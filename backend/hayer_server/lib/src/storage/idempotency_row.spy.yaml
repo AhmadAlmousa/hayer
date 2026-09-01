@@ -1,0 +1,18 @@
+class: IdempotencyRow
+serverOnly: true
+table: hayer_idempotency
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scope: String
+  userId: String
+  idempotencyKey: String
+  requestHash: String
+  responseId: String
+  createdAt: DateTime
+  expiresAt: DateTime
+indexes:
+  hayer_idempotency_unique:
+    fields: scope, userId, idempotencyKey
+    unique: true
+  hayer_idempotency_expiry:
+    fields: expiresAt

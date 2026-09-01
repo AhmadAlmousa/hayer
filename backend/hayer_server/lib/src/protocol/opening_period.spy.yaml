@@ -1,0 +1,6 @@
+class: OpeningPeriod
+fields:
+  day: int
+  openMinutes: int
+  closeMinutes: int
+  overnight: bool

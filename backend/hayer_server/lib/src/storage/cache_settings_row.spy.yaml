@@ -1,0 +1,20 @@
+class: CacheSettingsRow
+serverOnly: true
+table: hayer_cache_settings
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  settingsKey: String
+  version: int
+  freshHours: int
+  staleFallbackDays: int
+  retentionDays: int
+  extractorAttempts: int
+  perCreationConcurrency: int
+  globalRequestsPerMinute: int
+  globalBurst: int
+  updatedBy: String
+  updatedAt: DateTime
+indexes:
+  hayer_cache_settings_key:
+    fields: settingsKey
+    unique: true

@@ -1,0 +1,7 @@
+class: CalibrationValidation
+fields:
+  version: String
+  fixturePassed: bool
+  liveCanaryPassed: bool
+  errors: List<String>
+  validatedAt: DateTime

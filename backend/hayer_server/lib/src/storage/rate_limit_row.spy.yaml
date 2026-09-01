@@ -1,0 +1,15 @@
+class: RateLimitRow
+serverOnly: true
+table: hayer_rate_limit
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  counterKey: String
+  attemptCount: int
+  windowStartedAt: DateTime
+  expiresAt: DateTime
+indexes:
+  hayer_rate_limit_key:
+    fields: counterKey
+    unique: true
+  hayer_rate_limit_expiry:
+    fields: expiresAt

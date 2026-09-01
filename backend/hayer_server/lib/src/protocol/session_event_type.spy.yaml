@@ -1,0 +1,7 @@
+enum: SessionEventType
+values:
+  - participantsChanged
+  - progressChanged
+  - resultsChanged
+  - matched
+  - expired

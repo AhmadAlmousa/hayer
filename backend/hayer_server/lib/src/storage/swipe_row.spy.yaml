@@ -1,0 +1,22 @@
+class: SwipeRow
+serverOnly: true
+table: hayer_swipe
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  sessionId: String
+  userId: String
+  placeId: String
+  liked: bool
+  swipeIndex: int
+  clientSwipedAt: DateTime
+  serverReceivedAt: DateTime
+  idempotencyKey: String
+indexes:
+  hayer_swipe_identity:
+    fields: sessionId, userId, placeId
+    unique: true
+  hayer_swipe_idempotency:
+    fields: userId, idempotencyKey
+    unique: true
+  hayer_swipe_session_place:
+    fields: sessionId, placeId

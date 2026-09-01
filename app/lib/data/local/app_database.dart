@@ -1,0 +1,35 @@
+import 'package:drift/drift.dart';
+import 'package:drift_flutter/drift_flutter.dart';
+
+part 'app_database.g.dart';
+
+class PendingSwipes extends Table {
+  TextColumn get idempotencyKey => text()();
+  TextColumn get sessionId => text()();
+  TextColumn get placeId => text()();
+  BoolColumn get liked => boolean()();
+  IntColumn get swipeIndex => integer()();
+  DateTimeColumn get clientSwipedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {idempotencyKey};
+}
+
+@DriftDatabase(tables: [PendingSwipes])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase() : super(driftDatabase(name: 'hayer'));
+
+  @override
+  int get schemaVersion => 1;
+
+  Future<void> enqueue(PendingSwipesCompanion value) =>
+      into(pendingSwipes).insertOnConflictUpdate(value);
+
+  Future<List<PendingSwipe>> queued() => (select(
+    pendingSwipes,
+  )..orderBy([(row) => OrderingTerm.asc(row.clientSwipedAt)])).get();
+
+  Future<void> removePending(String idempotencyKey) => (delete(
+    pendingSwipes,
+  )..where((row) => row.idempotencyKey.equals(idempotencyKey))).go();
+}

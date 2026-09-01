@@ -1,0 +1,5 @@
+exception: ApiException
+fields:
+  code: String
+  message: String
+  retryAfterSeconds: int?

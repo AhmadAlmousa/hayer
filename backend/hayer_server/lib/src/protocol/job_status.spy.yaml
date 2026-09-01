@@ -1,0 +1,7 @@
+enum: JobStatus
+values:
+  - pending
+  - running
+  - succeeded
+  - failed
+  - cancelled

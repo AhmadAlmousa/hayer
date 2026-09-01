@@ -1,0 +1,27 @@
+admin:
+  - summary:
+  - catalog:
+  - policy:
+  - updatePolicy:
+  - quarantine:
+  - restore:
+  - refreshCoverage:
+  - invalidateCoverage:
+  - validateCalibration:
+  - activateCalibration:
+  - rollbackCalibration:
+bootstrap:
+  - getInfo:
+hayerSession:
+  - create:
+  - join:
+  - load:
+  - swipe:
+  - results:
+  - watch:
+place:
+  - suggest:
+anonymousIdp:
+  - login:
+jwtRefresh:
+  - refreshAccessToken:

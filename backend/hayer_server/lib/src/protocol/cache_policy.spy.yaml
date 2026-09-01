@@ -1,0 +1,11 @@
+class: CachePolicy
+fields:
+  version: int
+  freshHours: int
+  staleFallbackDays: int
+  retentionDays: int
+  extractorAttempts: int
+  perCreationConcurrency: int
+  globalRequestsPerMinute: int
+  globalBurst: int
+  updatedAt: DateTime

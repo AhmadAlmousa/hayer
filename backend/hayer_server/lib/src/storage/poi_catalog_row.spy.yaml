@@ -1,0 +1,31 @@
+class: PoiCatalogRow
+serverOnly: true
+table: hayer_poi_catalog
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  provider: String
+  providerPlaceId: String
+  featureId: String?
+  normalizedName: String
+  name: String
+  countryCode: String
+  latitude: double
+  longitude: double
+  categoryIds: List<String>
+  snapshot: PlaceSnapshot
+  calibrationVersion: String
+  sourceCheckedAt: DateTime
+  firstSeenAt: DateTime
+  lastSeenAt: DateTime
+  quarantinedAt: DateTime?
+  quarantineReason: String?
+indexes:
+  hayer_poi_provider_identity:
+    fields: provider, providerPlaceId
+    unique: true
+  hayer_poi_feature_id:
+    fields: featureId
+  hayer_poi_country_last_seen:
+    fields: countryCode, lastSeenAt
+  hayer_poi_quarantine:
+    fields: quarantinedAt

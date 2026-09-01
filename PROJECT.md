@@ -1,10 +1,10 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 
-Status: implementation in progress
+Status: beta implementation complete; environment and release verification in progress
 
-Current focus: M0 — repository and foundation
+Current focus: M7 — Docker/PostGIS, signed APK, and multi-device beta proof
 
 Product brief: [`overview.md`](overview.md)
 
@@ -162,106 +162,147 @@ session-creation deadline. Cache policy validation enforces
 
 ## Milestone tracker
 
-### M0 — Repository and foundation `[~]`
+### M0 — Repository and foundation `[!]`
 
 - [x] Study the product brief and pin all product/technical decisions.
 - [x] Create this canonical `PROJECT.md` tracker.
-- [!] Initialize/push the Git root. The managed workspace exposes `.git` as
-  read-only and GitHub SSH authentication currently returns `Permission
-  denied (publickey)`.
-- [ ] Preserve Vela as a pinned submodule/reference boundary.
-- [ ] Scaffold the Flutter consumer, Flutter admin, Serverpod server/client,
-  and deployment directories.
-- [ ] Pin SDKs/dependencies, generated code, strict analysis, ignores, secret
-  templates, and CI.
-- [ ] Prove RPC and WSS gateway-prefix routing.
+- [x] Initialize Git on `main` and configure
+  `git@github.com:AhmadAlmousa/hayer.git`.
+- [x] Preserve Vela at commit `02f72339347f8a20875256abe29934463d8bc34a`
+  as a submodule/reference boundary.
+- [x] Scaffold the Flutter consumer, Flutter admin, Serverpod server/client,
+  root Dart workspace, and deployment directories.
+- [x] Pin Flutter 3.44.2, Dart 3.12.2, Serverpod 3.4.13, generated code,
+  fatal-info analysis, ignores, secret templates, and CI.
+- [!] Prove RPC and WSS gateway-prefix routing on the Compose stack. Docker is
+  unavailable in this development environment.
 
 Exit: a fresh clone bootstraps, CI is green, and API plus streaming smoke tests
 pass through the intended public gateway.
 
-### M1 — Extractor and shared catalog `[ ]`
+### M1 — Extractor and shared catalog `[!]`
 
-- [ ] Add PostGIS/catalog/coverage/calibration/settings/jobs migrations and
-  indexes.
-- [ ] Implement the Dart web session, calibrated request builder, safe
-  positional parser, normalizer, filters, ranking, and diversity.
-- [ ] Add sanitized list/focused/empty/degraded fixtures and opt-in Saudi live
-  canaries.
-- [ ] Implement catalog-first lookup, refresh coalescing, English/Arabic
-  fallback, stale suppression, and scheduled retention.
+- [x] Add PostGIS catalog, category evidence, coverage, calibration, policy,
+  refresh-job, audit, and operational-metric migrations and indexes.
+- [x] Implement the original Dart cookie session, calibrated `tbm=map`
+  builder, safe positional parser, normalization, host/size checks, paging,
+  deduplication, exact-radius/closure/price filters, ranking, and diversity.
+- [~] Unit fixtures cover XSSI, list, focused, malformed/drift, price, hours,
+  stale suppression, policy, taxonomy, and consensus. A full sanitized
+  provider-response fixture corpus remains to be captured.
+- [x] Implement PostGIS catalog-first lookup, process-level refresh
+  coalescing, English/Arabic fallback, configurable attempts/concurrency,
+  global token-bucket source limits, 30-second deadline, stale suppression,
+  metrics, and scheduled retention.
+- [!] Run Saudi live canaries and `EXPLAIN ANALYZE` spatial-index proof against
+  a migrated PostGIS database.
 
 Exit: a Riyadh request makes a deterministic deck, a covered repeat is local,
 drift fails safely, and spatial queries use their indexes.
 
-### M2 — Server-authoritative sessions `[ ]`
+### M2 — Server-authoritative sessions `[!]`
 
-- [ ] Add anonymous identity, compatibility bootstrap, limits, and secure
-  token handling.
-- [ ] Implement session/participant/snapshot/swipe/idempotency persistence.
-- [ ] Implement create, join, load, swipe, results, expiry, cleanup, majority,
-  unanimous, instant, and after-deck matching.
-- [ ] Add streaming refresh hints, polling revisions, location suggestions,
-  and public join/download/media routes.
+- [x] Add anonymous JWT-backed identity, compatibility bootstrap,
+  update-required gating, endpoint rate limits, and secure client token
+  storage.
+- [x] Implement transactional session/participant/immutable-deck/swipe and
+  idempotency persistence with database constraints and a 12-member limit.
+- [x] Implement create, idempotent join, member-only load, durable swipe,
+  aggregate results, authoritative expiry, cleanup, per-place majority and
+  unanimous consensus, instant match, and after-deck completion.
+- [x] Add private streaming refresh hints, five-second polling fallback,
+  revision updates, location suggestions, join App Links, and download/static
+  routes.
+- [ ] Add the authenticated consumer-web photo proxy before enabling consumer
+  web; native Android currently loads only allowlisted HTTPS source photos.
+- [!] Run generated Serverpod database integration tests against PostGIS;
+  local unit tests do not substitute for transactional concurrency proof.
 
 Exit: integration tests prove identical decks, private votes, correct
 consensus, late joins, retry safety, and expiry.
 
-### M3 — Consumer foundation and design system `[ ]`
+### M3 — Consumer foundation and design system `[!]`
 
-- [ ] Configure Riverpod, repositories, routing/deep links, Drift outbox, and
-  secure anonymous identity.
-- [ ] Implement tokens/components, themes, Nunito, icon/wordmark, localization,
-  reduced motion, and responsive/RTL primitives.
-- [ ] Add widget previews/goldens and Android permissions/App Links/signing
-  configuration.
+- [x] Configure Riverpod, repositories, GoRouter/App Links, Drift swipe
+  outbox/replay, secure anonymous identity, active-session restoration, and
+  compatibility bootstrap.
+- [x] Implement Hayer-owned Material 3 themes/components, bundled Nunito,
+  teal/amber tokens, light/dark themes, English/Arabic localization, and
+  responsive/RTL-aware shells.
+- [x] Add Android location/camera/network permissions, application ID
+  `sa.almou.hayer`, minimum SDK 26, external release signing configuration,
+  and `assetlinks.json` materialization.
+- [~] Widget smoke tests exist and pass. Preview/golden matrices for dark,
+  large-text, narrow/wide, RTL, and reduced motion remain a release gate.
 
 Exit: the shell restores identity/session after termination, and previews
 pass in light, dark, large-text, narrow/wide, and RTL harnesses.
 
-### M4 — Solo vertical `[ ]`
+### M4 — Solo vertical `[!]`
 
-- [ ] Build category, location, options, and mode setup steps.
-- [ ] Connect GPS and typed location to catalog-backed creation and all
-  underfill/stale/source states.
-- [ ] Build durable photo-led swiping, result sorting, details, attribution,
-  and external navigation.
+- [x] Build category/subcategory, GPS/typed location, radius/price/deck, and
+  solo/multiplayer setup steps.
+- [x] Connect setup to catalog-backed creation with supported GCC bounds,
+  underfill, stale, no-place, and temporary-source messaging.
+- [x] Build optimistic photo-led swiping with durable replay, termination
+  resume, results filtering/sorting, full details sheet, attribution, and
+  phone/site/external-navigation handoff.
+- [!] Complete a signed APK create → forced restart → resume → results test
+  against the deployed backend. No release keystore or runtime backend is
+  available here.
 
 Exit: a signed test build completes create, swipe, forced restart/resume, and
 results against the backend.
 
-### M5 — Multiplayer vertical `[ ]`
+### M5 — Multiplayer vertical `[!]`
 
-- [ ] Implement ambiguity-free six-character codes, links, QR sharing,
-  scanning, and App-Link join routing.
-- [ ] Build lobby/progress/late-join/countdown/live-results flows.
-- [ ] Verify instant match and after-deck majority/unanimous behavior with
-  multiple clients and supported APK versions.
+- [x] Implement ambiguity-free six-character codes, links, QR sharing,
+  camera scanning, App-Link join routing, and collision-bounded allocation.
+- [x] Build lobby, participant progress, late join, live refresh/polling,
+  swipe, completion, partial results, and result convergence flows.
+- [!] Verify instant and after-deck majority/unanimous behavior with multiple
+  physical clients, duplicate requests, disconnects, and newest/previous APKs.
 
 Exit: two or more clients share the identical deck and converge on correct
 results through duplicate requests and disconnects.
 
-### M6 — Cache administration `[ ]`
+### M6 — Cache administration `[!]`
 
-- [ ] Protect both dashboard assets and RPCs with one named operator, CSRF,
-  exact-origin validation, and append-only audits.
-- [ ] Implement KPI trends, catalog/coverage map, filters, record/job/audit
-  inspectors, and policy editor.
-- [ ] Implement refresh, cancellation, quarantine/restore, invalidation,
-  pruning, and validated calibration activation/rollback.
+- [x] Protect dashboard assets and RPCs behind nginx Basic Auth plus a
+  constant-time server secret; require named operators/reasons and append
+  mutation audits. Credentials are memory-only in the web client.
+- [x] Implement 24-hour KPI summaries, catalog paging/search, an OpenFreeMap
+  context map, quarantine visibility/actions, and a bounded versioned policy
+  editor whose values drive runtime extraction/cache behavior.
+- [x] Implement coverage invalidation/refresh request creation, reversible
+  quarantine/restore, calibration schema validation plus Riyadh live canary,
+  activation, runtime version selection, and rollback.
+- [~] Add dedicated coverage/job/audit inspector pages, refresh-job execution
+  and cancellation, manual prune controls, and KPI trend charts.
+- [!] Verify nginx authentication, exact-origin/CSRF posture, auditing, and
+  reversible mutations through the deployed gateway.
 
 Exit: unauthorized access fails, mutations are reversible/audited, and broken
 calibration cannot activate.
 
-### M7 — Reliability and invited beta `[ ]`
+### M7 — Reliability and invited beta `[~]`
 
-- [ ] Complete offline, photo, expiry, source, diagnostics, and update-required
-  states without behavioral analytics.
-- [ ] Deploy Compose to Unraid, verify TLS/WSS, apply migrations, and restore a
-  daily backup.
-- [ ] Create an external release keystore; publish the signed APK, checksum,
-  download page, and valid `assetlinks.json`.
-- [ ] Pass accessibility, performance, security, and latest/previous build
-  compatibility gates; tag the beta release.
+- [x] Implement offline swipe replay, missing-photo fallback, stale/underfill/
+  source/expiry states, active-session resume, update-required download gate,
+  and privacy-conscious diagnostics without behavioral analytics.
+- [x] Add the Unraid Compose topology, nginx gateway, JIT source supervisor,
+  health checks, migrations-on-start, daily 03:00 backups, seven-day
+  retention, guarded restore, secret templates, and deploy preflight.
+- [x] Add external release-keystore configuration, APK/checksum build script,
+  download artifact staging, and certificate-derived `assetlinks.json`.
+- [x] Pass fatal-info analysis, 12 backend unit tests, consumer/admin widget
+  tests, shell syntax, and production web compilation for both Flutter apps.
+- [x] Android debug compilation passed under the constrained 2 GB/two-worker
+  Gradle profile and produced `app-debug.apk`; signed release still needs the
+  external keystore.
+- [!] Deploy Compose to Unraid; verify migrations, TLS/WSS/API prefixes, live
+  extraction, App Links, backup restore, accessibility, performance, and
+  newest/previous-build compatibility; then tag the invited beta.
 
 Exit: an invited user installs from the Hayer domain and completes the full
 solo and multiplayer flows without developer intervention.
@@ -315,12 +356,29 @@ solo and multiplayer flows without developer intervention.
 
 ## Evidence log
 
-- 2026-08-31: `serverpod_cli 3.4.13` installed successfully.
-- 2026-08-31: GitHub SSH probe failed with `Permission denied (publickey)`;
-  remote push remains blocked on host credentials.
-- 2026-08-31: Docker and Serverpod were initially absent; Docker remains
-  unavailable in this agent environment, so Compose runtime validation must
-  occur on Unraid or another Docker host.
+- 2026-08-31: Git is initialized on `main`, tracking `origin/main` at
+  `git@github.com:AhmadAlmousa/hayer.git`; Vela is clean at
+  `02f72339347f8a20875256abe29934463d8bc34a`.
+- 2026-08-31: `serverpod_cli 3.4.13` generated the server protocol, client,
+  endpoint dispatch, and integration test tools successfully.
+- 2026-08-31: `dart analyze --fatal-infos` passed for `hayer_server` and
+  `hayer_client`; `flutter analyze --fatal-infos` passed for `app` and
+  `admin`.
+- 2026-08-31: `dart test test/unit` passed 12 tests; `flutter test` passed the
+  consumer and admin widget tests.
+- 2026-08-31: consumer production web build passed with base `/app/`; admin
+  production web build passed with base `/admin/cache/`.
+- 2026-08-31: Bash/sh syntax checks passed for preflight, deploy, APK release,
+  backup, and restore scripts.
+- 2026-08-31: after two shared Gradle daemons were killed under host memory
+  pressure, the project was constrained to a 2 GB heap, 768 MB metaspace, two
+  workers, and a non-persistent daemon. The retry passed and produced a 192 MB
+  debug APK with SHA-256
+  `4d43428b3d2bd338c72eb019366f037c7dfdc1c642d023449994bb472091253e`.
+- 2026-08-31: Docker is unavailable in this agent environment. Compose,
+  PostGIS migrations/integration tests, nginx API/WSS routing, provider live
+  search, App Links, backup restore, and signed installation remain external
+  verification gates rather than claimed passes.
 
 ## Decision and change log
 
@@ -329,5 +387,12 @@ solo and multiplayer flows without developer intervention.
   response cache.
 - 2026-08-31: Set 72-hour refresh, two attempts, 30-day guarded stale fallback,
   and 365-day retention, all dashboard-controllable.
-- 2026-08-31: Added the protected, full-management Flutter web cache dashboard
-  with map, audit, quarantine-first removal, and validated calibration rollout.
+- 2026-08-31: Added the protected Flutter web cache dashboard with map,
+  audited quarantine-first management, bounded policy editing, and validated
+  calibration rollout; job/audit inspector depth remains tracked in M6.
+- 2026-08-31: Wired policy values into extraction retries/concurrency/global
+  traffic limits, added identical-refresh coalescing and scheduled cleanup,
+  and required a Riyadh live canary before calibration activation or rollback.
+- 2026-08-31: Added secure active-session restoration, bootstrap build gating,
+  QR scanning, and full provider-neutral result details/navigation to the
+  consumer app.

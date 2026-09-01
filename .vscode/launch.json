@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "hayer_flutter",
+            "cwd": "${workspaceFolder}/hayer_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "hayer_server",
+            "cwd": "${workspaceFolder}/hayer_server",
+            "request": "launch",
+            "type": "dart",
+            "preLaunchTask": "docker_compose_up",
+            "program": "bin/main.dart",
+            "env": {
+                "SERVERPOD_PASSWORD_database": "TFVXBqqTkeFQkq-pS5oxTKTEKk_zpRTH"
+            },
+            "args": [
+                "--apply-migrations"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "hayer (full stack)",
+            "configurations": [
+                "hayer_server",
+                "hayer_flutter"
+            ],
+            "presentation": {
+                "order": 1
+            }
+        }
+    ]
+}

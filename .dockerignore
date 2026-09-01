@@ -1,0 +1,9 @@
+.git
+.dart_tool
+**/.dart_tool
+**/build
+backend/deploy/data
+backend/deploy/backups
+backend/deploy/releases
+backend/deploy/secrets
+references

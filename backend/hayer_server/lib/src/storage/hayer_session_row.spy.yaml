@@ -1,0 +1,36 @@
+class: HayerSessionRow
+serverOnly: true
+table: hayer_session
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  sessionId: String
+  code: String
+  hostUserId: String
+  mode: SessionMode
+  categoryId: String
+  subcategoryIds: List<String>
+  priceLevel: int?
+  anchorLatitude: double
+  anchorLongitude: double
+  anchorAddress: String?
+  countryCode: String
+  radiusMeters: int
+  deckSizeRequested: int
+  deckSizeActual: int
+  consensusRule: ConsensusRule
+  matchingTiming: MatchingTiming
+  status: SessionStatus
+  matchedPlaceId: String?
+  revision: int
+  freshnessWarning: String?
+  createdAt: DateTime
+  expiresAt: DateTime
+indexes:
+  hayer_session_session_id:
+    fields: sessionId
+    unique: true
+  hayer_session_code:
+    fields: code
+    unique: true
+  hayer_session_status_expires:
+    fields: status, expiresAt

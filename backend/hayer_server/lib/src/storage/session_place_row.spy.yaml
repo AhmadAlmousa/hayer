@@ -1,0 +1,16 @@
+class: SessionPlaceRow
+serverOnly: true
+table: hayer_session_place
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  sessionId: String
+  placeId: String
+  deckOrder: int
+  snapshot: PlaceSnapshot
+indexes:
+  hayer_session_place_order:
+    fields: sessionId, deckOrder
+    unique: true
+  hayer_session_place_identity:
+    fields: sessionId, placeId
+    unique: true

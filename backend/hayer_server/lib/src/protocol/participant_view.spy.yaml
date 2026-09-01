@@ -1,0 +1,8 @@
+class: ParticipantView
+fields:
+  participantId: String
+  displayName: String
+  isHost: bool
+  currentIndex: int
+  hasCompleted: bool
+  lastSeenAt: DateTime

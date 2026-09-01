@@ -1,0 +1,17 @@
+class: PoiCategoryRow
+serverOnly: true
+table: hayer_poi_category
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  provider: String
+  providerPlaceId: String
+  categoryId: String
+  evidenceQuery: String
+  firstSeenAt: DateTime
+  lastSeenAt: DateTime
+indexes:
+  hayer_poi_category_identity:
+    fields: provider, providerPlaceId, categoryId
+    unique: true
+  hayer_poi_category_lookup:
+    fields: categoryId, lastSeenAt

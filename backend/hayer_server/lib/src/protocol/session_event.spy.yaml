@@ -1,0 +1,6 @@
+class: SessionEvent
+fields:
+  sessionId: String
+  type: SessionEventType
+  revision: int
+  occurredAt: DateTime

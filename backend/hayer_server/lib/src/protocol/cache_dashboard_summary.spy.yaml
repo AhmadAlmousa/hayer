@@ -1,0 +1,12 @@
+class: CacheDashboardSummary
+fields:
+  catalogCount: int
+  freshCount: int
+  staleCount: int
+  quarantinedCount: int
+  coverageCount: int
+  pendingJobs: int
+  cacheHitRate: double
+  sourceSuccessRate: double
+  calibrationVersion: String
+  generatedAt: DateTime

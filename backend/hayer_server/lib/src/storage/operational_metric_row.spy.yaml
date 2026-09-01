@@ -1,0 +1,15 @@
+class: OperationalMetricRow
+serverOnly: true
+table: hayer_operational_metric
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  bucketStartedAt: DateTime
+  metricName: String
+  dimensions: Map<String, String>
+  metricValue: double
+  sampleCount: int
+indexes:
+  hayer_metric_bucket_name:
+    fields: bucketStartedAt, metricName
+  hayer_metric_name_bucket:
+    fields: metricName, bucketStartedAt

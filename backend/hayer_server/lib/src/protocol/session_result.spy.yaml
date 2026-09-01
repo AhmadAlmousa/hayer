@@ -1,0 +1,7 @@
+class: SessionResult
+fields:
+  place: PlaceSnapshot
+  likeCount: int
+  voterCount: int
+  match: bool
+  rank: int

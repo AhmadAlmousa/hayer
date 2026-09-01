@@ -1,0 +1,26 @@
+class: ParticipantRow
+serverOnly: true
+table: hayer_participant
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  participantId: String
+  sessionId: String
+  userId: String
+  displayName: String
+  normalizedName: String
+  isHost: bool
+  currentIndex: int
+  hasCompleted: bool
+  lastSeenAt: DateTime
+indexes:
+  hayer_participant_id:
+    fields: participantId
+    unique: true
+  hayer_participant_session_user:
+    fields: sessionId, userId
+    unique: true
+  hayer_participant_session_name:
+    fields: sessionId, normalizedName
+    unique: true
+  hayer_participant_session:
+    fields: sessionId

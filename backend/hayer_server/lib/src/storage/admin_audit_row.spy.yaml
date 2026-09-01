@@ -1,0 +1,21 @@
+class: AdminAuditRow
+serverOnly: true
+table: hayer_admin_audit
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  auditId: String
+  operatorName: String
+  ipHash: String
+  action: String
+  targetType: String
+  targetId: String?
+  reason: String
+  beforeData: Map<String, String>?
+  afterData: Map<String, String>?
+  occurredAt: DateTime
+indexes:
+  hayer_admin_audit_id:
+    fields: auditId
+    unique: true
+  hayer_admin_audit_time:
+    fields: occurredAt

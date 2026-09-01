@@ -1,0 +1,24 @@
+class: PoiCoverageRow
+serverOnly: true
+table: hayer_poi_coverage
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  coverageKey: String
+  queryKey: String
+  language: String
+  countryCode: String
+  anchorLatitude: double
+  anchorLongitude: double
+  radiusMeters: int
+  calibrationVersion: String
+  resultCount: int
+  refreshedAt: DateTime
+  expiresAt: DateTime
+  lastFailureCode: String?
+  invalidatedAt: DateTime?
+indexes:
+  hayer_coverage_key:
+    fields: coverageKey
+    unique: true
+  hayer_coverage_query_expiry:
+    fields: countryCode, queryKey, language, expiresAt

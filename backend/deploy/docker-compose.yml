@@ -1,0 +1,80 @@
+name: hayer
+
+services:
+  gateway:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      server:
+        condition: service_healthy
+    ports:
+      - "8432:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./secrets/admin.htpasswd:/etc/nginx/secrets/admin.htpasswd:ro
+    networks: [hayer]
+
+  server:
+    build:
+      context: ../..
+      dockerfile: backend/hayer_server/Dockerfile.production
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./secrets/passwords.yaml:/workspace/backend/hayer_server/config/passwords.yaml:ro
+    expose: ["8080", "8081", "8082"]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8082/"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+    networks: [hayer]
+
+  postgres:
+    image: postgis/postgis:16-3.5-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hayer
+      POSTGRES_USER: hayer
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_password
+      TZ: Asia/Riyadh
+    secrets: [database_password]
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hayer -d hayer"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks: [hayer]
+
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGDATABASE: hayer
+      PGUSER: hayer
+      PGPASSFILE: /tmp/hayer-pgpass
+      TZ: Asia/Riyadh
+    secrets: [pgpass]
+    volumes:
+      - ./backups:/backups
+      - ./backup-loop.sh:/usr/local/bin/backup-loop:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/backup-loop"]
+    networks: [hayer]
+
+networks:
+  hayer:
+    internal: false
+
+secrets:
+  database_password:
+    file: ./secrets/database_password
+  pgpass:
+    file: ./secrets/pgpass

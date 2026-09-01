@@ -1,0 +1,14 @@
+class: CreateSessionRequest
+fields:
+  mode: SessionMode
+  categoryId: String
+  subcategoryIds: List<String>
+  priceLevel: int?
+  anchorLatitude: double
+  anchorLongitude: double
+  anchorAddress: String?
+  radiusMeters: int
+  deckSize: int
+  displayName: String?
+  consensusRule: ConsensusRule
+  matchingTiming: MatchingTiming

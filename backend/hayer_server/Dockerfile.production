@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1.7
+FROM dart:3.12.2 AS dependencies
+WORKDIR /workspace
+
+COPY backend/hayer_client/pubspec.yaml backend/hayer_client/pubspec.yaml
+COPY backend/hayer_server/pubspec.yaml backend/hayer_server/pubspec.yaml
+RUN printf '%s\n' \
+  'name: hayer_container_workspace' \
+  'publish_to: none' \
+  'environment:' \
+  '  sdk: ^3.12.0' \
+  'workspace:' \
+  '  - backend/hayer_client' \
+  '  - backend/hayer_server' \
+  > pubspec.yaml
+RUN dart pub get
+
+FROM dart:3.12.2
+ENV runmode=production serverid=default logging=normal role=monolith
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl \
+  && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+COPY --from=dependencies /workspace/.dart_tool /workspace/.dart_tool
+COPY --from=dependencies /workspace/pubspec.lock /workspace/pubspec.lock
+COPY --from=dependencies /root/.pub-cache /root/.pub-cache
+COPY --from=dependencies /workspace/pubspec.yaml /workspace/pubspec.yaml
+COPY backend/hayer_client backend/hayer_client
+COPY backend/hayer_server backend/hayer_server
+WORKDIR /workspace/backend/hayer_server
+EXPOSE 8080 8081 8082
+CMD ["dart", "run", "tool/supervisor.dart"]

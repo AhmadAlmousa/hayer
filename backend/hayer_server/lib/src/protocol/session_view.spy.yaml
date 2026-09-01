@@ -1,0 +1,23 @@
+class: SessionView
+fields:
+  sessionId: String
+  code: String
+  mode: SessionMode
+  categoryId: String
+  subcategoryIds: List<String>
+  priceLevel: int?
+  anchorLatitude: double
+  anchorLongitude: double
+  anchorAddress: String?
+  countryCode: String
+  radiusMeters: int
+  deckSizeRequested: int
+  deckSizeActual: int
+  consensusRule: ConsensusRule
+  matchingTiming: MatchingTiming
+  status: SessionStatus
+  matchedPlaceId: String?
+  revision: int
+  createdAt: DateTime
+  expiresAt: DateTime
+  freshnessWarning: String?

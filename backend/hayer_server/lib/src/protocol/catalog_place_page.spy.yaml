@@ -1,0 +1,6 @@
+class: CatalogPlacePage
+fields:
+  items: List<PlaceSnapshot>
+  total: int
+  page: int
+  pageSize: int

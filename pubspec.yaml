@@ -1,0 +1,11 @@
+name: hayer_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+workspace:
+  - backend/hayer_client
+  - backend/hayer_server
+  - app
+  - admin

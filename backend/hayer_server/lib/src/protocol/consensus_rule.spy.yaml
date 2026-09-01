@@ -1,0 +1,4 @@
+enum: ConsensusRule
+values:
+  - majority
+  - unanimous

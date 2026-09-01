@@ -1,0 +1,8 @@
+class: SwipeCommand
+fields:
+  sessionId: String
+  placeId: String
+  liked: bool
+  swipeIndex: int
+  clientSwipedAt: DateTime
+  idempotencyKey: String

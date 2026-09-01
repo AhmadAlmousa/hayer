@@ -1,0 +1,22 @@
+class: RefreshJobRow
+serverOnly: true
+table: hayer_refresh_job
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  jobId: String
+  coverageKey: String
+  status: JobStatus
+  requestedBy: String
+  reason: String
+  createdAt: DateTime
+  startedAt: DateTime?
+  completedAt: DateTime?
+  errorCode: String?
+indexes:
+  hayer_refresh_job_id:
+    fields: jobId
+    unique: true
+  hayer_refresh_job_coverage_status:
+    fields: coverageKey, status
+  hayer_refresh_job_created:
+    fields: createdAt

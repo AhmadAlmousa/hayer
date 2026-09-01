@@ -1,0 +1,10 @@
+class: BootstrapInfo
+fields:
+  minimumBuild: int
+  latestBuild: int
+  updateRequired: bool
+  supportedCountries: List<String>
+  certifiedCountries: List<String>
+  taxonomyVersion: String
+  configVersion: int
+  serverTime: DateTime

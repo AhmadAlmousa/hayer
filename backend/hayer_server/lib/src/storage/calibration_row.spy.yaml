@@ -1,0 +1,21 @@
+class: CalibrationRow
+serverOnly: true
+table: hayer_calibration
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  version: String
+  status: CalibrationStatus
+  document: Map<String, String>
+  fixturePassed: bool
+  liveCanaryPassed: bool
+  validationErrors: List<String>
+  createdBy: String
+  createdAt: DateTime
+  validatedAt: DateTime?
+  activatedAt: DateTime?
+indexes:
+  hayer_calibration_version:
+    fields: version
+    unique: true
+  hayer_calibration_status:
+    fields: status

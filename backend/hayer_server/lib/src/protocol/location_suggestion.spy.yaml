@@ -1,0 +1,9 @@
+class: LocationSuggestion
+fields:
+  placeId: String
+  mainText: String
+  secondaryText: String?
+  fullText: String
+  latitude: double
+  longitude: double
+  countryCode: String

@@ -1,0 +1,28 @@
+class: PlaceSnapshot
+fields:
+  placeId: String
+  featureId: String?
+  name: String
+  primaryType: String?
+  categoryIds: List<String>
+  rating: double?
+  reviewCount: int?
+  priceLevel: int?
+  priceText: String?
+  isOpen: bool?
+  statusText: String?
+  hours: List<OpeningPeriod>
+  distanceMeters: int
+  latitude: double
+  longitude: double
+  address: String?
+  formattedAddress: String?
+  phoneNumber: String?
+  websiteUrl: String?
+  mapsUrl: String?
+  photoUrls: List<String>
+  featuredReview: String?
+  editorialSummary: String?
+  attributions: List<String>
+  sourceCheckedAt: DateTime
+  isStale: bool

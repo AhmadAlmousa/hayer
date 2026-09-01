@@ -1,0 +1,4 @@
+[submodule "references/Vela"]
+	path = references/Vela
+	url = https://github.com/PimpinPumpkin/Vela
+	branch = main

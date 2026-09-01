@@ -1,0 +1,8 @@
+enum: CalibrationStatus
+values:
+  - draft
+  - validating
+  - valid
+  - invalid
+  - active
+  - superseded

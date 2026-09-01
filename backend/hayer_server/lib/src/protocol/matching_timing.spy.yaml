@@ -1,0 +1,4 @@
+enum: MatchingTiming
+values:
+  - instant
+  - afterDeck
