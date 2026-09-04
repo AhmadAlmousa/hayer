@@ -109,8 +109,46 @@ void main() {
       expect(clearCalls, 0);
     });
   });
+
+  group('retryOnceAfterTransientFailure', () {
+    test('retries one transient failure', () async {
+      var calls = 0;
+      final result = await retryOnceAfterTransientFailure<String>(
+        action: () async {
+          calls++;
+          if (calls == 1) throw const _TransientFailure();
+          return 'success';
+        },
+        isTransient: (error) => error is _TransientFailure,
+        delay: Duration.zero,
+      );
+
+      expect(result, 'success');
+      expect(calls, 2);
+    });
+
+    test('does not retry permanent failures', () async {
+      var calls = 0;
+      await expectLater(
+        retryOnceAfterTransientFailure<void>(
+          action: () async {
+            calls++;
+            throw StateError('permanent');
+          },
+          isTransient: (error) => error is _TransientFailure,
+          delay: Duration.zero,
+        ),
+        throwsStateError,
+      );
+      expect(calls, 1);
+    });
+  });
 }
 
 class _AuthenticationFailure implements Exception {
   const _AuthenticationFailure();
+}
+
+class _TransientFailure implements Exception {
+  const _TransientFailure();
 }

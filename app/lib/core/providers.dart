@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 import '../data/local/app_database.dart';
+import '../data/display_name_store.dart';
 import '../data/location_warmup.dart';
 import '../data/pending_swipe_store.dart';
 import '../data/session_repository.dart';
@@ -15,6 +16,10 @@ final clientProvider = Provider<Client>(
 
 final locationWarmupProvider = Provider<LocationWarmup>(
   (ref) => LocationWarmup(),
+);
+
+final displayNameStoreProvider = Provider<DisplayNameStore>(
+  (ref) => const SecureDisplayNameStore(),
 );
 
 final pendingSwipeStoreProvider = Provider<PendingSwipeStore>((ref) {

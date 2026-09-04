@@ -746,6 +746,18 @@ abstract class AppLocalizations {
   /// **'First match'**
   String get firstMatch;
 
+  /// No description provided for @matchFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'\'s a match!'**
+  String get matchFoundTitle;
+
+  /// No description provided for @matchFoundCelebration.
+  ///
+  /// In en, this message translates to:
+  /// **'First match—decision made!'**
+  String get matchFoundCelebration;
+
   /// No description provided for @fullDeck.
   ///
   /// In en, this message translates to:

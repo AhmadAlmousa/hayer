@@ -358,6 +358,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get firstMatch => 'First match';
 
   @override
+  String get matchFoundTitle => 'It\'s a match!';
+
+  @override
+  String get matchFoundCelebration => 'First match—decision made!';
+
+  @override
   String get fullDeck => 'Full deck';
 
   @override

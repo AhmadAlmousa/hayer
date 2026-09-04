@@ -9,6 +9,7 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'app/app.dart';
 import 'core/providers.dart';
 import 'data/authentication.dart';
+import 'data/resilient_auth_storage.dart';
 import 'core/widgets/friendly_error_view.dart';
 
 Future<void> main() async {
@@ -20,7 +21,9 @@ Future<void> main() async {
   final url = await getServerUrl();
   final client = Client(url)
     ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = FlutterAuthSessionManager();
+    ..authSessionManager = FlutterAuthSessionManager(
+      storage: ResilientAuthSuccessStorage(SecureClientAuthSuccessStorage()),
+    );
   var updateRequired = false;
   try {
     final package = await PackageInfo.fromPlatform();

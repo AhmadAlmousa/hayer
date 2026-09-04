@@ -35,6 +35,22 @@ void main() {
       greaterThanOrEqualTo(44),
     );
 
+    final glow = find.byKey(const ValueKey('setup-current-step-glow'));
+    final glowTransform = find.descendant(
+      of: glow,
+      matching: find.byType(Transform),
+    );
+    final initialScale = tester
+        .widget<Transform>(glowTransform.first)
+        .transform
+        .getMaxScaleOnAxis();
+    await tester.pump(const Duration(milliseconds: 550));
+    final animatedScale = tester
+        .widget<Transform>(glowTransform.first)
+        .transform
+        .getMaxScaleOnAxis();
+    expect(animatedScale, greaterThan(initialScale));
+
     await tester.tap(find.text('Where'));
     expect(selected, 1);
 

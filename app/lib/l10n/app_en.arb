@@ -121,6 +121,8 @@
   "joinMySession": "Join my Hayer session: {url}",
   "@joinMySession": {"placeholders": {"url": {"type": "String"}}},
   "firstMatch": "First match",
+  "matchFoundTitle": "It''s a match!",
+  "matchFoundCelebration": "First match—decision made!",
   "fullDeck": "Full deck",
   "host": "Host",
   "done": "Done",

@@ -47,3 +47,17 @@ Future<T> withAnonymousAuthentication<T>(
   isAuthenticationFailure: (error) => error is ServerpodClientUnauthorized,
   clearAuthentication: () => client.auth.updateSignedInUser(null),
 );
+
+Future<T> retryOnceAfterTransientFailure<T>({
+  required Future<T> Function() action,
+  required bool Function(Object error) isTransient,
+  Duration delay = const Duration(milliseconds: 350),
+}) async {
+  try {
+    return await action();
+  } on Object catch (error) {
+    if (!isTransient(error)) rethrow;
+    await Future<void>.delayed(delay);
+    return action();
+  }
+}

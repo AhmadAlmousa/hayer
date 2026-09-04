@@ -353,6 +353,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get firstMatch => 'أول تطابق';
 
   @override
+  String get matchFoundTitle => 'لقينا تطابق!';
+
+  @override
+  String get matchFoundCelebration => 'أول تطابق—تم القرار!';
+
+  @override
   String get fullDeck => 'كل البطاقات';
 
   @override

@@ -19,24 +19,30 @@ class SessionRepository {
 
   Future<SessionBundle> create(CreateSessionRequest request) async {
     final idempotencyKey = _uuid.v7();
-    final bundle = await withAnonymousAuthentication(
-      client,
-      () => client.hayerSession.create(
-        request: request,
-        idempotencyKey: idempotencyKey,
+    final bundle = await retryOnceAfterTransientFailure(
+      action: () => withAnonymousAuthentication(
+        client,
+        () => client.hayerSession.create(
+          request: request,
+          idempotencyKey: idempotencyKey,
+        ),
       ),
+      isTransient: _isTransientClientFailure,
     );
     await remember(bundle.session.sessionId);
     return bundle;
   }
 
   Future<SessionBundle> join(String code, String displayName) async {
-    final bundle = await withAnonymousAuthentication(
-      client,
-      () => client.hayerSession.join(
-        code: code,
-        displayName: displayName,
+    final bundle = await retryOnceAfterTransientFailure(
+      action: () => withAnonymousAuthentication(
+        client,
+        () => client.hayerSession.join(
+          code: code,
+          displayName: displayName,
+        ),
       ),
+      isTransient: _isTransientClientFailure,
     );
     await remember(bundle.session.sessionId);
     return bundle;
@@ -52,8 +58,13 @@ class SessionRepository {
   Future<String?> activeSessionId() =>
       secureStorage.read(key: activeSessionKey);
 
-  Future<void> remember(String sessionId) =>
-      secureStorage.write(key: activeSessionKey, value: sessionId);
+  Future<void> remember(String sessionId) async {
+    try {
+      await secureStorage.write(key: activeSessionKey, value: sessionId);
+    } catch (_) {
+      // Local resume persistence is optional; the server action succeeded.
+    }
+  }
 
   Future<void> forgetActiveSession() =>
       secureStorage.delete(key: activeSessionKey);
@@ -127,3 +138,9 @@ class SessionRepository {
     }
   }
 }
+
+bool _isTransientClientFailure(Object error) =>
+    error is ServerpodClientException &&
+    (error.statusCode < 0 ||
+        error.statusCode == 408 ||
+        error.statusCode >= 500);

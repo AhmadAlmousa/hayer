@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/providers.dart';
 import '../../core/page_title.dart';
 import '../../core/widgets/content_shell.dart';
+import '../../core/widgets/fireworks_celebration.dart';
 import '../../core/widgets/search_area_map.dart';
 import '../../core/widgets/session_qr_code.dart';
 import '../../data/session_realtime_listener.dart';
@@ -29,6 +30,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   SessionBundle? _bundle;
   Object? _error;
   SessionRealtimeListener? _updates;
+  bool _celebrating = false;
 
   @override
   void initState() {
@@ -50,10 +52,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           .read(sessionRepositoryProvider)
           .load(widget.sessionId);
       if (mounted) {
+        final becameInstantMatch =
+            _bundle != null &&
+            _bundle!.session.status != SessionStatus.completed &&
+            value.session.status == SessionStatus.completed &&
+            value.session.matchingTiming == MatchingTiming.instant &&
+            value.session.matchedPlaceId != null;
         setState(() {
           _bundle = value;
           _error = null;
         });
+        if (becameInstantMatch) await _celebrateMatch();
       }
     } catch (error) {
       if (mounted) setState(() => _error = error);
@@ -68,6 +77,13 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           .watch(sessionId: widget.sessionId),
       onEvent: (_) => _load(),
     )..start();
+  }
+
+  Future<void> _celebrateMatch() async {
+    if (_celebrating || !mounted) return;
+    _celebrating = true;
+    await showMatchFireworks(context);
+    if (mounted) context.go('/results/${widget.sessionId}');
   }
 
   @override

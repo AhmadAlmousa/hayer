@@ -17,6 +17,8 @@ import '../../core/widgets/search_area_map.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'setup_data.dart';
 import 'setup_error.dart';
+import 'multiplayer_decision_options.dart';
+import 'setup_preferences.dart';
 import 'setup_step_pager.dart';
 import 'setup_timeline.dart';
 
@@ -39,6 +41,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   int? _priceLevel;
   int _deckSize = 10;
   DateTime? _visitAt;
+  VisitTimeChoice _visitTimeChoice = VisitTimeChoice.anyTime;
   SessionMode _mode = SessionMode.solo;
   ConsensusRule _consensus = ConsensusRule.majority;
   bool _instant = false;
@@ -55,6 +58,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   void initState() {
     super.initState();
     unawaited(_adoptWarmedLocation());
+    unawaited(_restoreDisplayName());
   }
 
   @override
@@ -83,14 +87,17 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         child: ContentShell(
           child: Column(
             children: [
-              SetupTimeline(
-                step: _step,
-                labels: [
-                  strings.setupTimelineType,
-                  strings.setupTimelineWhere,
-                  strings.setupTimelineMode,
-                ],
-                onSelect: _goToStep,
+              Padding(
+                padding: const EdgeInsets.only(top: 14),
+                child: SetupTimeline(
+                  step: _step,
+                  labels: [
+                    strings.setupTimelineType,
+                    strings.setupTimelineWhere,
+                    strings.setupTimelineMode,
+                  ],
+                  onSelect: _goToStep,
+                ),
               ),
               Expanded(
                 child: SetupStepPager(
@@ -310,9 +317,10 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
           title: strings.price,
           value: (_priceLevel ?? 0).toDouble(),
           max: 4,
-          label: _priceLevel == null
-              ? strings.anyPrice
-              : strings.priceLevelValue(_priceLevel!),
+          label: priceLevelLabel(
+            _priceLevel,
+            anyPriceLabel: strings.anyPrice,
+          ),
           onChanged: (value) => setState(
             () => _priceLevel = value.round() == 0 ? null : value.round(),
           ),
@@ -336,36 +344,49 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         const SizedBox(height: 8),
         Align(
           alignment: AlignmentDirectional.centerStart,
-          child: M3ESplitButton<_VisitTimeChoice>.tonal(
-            label: _visitAt == null ? strings.openNow : strings.customTime,
-            leadingIcon: _visitAt == null
-                ? Icons.schedule_rounded
-                : Icons.event_available_rounded,
+          child: M3ESplitButton<VisitTimeChoice>.tonal(
+            label: switch (_visitTimeChoice) {
+              VisitTimeChoice.anyTime => strings.anyTime,
+              VisitTimeChoice.openNow => strings.openNow,
+              VisitTimeChoice.custom => strings.customTime,
+            },
+            leadingIcon: switch (_visitTimeChoice) {
+              VisitTimeChoice.anyTime => Icons.all_inclusive_rounded,
+              VisitTimeChoice.openNow => Icons.schedule_rounded,
+              VisitTimeChoice.custom => Icons.event_available_rounded,
+            },
             size: M3EButtonSize.md,
-            selectedValue: _visitAt == null
-                ? _VisitTimeChoice.openNow
-                : _VisitTimeChoice.custom,
-            onPressed: _visitAt == null ? () {} : _pickVisitTime,
+            selectedValue: _visitTimeChoice,
+            onPressed: _visitTimeChoice == VisitTimeChoice.custom
+                ? _pickVisitTime
+                : () {},
             onSelected: (value) {
-              if (value == _VisitTimeChoice.openNow) {
-                setState(() => _visitAt = null);
-              } else {
+              if (value == VisitTimeChoice.custom) {
                 _pickVisitTime();
+              } else {
+                setState(() {
+                  _visitTimeChoice = value;
+                  _visitAt = null;
+                });
               }
             },
             items: [
-              M3ESplitButtonItem<_VisitTimeChoice>(
-                value: _VisitTimeChoice.openNow,
+              M3ESplitButtonItem<VisitTimeChoice>(
+                value: VisitTimeChoice.anyTime,
+                child: Text(strings.anyTime),
+              ),
+              M3ESplitButtonItem<VisitTimeChoice>(
+                value: VisitTimeChoice.openNow,
                 child: Text(strings.openNow),
               ),
-              M3ESplitButtonItem<_VisitTimeChoice>(
-                value: _VisitTimeChoice.custom,
+              M3ESplitButtonItem<VisitTimeChoice>(
+                value: VisitTimeChoice.custom,
                 child: Text(strings.customTime),
               ),
             ],
           ),
         ),
-        if (_visitAt != null) ...[
+        if (_visitTimeChoice == VisitTimeChoice.custom && _visitAt != null) ...[
           const SizedBox(height: 8),
           Text(
             DateFormat.yMMMEd(
@@ -422,24 +443,15 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               prefixIcon: const Icon(Icons.person_outline),
             ),
           ),
-          Wrap(
-            spacing: 8,
-            children: [
-              M3EChip(
-                type: M3EChipType.filter,
-                label: strings.majority,
-                selected: _consensus == ConsensusRule.majority,
-                onPressed: () =>
-                    setState(() => _consensus = ConsensusRule.majority),
-              ),
-              M3EChip(
-                type: M3EChipType.filter,
-                label: strings.unanimous,
-                selected: _consensus == ConsensusRule.unanimous,
-                onPressed: () =>
-                    setState(() => _consensus = ConsensusRule.unanimous),
-              ),
-            ],
+          MultiplayerDecisionOptions(
+            majoritySelected: _consensus == ConsensusRule.majority,
+            stopOnFirstMatch: _instant,
+            onSelectMajority: () =>
+                setState(() => _consensus = ConsensusRule.majority),
+            onSelectUnanimous: () =>
+                setState(() => _consensus = ConsensusRule.unanimous),
+            onToggleStopOnFirstMatch: () =>
+                setState(() => _instant = !_instant),
           ),
           const SizedBox(height: 8),
           AnimatedSwitcher(
@@ -465,16 +477,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                   ),
                 ),
               ],
-            ),
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(strings.stopOnFirstMatch),
-            onTap: () => setState(() => _instant = !_instant),
-            trailing: M3ESwitch(
-              value: _instant,
-              semanticLabel: strings.stopOnFirstMatch,
-              onChanged: (value) => setState(() => _instant = value),
             ),
           ),
         ],
@@ -516,7 +518,11 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               anchorLatitude: _latitude!,
               anchorLongitude: _longitude!,
               anchorAddress: _address,
-              visitAt: (_visitAt ?? DateTime.now()).toUtc(),
+              visitAt: visitAtForSelection(
+                _visitTimeChoice,
+                now: DateTime.now(),
+                customTime: _visitAt,
+              ),
               radiusMeters: _radiusMeters,
               deckSize: _deckSize,
               displayName: _mode == SessionMode.multiplayer
@@ -528,6 +534,12 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                   : MatchingTiming.afterDeck,
             ),
           );
+      if (!mounted) return;
+      if (_mode == SessionMode.multiplayer) {
+        await ref
+            .read(displayNameStoreProvider)
+            .write(_displayName.text.trim());
+      }
       if (!mounted) return;
       final route = _mode == SessionMode.solo ? 'swipe' : 'lobby';
       context.go('/$route/${bundle.session.sessionId}', extra: bundle);
@@ -744,8 +756,15 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
     }
     setState(() {
       _visitAt = selected;
+      _visitTimeChoice = VisitTimeChoice.custom;
       _error = null;
     });
+  }
+
+  Future<void> _restoreDisplayName() async {
+    final value = await ref.read(displayNameStoreProvider).read();
+    if (!mounted || value == null || _displayName.text.isNotEmpty) return;
+    setState(() => _displayName.text = value);
   }
 
   void _goToStep(int value) {
@@ -775,8 +794,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   String _formatDistance(int meters) =>
       meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';
 }
-
-enum _VisitTimeChoice { openNow, custom }
 
 class _CompactOptionSlider extends StatelessWidget {
   const _CompactOptionSlider({
@@ -821,13 +838,17 @@ class _CompactOptionSlider extends StatelessWidget {
             ),
           ],
         ),
-        M3ESlider(
-          value: value,
-          max: max,
-          divisions: max.round(),
-          haptic: M3EHapticFeedback.light,
-          semanticFormatterCallback: (_) => '$title: $label',
-          onChanged: onChanged,
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            showValueIndicator: ShowValueIndicator.never,
+          ),
+          child: Slider(
+            value: value,
+            max: max,
+            divisions: max.round(),
+            semanticFormatterCallback: (_) => '$title: $label',
+            onChanged: onChanged,
+          ),
         ),
       ],
     );

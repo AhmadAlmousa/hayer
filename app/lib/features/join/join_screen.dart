@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -33,6 +35,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     _code = TextEditingController(
       text: extractSessionCode(widget.initialCode ?? '') ?? '',
     );
+    unawaited(_restoreDisplayName());
   }
 
   @override
@@ -170,6 +173,8 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
           .read(sessionRepositoryProvider)
           .join(extractSessionCode(_code.text)!, _name.text.trim());
       if (!mounted) return;
+      await ref.read(displayNameStoreProvider).write(_name.text.trim());
+      if (!mounted) return;
       context.go('/lobby/${bundle.session.sessionId}', extra: bundle);
     } catch (error) {
       setState(
@@ -184,6 +189,12 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
 
   void _clearError() {
     if (_error != null) setState(() => _error = null);
+  }
+
+  Future<void> _restoreDisplayName() async {
+    final value = await ref.read(displayNameStoreProvider).read();
+    if (!mounted || value == null || _name.text.isNotEmpty) return;
+    setState(() => _name.text = value);
   }
 }
 

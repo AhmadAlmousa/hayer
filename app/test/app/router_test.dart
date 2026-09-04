@@ -2,6 +2,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_app/app/router.dart';
+import 'package:hayer_app/core/providers.dart';
+import 'package:hayer_app/data/display_name_store.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 
 void main() {
@@ -85,4 +87,42 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('join form restores the saved display name', (tester) async {
+    final router = createAppRouter(initialLocation: '/join/A37');
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          displayNameStoreProvider.overrideWithValue(
+            _MemoryDisplayNameStore('Ahmad'),
+          ),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final fields = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
+    expect(fields.last.controller?.text, 'Ahmad');
+  });
+}
+
+final class _MemoryDisplayNameStore implements DisplayNameStore {
+  _MemoryDisplayNameStore(this.value);
+
+  String? value;
+
+  @override
+  Future<String?> read() async => value;
+
+  @override
+  Future<void> write(String displayName) async => value = displayName;
 }

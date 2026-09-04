@@ -121,6 +121,8 @@
   "joinMySession": "انضم إلى جلستي في حيّر: {url}",
   "@joinMySession": {"placeholders": {"url": {"type": "String"}}},
   "firstMatch": "أول تطابق",
+  "matchFoundTitle": "لقينا تطابق!",
+  "matchFoundCelebration": "أول تطابق—تم القرار!",
   "fullDeck": "كل البطاقات",
   "host": "المضيف",
   "done": "انتهى",

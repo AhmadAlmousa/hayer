@@ -10,6 +10,8 @@ import 'package:material_3_expressive/material_3_expressive.dart';
 import '../../app/theme.dart';
 import '../../core/providers.dart';
 import '../../core/page_title.dart';
+import '../../core/widgets/fireworks_celebration.dart';
+import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'place_deck_swiper.dart';
 import 'session_close_button.dart';
@@ -28,6 +30,8 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
   int _index = 0;
   bool _submitting = false;
   bool _ready = false;
+  bool _transitioningToResults = false;
+  SessionRealtimeListener? _updates;
   final _swiperController = CardSwiperController();
 
   @override
@@ -39,6 +43,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
 
   @override
   void dispose() {
+    unawaited(_updates?.dispose());
     unawaited(_swiperController.dispose());
     super.dispose();
   }
@@ -59,6 +64,37 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       _index = mine?.currentIndex.clamp(0, value.deck.length) ?? 0;
       _ready = true;
     });
+    _connect();
+    if (value.session.status == SessionStatus.completed) {
+      unawaited(_showResults(celebrate: _isInstantMatch(value)));
+    }
+  }
+
+  void _connect() {
+    _updates ??= SessionRealtimeListener(
+      connect: () => ref
+          .read(clientProvider)
+          .hayerSession
+          .watch(sessionId: widget.sessionId),
+      onEvent: _handleSessionEvent,
+    )..start();
+  }
+
+  Future<void> _handleSessionEvent(SessionEvent event) async {
+    if (_transitioningToResults) return;
+    final value = await ref
+        .read(sessionRepositoryProvider)
+        .load(widget.sessionId);
+    if (!mounted || _transitioningToResults) return;
+    final wasCompleted = _bundle?.session.status == SessionStatus.completed;
+    setState(() => _bundle = value);
+    if (value.session.status == SessionStatus.completed) {
+      await _showResults(
+        celebrate:
+            _isInstantMatch(value) &&
+            (!wasCompleted || event.type == SessionEventType.matched),
+      );
+    }
   }
 
   @override
@@ -71,7 +107,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     }
     if (_index >= bundle.deck.length && !_submitting) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) context.go('/results/${widget.sessionId}');
+        if (mounted) unawaited(_showResults(celebrate: false));
       });
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -231,8 +267,21 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     }
     if (_bundle?.session.status == SessionStatus.completed ||
         _index >= (_bundle?.deck.length ?? 0)) {
-      context.go('/results/${widget.sessionId}');
+      await _showResults(
+        celebrate: value != null && _isInstantMatch(value),
+      );
     }
+  }
+
+  bool _isInstantMatch(SessionBundle bundle) =>
+      bundle.session.matchingTiming == MatchingTiming.instant &&
+      bundle.session.matchedPlaceId != null;
+
+  Future<void> _showResults({required bool celebrate}) async {
+    if (_transitioningToResults || !mounted) return;
+    _transitioningToResults = true;
+    if (celebrate) await showMatchFireworks(context);
+    if (mounted) context.go('/results/${widget.sessionId}');
   }
 }
 
