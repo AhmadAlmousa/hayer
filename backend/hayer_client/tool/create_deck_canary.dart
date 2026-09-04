@@ -36,7 +36,8 @@ Future<void> main(List<String> args) async {
     );
     sessionId = bundle.session.sessionId;
     stdout.writeln(
-      'Authenticated deck canary passed (${bundle.deck.length} places).',
+      'Authenticated deck canary passed '
+      '(${bundle.deck.length} places, code ${bundle.session.code}).',
     );
   } catch (error, stackTrace) {
     stderr
