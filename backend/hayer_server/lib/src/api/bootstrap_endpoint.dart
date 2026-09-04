@@ -11,7 +11,7 @@ class BootstrapEndpoint extends Endpoint {
     const minimumBuild = 1;
     return BootstrapInfo(
       minimumBuild: minimumBuild,
-      latestBuild: 2,
+      latestBuild: 3,
       updateRequired: build < minimumBuild,
       supportedCountries: const ['SA', 'AE', 'KW', 'QA', 'BH', 'OM'],
       certifiedCountries: const ['SA'],

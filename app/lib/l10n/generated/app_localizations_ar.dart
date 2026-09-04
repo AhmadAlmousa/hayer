@@ -482,7 +482,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanQrCode => 'مسح رمز QR';
 
   @override
-  String get scanInstructions => 'ضع رمز QR الخاص بحيّر داخل الإطار';
+  String get scanInstructions => 'استخدم كاميرا جهازك لمسح رمز QR لجلسة حيّر.';
+
+  @override
+  String get openingScanner => 'جارٍ فتح الماسح…';
+
+  @override
+  String get enterCodeInstead => 'أدخل الرمز يدوياً';
+
+  @override
+  String get invalidQrCode => 'رمز QR هذا ليس رابط جلسة حيّر.';
+
+  @override
+  String get scannerUnavailable => 'مسح QR متاح في تطبيقي Android وiOS.';
 
   @override
   String get cameraPermissionNeeded => 'يلزم السماح للكاميرا لمسح رمز الجلسة.';

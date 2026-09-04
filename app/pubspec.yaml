@@ -1,7 +1,7 @@
 name: hayer_app
 description: Hayer's Android-first place decision application.
 publish_to: none
-version: 0.1.0+2
+version: 0.1.0+3
 
 environment:
   sdk: ^3.12.0
@@ -31,7 +31,6 @@ dependencies:
   material_3_expressive: ^1.1.1
   material_ui: ^1.1.1
   maplibre_gl: ^0.27.0
-  mobile_scanner: ^7.1.3
   package_info_plus: ^9.0.1
   qr_flutter: ^4.1.0
   serverpod_auth_idp_flutter: 3.4.13

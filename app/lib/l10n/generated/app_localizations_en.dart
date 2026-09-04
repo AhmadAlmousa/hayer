@@ -487,7 +487,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanQrCode => 'Scan QR code';
 
   @override
-  String get scanInstructions => 'Center the Hayer QR code inside the frame';
+  String get scanInstructions =>
+      'Use your device camera to scan a Hayer session QR code.';
+
+  @override
+  String get openingScanner => 'Opening scanner…';
+
+  @override
+  String get enterCodeInstead => 'Enter code instead';
+
+  @override
+  String get invalidQrCode => 'That QR code is not a Hayer session link.';
+
+  @override
+  String get scannerUnavailable =>
+      'QR scanning is available in the Android and iOS apps.';
 
   @override
   String get cameraPermissionNeeded =>

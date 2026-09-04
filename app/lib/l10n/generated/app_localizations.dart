@@ -959,8 +959,32 @@ abstract class AppLocalizations {
   /// No description provided for @scanInstructions.
   ///
   /// In en, this message translates to:
-  /// **'Center the Hayer QR code inside the frame'**
+  /// **'Use your device camera to scan a Hayer session QR code.'**
   String get scanInstructions;
+
+  /// No description provided for @openingScanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening scanner…'**
+  String get openingScanner;
+
+  /// No description provided for @enterCodeInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter code instead'**
+  String get enterCodeInstead;
+
+  /// No description provided for @invalidQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'That QR code is not a Hayer session link.'**
+  String get invalidQrCode;
+
+  /// No description provided for @scannerUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'QR scanning is available in the Android and iOS apps.'**
+  String get scannerUnavailable;
 
   /// No description provided for @cameraPermissionNeeded.
   ///
