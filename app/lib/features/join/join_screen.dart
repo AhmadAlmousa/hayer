@@ -20,6 +20,7 @@ class JoinScreen extends ConsumerStatefulWidget {
 }
 
 class _JoinScreenState extends ConsumerState<JoinScreen> {
+  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _code;
   final _name = TextEditingController();
   final _nameFocus = FocusNode();
@@ -29,7 +30,9 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   @override
   void initState() {
     super.initState();
-    _code = TextEditingController(text: widget.initialCode?.toUpperCase());
+    _code = TextEditingController(
+      text: extractSessionCode(widget.initialCode ?? '') ?? '',
+    );
   }
 
   @override
@@ -69,57 +72,84 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 28),
-              TextField(
-                controller: _code,
-                autofocus: widget.initialCode == null,
-                textCapitalization: TextCapitalization.characters,
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) => _nameFocus.requestFocus(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 8,
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(maxSessionCodeLength),
-                  FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
-                  _UpperCaseFormatter(),
-                ],
-                decoration: InputDecoration(labelText: strings.sessionCode),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _name,
-                focusNode: _nameFocus,
-                autofocus: widget.initialCode != null,
-                maxLength: 30,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _loading ? null : _join(),
-                decoration: InputDecoration(
-                  labelText: strings.displayName,
-                  prefixIcon: const Icon(Icons.person_outline),
-                ),
-              ),
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Text(
-                    _error!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      controller: _code,
+                      autofocus: widget.initialCode == null,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      textCapitalization: TextCapitalization.characters,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (_) => _clearError(),
+                      onFieldSubmitted: (_) => _nameFocus.requestFocus(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 8,
+                      ),
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(
+                          maxSessionCodeLength,
+                        ),
+                        FilteringTextInputFormatter.allow(
+                          RegExp('[A-Za-z0-9]'),
+                        ),
+                        _UpperCaseFormatter(),
+                      ],
+                      validator: (value) => isValidSessionCode(value ?? '')
+                          ? null
+                          : strings.invalidSessionCode,
+                      decoration: InputDecoration(
+                        labelText: strings.sessionCode,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _name,
+                      focusNode: _nameFocus,
+                      autofocus: widget.initialCode != null,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      maxLength: 30,
+                      textInputAction: TextInputAction.done,
+                      onChanged: (_) => _clearError(),
+                      onFieldSubmitted: (_) => _loading ? null : _join(),
+                      validator: (value) {
+                        final length = value?.trim().length ?? 0;
+                        return length >= 2 && length <= 30
+                            ? null
+                            : strings.invalidDisplayName;
+                      },
+                      decoration: InputDecoration(
+                        labelText: strings.displayName,
+                        prefixIcon: const Icon(Icons.person_outline),
+                      ),
+                    ),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          _error!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    M3EButton.filled(
+                      onPressed: _loading ? null : _join,
+                      size: M3EButtonSize.md,
+                      child: _loading
+                          ? const SizedBox.square(
+                              dimension: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(strings.join),
+                    ),
+                  ],
                 ),
-              M3EButton.filled(
-                onPressed: _loading ? null : _join,
-                size: M3EButtonSize.md,
-                child: _loading
-                    ? const SizedBox.square(
-                        dimension: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(strings.join),
               ),
             ],
           ),
@@ -130,6 +160,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
 
   Future<void> _join() async {
     FocusManager.instance.primaryFocus?.unfocus();
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() {
       _loading = true;
       _error = null;
@@ -137,7 +168,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     try {
       final bundle = await ref
           .read(sessionRepositoryProvider)
-          .join(_code.text, _name.text);
+          .join(extractSessionCode(_code.text)!, _name.text.trim());
       if (!mounted) return;
       context.go('/lobby/${bundle.session.sessionId}', extra: bundle);
     } catch (error) {
@@ -149,6 +180,10 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  void _clearError() {
+    if (_error != null) setState(() => _error = null);
   }
 }
 

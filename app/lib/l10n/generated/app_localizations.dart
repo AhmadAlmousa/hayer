@@ -140,6 +140,18 @@ abstract class AppLocalizations {
   /// **'Join'**
   String get join;
 
+  /// No description provided for @switchToLightTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to light theme'**
+  String get switchToLightTheme;
+
+  /// No description provided for @switchToDarkTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to dark theme'**
+  String get switchToDarkTheme;
+
   /// No description provided for @setupWhatTitle.
   ///
   /// In en, this message translates to:
@@ -307,6 +319,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose day and time'**
   String get chooseVisitTime;
+
+  /// No description provided for @customTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom time'**
+  String get customTime;
 
   /// No description provided for @clearVisitTime.
   ///
@@ -686,6 +704,12 @@ abstract class AppLocalizations {
   /// **'Show QR code'**
   String get showQrCode;
 
+  /// No description provided for @qrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'QR'**
+  String get qrLabel;
+
   /// No description provided for @sessionQrTitle.
   ///
   /// In en, this message translates to:
@@ -937,6 +961,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not join this session.'**
   String get joinFailed;
+
+  /// No description provided for @invalidSessionCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid session code.'**
+  String get invalidSessionCode;
+
+  /// No description provided for @invalidDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a display name with 2–30 characters.'**
+  String get invalidDisplayName;
 
   /// No description provided for @undoLastSwipe.
   ///

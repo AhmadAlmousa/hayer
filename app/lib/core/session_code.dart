@@ -2,10 +2,13 @@ const sessionCodeLength = 3;
 const legacySessionCodeLength = 6;
 const maxSessionCodeLength = legacySessionCodeLength;
 const sessionCodeAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const sessionCodeLetterAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const sessionCodeDigitAlphabet = '0123456789';
 
 final RegExp _sessionCodePattern = RegExp(
-  '[$sessionCodeAlphabet]{$legacySessionCodeLength}|'
-  '[$sessionCodeAlphabet]{$sessionCodeLength}',
+  '[$sessionCodeLetterAlphabet][$sessionCodeDigitAlphabet]{2}|'
+  '[$sessionCodeAlphabet]{$sessionCodeLength}|'
+  '[$sessionCodeAlphabet]{$legacySessionCodeLength}',
   caseSensitive: false,
 );
 

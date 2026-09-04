@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
@@ -51,6 +53,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
   double? _previewLatitude;
   double? _previewLongitude;
   int? _previewRadius;
+  LatLng? _pendingCameraCenter;
 
   @override
   void didUpdateWidget(SearchAreaMap oldWidget) {
@@ -84,6 +87,11 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
             children: [
               Positioned.fill(
                 child: MapLibreMap(
+                  gestureRecognizers: {
+                    Factory<OneSequenceGestureRecognizer>(
+                      EagerGestureRecognizer.new,
+                    ),
+                  },
                   styleString: _mapStyle,
                   initialCameraPosition: CameraPosition(
                     target: LatLng(widget.latitude, widget.longitude),
@@ -99,6 +107,10 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
                     AnnotationType.circle,
                   ],
                   onMapCreated: _onMapCreated,
+                  onCameraMove: widget.editable
+                      ? (position) => _pendingCameraCenter = position.target
+                      : null,
+                  onCameraIdle: widget.editable ? _commitCameraCenter : null,
                   onStyleLoadedCallback: () {
                     _styleLoaded = true;
                     unawaited(_draw());
@@ -168,6 +180,22 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
   void _onMapCreated(MapLibreMapController controller) {
     _controller = controller;
     controller.onFeatureDrag.add(_onFeatureDrag);
+  }
+
+  void _commitCameraCenter() {
+    final center = _pendingCameraCenter;
+    _pendingCameraCenter = null;
+    if (center == null ||
+        distanceMeters(
+              widget.latitude,
+              widget.longitude,
+              center.latitude,
+              center.longitude,
+            ) <
+            2) {
+      return;
+    }
+    widget.onCenterChanged?.call(center.latitude, center.longitude);
   }
 
   void _onFeatureDrag(
@@ -261,7 +289,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
         CircleOptions(
           geometry: LatLng(widget.latitude, widget.longitude),
           circleColor: '#FF6B6B',
-          circleRadius: 10,
+          circleRadius: 12,
           circleStrokeColor: '#FFFFFF',
           circleStrokeWidth: 4,
           draggable: widget.editable,
@@ -276,9 +304,9 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
               widget.radiusMeters,
             ),
             circleColor: '#087F7E',
-            circleRadius: 9,
+            circleRadius: 13,
             circleStrokeColor: '#FFFFFF',
-            circleStrokeWidth: 3,
+            circleStrokeWidth: 4,
             draggable: true,
           ),
         );

@@ -10,6 +10,7 @@ import '../../core/page_title.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../app/locale_controller.dart';
+import '../../app/theme_controller.dart';
 import '../../core/widgets/version_indicator.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'resume_session_button.dart';
@@ -58,49 +59,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final strings = AppLocalizations.of(context)!;
     setBrowserPageTitle(strings.appName);
     return Scaffold(
-      appBar: M3EAppBar.top(
-        title: Text(strings.appName),
-        actions: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: 4),
-            child: SizedBox(
-              width: 92,
-              child: M3ESegmentedButton<String>(
-                showSelectedIcon: false,
-                segments: const [
-                  M3ESegment(value: 'en', label: 'EN'),
-                  M3ESegment(value: 'ar', label: 'ع'),
-                ],
-                selected: {Localizations.localeOf(context).languageCode},
-                onSelectionChanged: (value) {
-                  M3EHaptics.selection();
-                  ref
-                      .read(localeControllerProvider.notifier)
-                      .select(value.single);
-                },
-              ),
-            ),
-          ),
-          if (_activeSession != null)
-            M3EIconButton(
-              tooltip: strings.resumeSession,
-              onPressed: _resuming ? null : _resume,
-              icon: const Icon(Icons.restore_rounded),
-            ),
-          M3EIconButton(
-            tooltip: strings.joinSession,
-            onPressed: () => context.push('/scan'),
-            icon: const Icon(Icons.qr_code_scanner_rounded),
-          ),
-        ],
-      ),
       body: SafeArea(
         child: ContentShell(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    M3EIconButton(
+                      key: const ValueKey('theme-toggle'),
+                      tooltip: Theme.of(context).brightness == Brightness.dark
+                          ? strings.switchToLightTheme
+                          : strings.switchToDarkTheme,
+                      onPressed: () => ref
+                          .read(themeModeControllerProvider.notifier)
+                          .toggle(Theme.of(context).brightness),
+                      icon: Icon(
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Icons.light_mode_rounded
+                            : Icons.dark_mode_rounded,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 92,
+                      child: M3ESegmentedButton<String>(
+                        showSelectedIcon: false,
+                        segments: const [
+                          M3ESegment(value: 'en', label: 'EN'),
+                          M3ESegment(value: 'ar', label: 'ع'),
+                        ],
+                        selected: {
+                          Localizations.localeOf(context).languageCode,
+                        },
+                        onSelectionChanged: (value) {
+                          M3EHaptics.selection();
+                          ref
+                              .read(localeControllerProvider.notifier)
+                              .select(value.single);
+                        },
+                      ),
+                    ),
+                    if (_activeSession != null)
+                      M3EIconButton(
+                        tooltip: strings.resumeSession,
+                        onPressed: _resuming ? null : _resume,
+                        icon: const Icon(Icons.restore_rounded),
+                      ),
+                    M3EIconButton(
+                      tooltip: strings.joinSession,
+                      onPressed: () => context.push('/scan'),
+                      icon: const Icon(Icons.qr_code_scanner_rounded),
+                    ),
+                  ],
+                ),
                 const Spacer(),
                 Align(
                   child: ClipRRect(

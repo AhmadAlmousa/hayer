@@ -4,11 +4,12 @@ import 'package:hayer_app/core/session_code.dart';
 void main() {
   group('session codes', () {
     test('extracts a three-character code from a public join URL', () {
-      expect(extractSessionCode('https://hayer.almou.sa/join/q3w'), 'Q3W');
-      expect(extractSessionCode('https://hayer.almou.sa/app/join/q3w'), 'Q3W');
+      expect(extractSessionCode('https://hayer.almou.sa/join/a37'), 'A37');
+      expect(extractSessionCode('https://hayer.almou.sa/app/join/a37'), 'A37');
     });
 
     test('accepts new and legacy codes but rejects invalid values', () {
+      expect(isValidSessionCode('Q37'), isTrue);
       expect(isValidSessionCode('Q3W'), isTrue);
       expect(isValidSessionCode('Q3QTWM'), isTrue);
       expect(

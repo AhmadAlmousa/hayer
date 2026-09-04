@@ -96,16 +96,15 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
                   children: [
-                    Center(
-                      child: M3EButton.icon(
-                        onPressed: () => _showQrCode(bundle.session.code),
-                        icon: const Icon(Icons.qr_code_2_rounded),
-                        label: Text(strings.showQrCode),
-                        style: M3EButtonStyle.tonal,
-                        size: M3EButtonSize.md,
+                    Text(
+                      strings.sessionCode,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 4),
                     Text(
                       bundle.session.code,
                       textAlign: TextAlign.center,
@@ -116,34 +115,51 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                           ),
                     ),
                     const SizedBox(height: 12),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
+                    Row(
                       children: [
-                        M3EButton.icon(
-                          onPressed: () {
-                            Clipboard.setData(
-                              ClipboardData(text: bundle.session.code),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(strings.codeCopied)),
-                            );
-                          },
-                          icon: const Icon(Icons.copy_rounded),
-                          label: Text(strings.copyLabel),
-                          style: M3EButtonStyle.outlined,
+                        Expanded(
+                          child: M3EButton.icon(
+                            onPressed: () => _showQrCode(bundle.session.code),
+                            icon: const Icon(Icons.qr_code_2_rounded),
+                            label: Text(strings.qrLabel),
+                            style: M3EButtonStyle.outlined,
+                            size: M3EButtonSize.sm,
+                          ),
                         ),
-                        M3EButton.icon(
-                          onPressed: () => SharePlus.instance.share(
-                            ShareParams(
-                              text: strings.joinMySession(
-                                sessionJoinUri(bundle.session.code).toString(),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: M3EButton.icon(
+                            onPressed: () {
+                              Clipboard.setData(
+                                ClipboardData(text: bundle.session.code),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(strings.codeCopied)),
+                              );
+                            },
+                            icon: const Icon(Icons.copy_rounded),
+                            label: Text(strings.copyLabel),
+                            style: M3EButtonStyle.outlined,
+                            size: M3EButtonSize.sm,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: M3EButton.icon(
+                            onPressed: () => SharePlus.instance.share(
+                              ShareParams(
+                                text: strings.joinMySession(
+                                  sessionJoinUri(
+                                    bundle.session.code,
+                                  ).toString(),
+                                ),
                               ),
                             ),
+                            icon: const Icon(Icons.share_rounded),
+                            label: Text(strings.shareLabel),
+                            style: M3EButtonStyle.outlined,
+                            size: M3EButtonSize.sm,
                           ),
-                          icon: const Icon(Icons.share_rounded),
-                          label: Text(strings.shareLabel),
-                          style: M3EButtonStyle.outlined,
                         ),
                       ],
                     ),
@@ -257,14 +273,14 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      flex: 2,
-                      child: M3EButton.filled(
+                      child: M3EButton.icon(
                         onPressed: () => context.push(
                           '/swipe/${widget.sessionId}',
                           extra: bundle,
                         ),
+                        icon: const Icon(Icons.arrow_forward_rounded),
+                        label: Text(strings.startSwiping),
                         size: M3EButtonSize.md,
-                        child: Text(strings.startSwiping),
                       ),
                     ),
                   ],

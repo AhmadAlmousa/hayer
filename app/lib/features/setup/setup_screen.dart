@@ -79,21 +79,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
     final strings = AppLocalizations.of(context)!;
     setBrowserPageTitle('${strings.newSearch} — ${strings.appName}');
     return Scaffold(
-      appBar: M3EAppBar.top(
-        automaticallyImplyLeading: true,
-        title: Text(strings.appName),
-        actions: [
-          M3EIconButton(
-            tooltip: strings.resumeSession,
-            onPressed: _resumeLastSession,
-            icon: const Icon(Icons.restore_rounded),
-          ),
-          M3EIconButton(
-            onPressed: () => context.push('/join'),
-            icon: const Icon(Icons.group_add_rounded),
-          ),
-        ],
-      ),
       body: SafeArea(
         child: ContentShell(
           child: Column(
@@ -157,11 +142,18 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
+                            : _step == 2 && _mode == SessionMode.solo
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(strings.startSwiping),
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.arrow_forward_rounded),
+                                ],
+                              )
                             : Text(
                                 _step == 2
-                                    ? (_mode == SessionMode.solo
-                                          ? strings.startSwiping
-                                          : strings.createSession)
+                                    ? strings.createSession
                                     : strings.continueLabel,
                               ),
                       ),
@@ -314,87 +306,77 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _OptionSection(
-          icon: Icons.payments_rounded,
+        _CompactOptionSlider(
           title: strings.price,
-          description: strings.priceDescription,
-          child: _AnimatedOptionSlider(
-            value: (_priceLevel ?? 0).toDouble(),
-            max: 4,
-            icon: _priceLevel == null
-                ? Icons.all_inclusive_rounded
-                : Icons.payments_rounded,
-            label: _priceLevel == null
-                ? strings.anyPrice
-                : strings.priceLevelValue(_priceLevel!),
-            semanticLabel: strings.price,
-            onChanged: (value) => setState(
-              () => _priceLevel = value.round() == 0 ? null : value.round(),
-            ),
+          value: (_priceLevel ?? 0).toDouble(),
+          max: 4,
+          label: _priceLevel == null
+              ? strings.anyPrice
+              : strings.priceLevelValue(_priceLevel!),
+          onChanged: (value) => setState(
+            () => _priceLevel = value.round() == 0 ? null : value.round(),
           ),
         ),
-        const SizedBox(height: 16),
-        _OptionSection(
-          icon: Icons.style_rounded,
+        const SizedBox(height: 12),
+        _CompactOptionSlider(
           title: strings.deckSize,
-          description: strings.deckSizeDescription,
-          child: _AnimatedOptionSlider(
-            value: ((_deckSize - 10) / 10).toDouble(),
-            max: 4,
-            icon: Icons.style_rounded,
-            label: strings.placesCount(_deckSize),
-            semanticLabel: strings.deckSize,
-            onChanged: (value) =>
-                setState(() => _deckSize = 10 + value.round() * 10),
-          ),
+          value: ((_deckSize - 10) / 10).toDouble(),
+          max: 4,
+          label: strings.placesCount(_deckSize),
+          onChanged: (value) =>
+              setState(() => _deckSize = 10 + value.round() * 10),
         ),
         const SizedBox(height: 16),
-        _OptionSection(
-          icon: Icons.event_available_rounded,
-          title: strings.visitTime,
-          description: strings.visitTimeDescription,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: ListTile(
-                  key: ValueKey(_visitAt),
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    child: Icon(
-                      _visitAt == null
-                          ? Icons.schedule_rounded
-                          : Icons.event_available_rounded,
-                    ),
-                  ),
-                  title: Text(
-                    _visitAt == null
-                        ? strings.anyTime
-                        : DateFormat.yMMMEd(
-                            Localizations.localeOf(context).toLanguageTag(),
-                          ).add_jm().format(_visitAt!),
-                    style: const TextStyle(fontWeight: FontWeight.w900),
-                  ),
-                ),
+        Text(
+          strings.visitTime,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: M3ESplitButton<_VisitTimeChoice>.tonal(
+            label: _visitAt == null ? strings.openNow : strings.customTime,
+            leadingIcon: _visitAt == null
+                ? Icons.schedule_rounded
+                : Icons.event_available_rounded,
+            size: M3EButtonSize.md,
+            selectedValue: _visitAt == null
+                ? _VisitTimeChoice.openNow
+                : _VisitTimeChoice.custom,
+            onPressed: _visitAt == null ? () {} : _pickVisitTime,
+            onSelected: (value) {
+              if (value == _VisitTimeChoice.openNow) {
+                setState(() => _visitAt = null);
+              } else {
+                _pickVisitTime();
+              }
+            },
+            items: [
+              M3ESplitButtonItem<_VisitTimeChoice>(
+                value: _VisitTimeChoice.openNow,
+                child: Text(strings.openNow),
               ),
-              M3EButton.icon(
-                onPressed: _pickVisitTime,
-                icon: const Icon(Icons.calendar_month_rounded),
-                label: Text(strings.chooseVisitTime),
-                style: M3EButtonStyle.tonal,
-                size: M3EButtonSize.md,
+              M3ESplitButtonItem<_VisitTimeChoice>(
+                value: _VisitTimeChoice.custom,
+                child: Text(strings.customTime),
               ),
-              if (_visitAt != null)
-                M3EButton.icon(
-                  onPressed: () => setState(() => _visitAt = null),
-                  icon: const Icon(Icons.clear_rounded),
-                  label: Text(strings.clearVisitTime),
-                  style: M3EButtonStyle.text,
-                ),
             ],
           ),
         ),
+        if (_visitAt != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            DateFormat.yMMMEd(
+              Localizations.localeOf(context).toLanguageTag(),
+            ).add_jm().format(_visitAt!),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -404,37 +386,29 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Heading(strings.setupModeTitle),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final cards = <Widget>[
-              _ModeCard(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _ModeCard(
                 label: strings.solo,
                 description: strings.soloDescription,
                 icon: Icons.person_rounded,
                 selected: _mode == SessionMode.solo,
                 onTap: () => setState(() => _mode = SessionMode.solo),
               ),
-              _ModeCard(
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _ModeCard(
                 label: strings.multiplayer,
                 description: strings.multiplayerDescription,
                 icon: Icons.groups_rounded,
                 selected: _mode == SessionMode.multiplayer,
                 onTap: () => setState(() => _mode = SessionMode.multiplayer),
               ),
-            ];
-            if (constraints.maxWidth < 380) {
-              return Column(
-                children: [cards.first, const SizedBox(height: 12), cards.last],
-              );
-            }
-            return Row(
-              children: [
-                Expanded(child: cards.first),
-                const SizedBox(width: 12),
-                Expanded(child: cards.last),
-              ],
-            );
-          },
+            ),
+          ],
         ),
         if (_mode == SessionMode.multiplayer) ...[
           const SizedBox(height: 18),
@@ -542,7 +516,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               anchorLatitude: _latitude!,
               anchorLongitude: _longitude!,
               anchorAddress: _address,
-              visitAt: _visitAt?.toUtc(),
+              visitAt: (_visitAt ?? DateTime.now()).toUtc(),
               radiusMeters: _radiusMeters,
               deckSize: _deckSize,
               displayName: _mode == SessionMode.multiplayer
@@ -789,38 +763,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
     }
   }
 
-  Future<void> _resumeLastSession() async {
-    try {
-      final repository = ref.read(sessionRepositoryProvider);
-      final sessionId = await repository.activeSessionId();
-      if (sessionId == null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.noSavedSession),
-            ),
-          );
-        }
-        return;
-      }
-      final bundle = await repository.load(sessionId);
-      if (!mounted) return;
-      if (bundle.session.status != SessionStatus.active) {
-        context.go('/results/$sessionId');
-      } else if (bundle.session.mode == SessionMode.multiplayer) {
-        context.go('/lobby/$sessionId', extra: bundle);
-      } else {
-        context.go('/swipe/$sessionId', extra: bundle);
-      }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.resumeFailed)),
-        );
-      }
-    }
-  }
-
   Widget _stepScrollView(Widget child) => SingleChildScrollView(
     keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
     padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
@@ -834,77 +776,57 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';
 }
 
-class _AnimatedOptionSlider extends StatelessWidget {
-  const _AnimatedOptionSlider({
+enum _VisitTimeChoice { openNow, custom }
+
+class _CompactOptionSlider extends StatelessWidget {
+  const _CompactOptionSlider({
+    required this.title,
     required this.value,
     required this.max,
-    required this.icon,
     required this.label,
-    required this.semanticLabel,
     required this.onChanged,
   });
 
+  final String title;
   final double value;
   final double max;
-  final IconData icon;
   final String label;
-  final String semanticLabel;
   final ValueChanged<double> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final progress = value / max;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 260),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          decoration: BoxDecoration(
-            color: Color.lerp(
-              colors.surfaceContainerHighest,
-              colors.primaryContainer,
-              .25 + progress * .75,
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+              ),
             ),
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TweenAnimationBuilder<double>(
-                tween: Tween(end: 1 + progress * .22),
-                duration: const Duration(milliseconds: 260),
-                curve: Curves.easeOutBack,
-                builder: (context, scale, child) =>
-                    Transform.scale(scale: scale, child: child),
-                child: Icon(icon, color: colors.primary),
-              ),
-              const SizedBox(width: 10),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: ScaleTransition(scale: animation, child: child),
-                ),
-                child: Text(
-                  label,
-                  key: ValueKey(label),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: colors.onPrimaryContainer,
-                    fontWeight: FontWeight.w900,
-                  ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 160),
+              child: Text(
+                label,
+                key: ValueKey(label),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         M3ESlider(
           value: value,
           max: max,
           divisions: max.round(),
           haptic: M3EHapticFeedback.light,
-          semanticFormatterCallback: (_) => '$semanticLabel: $label',
+          semanticFormatterCallback: (_) => '$title: $label',
           onChanged: onChanged,
         ),
       ],
@@ -1042,71 +964,6 @@ class _ModeCard extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _OptionSection extends StatelessWidget {
-  const _OptionSection({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.child,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(13),
-                  ),
-                  child: Icon(icon, color: colors.primary),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
-                      ),
-                      Text(
-                        description,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            child,
-          ],
         ),
       ),
     );

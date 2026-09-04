@@ -10,6 +10,7 @@ import '../core/providers.dart';
 import 'locale_controller.dart';
 import 'router.dart';
 import 'theme.dart';
+import 'theme_controller.dart';
 
 class HayerApp extends ConsumerWidget {
   const HayerApp({
@@ -25,6 +26,7 @@ class HayerApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(locationWarmupProvider);
     final locale = ref.watch(localeControllerProvider);
+    final themeMode = ref.watch(themeModeControllerProvider);
     final effectivePlatform = platform ?? defaultTargetPlatform;
     final lightTheme = HayerTheme.light(platform: effectivePlatform);
     final darkTheme = HayerTheme.dark(platform: effectivePlatform);
@@ -35,7 +37,7 @@ class HayerApp extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         theme: lightTheme,
         darkTheme: darkTheme,
-        themeMode: ThemeMode.system,
+        themeMode: themeMode,
         locale: locale,
         builder: builder,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -48,7 +50,7 @@ class HayerApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       locale: locale,
       builder: builder,
       routerConfig: appRouter,

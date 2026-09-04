@@ -30,6 +30,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get join => 'Join';
 
   @override
+  String get switchToLightTheme => 'Switch to light theme';
+
+  @override
+  String get switchToDarkTheme => 'Switch to dark theme';
+
+  @override
   String get setupWhatTitle => 'What are you in the mood for?';
 
   @override
@@ -116,6 +122,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseVisitTime => 'Choose day and time';
+
+  @override
+  String get customTime => 'Custom time';
 
   @override
   String get clearVisitTime => 'Clear time';
@@ -326,6 +335,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showQrCode => 'Show QR code';
 
   @override
+  String get qrLabel => 'QR';
+
+  @override
   String get sessionQrTitle => 'Session QR code';
 
   @override
@@ -477,6 +489,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinFailed => 'Could not join this session.';
+
+  @override
+  String get invalidSessionCode => 'Enter a valid session code.';
+
+  @override
+  String get invalidDisplayName => 'Enter a display name with 2–30 characters.';
 
   @override
   String get undoLastSwipe => 'Undo last swipe';

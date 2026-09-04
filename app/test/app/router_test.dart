@@ -8,7 +8,7 @@ void main() {
   testWidgets('a browser join path opens the named-session form', (
     tester,
   ) async {
-    final router = createAppRouter(initialLocation: '/join/Q3W');
+    final router = createAppRouter(initialLocation: '/join/A37');
     addTearDown(router.dispose);
 
     await tester.pumpWidget(
@@ -26,8 +26,13 @@ void main() {
         .widgetList<TextField>(find.byType(TextField))
         .toList();
     expect(fields, hasLength(2));
-    expect(fields.first.controller?.text, 'Q3W');
+    expect(fields.first.controller?.text, 'A37');
     expect(find.text('Display name'), findsOneWidget);
+    expect(find.text('Enter a valid session code.'), findsNothing);
+    expect(
+      find.text('Enter a display name with 2–30 characters.'),
+      findsNothing,
+    );
   });
 
   testWidgets('a mounted web join path is normalized to the join form', (
@@ -52,5 +57,32 @@ void main() {
         .toList();
     expect(fields.first.controller?.text, 'Q3W');
     expect(router.routeInformationProvider.value.uri.path, '/join/Q3W');
+  });
+
+  testWidgets('join form reports invalid fields before calling the server', (
+    tester,
+  ) async {
+    final router = createAppRouter(initialLocation: '/join');
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Join'));
+    await tester.pump();
+
+    expect(find.text('Enter a valid session code.'), findsOneWidget);
+    expect(
+      find.text('Enter a display name with 2–30 characters.'),
+      findsOneWidget,
+    );
   });
 }

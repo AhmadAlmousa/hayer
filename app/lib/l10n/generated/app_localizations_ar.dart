@@ -30,6 +30,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get join => 'انضم';
 
   @override
+  String get switchToLightTheme => 'التبديل إلى المظهر الفاتح';
+
+  @override
+  String get switchToDarkTheme => 'التبديل إلى المظهر الداكن';
+
+  @override
   String get setupWhatTitle => 'وش ودّك فيه؟';
 
   @override
@@ -115,6 +121,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chooseVisitTime => 'اختر اليوم والوقت';
+
+  @override
+  String get customTime => 'وقت مخصص';
 
   @override
   String get clearVisitTime => 'إلغاء الوقت';
@@ -321,6 +330,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get showQrCode => 'عرض رمز QR';
 
   @override
+  String get qrLabel => 'QR';
+
+  @override
   String get sessionQrTitle => 'رمز QR للجلسة';
 
   @override
@@ -471,6 +483,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get joinFailed => 'تعذر الانضمام إلى هذه الجلسة.';
+
+  @override
+  String get invalidSessionCode => 'أدخل رمز جلسة صالحاً.';
+
+  @override
+  String get invalidDisplayName => 'أدخل اسماً ظاهراً من حرفين إلى 30 حرفاً.';
 
   @override
   String get undoLastSwipe => 'تراجع عن آخر سحب';
