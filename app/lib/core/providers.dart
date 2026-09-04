@@ -1,22 +1,33 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 import '../data/local/app_database.dart';
+import '../data/location_warmup.dart';
+import '../data/pending_swipe_store.dart';
 import '../data/session_repository.dart';
 
 final clientProvider = Provider<Client>(
   (ref) => throw StateError('The Serverpod client was not initialized.'),
 );
 
-final databaseProvider = Provider<AppDatabase>((ref) {
-  final database = AppDatabase();
-  ref.onDispose(database.close);
-  return database;
+final locationWarmupProvider = Provider<LocationWarmup>(
+  (ref) => LocationWarmup(),
+);
+
+final pendingSwipeStoreProvider = Provider<PendingSwipeStore>((ref) {
+  final store = kIsWeb
+      ? const SecurePendingSwipeStore()
+      : DriftPendingSwipeStore(AppDatabase());
+  ref.onDispose(() => unawaited(store.close()));
+  return store;
 });
 
 final sessionRepositoryProvider = Provider<SessionRepository>(
   (ref) => SessionRepository(
     client: ref.watch(clientProvider),
-    database: ref.watch(databaseProvider),
+    outbox: ref.watch(pendingSwipeStoreProvider),
   ),
 );

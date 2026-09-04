@@ -27,50 +27,34 @@ class PlaceSearchService {
   }) async {
     final queries = PlaceTaxonomy.resolve(categoryId, subcategoryIds);
     final candidates = <PlaceCandidate>[];
+    PlaceSourceException? sourceFailure;
+    var selected = <PlaceSnapshot>[];
     for (var start = 0; start < queries.length; start += concurrency) {
-      final batch = queries.skip(start).take(concurrency);
+      final batch = queries.skip(start).take(concurrency).toList();
       final results = await Future.wait(
         batch.map(
-          (query) => source.search(
-            query: query.query,
-            categoryId: query.categoryId,
-            latitude: latitude,
-            longitude: longitude,
-            radiusMeters: radiusMeters,
-            desiredCount: deckSize,
-            language: 'en',
-            countryCode: countryCode,
-          ),
+          (query) async {
+            try {
+              return await source.search(
+                query: query.query,
+                categoryId: query.categoryId,
+                latitude: latitude,
+                longitude: longitude,
+                radiusMeters: radiusMeters,
+                desiredCount: deckSize,
+                language: 'en',
+                countryCode: countryCode,
+              );
+            } on PlaceSourceException catch (error) {
+              sourceFailure ??= error;
+              return const <PlaceCandidate>[];
+            }
+          },
         ),
       );
       for (final result in results) {
         candidates.addAll(result);
       }
-    }
-    var selected = policy.select(
-      candidates: candidates,
-      anchorLatitude: latitude,
-      anchorLongitude: longitude,
-      radiusMeters: radiusMeters,
-      deckSize: deckSize,
-      maximumPriceLevel: maximumPriceLevel,
-    );
-    final fallback = queries.length == 1
-        ? queries.single.arabicFallbackQuery
-        : null;
-    if (selected.length < deckSize && fallback != null) {
-      candidates.addAll(
-        await source.search(
-          query: fallback,
-          categoryId: queries.single.categoryId,
-          latitude: latitude,
-          longitude: longitude,
-          radiusMeters: radiusMeters,
-          desiredCount: deckSize - selected.length,
-          language: 'ar',
-          countryCode: countryCode,
-        ),
-      );
       selected = policy.select(
         candidates: candidates,
         anchorLatitude: latitude,
@@ -79,7 +63,39 @@ class PlaceSearchService {
         deckSize: deckSize,
         maximumPriceLevel: maximumPriceLevel,
       );
+      if (selected.length >= deckSize) break;
     }
+    final fallback = queries.length == 1
+        ? queries.single.arabicFallbackQuery
+        : null;
+    if (selected.length < deckSize && fallback != null) {
+      try {
+        candidates.addAll(
+          await source.search(
+            query: fallback,
+            categoryId: queries.single.categoryId,
+            latitude: latitude,
+            longitude: longitude,
+            radiusMeters: radiusMeters,
+            desiredCount: deckSize - selected.length,
+            language: 'ar',
+            countryCode: countryCode,
+          ),
+        );
+        selected = policy.select(
+          candidates: candidates,
+          anchorLatitude: latitude,
+          anchorLongitude: longitude,
+          radiusMeters: radiusMeters,
+          deckSize: deckSize,
+          maximumPriceLevel: maximumPriceLevel,
+        );
+      } on PlaceSourceException catch (error) {
+        sourceFailure ??= error;
+      }
+    }
+    final failure = sourceFailure;
+    if (selected.isEmpty && failure != null) throw failure;
     return selected;
   }
 

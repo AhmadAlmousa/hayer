@@ -32,6 +32,7 @@ abstract class HayerSessionRow
     required this.anchorLatitude,
     required this.anchorLongitude,
     this.anchorAddress,
+    this.visitAt,
     required this.countryCode,
     required this.radiusMeters,
     required this.deckSizeRequested,
@@ -58,6 +59,7 @@ abstract class HayerSessionRow
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     required String countryCode,
     required int radiusMeters,
     required int deckSizeRequested,
@@ -89,6 +91,9 @@ abstract class HayerSessionRow
       anchorLatitude: (jsonSerialization['anchorLatitude'] as num).toDouble(),
       anchorLongitude: (jsonSerialization['anchorLongitude'] as num).toDouble(),
       anchorAddress: jsonSerialization['anchorAddress'] as String?,
+      visitAt: jsonSerialization['visitAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
       countryCode: jsonSerialization['countryCode'] as String,
       radiusMeters: jsonSerialization['radiusMeters'] as int,
       deckSizeRequested: jsonSerialization['deckSizeRequested'] as int,
@@ -141,6 +146,8 @@ abstract class HayerSessionRow
 
   String? anchorAddress;
 
+  DateTime? visitAt;
+
   String countryCode;
 
   int radiusMeters;
@@ -183,6 +190,7 @@ abstract class HayerSessionRow
     double? anchorLatitude,
     double? anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     String? countryCode,
     int? radiusMeters,
     int? deckSizeRequested,
@@ -211,6 +219,7 @@ abstract class HayerSessionRow
       'anchorLatitude': anchorLatitude,
       'anchorLongitude': anchorLongitude,
       if (anchorAddress != null) 'anchorAddress': anchorAddress,
+      if (visitAt != null) 'visitAt': visitAt?.toJson(),
       'countryCode': countryCode,
       'radiusMeters': radiusMeters,
       'deckSizeRequested': deckSizeRequested,
@@ -276,6 +285,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     required String countryCode,
     required int radiusMeters,
     required int deckSizeRequested,
@@ -300,6 +310,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
          anchorLatitude: anchorLatitude,
          anchorLongitude: anchorLongitude,
          anchorAddress: anchorAddress,
+         visitAt: visitAt,
          countryCode: countryCode,
          radiusMeters: radiusMeters,
          deckSizeRequested: deckSizeRequested,
@@ -330,6 +341,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     double? anchorLatitude,
     double? anchorLongitude,
     Object? anchorAddress = _Undefined,
+    Object? visitAt = _Undefined,
     String? countryCode,
     int? radiusMeters,
     int? deckSizeRequested,
@@ -358,6 +370,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
       anchorAddress: anchorAddress is String?
           ? anchorAddress
           : this.anchorAddress,
+      visitAt: visitAt is DateTime? ? visitAt : this.visitAt,
       countryCode: countryCode ?? this.countryCode,
       radiusMeters: radiusMeters ?? this.radiusMeters,
       deckSizeRequested: deckSizeRequested ?? this.deckSizeRequested,
@@ -435,6 +448,12 @@ class HayerSessionRowUpdateTable extends _i1.UpdateTable<HayerSessionRowTable> {
   _i1.ColumnValue<String, String> anchorAddress(String? value) =>
       _i1.ColumnValue(
         table.anchorAddress,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> visitAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.visitAt,
         value,
       );
 
@@ -554,6 +573,10 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
       'anchorAddress',
       this,
     );
+    visitAt = _i1.ColumnDateTime(
+      'visitAt',
+      this,
+    );
     countryCode = _i1.ColumnString(
       'countryCode',
       this,
@@ -629,6 +652,8 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnString anchorAddress;
 
+  late final _i1.ColumnDateTime visitAt;
+
   late final _i1.ColumnString countryCode;
 
   late final _i1.ColumnInt radiusMeters;
@@ -666,6 +691,7 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
     anchorLatitude,
     anchorLongitude,
     anchorAddress,
+    visitAt,
     countryCode,
     radiusMeters,
     deckSizeRequested,

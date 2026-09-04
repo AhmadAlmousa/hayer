@@ -1,24 +1,43 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../core/providers.dart';
+import 'locale_controller.dart';
 import 'router.dart';
 import 'theme.dart';
 
-class HayerApp extends StatelessWidget {
-  const HayerApp({super.key, this.updateRequired = false});
+class HayerApp extends ConsumerWidget {
+  const HayerApp({
+    super.key,
+    this.updateRequired = false,
+    this.platform,
+  });
 
   final bool updateRequired;
+  final TargetPlatform? platform;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(locationWarmupProvider);
+    final locale = ref.watch(localeControllerProvider);
+    final effectivePlatform = platform ?? defaultTargetPlatform;
+    final lightTheme = HayerTheme.light(platform: effectivePlatform);
+    final darkTheme = HayerTheme.dark(platform: effectivePlatform);
+    final builder = _adaptiveBuilder(effectivePlatform);
     if (updateRequired) {
       return MaterialApp(
         title: 'Hayer',
         debugShowCheckedModeBanner: false,
-        theme: HayerTheme.light(),
-        darkTheme: HayerTheme.dark(),
+        theme: lightTheme,
+        darkTheme: darkTheme,
         themeMode: ThemeMode.system,
+        locale: locale,
+        builder: builder,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const _UpdateRequiredScreen(),
@@ -27,13 +46,63 @@ class HayerApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Hayer',
       debugShowCheckedModeBanner: false,
-      theme: HayerTheme.light(),
-      darkTheme: HayerTheme.dark(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       themeMode: ThemeMode.system,
+      locale: locale,
+      builder: builder,
       routerConfig: appRouter,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );
+  }
+
+  TransitionBuilder? _adaptiveBuilder(TargetPlatform platform) {
+    final isApple =
+        platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+    return (context, child) {
+      Widget result = child ?? const SizedBox.shrink();
+      result = MediaQuery.withClampedTextScaling(
+        minScaleFactor: 1,
+        maxScaleFactor: 1.4,
+        child: result,
+      );
+      result = ScrollConfiguration(
+        behavior: const _HayerScrollBehavior(),
+        child: result,
+      );
+      if (isApple) {
+        result = CupertinoTheme(
+          data: CupertinoThemeData(
+            brightness: Theme.of(context).brightness,
+            primaryColor: HayerTheme.teal,
+            scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
+          ),
+          child: result,
+        );
+      }
+      return M3ETheme(
+        data: M3EThemeData.fromMaterial(Theme.of(context)),
+        child: result,
+      );
+    };
+  }
+}
+
+class _HayerScrollBehavior extends MaterialScrollBehavior {
+  const _HayerScrollBehavior();
+
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    if (details.direction == AxisDirection.up ||
+        details.direction == AxisDirection.down) {
+      return Scrollbar(controller: details.controller, child: child);
+    }
+    return child;
   }
 }
 
@@ -61,13 +130,14 @@ class _UpdateRequiredScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 24),
-                  FilledButton.icon(
+                  M3EButton.icon(
                     onPressed: () => launchUrl(
                       Uri.parse('https://hayer.almou.sa/download'),
                       mode: LaunchMode.externalApplication,
                     ),
                     icon: const Icon(Icons.download_rounded),
                     label: Text(strings.downloadUpdate),
+                    size: M3EButtonSize.md,
                   ),
                 ],
               ),

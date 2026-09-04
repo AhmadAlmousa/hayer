@@ -1,12 +1,18 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../app/theme.dart';
 import '../../core/providers.dart';
+import '../../core/page_title.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'place_card.dart';
+import 'place_deck_swiper.dart';
+import 'session_close_button.dart';
 
 class SwipeScreen extends ConsumerStatefulWidget {
   const SwipeScreen({super.key, required this.sessionId, this.initialBundle});
@@ -21,12 +27,20 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
   SessionBundle? _bundle;
   int _index = 0;
   bool _submitting = false;
+  bool _ready = false;
+  final _swiperController = CardSwiperController();
 
   @override
   void initState() {
     super.initState();
     _bundle = widget.initialBundle;
     _initialize();
+  }
+
+  @override
+  void dispose() {
+    unawaited(_swiperController.dispose());
+    super.dispose();
   }
 
   Future<void> _initialize() async {
@@ -43,22 +57,24 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     setState(() {
       _bundle = value;
       _index = mine?.currentIndex.clamp(0, value.deck.length) ?? 0;
+      _ready = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context)!;
+    setBrowserPageTitle('${strings.startSwiping} — ${strings.appName}');
     final bundle = _bundle;
-    if (bundle == null) {
+    if (bundle == null || !_ready) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    if (_index >= bundle.deck.length) {
+    if (_index >= bundle.deck.length && !_submitting) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.go('/results/${widget.sessionId}');
       });
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final place = bundle.deck[_index];
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -67,21 +83,37 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: () => context.pop(),
-                    icon: const Icon(Icons.close_rounded),
+                  SessionCloseButton(
+                    isSolo: bundle.session.mode == SessionMode.solo,
+                    onTerminateSolo: () => ref
+                        .read(sessionRepositoryProvider)
+                        .abandonSolo(widget.sessionId),
+                    onLeave: () {
+                      if (bundle.session.mode == SessionMode.solo) {
+                        context.go('/');
+                      } else {
+                        context.pop();
+                      }
+                    },
                   ),
                   Expanded(
                     child: Semantics(
-                      label: 'Card ${_index + 1} of ${bundle.deck.length}',
+                      label: strings.cardProgress(
+                        (_index + 1).clamp(1, bundle.deck.length),
+                        bundle.deck.length,
+                      ),
                       child: Text(
-                        '${_index + 1} / ${bundle.deck.length}',
+                        '${(_index + 1).clamp(1, bundle.deck.length)} / '
+                        '${bundle.deck.length}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontWeight: FontWeight.w900),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ),
                   ),
-                  IconButton(
+                  M3EIconButton(
                     onPressed: bundle.session.mode == SessionMode.multiplayer
                         ? () => context.push(
                             '/lobby/${widget.sessionId}',
@@ -103,51 +135,15 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      for (var behind = 2; behind >= 1; behind--)
-                        if (_index + behind < bundle.deck.length)
-                          Positioned(
-                            top: behind * 18,
-                            left: behind * 8,
-                            right: behind * 8,
-                            bottom: 0,
-                            child: Card(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHighest,
-                            ),
-                          ),
-                      Positioned.fill(
-                        bottom: 36,
-                        child: Dismissible(
-                          key: ValueKey(place.placeId),
-                          direction: DismissDirection.horizontal,
-                          confirmDismiss: (direction) async {
-                            await _swipe(
-                              direction == DismissDirection.startToEnd,
-                            );
-                            return true;
-                          },
-                          background: _stamp(
-                            'LIKE',
-                            HayerTheme.success,
-                            Alignment.topLeft,
-                          ),
-                          secondaryBackground: _stamp(
-                            'NOPE',
-                            HayerTheme.coral,
-                            Alignment.topRight,
-                          ),
-                          child: PlaceCard(place: place),
-                        ),
-                      ),
-                    ],
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: PlaceDeckSwiper(
+                  places: bundle.deck,
+                  initialIndex: _index.clamp(0, bundle.deck.length - 1),
+                  controller: _swiperController,
+                  disabled: _submitting,
+                  countryCode: bundle.session.countryCode,
+                  onDecision: _onDecision,
                 ),
               ),
             ),
@@ -157,19 +153,35 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _SwipeButton(
-                    semanticLabel: AppLocalizations.of(context)!.pass,
+                    semanticLabel: strings.pass,
                     icon: Icons.close_rounded,
                     color: HayerTheme.coral,
                     size: 64,
-                    onTap: _submitting ? null : () => _swipe(false),
+                    onTap: _submitting
+                        ? null
+                        : () => _swiperController.swipe(
+                            CardSwiperDirection.left,
+                          ),
                   ),
-                  const SizedBox(width: 30),
+                  const SizedBox(width: 18),
                   _SwipeButton(
-                    semanticLabel: AppLocalizations.of(context)!.like,
+                    semanticLabel: strings.undoLastSwipe,
+                    icon: Icons.undo_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 54,
+                    onTap: _submitting || _index == 0 ? null : _undoLastSwipe,
+                  ),
+                  const SizedBox(width: 18),
+                  _SwipeButton(
+                    semanticLabel: strings.like,
                     icon: Icons.favorite_rounded,
                     color: HayerTheme.success,
                     size: 72,
-                    onTap: _submitting ? null : () => _swipe(true),
+                    onTap: _submitting
+                        ? null
+                        : () => _swiperController.swipe(
+                            CardSwiperDirection.right,
+                          ),
                   ),
                 ],
               ),
@@ -180,31 +192,24 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     );
   }
 
-  Widget _stamp(String text, Color color, Alignment alignment) => Container(
-    alignment: alignment,
-    padding: const EdgeInsets.all(34),
-    child: Transform.rotate(
-      angle: text == 'LIKE' ? -.16 : .16,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: color,
-          fontWeight: FontWeight.w900,
-          fontSize: 34,
-        ),
-      ),
-    ),
-  );
+  bool _onDecision(int index, bool liked) {
+    if (_submitting || _bundle == null || index != _index) return false;
+    unawaited(_recordSwipe(index, liked));
+    return true;
+  }
 
-  Future<void> _swipe(bool liked) async {
-    if (_submitting || _bundle == null || _index >= _bundle!.deck.length) {
-      return;
-    }
-    final place = _bundle!.deck[_index];
-    final current = _index;
+  void _undoLastSwipe() {
+    if (_submitting || _index <= 0) return;
+    final previousIndex = _index - 1;
+    setState(() => _index = previousIndex);
+    _swiperController.moveTo(previousIndex);
+  }
+
+  Future<void> _recordSwipe(int index, bool liked) async {
+    final place = _bundle!.deck[index];
     setState(() {
       _submitting = true;
-      _index++;
+      _index = index + 1;
     });
     final value = await ref
         .read(sessionRepositoryProvider)
@@ -212,7 +217,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
           sessionId: widget.sessionId,
           placeId: place.placeId,
           liked: liked,
-          swipeIndex: current,
+          swipeIndex: index,
         );
     if (!mounted) return;
     setState(() {
@@ -250,14 +255,17 @@ class _SwipeButton extends StatelessWidget {
     label: semanticLabel,
     child: SizedBox.square(
       dimension: size,
-      child: IconButton.filledTonal(
+      child: M3EIconButton(
         onPressed: onTap,
-        style: IconButton.styleFrom(
-          backgroundColor: color.withValues(alpha: .14),
-          foregroundColor: color,
+        variant: M3EIconButtonVariant.tonal,
+        visualSize: Size.square(size),
+        decoration: M3EIconButtonDecoration(
+          backgroundColor: WidgetStatePropertyAll(
+            color.withValues(alpha: .14),
+          ),
+          foregroundColor: WidgetStatePropertyAll(color),
         ),
-        iconSize: size * .46,
-        icon: Icon(icon),
+        icon: Icon(icon, size: size * .46),
       ),
     ),
   );

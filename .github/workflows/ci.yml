@@ -14,6 +14,20 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    services:
+      postgis:
+        image: postgis/postgis:16-3.5-alpine
+        env:
+          POSTGRES_DB: hayer_test
+          POSTGRES_PASSWORD: hayer_test
+          POSTGRES_USER: postgres
+        ports:
+          - 9090:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d hayer_test"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,6 +56,7 @@ jobs:
           dart format --output=none --set-exit-if-changed
           backend/hayer_server/lib backend/hayer_server/bin
           backend/hayer_server/tool backend/hayer_server/test
+          backend/hayer_server/integration_test
           backend/hayer_client/lib
           app/lib app/test admin/lib admin/test
 
@@ -53,9 +68,15 @@ jobs:
         working-directory: backend/hayer_server
         run: dart test
 
+      - name: Test server sessions with PostGIS
+        working-directory: backend/hayer_server
+        env:
+          SERVERPOD_DATABASE_PASSWORD: hayer_test
+        run: dart test integration_test
+
       - name: Check operational scripts
         run: |
-          bash -n scripts/preflight.sh scripts/deploy-unraid.sh scripts/build-release-apk.sh
+          bash -n scripts/preflight.sh scripts/build-release-apk.sh scripts/test-server-integration.sh
           sh -n backend/deploy/backup-loop.sh backend/deploy/restore-backup.sh
 
       - name: Analyze and test consumer

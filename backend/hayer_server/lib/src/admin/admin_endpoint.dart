@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
+import 'admin_gateway_access.dart';
 import '../generated/protocol.dart';
 import '../places/calibration.dart';
 import '../places/google_web_place_source.dart';
@@ -121,7 +122,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
     required CachePolicy policy,
   }) async {
-    _authorize(session, credentials);
+    operatorName = _authorize(session, credentials);
     _reason(reason);
     _validatePolicy(policy);
     final now = DateTime.now().toUtc();
@@ -210,7 +211,7 @@ class AdminEndpoint extends Endpoint {
     required String coverageKey,
     required String reason,
   }) async {
-    _authorize(session, credentials);
+    operatorName = _authorize(session, credentials);
     _reason(reason);
     final existing = await RefreshJobRow.db.findFirstRow(
       session,
@@ -250,7 +251,7 @@ class AdminEndpoint extends Endpoint {
     required String coverageKey,
     required String reason,
   }) async {
-    _authorize(session, credentials);
+    operatorName = _authorize(session, credentials);
     _reason(reason);
     final rows = await PoiCoverageRow.db.updateWhere(
       session,
@@ -275,7 +276,7 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required String documentJson,
   }) async {
-    _authorize(session, credentials);
+    operatorName = _authorize(session, credentials);
     final normalizedVersion = version.trim();
     if (!RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$').hasMatch(
       normalizedVersion,
@@ -377,7 +378,7 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required String reason,
   }) async {
-    _authorize(session, credentials);
+    operatorName = _authorize(session, credentials);
     _reason(reason);
     final candidate = await CalibrationRow.db.findFirstRow(
       session,
@@ -425,7 +426,7 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required String reason,
   }) async {
-    _authorize(session, credentials);
+    operatorName = _authorize(session, credentials);
     _reason(reason);
     final candidate = await CalibrationRow.db.findFirstRow(
       session,
@@ -474,7 +475,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
     required bool quarantine,
   }) async {
-    _authorize(session, credentials);
+    operatorName = _authorize(session, credentials);
     _reason(reason);
     final row = await PoiCatalogRow.db.findFirstRow(
       session,
@@ -565,27 +566,20 @@ WHERE "metricName" = @name
     }
   }
 
-  void _authorize(Session session, String provided) {
-    final expected = session.passwords['adminGatewaySecret'];
-    if (expected == null ||
-        expected.startsWith('REPLACE_') ||
-        !_constantTimeEquals(expected, provided)) {
+  String _authorize(Session session, String _) {
+    final request = session.request;
+    final operator = AdminGatewayAccess.resolveOperator(
+      authenticatedValues:
+          request?.headers[AdminGatewayAccess.authenticatedHeader],
+      usernameValues: request?.headers[AdminGatewayAccess.usernameHeader],
+    );
+    if (operator == null) {
       throw ApiException(
         code: 'unauthorized',
-        message: 'Dashboard credentials are invalid.',
+        message: 'Dashboard access must pass through the protected gateway.',
       );
     }
-  }
-
-  bool _constantTimeEquals(String expected, String provided) {
-    final a = utf8.encode(expected);
-    final b = utf8.encode(provided);
-    var difference = a.length ^ b.length;
-    for (var index = 0; index < a.length; index++) {
-      final providedByte = b.isEmpty ? 0 : b[index % b.length];
-      difference |= a[index] ^ providedByte;
-    }
-    return difference == 0;
+    return operator;
   }
 
   String _operator(String value) {

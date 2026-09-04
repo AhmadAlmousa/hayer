@@ -1,3 +1,4 @@
+import java.io.File
 import java.util.Properties
 
 plugins {
@@ -37,7 +38,18 @@ android {
             create("release") {
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
-                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                val configuredStoreFile = File(
+                    keystoreProperties.getProperty("storeFile"),
+                )
+                val localStoreFile = keystorePropertiesFile.parentFile.resolve(
+                    configuredStoreFile.name,
+                )
+                storeFile = when {
+                    configuredStoreFile.isAbsolute && configuredStoreFile.exists() ->
+                        configuredStoreFile
+                    localStoreFile.exists() -> localStoreFile
+                    else -> configuredStoreFile
+                }
                 storePassword = keystoreProperties.getProperty("storePassword")
             }
         }

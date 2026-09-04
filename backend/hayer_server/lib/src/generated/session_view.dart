@@ -30,6 +30,7 @@ abstract class SessionView
     required this.anchorLatitude,
     required this.anchorLongitude,
     this.anchorAddress,
+    this.visitAt,
     required this.countryCode,
     required this.radiusMeters,
     required this.deckSizeRequested,
@@ -54,6 +55,7 @@ abstract class SessionView
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     required String countryCode,
     required int radiusMeters,
     required int deckSizeRequested,
@@ -81,6 +83,9 @@ abstract class SessionView
       anchorLatitude: (jsonSerialization['anchorLatitude'] as num).toDouble(),
       anchorLongitude: (jsonSerialization['anchorLongitude'] as num).toDouble(),
       anchorAddress: jsonSerialization['anchorAddress'] as String?,
+      visitAt: jsonSerialization['visitAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
       countryCode: jsonSerialization['countryCode'] as String,
       radiusMeters: jsonSerialization['radiusMeters'] as int,
       deckSizeRequested: jsonSerialization['deckSizeRequested'] as int,
@@ -124,6 +129,8 @@ abstract class SessionView
 
   String? anchorAddress;
 
+  DateTime? visitAt;
+
   String countryCode;
 
   int radiusMeters;
@@ -161,6 +168,7 @@ abstract class SessionView
     double? anchorLatitude,
     double? anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     String? countryCode,
     int? radiusMeters,
     int? deckSizeRequested,
@@ -187,6 +195,7 @@ abstract class SessionView
       'anchorLatitude': anchorLatitude,
       'anchorLongitude': anchorLongitude,
       if (anchorAddress != null) 'anchorAddress': anchorAddress,
+      if (visitAt != null) 'visitAt': visitAt?.toJson(),
       'countryCode': countryCode,
       'radiusMeters': radiusMeters,
       'deckSizeRequested': deckSizeRequested,
@@ -215,6 +224,7 @@ abstract class SessionView
       'anchorLatitude': anchorLatitude,
       'anchorLongitude': anchorLongitude,
       if (anchorAddress != null) 'anchorAddress': anchorAddress,
+      if (visitAt != null) 'visitAt': visitAt?.toJson(),
       'countryCode': countryCode,
       'radiusMeters': radiusMeters,
       'deckSizeRequested': deckSizeRequested,
@@ -249,6 +259,7 @@ class _SessionViewImpl extends SessionView {
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     required String countryCode,
     required int radiusMeters,
     required int deckSizeRequested,
@@ -271,6 +282,7 @@ class _SessionViewImpl extends SessionView {
          anchorLatitude: anchorLatitude,
          anchorLongitude: anchorLongitude,
          anchorAddress: anchorAddress,
+         visitAt: visitAt,
          countryCode: countryCode,
          radiusMeters: radiusMeters,
          deckSizeRequested: deckSizeRequested,
@@ -299,6 +311,7 @@ class _SessionViewImpl extends SessionView {
     double? anchorLatitude,
     double? anchorLongitude,
     Object? anchorAddress = _Undefined,
+    Object? visitAt = _Undefined,
     String? countryCode,
     int? radiusMeters,
     int? deckSizeRequested,
@@ -325,6 +338,7 @@ class _SessionViewImpl extends SessionView {
       anchorAddress: anchorAddress is String?
           ? anchorAddress
           : this.anchorAddress,
+      visitAt: visitAt is DateTime? ? visitAt : this.visitAt,
       countryCode: countryCode ?? this.countryCode,
       radiusMeters: radiusMeters ?? this.radiusMeters,
       deckSizeRequested: deckSizeRequested ?? this.deckSizeRequested,

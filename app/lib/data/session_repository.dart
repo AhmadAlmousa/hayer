@@ -1,41 +1,53 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hayer_client/hayer_client.dart';
 
-import 'local/app_database.dart';
+import 'authentication.dart';
+import 'pending_swipe_store.dart';
 
 class SessionRepository {
   const SessionRepository({
     required this.client,
-    required this.database,
+    required this.outbox,
     this.secureStorage = const FlutterSecureStorage(),
   });
 
   final Client client;
-  final AppDatabase database;
+  final PendingSwipeStore outbox;
   final FlutterSecureStorage secureStorage;
   static const _uuid = Uuid();
   static const activeSessionKey = 'hayer.active-session-id';
 
   Future<SessionBundle> create(CreateSessionRequest request) async {
-    final bundle = await client.hayerSession.create(
-      request: request,
-      idempotencyKey: _uuid.v7(),
+    final idempotencyKey = _uuid.v7();
+    final bundle = await withAnonymousAuthentication(
+      client,
+      () => client.hayerSession.create(
+        request: request,
+        idempotencyKey: idempotencyKey,
+      ),
     );
     await remember(bundle.session.sessionId);
     return bundle;
   }
 
   Future<SessionBundle> join(String code, String displayName) async {
-    final bundle = await client.hayerSession.join(
-      code: code,
-      displayName: displayName,
+    final bundle = await withAnonymousAuthentication(
+      client,
+      () => client.hayerSession.join(
+        code: code,
+        displayName: displayName,
+      ),
     );
     await remember(bundle.session.sessionId);
     return bundle;
   }
 
-  Future<SessionBundle> load(String sessionId) =>
-      client.hayerSession.load(sessionId: sessionId);
+  Future<SessionBundle> load(String sessionId) async {
+    return withAnonymousAuthentication(
+      client,
+      () => client.hayerSession.load(sessionId: sessionId),
+    );
+  }
 
   Future<String?> activeSessionId() =>
       secureStorage.read(key: activeSessionKey);
@@ -45,6 +57,16 @@ class SessionRepository {
 
   Future<void> forgetActiveSession() =>
       secureStorage.delete(key: activeSessionKey);
+
+  Future<void> abandonSolo(String sessionId) async {
+    await withAnonymousAuthentication(
+      client,
+      () => client.hayerSession.abandon(sessionId: sessionId),
+    );
+    await outbox.removeSession(sessionId);
+    final active = await activeSessionId();
+    if (active == sessionId) await forgetActiveSession();
+  }
 
   Future<SessionBundle?> swipe({
     required String sessionId,
@@ -63,10 +85,13 @@ class SessionRepository {
       idempotencyKey: key,
     );
     try {
-      return await client.hayerSession.swipe(command: command);
+      return await withAnonymousAuthentication(
+        client,
+        () => client.hayerSession.swipe(command: command),
+      );
     } catch (_) {
-      await database.enqueue(
-        PendingSwipesCompanion.insert(
+      await outbox.enqueue(
+        PendingSwipeRecord(
           idempotencyKey: key,
           sessionId: sessionId,
           placeId: placeId,
@@ -80,19 +105,22 @@ class SessionRepository {
   }
 
   Future<void> flushQueue() async {
-    for (final pending in await database.queued()) {
+    for (final pending in await outbox.queued()) {
       try {
-        await client.hayerSession.swipe(
-          command: SwipeCommand(
-            sessionId: pending.sessionId,
-            placeId: pending.placeId,
-            liked: pending.liked,
-            swipeIndex: pending.swipeIndex,
-            clientSwipedAt: pending.clientSwipedAt,
-            idempotencyKey: pending.idempotencyKey,
+        await withAnonymousAuthentication(
+          client,
+          () => client.hayerSession.swipe(
+            command: SwipeCommand(
+              sessionId: pending.sessionId,
+              placeId: pending.placeId,
+              liked: pending.liked,
+              swipeIndex: pending.swipeIndex,
+              clientSwipedAt: pending.clientSwipedAt,
+              idempotencyKey: pending.idempotencyKey,
+            ),
           ),
         );
-        await database.removePending(pending.idempotencyKey);
+        await outbox.remove(pending.idempotencyKey);
       } catch (_) {
         break;
       }

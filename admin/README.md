@@ -9,6 +9,6 @@ flutter test
 flutter build web --base-href /admin/cache/
 ```
 
-The production gateway protects both `/admin/cache/` and `/admin-api/` with
-Basic Auth. The app also requires the server-side admin secret and keeps it in
-memory only. See `../backend/deploy/secrets/README.md`.
+The production gateway protects `/admin/cache/` and its nested API route with
+the same nginx Basic Auth credentials. See
+`../backend/deploy/secrets/README.md`.

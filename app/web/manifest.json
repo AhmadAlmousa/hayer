@@ -1,11 +1,11 @@
 {
-    "name": "hayer_flutter",
-    "short_name": "hayer_flutter",
+    "name": "Hayer",
+    "short_name": "Hayer",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0E9594",
+    "theme_color": "#0E9594",
+    "description": "Swipe through places and decide together.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

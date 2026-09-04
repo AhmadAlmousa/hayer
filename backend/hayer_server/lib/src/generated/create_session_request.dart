@@ -27,6 +27,7 @@ abstract class CreateSessionRequest
     required this.anchorLatitude,
     required this.anchorLongitude,
     this.anchorAddress,
+    this.visitAt,
     required this.radiusMeters,
     required this.deckSize,
     this.displayName,
@@ -42,6 +43,7 @@ abstract class CreateSessionRequest
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     required int radiusMeters,
     required int deckSize,
     String? displayName,
@@ -62,6 +64,9 @@ abstract class CreateSessionRequest
       anchorLatitude: (jsonSerialization['anchorLatitude'] as num).toDouble(),
       anchorLongitude: (jsonSerialization['anchorLongitude'] as num).toDouble(),
       anchorAddress: jsonSerialization['anchorAddress'] as String?,
+      visitAt: jsonSerialization['visitAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
       radiusMeters: jsonSerialization['radiusMeters'] as int,
       deckSize: jsonSerialization['deckSize'] as int,
       displayName: jsonSerialization['displayName'] as String?,
@@ -88,6 +93,8 @@ abstract class CreateSessionRequest
 
   String? anchorAddress;
 
+  DateTime? visitAt;
+
   int radiusMeters;
 
   int deckSize;
@@ -109,6 +116,7 @@ abstract class CreateSessionRequest
     double? anchorLatitude,
     double? anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     int? radiusMeters,
     int? deckSize,
     String? displayName,
@@ -126,6 +134,7 @@ abstract class CreateSessionRequest
       'anchorLatitude': anchorLatitude,
       'anchorLongitude': anchorLongitude,
       if (anchorAddress != null) 'anchorAddress': anchorAddress,
+      if (visitAt != null) 'visitAt': visitAt?.toJson(),
       'radiusMeters': radiusMeters,
       'deckSize': deckSize,
       if (displayName != null) 'displayName': displayName,
@@ -145,6 +154,7 @@ abstract class CreateSessionRequest
       'anchorLatitude': anchorLatitude,
       'anchorLongitude': anchorLongitude,
       if (anchorAddress != null) 'anchorAddress': anchorAddress,
+      if (visitAt != null) 'visitAt': visitAt?.toJson(),
       'radiusMeters': radiusMeters,
       'deckSize': deckSize,
       if (displayName != null) 'displayName': displayName,
@@ -170,6 +180,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    DateTime? visitAt,
     required int radiusMeters,
     required int deckSize,
     String? displayName,
@@ -183,6 +194,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
          anchorLatitude: anchorLatitude,
          anchorLongitude: anchorLongitude,
          anchorAddress: anchorAddress,
+         visitAt: visitAt,
          radiusMeters: radiusMeters,
          deckSize: deckSize,
          displayName: displayName,
@@ -202,6 +214,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     double? anchorLatitude,
     double? anchorLongitude,
     Object? anchorAddress = _Undefined,
+    Object? visitAt = _Undefined,
     int? radiusMeters,
     int? deckSize,
     Object? displayName = _Undefined,
@@ -219,6 +232,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
       anchorAddress: anchorAddress is String?
           ? anchorAddress
           : this.anchorAddress,
+      visitAt: visitAt is DateTime? ? visitAt : this.visitAt,
       radiusMeters: radiusMeters ?? this.radiusMeters,
       deckSize: deckSize ?? this.deckSize,
       displayName: displayName is String? ? displayName : this.displayName,

@@ -9,8 +9,16 @@ import '../features/scan/scan_screen.dart';
 import '../features/setup/setup_screen.dart';
 import '../features/swipe/swipe_screen.dart';
 
-final appRouter = GoRouter(
-  initialLocation: '/',
+GoRouter createAppRouter({String? initialLocation}) => GoRouter(
+  initialLocation: initialLocation,
+  redirect: (context, state) {
+    final path = state.uri.path;
+    if (path == '/app') return '/';
+    if (path.startsWith('/app/')) {
+      return state.uri.replace(path: path.substring(4)).toString();
+    }
+    return null;
+  },
   routes: [
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/setup', builder: (context, state) => const SetupScreen()),
@@ -47,3 +55,5 @@ final appRouter = GoRouter(
     ),
   ],
 );
+
+final appRouter = createAppRouter();

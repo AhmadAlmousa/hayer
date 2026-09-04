@@ -1,0 +1,662 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+import 'package:hayer_server/src/generated/protocol.dart';
+import 'package:serverpod/serverpod.dart';
+import 'package:test/test.dart';
+
+import '../test/integration/test_tools/serverpod_test_tools.dart';
+
+const _anchorLatitude = 24.7136;
+const _anchorLongitude = 46.6753;
+const _calibrationVersion = 'hayer-google-web-18';
+
+void main() {
+  withServerpod(
+    'HayerSessionEndpoint with PostGIS',
+    (sessionBuilder, endpoints) {
+      late TestSessionBuilder host;
+      late TestSessionBuilder guest;
+      late TestSessionBuilder outsider;
+
+      setUp(() async {
+        await _resetHayerTables(sessionBuilder);
+        await _seedRestaurantCatalog(sessionBuilder);
+        host = _authenticated(sessionBuilder, 'user-host');
+        guest = _authenticated(sessionBuilder, 'user-guest');
+        outsider = _authenticated(sessionBuilder, 'user-outsider');
+      });
+
+      tearDown(() => _resetHayerTables(sessionBuilder));
+
+      test('concurrent create retries persist one immutable session', () async {
+        final request = _request();
+        final bundles = await Future.wait([
+          endpoints.hayerSession.create(
+            host,
+            request: request,
+            idempotencyKey: 'create-retry-0001',
+          ),
+          endpoints.hayerSession.create(
+            host,
+            request: request,
+            idempotencyKey: 'create-retry-0001',
+          ),
+        ]);
+
+        expect(bundles[0].session.sessionId, bundles[1].session.sessionId);
+        expect(_placeIds(bundles[0]), _placeIds(bundles[1]));
+        expect(bundles[0].deck, hasLength(10));
+
+        final counts = await _rowCounts(sessionBuilder);
+        expect(counts.sessions, 1);
+        expect(counts.participants, 1);
+        expect(counts.sessionPlaces, 10);
+        expect(counts.idempotencyKeys, 1);
+        expect(counts.rateLimitRows, 1);
+        expect(counts.createAttempts, 2);
+
+        await expectLater(
+          endpoints.hayerSession.create(
+            host,
+            request: _request(radiusMeters: 1000),
+            idempotencyKey: 'create-retry-0001',
+          ),
+          throwsA(_apiError('conflict')),
+        );
+      });
+
+      test(
+        'late joins receive the original deck and no private votes',
+        () async {
+          final created = await endpoints.hayerSession.create(
+            host,
+            request: _request(),
+            idempotencyKey: 'create-late-join',
+          );
+          final firstPlace = created.deck.first;
+          await endpoints.hayerSession.swipe(
+            host,
+            command: _swipe(created, index: 0, liked: true, suffix: 'host'),
+          );
+          await _renameCatalogPlace(
+            sessionBuilder,
+            firstPlace.placeId,
+            'Changed catalog name',
+          );
+
+          final joined = await endpoints.hayerSession.join(
+            guest,
+            code: created.session.code,
+            displayName: 'Guest',
+          );
+
+          expect(_placeIds(joined), _placeIds(created));
+          expect(joined.deck.first.name, firstPlace.name);
+          expect(joined.participants, hasLength(2));
+          expect(
+            joined.participants.singleWhere((item) => item.isHost).currentIndex,
+            1,
+          );
+          expect(
+            joined.participants
+                .singleWhere((item) => !item.isHost)
+                .currentIndex,
+            0,
+          );
+
+          await expectLater(
+            endpoints.hayerSession.join(
+              outsider,
+              code: created.session.code,
+              displayName: ' guest ',
+            ),
+            throwsA(_apiError('name_taken')),
+          );
+          await expectLater(
+            endpoints.hayerSession.results(
+              outsider,
+              sessionId: created.session.sessionId,
+            ),
+            throwsA(_apiError('forbidden')),
+          );
+        },
+      );
+
+      test(
+        'duplicate swipes advance once and the latest choice can be revised',
+        () async {
+          final created = await endpoints.hayerSession.create(
+            host,
+            request: _request(mode: SessionMode.solo),
+            idempotencyKey: 'create-swipe-retry',
+          );
+          final command = _swipe(
+            created,
+            index: 0,
+            liked: true,
+            suffix: 'same-command',
+          );
+
+          final bundles = await Future.wait([
+            endpoints.hayerSession.swipe(host, command: command),
+            endpoints.hayerSession.swipe(host, command: command),
+          ]);
+
+          for (final bundle in bundles) {
+            expect(bundle.participants.single.currentIndex, 1);
+            expect(bundle.session.revision, 2);
+          }
+          final counts = await _rowCounts(sessionBuilder);
+          expect(counts.swipes, 1);
+
+          final revised = await endpoints.hayerSession.swipe(
+            host,
+            command: _swipe(
+              created,
+              index: 0,
+              liked: false,
+              suffix: 'revised',
+            ),
+          );
+          expect(revised.participants.single.currentIndex, 1);
+          final results = await endpoints.hayerSession.results(
+            host,
+            sessionId: created.session.sessionId,
+          );
+          expect(
+            results
+                .singleWhere(
+                  (item) => item.place.placeId == created.deck.first.placeId,
+                )
+                .likeCount,
+            0,
+          );
+
+          await endpoints.hayerSession.swipe(
+            host,
+            command: _swipe(created, index: 1, liked: true, suffix: 'next'),
+          );
+          await expectLater(
+            endpoints.hayerSession.swipe(
+              host,
+              command: _swipe(
+                created,
+                index: 0,
+                liked: true,
+                suffix: 'too-old',
+              ),
+            ),
+            throwsA(_apiError('conflict')),
+          );
+        },
+      );
+
+      test('after-deck majority remains joinable for late guests', () async {
+        final created = await endpoints.hayerSession.create(
+          host,
+          request: _request(),
+          idempotencyKey: 'create-after-deck',
+        );
+        await endpoints.hayerSession.join(
+          guest,
+          code: created.session.code,
+          displayName: 'Guest',
+        );
+
+        for (var index = 0; index < created.deck.length; index++) {
+          await endpoints.hayerSession.swipe(
+            host,
+            command: _swipe(
+              created,
+              index: index,
+              liked: index <= 1,
+              suffix: 'host',
+            ),
+          );
+          final guestBundle = await endpoints.hayerSession.swipe(
+            guest,
+            command: _swipe(
+              created,
+              index: index,
+              liked: index == 0,
+              suffix: 'guest',
+            ),
+          );
+          if (index == created.deck.length - 1) {
+            expect(guestBundle.session.status, SessionStatus.active);
+          }
+        }
+
+        final lateGuest = await endpoints.hayerSession.join(
+          outsider,
+          code: created.session.code,
+          displayName: 'Late guest',
+        );
+        expect(lateGuest.session.status, SessionStatus.active);
+        expect(lateGuest.participants, hasLength(3));
+
+        for (var index = 0; index < lateGuest.deck.length; index++) {
+          await endpoints.hayerSession.swipe(
+            outsider,
+            command: _swipe(
+              lateGuest,
+              index: index,
+              liked: index == 0,
+              suffix: 'late-guest',
+            ),
+          );
+        }
+
+        final hostResults = await endpoints.hayerSession.results(
+          host,
+          sessionId: created.session.sessionId,
+        );
+        final guestResults = await endpoints.hayerSession.results(
+          guest,
+          sessionId: created.session.sessionId,
+        );
+        expect(_resultSummary(hostResults), _resultSummary(guestResults));
+
+        final unanimousPlace = hostResults.singleWhere(
+          (item) => item.place.placeId == created.deck[0].placeId,
+        );
+        expect(unanimousPlace.likeCount, 3);
+        expect(unanimousPlace.voterCount, 3);
+        expect(unanimousPlace.match, isTrue);
+
+        final splitPlace = hostResults.singleWhere(
+          (item) => item.place.placeId == created.deck[1].placeId,
+        );
+        expect(splitPlace.likeCount, 1);
+        expect(splitPlace.voterCount, 3);
+        expect(splitPlace.match, isFalse);
+      });
+
+      test('instant unanimous waits for two voters before matching', () async {
+        final created = await endpoints.hayerSession.create(
+          host,
+          request: _request(
+            consensusRule: ConsensusRule.unanimous,
+            matchingTiming: MatchingTiming.instant,
+          ),
+          idempotencyKey: 'create-instant',
+        );
+        await endpoints.hayerSession.join(
+          guest,
+          code: created.session.code,
+          displayName: 'Guest',
+        );
+
+        final hostVote = await endpoints.hayerSession.swipe(
+          host,
+          command: _swipe(created, index: 0, liked: true, suffix: 'host'),
+        );
+        expect(hostVote.session.status, SessionStatus.active);
+
+        final guestVote = await endpoints.hayerSession.swipe(
+          guest,
+          command: _swipe(created, index: 0, liked: true, suffix: 'guest'),
+        );
+        expect(guestVote.session.status, SessionStatus.completed);
+        expect(guestVote.session.matchedPlaceId, created.deck.first.placeId);
+      });
+
+      test(
+        'abandon permanently deletes only a host-owned solo session',
+        () async {
+          final solo = await endpoints.hayerSession.create(
+            host,
+            request: _request(mode: SessionMode.solo),
+            idempotencyKey: 'create-abandon-solo',
+          );
+          await endpoints.hayerSession.swipe(
+            host,
+            command: _swipe(solo, index: 0, liked: true, suffix: 'abandon'),
+          );
+
+          await endpoints.hayerSession.abandon(
+            host,
+            sessionId: solo.session.sessionId,
+          );
+
+          final counts = await _rowCounts(sessionBuilder);
+          expect(counts.sessions, 0);
+          expect(counts.participants, 0);
+          expect(counts.sessionPlaces, 0);
+          expect(counts.swipes, 0);
+          expect(counts.idempotencyKeys, 0);
+          await expectLater(
+            endpoints.hayerSession.load(
+              host,
+              sessionId: solo.session.sessionId,
+            ),
+            throwsA(_apiError('not_found')),
+          );
+
+          final multiplayer = await endpoints.hayerSession.create(
+            host,
+            request: _request(),
+            idempotencyKey: 'create-abandon-multiplayer',
+          );
+          await expectLater(
+            endpoints.hayerSession.abandon(
+              host,
+              sessionId: multiplayer.session.sessionId,
+            ),
+            throwsA(_apiError('forbidden')),
+          );
+        },
+      );
+
+      test('expiry is persisted and blocks subsequent writes', () async {
+        final created = await endpoints.hayerSession.create(
+          host,
+          request: _request(mode: SessionMode.solo),
+          idempotencyKey: 'create-expiry',
+        );
+        await _expireSession(sessionBuilder, created.session.sessionId);
+
+        final loaded = await endpoints.hayerSession.load(
+          host,
+          sessionId: created.session.sessionId,
+        );
+        expect(loaded.session.status, SessionStatus.expired);
+
+        await expectLater(
+          endpoints.hayerSession.swipe(
+            host,
+            command: _swipe(
+              created,
+              index: 0,
+              liked: true,
+              suffix: 'expired',
+            ),
+          ),
+          throwsA(_apiError('session_expired')),
+        );
+        expect(
+          await _sessionStatus(sessionBuilder, created.session.sessionId),
+          SessionStatus.expired,
+        );
+      });
+    },
+    rollbackDatabase: RollbackDatabase.disabled,
+    serverpodStartTimeout: const Duration(minutes: 2),
+  );
+}
+
+TestSessionBuilder _authenticated(
+  TestSessionBuilder sessionBuilder,
+  String userIdentifier,
+) => sessionBuilder.copyWith(
+  authentication: AuthenticationOverride.authenticationInfo(
+    userIdentifier,
+    const <Scope>{},
+  ),
+);
+
+CreateSessionRequest _request({
+  SessionMode mode = SessionMode.multiplayer,
+  int radiusMeters = 500,
+  ConsensusRule consensusRule = ConsensusRule.majority,
+  MatchingTiming matchingTiming = MatchingTiming.afterDeck,
+}) => CreateSessionRequest(
+  mode: mode,
+  categoryId: 'restaurant',
+  subcategoryIds: const [],
+  anchorLatitude: _anchorLatitude,
+  anchorLongitude: _anchorLongitude,
+  anchorAddress: 'Riyadh',
+  radiusMeters: radiusMeters,
+  deckSize: 10,
+  displayName: 'Host',
+  consensusRule: consensusRule,
+  matchingTiming: matchingTiming,
+);
+
+SwipeCommand _swipe(
+  SessionBundle bundle, {
+  required int index,
+  required bool liked,
+  required String suffix,
+}) => SwipeCommand(
+  sessionId: bundle.session.sessionId,
+  placeId: bundle.deck[index].placeId,
+  liked: liked,
+  swipeIndex: index,
+  clientSwipedAt: DateTime.utc(2026, 9, 2, 12, 0, index),
+  idempotencyKey: '${bundle.session.sessionId}-$suffix-$index',
+);
+
+Matcher _apiError(String code) => isA<ApiException>().having(
+  (error) => error.code,
+  'code',
+  code,
+);
+
+List<String> _placeIds(SessionBundle bundle) =>
+    bundle.deck.map((place) => place.placeId).toList(growable: false);
+
+List<(String, int, int, bool, int)> _resultSummary(
+  List<SessionResult> results,
+) => results
+    .map(
+      (result) => (
+        result.place.placeId,
+        result.likeCount,
+        result.voterCount,
+        result.match,
+        result.rank,
+      ),
+    )
+    .toList(growable: false);
+
+Future<void> _seedRestaurantCatalog(
+  TestSessionBuilder sessionBuilder,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    final now = DateTime.now().toUtc();
+    final places = [
+      for (var index = 0; index < 10; index++) _place(index, checkedAt: now),
+    ];
+    await PoiCatalogRow.db.insert(
+      session,
+      [
+        for (final place in places)
+          PoiCatalogRow(
+            provider: 'google-web',
+            providerPlaceId: place.placeId,
+            featureId: place.featureId,
+            normalizedName: place.name.toLowerCase(),
+            name: place.name,
+            countryCode: 'SA',
+            latitude: place.latitude,
+            longitude: place.longitude,
+            categoryIds: const ['restaurant'],
+            snapshot: place,
+            calibrationVersion: _calibrationVersion,
+            sourceCheckedAt: now,
+            firstSeenAt: now,
+            lastSeenAt: now,
+          ),
+      ],
+    );
+    await PoiCoverageRow.db.insertRow(
+      session,
+      PoiCoverageRow(
+        coverageKey: _coverageKey(
+          categoryIds: const ['restaurant'],
+          countryCode: 'SA',
+          latitude: _anchorLatitude,
+          longitude: _anchorLongitude,
+          radiusMeters: 500,
+        ),
+        queryKey: 'restaurant',
+        language: 'en',
+        countryCode: 'SA',
+        anchorLatitude: _anchorLatitude,
+        anchorLongitude: _anchorLongitude,
+        radiusMeters: 500,
+        calibrationVersion: _calibrationVersion,
+        resultCount: places.length,
+        refreshedAt: now,
+        expiresAt: now.add(const Duration(hours: 1)),
+      ),
+    );
+  } finally {
+    await session.close();
+  }
+}
+
+PlaceSnapshot _place(int index, {required DateTime checkedAt}) {
+  final offset = index * 0.00005;
+  return PlaceSnapshot(
+    placeId: 'place-$index',
+    featureId: 'feature-$index',
+    name: 'Restaurant $index',
+    primaryType: 'Restaurant',
+    categoryIds: const ['restaurant'],
+    rating: 4.8 - (index * 0.05),
+    reviewCount: 1000 - index,
+    priceLevel: 2,
+    priceText: r'$$',
+    isOpen: true,
+    statusText: 'Open',
+    hours: const [],
+    distanceMeters: 0,
+    latitude: _anchorLatitude + offset,
+    longitude: _anchorLongitude + offset,
+    formattedAddress: 'Riyadh, Saudi Arabia',
+    mapsUrl: 'https://www.google.com/maps/place/place-$index',
+    photoUrls: const [],
+    attributions: const ['Google Maps'],
+    sourceCheckedAt: checkedAt,
+    isStale: false,
+  );
+}
+
+String _coverageKey({
+  required List<String> categoryIds,
+  required String countryCode,
+  required double latitude,
+  required double longitude,
+  required int radiusMeters,
+}) => sha256
+    .convert(
+      utf8.encode(
+        '${countryCode}_${latitude.toStringAsFixed(3)}_'
+        '${longitude.toStringAsFixed(3)}_${radiusMeters}_'
+        '${categoryIds.join(',')}',
+      ),
+    )
+    .toString();
+
+Future<void> _resetHayerTables(TestSessionBuilder sessionBuilder) async {
+  final session = sessionBuilder.build();
+  try {
+    await session.db.unsafeExecute('''
+TRUNCATE TABLE
+  "hayer_swipe",
+  "hayer_session_place",
+  "hayer_participant",
+  "hayer_session",
+  "hayer_idempotency",
+  "hayer_rate_limit",
+  "hayer_operational_metric",
+  "hayer_poi_category",
+  "hayer_poi_coverage",
+  "hayer_poi_catalog"
+CASCADE
+''');
+  } finally {
+    await session.close();
+  }
+}
+
+Future<void> _renameCatalogPlace(
+  TestSessionBuilder sessionBuilder,
+  String placeId,
+  String name,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    final row = await PoiCatalogRow.db.findFirstRow(
+      session,
+      where: (table) => table.providerPlaceId.equals(placeId),
+    );
+    if (row == null) throw StateError('Seeded catalog place was not found.');
+    row.name = name;
+    row.normalizedName = name.toLowerCase();
+    row.snapshot = row.snapshot.copyWith(name: name);
+    await PoiCatalogRow.db.updateRow(session, row);
+  } finally {
+    await session.close();
+  }
+}
+
+Future<void> _expireSession(
+  TestSessionBuilder sessionBuilder,
+  String sessionId,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    final row = await HayerSessionRow.db.findFirstRow(
+      session,
+      where: (table) => table.sessionId.equals(sessionId),
+    );
+    if (row == null) throw StateError('Created session was not found.');
+    row.expiresAt = DateTime.now().toUtc().subtract(const Duration(minutes: 1));
+    await HayerSessionRow.db.updateRow(session, row);
+  } finally {
+    await session.close();
+  }
+}
+
+Future<SessionStatus?> _sessionStatus(
+  TestSessionBuilder sessionBuilder,
+  String sessionId,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    return (await HayerSessionRow.db.findFirstRow(
+      session,
+      where: (table) => table.sessionId.equals(sessionId),
+    ))?.status;
+  } finally {
+    await session.close();
+  }
+}
+
+Future<
+  ({
+    int sessions,
+    int participants,
+    int sessionPlaces,
+    int idempotencyKeys,
+    int swipes,
+    int rateLimitRows,
+    int createAttempts,
+  })
+>
+_rowCounts(TestSessionBuilder sessionBuilder) async {
+  final session = sessionBuilder.build();
+  try {
+    final createLimit = await RateLimitRow.db.findFirstRow(
+      session,
+      where: (table) => table.counterKey.equals('session-create:user-host'),
+    );
+    return (
+      sessions: await HayerSessionRow.db.count(session),
+      participants: await ParticipantRow.db.count(session),
+      sessionPlaces: await SessionPlaceRow.db.count(session),
+      idempotencyKeys: await IdempotencyRow.db.count(session),
+      swipes: await SwipeRow.db.count(session),
+      rateLimitRows: await RateLimitRow.db.count(session),
+      createAttempts: createLimit?.attemptCount ?? 0,
+    );
+  } finally {
+    await session.close();
+  }
+}

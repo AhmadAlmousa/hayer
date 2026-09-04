@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -12,13 +13,26 @@ class GoogleWebSession {
   final http.Client _client;
   final Map<String, String> _cookies = {};
   Future<void>? _warming;
+  bool _warmed = false;
 
   static const _userAgent =
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
-  Future<void> warm({String language = 'en', String region = 'sa'}) =>
-      _warming ??= _warm(language: language, region: region);
+  Future<void> warm({String language = 'en', String region = 'sa'}) async {
+    if (_warmed) return;
+    final inProgress = _warming;
+    if (inProgress != null) return inProgress;
+
+    final warming = _warm(language: language, region: region);
+    _warming = warming;
+    try {
+      await warming;
+      _warmed = true;
+    } finally {
+      if (identical(_warming, warming)) _warming = null;
+    }
+  }
 
   Future<http.Response> search({
     required String query,
@@ -58,6 +72,12 @@ class GoogleWebSession {
     final response = await _client
         .get(uri, headers: _headers(language, region))
         .timeout(const Duration(seconds: 10));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw HttpException(
+        'Place session warm-up returned HTTP ${response.statusCode}.',
+        uri: uri,
+      );
+    }
     _captureCookies(response.headers['set-cookie']);
   }
 

@@ -10,16 +10,9 @@ class AdminCredentials {
   final String secret;
 }
 
-class AdminApp extends StatefulWidget {
+class AdminApp extends StatelessWidget {
   const AdminApp({super.key, required this.client});
   final Client client;
-
-  @override
-  State<AdminApp> createState() => _AdminAppState();
-}
-
-class _AdminAppState extends State<AdminApp> {
-  AdminCredentials? _credentials;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -29,16 +22,10 @@ class _AdminAppState extends State<AdminApp> {
     darkTheme: _theme(Brightness.dark),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: _credentials == null
-        ? _LoginScreen(
-            client: widget.client,
-            onAuthenticated: (value) => setState(() => _credentials = value),
-          )
-        : _Dashboard(
-            client: widget.client,
-            credentials: _credentials!,
-            onSignOut: () => setState(() => _credentials = null),
-          ),
+    home: _Dashboard(
+      client: client,
+      credentials: const AdminCredentials(operatorName: 'nginx', secret: ''),
+    ),
   );
 
   ThemeData _theme(Brightness brightness) {
@@ -65,134 +52,10 @@ class _AdminAppState extends State<AdminApp> {
   }
 }
 
-class _LoginScreen extends StatefulWidget {
-  const _LoginScreen({required this.client, required this.onAuthenticated});
-  final Client client;
-  final ValueChanged<AdminCredentials> onAuthenticated;
-
-  @override
-  State<_LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<_LoginScreen> {
-  final _operator = TextEditingController();
-  final _secret = TextEditingController();
-  String? _error;
-  bool _loading = false;
-
-  @override
-  void dispose() {
-    _operator.dispose();
-    _secret.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    body: Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 440),
-        child: Card(
-          margin: const EdgeInsets.all(24),
-          child: Padding(
-            padding: const EdgeInsets.all(28),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Icon(
-                  Icons.admin_panel_settings_outlined,
-                  size: 54,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'Hayer Cache Operations',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                TextField(
-                  controller: _operator,
-                  decoration: const InputDecoration(labelText: 'Operator name'),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _secret,
-                  obscureText: true,
-                  onSubmitted: (_) => _login(),
-                  decoration: const InputDecoration(
-                    labelText: 'Gateway secret',
-                  ),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 10),
-                  Text(
-                    _error!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 18),
-                FilledButton(
-                  onPressed: _loading ? null : _login,
-                  child: _loading
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Sign in'),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Credentials remain in memory for this tab only.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-
-  Future<void> _login() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final value = AdminCredentials(
-        operatorName: _operator.text.trim(),
-        secret: _secret.text,
-      );
-      await widget.client.admin.summary(credentials: value.secret);
-      widget.onAuthenticated(value);
-    } catch (error) {
-      setState(
-        () => _error = error is ApiException
-            ? error.message
-            : 'Could not authenticate.',
-      );
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-}
-
 class _Dashboard extends StatefulWidget {
-  const _Dashboard({
-    required this.client,
-    required this.credentials,
-    required this.onSignOut,
-  });
+  const _Dashboard({required this.client, required this.credentials});
   final Client client;
   final AdminCredentials credentials;
-  final VoidCallback onSignOut;
 
   @override
   State<_Dashboard> createState() => _DashboardState();
@@ -231,17 +94,6 @@ class _DashboardState extends State<_Dashboard> {
               strings.appName,
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Center(child: Text(widget.credentials.operatorName)),
-              ),
-              IconButton(
-                tooltip: 'Sign out',
-                onPressed: widget.onSignOut,
-                icon: const Icon(Icons.logout_rounded),
-              ),
-            ],
           ),
           body: Row(
             children: [

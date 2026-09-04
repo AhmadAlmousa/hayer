@@ -1,15 +1,19 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/providers.dart';
+import '../../core/page_title.dart';
 import '../../core/widgets/content_shell.dart';
+import '../../core/widgets/search_area_map.dart';
+import '../../core/widgets/session_qr_code.dart';
+import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class LobbyScreen extends ConsumerStatefulWidget {
@@ -24,8 +28,7 @@ class LobbyScreen extends ConsumerStatefulWidget {
 class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   SessionBundle? _bundle;
   Object? _error;
-  StreamSubscription<SessionEvent>? _events;
-  Timer? _polling;
+  SessionRealtimeListener? _updates;
 
   @override
   void initState() {
@@ -37,8 +40,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
 
   @override
   void dispose() {
-    _events?.cancel();
-    _polling?.cancel();
+    unawaited(_updates?.dispose());
     super.dispose();
   }
 
@@ -59,28 +61,23 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   }
 
   void _connect() {
-    _events = ref
-        .read(clientProvider)
-        .hayerSession
-        .watch(sessionId: widget.sessionId)
-        .listen(
-          (_) => _load(),
-          onError: (_) {
-            _polling ??= Timer.periodic(
-              const Duration(seconds: 5),
-              (_) => _load(),
-            );
-          },
-        );
+    _updates = SessionRealtimeListener(
+      connect: () => ref
+          .read(clientProvider)
+          .hayerSession
+          .watch(sessionId: widget.sessionId),
+      onEvent: (_) => _load(),
+    )..start();
   }
 
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
+    setBrowserPageTitle('${strings.lobby} — ${strings.appName}');
     final bundle = _bundle;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
+      appBar: M3EAppBar.top(
+        leading: M3EIconButton(
           onPressed: () => context.go('/'),
           icon: const Icon(Icons.home_outlined),
         ),
@@ -90,26 +87,22 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           ? Center(
               child: _error == null
                   ? const CircularProgressIndicator()
-                  : Text('Could not load session: $_error'),
+                  : Text(strings.couldNotLoadSession),
             )
           : SafeArea(
               child: ContentShell(
                 child: ListView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
                   children: [
                     Center(
-                      child: Card(
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(18),
-                          child: QrImageView(
-                            data:
-                                'https://hayer.almou.sa/join/${bundle.session.code}',
-                            size: 190,
-                            semanticsLabel:
-                                'Join session ${bundle.session.code}',
-                          ),
-                        ),
+                      child: M3EButton.icon(
+                        onPressed: () => _showQrCode(bundle.session.code),
+                        icon: const Icon(Icons.qr_code_2_rounded),
+                        label: Text(strings.showQrCode),
+                        style: M3EButtonStyle.tonal,
+                        size: M3EButtonSize.md,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -127,30 +120,48 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       alignment: WrapAlignment.center,
                       spacing: 8,
                       children: [
-                        OutlinedButton.icon(
+                        M3EButton.icon(
                           onPressed: () {
                             Clipboard.setData(
                               ClipboardData(text: bundle.session.code),
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Code copied')),
+                              SnackBar(content: Text(strings.codeCopied)),
                             );
                           },
                           icon: const Icon(Icons.copy_rounded),
-                          label: const Text('Copy'),
+                          label: Text(strings.copyLabel),
+                          style: M3EButtonStyle.outlined,
                         ),
-                        OutlinedButton.icon(
+                        M3EButton.icon(
                           onPressed: () => SharePlus.instance.share(
                             ShareParams(
-                              text:
-                                  'Join my Hayer session: https://hayer.almou.sa/join/${bundle.session.code}',
+                              text: strings.joinMySession(
+                                sessionJoinUri(bundle.session.code).toString(),
+                              ),
                             ),
                           ),
                           icon: const Icon(Icons.share_rounded),
-                          label: const Text('Share'),
+                          label: Text(strings.shareLabel),
+                          style: M3EButtonStyle.outlined,
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
+                    SearchAreaMap(
+                      latitude: bundle.session.anchorLatitude,
+                      longitude: bundle.session.anchorLongitude,
+                      radiusMeters: bundle.session.radiusMeters,
+                      height: 240,
+                    ),
+                    if (bundle.session.anchorAddress != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        bundle.session.anchorAddress!,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
                     const SizedBox(height: 20),
                     Card(
                       child: Padding(
@@ -165,19 +176,25 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                             ),
                             _Info(
                               icon: Icons.style_rounded,
-                              value: '${bundle.session.deckSizeActual} places',
+                              value: strings.placesCount(
+                                bundle.session.deckSizeActual,
+                              ),
                             ),
                             _Info(
                               icon: Icons.how_to_vote_outlined,
-                              value: bundle.session.consensusRule.name,
+                              value:
+                                  bundle.session.consensusRule ==
+                                      ConsensusRule.majority
+                                  ? strings.majority
+                                  : strings.unanimous,
                             ),
                             _Info(
                               icon: Icons.timer_outlined,
                               value:
                                   bundle.session.matchingTiming ==
                                       MatchingTiming.instant
-                                  ? 'First match'
-                                  : 'Full deck',
+                                  ? strings.firstMatch
+                                  : strings.fullDeck,
                             ),
                           ],
                         ),
@@ -205,17 +222,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                               Flexible(child: Text(participant.displayName)),
                               if (participant.isHost) ...[
                                 const SizedBox(width: 8),
-                                const Chip(
-                                  label: Text('Host'),
-                                  visualDensity: VisualDensity.compact,
-                                ),
+                                M3EChip(label: strings.host),
                               ],
                             ],
                           ),
                           trailing: Text(
                             participant.hasCompleted
-                                ? 'Done'
-                                : '${participant.currentIndex}/${bundle.session.deckSizeActual}',
+                                ? strings.done
+                                : strings.participantProgress(
+                                    participant.currentIndex,
+                                    bundle.session.deckSizeActual,
+                                  ),
                           ),
                         ),
                       ),
@@ -231,20 +248,22 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
+                      child: M3EButton.outlined(
                         onPressed: () =>
                             context.push('/results/${widget.sessionId}'),
+                        size: M3EButtonSize.md,
                         child: Text(strings.viewResults),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       flex: 2,
-                      child: FilledButton(
+                      child: M3EButton.filled(
                         onPressed: () => context.push(
                           '/swipe/${widget.sessionId}',
                           extra: bundle,
                         ),
+                        size: M3EButtonSize.md,
                         child: Text(strings.startSwiping),
                       ),
                     ),
@@ -257,6 +276,31 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
 
   String _distance(int meters) =>
       meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';
+
+  Future<void> _showQrCode(String code) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final strings = AppLocalizations.of(dialogContext)!;
+        return AlertDialog(
+          title: Text(strings.sessionQrTitle),
+          content: LayoutBuilder(
+            builder: (context, constraints) => SessionQrCode(
+              code: code,
+              size: constraints.maxWidth.clamp(210, 300),
+            ),
+          ),
+          actions: [
+            M3EButton.text(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class _Info extends StatelessWidget {

@@ -18,21 +18,93 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Hayer helps you swipe through places and decide together.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Hayer — Decide together">
+  <meta property="og:description" content="Swipe through nearby places and find the choice your group agrees on.">
+  <meta property="og:url" content="https://hayer.almou.sa/">
+  <meta property="og:image" content="https://hayer.almou.sa/app/icons/Icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#FAFDFC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101414" media="(prefers-color-scheme: dark)">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="hayer_flutter">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hayer">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>hayer_flutter</title>
+  <title>Hayer</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #FAFDFC;
+      overscroll-behavior-x: none;
+    }
+    flt-glass-pane, flutter-view { overscroll-behavior: none; }
+    #hayer-loading {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: 20px;
+      color: #063B3B;
+      font: 700 18px system-ui, sans-serif;
+      background: #FAFDFC;
+      z-index: 9999;
+      transition: opacity 180ms ease;
+    }
+    #hayer-loading img { width: 88px; height: 88px; border-radius: 26px; }
+    #hayer-loading progress { width: 160px; accent-color: #0E9594; }
+    @media (prefers-color-scheme: dark) {
+      html, body { background: #101414; }
+    }
+  </style>
 </head>
 <body>
+  <div id="hayer-loading" role="status" aria-label="Loading Hayer">
+    <img src="icons/Icon-192.png" alt="">
+    <span>Hayer</span>
+    <progress></progress>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', () => {
+      const loading = document.getElementById('hayer-loading');
+      if (!loading) return;
+      loading.style.opacity = '0';
+      window.setTimeout(() => loading.remove(), 200);
+    });
+    // Keep horizontal trackpad/edge gestures inside Hayer instead of letting
+    // the browser interpret them as Back or Forward navigation.
+    document.addEventListener('wheel', (event) => {
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) event.preventDefault();
+    }, { passive: false });
+
+    let edgeTouch = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener('touchstart', (event) => {
+      const touch = event.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      edgeTouch = touchStartX < 24 || touchStartX > window.innerWidth - 24;
+    }, { passive: true });
+    document.addEventListener('touchmove', (event) => {
+      if (!edgeTouch) return;
+      const touch = event.touches[0];
+      if (Math.abs(touch.clientX - touchStartX) > Math.abs(touch.clientY - touchStartY)) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+    document.addEventListener('touchend', () => { edgeTouch = false; }, { passive: true });
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

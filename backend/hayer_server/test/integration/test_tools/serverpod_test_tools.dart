@@ -767,6 +767,37 @@ class _HayerSessionEndpoint {
     });
   }
 
+  _i3.Future<void> abandon(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String sessionId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'hayerSession',
+            method: 'abandon',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'hayerSession',
+          methodName: 'abandon',
+          parameters: _i1.testObjectToJson({'sessionId': sessionId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<_i9.SessionBundle> swipe(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i11.SwipeCommand command,
@@ -904,6 +935,43 @@ class _PlaceEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<List<_i14.LocationSuggestion>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> reverseGeocode(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required double latitude,
+    required double longitude,
+    required String languageCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'place',
+            method: 'reverseGeocode',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'place',
+          methodName: 'reverseGeocode',
+          parameters: _i1.testObjectToJson({
+            'latitude': latitude,
+            'longitude': longitude,
+            'languageCode': languageCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

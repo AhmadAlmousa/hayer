@@ -7,9 +7,11 @@ import 'package:serverpod/serverpod.dart';
 import '../generated/protocol.dart';
 import '../places/catalog_place_service.dart';
 import '../places/place_services.dart';
+import '../places/place_availability.dart';
 import '../places/place_source.dart';
 import '../places/taxonomy.dart';
 import '../sessions/consensus.dart';
+import '../sessions/session_code.dart';
 import '../sessions/session_mapper.dart';
 import '../security/rate_limiter.dart';
 
@@ -18,7 +20,6 @@ class HayerSessionEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   static const _uuid = Uuid();
-  static const _codeAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
   Future<SessionBundle> create(
     Session session, {
@@ -64,10 +65,13 @@ class HayerSessionEndpoint extends Endpoint {
         message: 'Hayer currently supports locations in GCC countries only.',
       );
     }
-    late final List<PlaceSnapshot> deck;
+    late final List<PlaceSnapshot> candidates;
     try {
       final services = await PlaceServices.forSession(session);
-      deck =
+      final candidateCount = request.visitAt == null
+          ? request.deckSize
+          : min(50, max(request.deckSize * 3, request.deckSize + 10));
+      candidates =
           await CatalogPlaceService(
             source: services.source,
             calibrationVersion: services.calibration.version,
@@ -78,16 +82,35 @@ class HayerSessionEndpoint extends Endpoint {
             latitude: request.anchorLatitude,
             longitude: request.anchorLongitude,
             radiusMeters: request.radiusMeters,
-            deckSize: request.deckSize,
+            deckSize: candidateCount,
             maximumPriceLevel: request.priceLevel,
             countryCode: countryCode,
           );
-    } on PlaceSourceException catch (error) {
+    } on PlaceSourceException catch (error, stackTrace) {
+      session.log(
+        'Session creation place source failure (${error.code}): '
+        '${error.message}',
+        level: LogLevel.error,
+        exception: error.cause ?? error,
+        stackTrace: stackTrace,
+      );
       throw ApiException(
         code: error.code,
         message: error.message,
       );
     }
+    final deck = request.visitAt == null
+        ? candidates
+        : candidates
+              .where(
+                (place) => PlaceAvailability.isOpenAt(
+                  place,
+                  visitAt: request.visitAt!,
+                  countryCode: countryCode,
+                ),
+              )
+              .take(request.deckSize)
+              .toList(growable: false);
     if (deck.isEmpty) {
       throw ApiException(
         code: 'no_places',
@@ -101,7 +124,48 @@ class HayerSessionEndpoint extends Endpoint {
     final code = await _unusedCode(session);
     final displayName = _displayName(request.displayName, fallback: 'Host');
 
-    await session.db.transaction((transaction) async {
+    final persistedSessionId = await session.db.transaction((
+      transaction,
+    ) async {
+      final idempotencyRows = await IdempotencyRow.db.insert(
+        session,
+        [
+          IdempotencyRow(
+            scope: 'create-session',
+            userId: userId,
+            idempotencyKey: idempotencyKey,
+            requestHash: requestHash,
+            responseId: sessionId,
+            createdAt: now,
+            expiresAt: now.add(const Duration(hours: 24)),
+          ),
+        ],
+        transaction: transaction,
+        ignoreConflicts: true,
+      );
+      if (idempotencyRows.isEmpty) {
+        final concurrentKey = await IdempotencyRow.db.findFirstRow(
+          session,
+          where: (table) =>
+              table.scope.equals('create-session') &
+              table.userId.equals(userId) &
+              table.idempotencyKey.equals(idempotencyKey),
+          transaction: transaction,
+        );
+        if (concurrentKey == null) {
+          throw StateError(
+            'Idempotency row disappeared after a create conflict.',
+          );
+        }
+        if (concurrentKey.requestHash != requestHash) {
+          throw ApiException(
+            code: 'conflict',
+            message: 'This retry key was already used for a different request.',
+          );
+        }
+        return concurrentKey.responseId;
+      }
+
       await HayerSessionRow.db.insertRow(
         session,
         HayerSessionRow(
@@ -115,6 +179,7 @@ class HayerSessionEndpoint extends Endpoint {
           anchorLatitude: request.anchorLatitude,
           anchorLongitude: request.anchorLongitude,
           anchorAddress: request.anchorAddress?.trim(),
+          visitAt: request.visitAt?.toUtc(),
           countryCode: countryCode,
           radiusMeters: request.radiusMeters,
           deckSizeRequested: request.deckSize,
@@ -159,21 +224,9 @@ class HayerSessionEndpoint extends Endpoint {
         ],
         transaction: transaction,
       );
-      await IdempotencyRow.db.insertRow(
-        session,
-        IdempotencyRow(
-          scope: 'create-session',
-          userId: userId,
-          idempotencyKey: idempotencyKey,
-          requestHash: requestHash,
-          responseId: sessionId,
-          createdAt: now,
-          expiresAt: now.add(const Duration(hours: 24)),
-        ),
-        transaction: transaction,
-      );
+      return sessionId;
     });
-    return _loadById(session, sessionId, userId: userId);
+    return _loadById(session, persistedSessionId, userId: userId);
   }
 
   Future<SessionBundle> join(
@@ -189,14 +242,11 @@ class HayerSessionEndpoint extends Endpoint {
       limit: 30,
       window: const Duration(minutes: 1),
     );
-    final normalizedCode = code.toUpperCase().replaceAll(
-      RegExp(r'[^A-Z0-9]'),
-      '',
-    );
-    if (normalizedCode.length != 6) {
+    final normalizedCode = SessionCode.normalize(code);
+    if (!SessionCode.isValid(normalizedCode)) {
       throw ApiException(
         code: 'bad_request',
-        message: 'Enter a valid six-character code.',
+        message: 'Enter a valid session code.',
       );
     }
     final name = _displayName(displayName);
@@ -313,6 +363,55 @@ class HayerSessionEndpoint extends Endpoint {
     required String sessionId,
   }) => _loadById(session, sessionId, userId: _userId(session));
 
+  /// Permanently deletes an active solo session owned by the caller.
+  Future<void> abandon(
+    Session session, {
+    required String sessionId,
+  }) async {
+    final userId = _userId(session);
+    await RateLimiter.check(
+      session,
+      operation: 'session-abandon',
+      subject: userId,
+      limit: 20,
+      window: const Duration(minutes: 1),
+    );
+    await session.db.transaction((transaction) async {
+      final row = await HayerSessionRow.db.findFirstRow(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      if (row == null) return;
+      if (row.mode != SessionMode.solo) {
+        throw ApiException(
+          code: 'forbidden',
+          message: 'Only solo sessions can be ended this way.',
+        );
+      }
+      if (row.hostUserId != userId) {
+        throw ApiException(
+          code: 'forbidden',
+          message: 'Only the session owner can end it.',
+        );
+      }
+      await HayerSessionRow.db.deleteRow(
+        session,
+        row,
+        transaction: transaction,
+      );
+      await IdempotencyRow.db.deleteWhere(
+        session,
+        where: (table) =>
+            table.scope.equals('create-session') &
+            table.userId.equals(userId) &
+            table.responseId.equals(sessionId),
+        transaction: transaction,
+      );
+    });
+  }
+
   Future<SessionBundle> swipe(
     Session session, {
     required SwipeCommand command,
@@ -373,44 +472,71 @@ class HayerSessionEndpoint extends Endpoint {
             table.placeId.equals(command.placeId),
         transaction: transaction,
       );
+      var revisingPreviousSwipe = false;
       if (already != null) {
-        if (already.liked != command.liked ||
-            already.swipeIndex != command.swipeIndex) {
+        if (already.swipeIndex != command.swipeIndex) {
           throw ApiException(
             code: 'conflict',
-            message: 'This card was already swiped differently.',
+            message: 'This card was already swiped at another position.',
           );
         }
-        return;
+        if (already.liked == command.liked) return;
+        if (participant.currentIndex != command.swipeIndex + 1) {
+          throw ApiException(
+            code: 'conflict',
+            message: 'Only your most recent swipe can be changed.',
+          );
+        }
+        already
+          ..liked = command.liked
+          ..clientSwipedAt = command.clientSwipedAt.toUtc()
+          ..serverReceivedAt = now;
+        await SwipeRow.db.updateRow(
+          session,
+          already,
+          transaction: transaction,
+        );
+        participant.lastSeenAt = now;
+        await ParticipantRow.db.updateRow(
+          session,
+          participant,
+          transaction: transaction,
+        );
+        revisingPreviousSwipe = true;
+        event = SessionEventType.resultsChanged;
       }
-      if (command.swipeIndex != participant.currentIndex) {
+      if (!revisingPreviousSwipe &&
+          command.swipeIndex != participant.currentIndex) {
         throw ApiException(
           code: 'conflict',
           message: 'Your deck progress changed. Reload and try again.',
         );
       }
-      await SwipeRow.db.insertRow(
-        session,
-        SwipeRow(
-          sessionId: row.sessionId,
-          userId: userId,
-          placeId: command.placeId,
-          liked: command.liked,
-          swipeIndex: command.swipeIndex,
-          clientSwipedAt: command.clientSwipedAt.toUtc(),
-          serverReceivedAt: now,
-          idempotencyKey: command.idempotencyKey,
-        ),
-        transaction: transaction,
-      );
-      participant.currentIndex++;
-      participant.hasCompleted = participant.currentIndex >= row.deckSizeActual;
-      participant.lastSeenAt = now;
-      await ParticipantRow.db.updateRow(
-        session,
-        participant,
-        transaction: transaction,
-      );
+      if (!revisingPreviousSwipe) {
+        await SwipeRow.db.insertRow(
+          session,
+          SwipeRow(
+            sessionId: row.sessionId,
+            userId: userId,
+            placeId: command.placeId,
+            liked: command.liked,
+            swipeIndex: command.swipeIndex,
+            clientSwipedAt: command.clientSwipedAt.toUtc(),
+            serverReceivedAt: now,
+            idempotencyKey: command.idempotencyKey,
+          ),
+          transaction: transaction,
+        );
+        participant.currentIndex++;
+        participant.hasCompleted =
+            participant.currentIndex >= row.deckSizeActual;
+        participant.lastSeenAt = now;
+        await ParticipantRow.db.updateRow(
+          session,
+          participant,
+          transaction: transaction,
+        );
+      }
 
       if (row.matchingTiming == MatchingTiming.instant && command.liked) {
         final placeSwipes = await SwipeRow.db.find(
@@ -431,18 +557,13 @@ class HayerSessionEndpoint extends Endpoint {
           event = SessionEventType.matched;
         }
       }
+      // Finishing every deck currently in a multiplayer room must not close
+      // its join link. Late participants can still join and update results.
       if (row.status == SessionStatus.active &&
-          row.matchingTiming == MatchingTiming.afterDeck) {
-        final participants = await ParticipantRow.db.find(
-          session,
-          where: (table) => table.sessionId.equals(row.sessionId),
-          transaction: transaction,
-        );
-        if (participants.isNotEmpty &&
-            participants.every((item) => item.hasCompleted)) {
-          row.status = SessionStatus.completed;
-          event = SessionEventType.resultsChanged;
-        }
+          row.mode == SessionMode.solo &&
+          participant.hasCompleted) {
+        row.status = SessionStatus.completed;
+        event = SessionEventType.resultsChanged;
       }
       row.revision++;
       revision = row.revision;
@@ -509,8 +630,23 @@ class HayerSessionEndpoint extends Endpoint {
     Session session, {
     required String sessionId,
   }) async* {
-    await _requireMembership(session, sessionId, _userId(session));
-    yield* session.messages.createStream<SessionEvent>(_channel(sessionId));
+    // Create the event stream before reading the current revision so an event
+    // posted during the read is queued instead of falling into a race window.
+    final updates = session.messages.createStream<SessionEvent>(
+      _channel(sessionId),
+    );
+    final bundle = await _loadById(
+      session,
+      sessionId,
+      userId: _userId(session),
+    );
+    yield SessionEvent(
+      sessionId: sessionId,
+      type: SessionEventType.resultsChanged,
+      revision: bundle.session.revision,
+      occurredAt: DateTime.now().toUtc(),
+    );
+    yield* updates;
   }
 
   Future<SessionBundle> _loadById(
@@ -575,11 +711,8 @@ class HayerSessionEndpoint extends Endpoint {
 
   Future<String> _unusedCode(Session session) async {
     final random = Random.secure();
-    for (var attempt = 0; attempt < 8; attempt++) {
-      final value = List.generate(
-        6,
-        (_) => _codeAlphabet[random.nextInt(_codeAlphabet.length)],
-      ).join();
+    for (var attempt = 0; attempt < 64; attempt++) {
+      final value = SessionCode.generate(random);
       final existing = await HayerSessionRow.db.findFirstRow(
         session,
         where: (table) => table.code.equals(value),
@@ -612,12 +745,10 @@ class HayerSessionEndpoint extends Endpoint {
         message: 'The search location is invalid.',
       );
     }
-    if (!const {500, 1000, 3000, 5000, 10000}.contains(
-      request.radiusMeters,
-    )) {
+    if (request.radiusMeters < 500 || request.radiusMeters > 10000) {
       throw ApiException(
         code: 'invalid_request',
-        message: 'Choose a supported search radius.',
+        message: 'Choose a search radius between 500 m and 10 km.',
       );
     }
     if (!const {10, 20, 30, 40, 50}.contains(request.deckSize)) {
@@ -631,6 +762,16 @@ class HayerSessionEndpoint extends Endpoint {
       throw ApiException(
         code: 'bad_request',
         message: 'Price level is invalid.',
+      );
+    }
+    final visitAt = request.visitAt?.toUtc();
+    final now = DateTime.now().toUtc();
+    if (visitAt != null &&
+        (visitAt.isBefore(now.subtract(const Duration(minutes: 5))) ||
+            visitAt.isAfter(now.add(const Duration(days: 90))))) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'Visit time must be within the next 90 days.',
       );
     }
     if (idempotencyKey.length < 8 || idempotencyKey.length > 128) {

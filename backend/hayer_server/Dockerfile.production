@@ -1,32 +1,84 @@
 # syntax=docker/dockerfile:1.7
-FROM dart:3.12.2 AS dependencies
-WORKDIR /workspace
 
+# Flutter is build-only. Keeping its inputs narrow lets backend and Compose
+# changes reuse the existing web bundle layer.
+FROM debian:bookworm-slim AS flutter-toolchain
+ARG FLUTTER_VERSION=3.44.2
+ARG FLUTTER_SHA256=b0de1d19754688ec6769c9a067db3b0594479d3d767f971bfecfc132904c8d5e
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    ca-certificates curl git libglu1-mesa unzip xz-utils \
+  && rm -rf /var/lib/apt/lists/* \
+  && curl --fail --location --silent --show-error \
+    --output /tmp/flutter.tar.xz \
+    "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
+  && echo "${FLUTTER_SHA256}  /tmp/flutter.tar.xz" | sha256sum --check --strict \
+  && tar --extract --xz --file /tmp/flutter.tar.xz --directory /opt \
+  && rm /tmp/flutter.tar.xz \
+  && chown -R root:root /opt/flutter
+ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
+RUN flutter config --no-analytics \
+  && flutter precache --web
+
+FROM flutter-toolchain AS web-build
+WORKDIR /workspace
+COPY pubspec.yaml pubspec.lock ./
+COPY app/pubspec.yaml app/pubspec.yaml
+COPY admin/pubspec.yaml admin/pubspec.yaml
+COPY backend/hayer_client/pubspec.yaml backend/hayer_client/pubspec.yaml
+COPY backend/hayer_server/pubspec.yaml backend/hayer_server/pubspec.yaml
+RUN flutter pub get
+COPY app app
+COPY admin admin
+COPY backend/hayer_client backend/hayer_client
+RUN cd app \
+  && flutter build web --release --no-pub --base-href /app/ \
+  && cd ../admin \
+  && flutter build web --release --no-pub --base-href /admin/cache/
+
+# Dart is also build-only. Production runs standalone native executables and
+# does not contain the SDK, package cache, source tree, or development watcher.
+FROM dart:3.12.2 AS native-build
+WORKDIR /workspace
 COPY backend/hayer_client/pubspec.yaml backend/hayer_client/pubspec.yaml
 COPY backend/hayer_server/pubspec.yaml backend/hayer_server/pubspec.yaml
 RUN printf '%s\n' \
-  'name: hayer_container_workspace' \
+  'name: hayer_native_workspace' \
   'publish_to: none' \
   'environment:' \
   '  sdk: ^3.12.0' \
   'workspace:' \
   '  - backend/hayer_client' \
   '  - backend/hayer_server' \
-  > pubspec.yaml
-RUN dart pub get
-
-FROM dart:3.12.2
-ENV runmode=production serverid=default logging=normal role=monolith
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends curl \
-  && rm -rf /var/lib/apt/lists/*
-WORKDIR /workspace
-COPY --from=dependencies /workspace/.dart_tool /workspace/.dart_tool
-COPY --from=dependencies /workspace/pubspec.lock /workspace/pubspec.lock
-COPY --from=dependencies /root/.pub-cache /root/.pub-cache
-COPY --from=dependencies /workspace/pubspec.yaml /workspace/pubspec.yaml
+  > pubspec.yaml \
+  && dart pub get
 COPY backend/hayer_client backend/hayer_client
 COPY backend/hayer_server backend/hayer_server
-WORKDIR /workspace/backend/hayer_server
+RUN mkdir -p /out \
+  && dart compile exe backend/hayer_server/bin/main.dart \
+    -o /out/hayer-server \
+  && dart compile exe backend/hayer_server/tool/init_runtime_config.dart \
+    -o /out/hayer-runtime-init \
+  && dart compile exe backend/hayer_server/tool/place_source_canary.dart \
+    -o /out/hayer-place-canary \
+  && dart compile exe backend/hayer_client/tool/public_gateway_canary.dart \
+    -o /out/hayer-public-gateway-canary
+
+FROM debian:bookworm-slim AS runtime
+ENV runmode=production serverid=default logging=normal role=monolith
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    apache2-utils ca-certificates curl \
+  && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/hayer
+COPY --from=native-build --chmod=755 /out/ /usr/local/bin/
+COPY backend/hayer_server/config config
+COPY backend/hayer_server/migrations migrations
+COPY backend/hayer_server/web/pages web/pages
+COPY backend/hayer_server/web/static web/static
+COPY backend/hayer_server/web/templates web/templates
+COPY --from=web-build /workspace/app/build/web web/app
+COPY --from=web-build /workspace/admin/build/web web/admin
+RUN mkdir -p web/static/.well-known web/static/downloads
 EXPOSE 8080 8081 8082
-CMD ["dart", "run", "tool/supervisor.dart"]
+CMD ["hayer-server", "--mode=production", "--server-id=default", "--logging=normal", "--role=monolith", "--apply-migrations"]

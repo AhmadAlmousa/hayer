@@ -15,6 +15,21 @@ class RateLimiter {
     final key = '$operation:$subject';
     final now = DateTime.now().toUtc();
     await session.db.transaction((transaction) async {
+      final inserted = await RateLimitRow.db.insert(
+        session,
+        [
+          RateLimitRow(
+            counterKey: key,
+            attemptCount: 1,
+            windowStartedAt: now,
+            expiresAt: now.add(window),
+          ),
+        ],
+        transaction: transaction,
+        ignoreConflicts: true,
+      );
+      if (inserted.isNotEmpty) return;
+
       final existing = await RateLimitRow.db.findFirstRow(
         session,
         where: (table) => table.counterKey.equals(key),
@@ -22,17 +37,7 @@ class RateLimiter {
         lockMode: LockMode.forUpdate,
       );
       if (existing == null) {
-        await RateLimitRow.db.insertRow(
-          session,
-          RateLimitRow(
-            counterKey: key,
-            attemptCount: 1,
-            windowStartedAt: now,
-            expiresAt: now.add(window),
-          ),
-          transaction: transaction,
-        );
-        return;
+        throw StateError('Rate limit row disappeared after a conflict.');
       }
       if (!existing.expiresAt.isAfter(now)) {
         existing.attemptCount = 1;

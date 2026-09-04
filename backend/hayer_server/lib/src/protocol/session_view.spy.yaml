@@ -9,6 +9,7 @@ fields:
   anchorLatitude: double
   anchorLongitude: double
   anchorAddress: String?
+  visitAt: DateTime?
   countryCode: String
   radiusMeters: int
   deckSizeRequested: int

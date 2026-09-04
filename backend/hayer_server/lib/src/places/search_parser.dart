@@ -20,14 +20,20 @@ class SearchParser {
 
   SearchParseResult parse(String body, {required DateTime checkedAt}) {
     final response = GoogleResponse.parse(body);
-    final list = response.at(calibration.paths['results']);
-    final focused = response.at(calibration.paths['single']);
+    final list = response.at(
+      calibration.paths[PlaceCalibrationPath.results],
+    );
+    final focused = response.at(
+      calibration.paths[PlaceCalibrationPath.single],
+    );
     final entries = <Object?>[];
     if (list is List && list.isNotEmpty) {
       entries.addAll(list);
     }
     if (entries.isEmpty) {
-      final atThisPlace = response.at(calibration.paths['atThisPlace']);
+      final atThisPlace = response.at(
+        calibration.paths[PlaceCalibrationPath.atThisPlace],
+      );
       if (atThisPlace is List) {
         for (final item in atThisPlace) {
           if (item is List && item.isNotEmpty) {
@@ -52,15 +58,24 @@ class SearchParser {
     Object? entry,
     DateTime checkedAt,
   ) {
-    final name = response.stringAt(calibration.paths['name'], from: entry);
-    final latitude = response.doubleAt(calibration.paths['lat'], from: entry);
-    final longitude = response.doubleAt(calibration.paths['lng'], from: entry);
+    final name = response.stringAt(
+      calibration.paths[PlaceCalibrationPath.name],
+      from: entry,
+    );
+    final latitude = response.doubleAt(
+      calibration.paths[PlaceCalibrationPath.lat],
+      from: entry,
+    );
+    final longitude = response.doubleAt(
+      calibration.paths[PlaceCalibrationPath.lng],
+      from: entry,
+    );
     final featureId = response.stringAt(
-      calibration.paths['featureId'],
+      calibration.paths[PlaceCalibrationPath.featureId],
       from: entry,
     );
     final rawPlaceId = response.stringAt(
-      calibration.paths['placeId'],
+      calibration.paths[PlaceCalibrationPath.placeId],
       from: entry,
     );
     final placeId = rawPlaceId ?? featureId;
@@ -71,30 +86,48 @@ class SearchParser {
       return null;
     }
     final status =
-        response.stringAt(calibration.paths['openStatus'], from: entry) ??
-        response.stringAt(calibration.paths['statusRich'], from: entry) ??
-        response.stringAt(calibration.paths['status118'], from: entry);
+        response.stringAt(
+          calibration.paths[PlaceCalibrationPath.openStatus],
+          from: entry,
+        ) ??
+        response.stringAt(
+          calibration.paths[PlaceCalibrationPath.statusRich],
+          from: entry,
+        ) ??
+        response.stringAt(
+          calibration.paths[PlaceCalibrationPath.status118],
+          from: entry,
+        );
     final priceText = response.stringAt(
-      calibration.paths['priceText'],
+      calibration.paths[PlaceCalibrationPath.priceText],
       from: entry,
     );
     final website = _safeHttps(
-      response.stringAt(calibration.paths['website'], from: entry),
+      response.stringAt(
+        calibration.paths[PlaceCalibrationPath.website],
+        from: entry,
+      ),
     );
     final photos = _photos(
-      response.at(calibration.paths['photos'], from: entry),
+      response.at(
+        calibration.paths[PlaceCalibrationPath.photos],
+        from: entry,
+      ),
     );
     return PlaceCandidate(
       placeId: placeId,
       featureId: featureId,
       name: name,
       primaryType: response.stringAt(
-        calibration.paths['category'],
+        calibration.paths[PlaceCalibrationPath.category],
         from: entry,
       ),
-      rating: response.doubleAt(calibration.paths['rating'], from: entry),
+      rating: response.doubleAt(
+        calibration.paths[PlaceCalibrationPath.rating],
+        from: entry,
+      ),
       reviewCount: response.intAt(
-        calibration.paths['reviewCount'],
+        calibration.paths[PlaceCalibrationPath.reviewCount],
         from: entry,
       ),
       priceLevel: _priceLevel(priceText),
@@ -104,22 +137,28 @@ class SearchParser {
       hours: _hours(response, entry),
       latitude: latitude,
       longitude: longitude,
-      address: response.stringAt(calibration.paths['address'], from: entry),
-      formattedAddress: response.stringAt(
-        calibration.paths['address'],
+      address: response.stringAt(
+        calibration.paths[PlaceCalibrationPath.address],
         from: entry,
       ),
-      phoneNumber: response.stringAt(calibration.paths['phone'], from: entry),
+      formattedAddress: response.stringAt(
+        calibration.paths[PlaceCalibrationPath.address],
+        from: entry,
+      ),
+      phoneNumber: response.stringAt(
+        calibration.paths[PlaceCalibrationPath.phone],
+        from: entry,
+      ),
       websiteUrl: website,
       mapsUrl:
           'https://www.google.com/maps/search/?api=1&query_place_id=${Uri.encodeQueryComponent(placeId)}',
       photoUrls: photos,
       featuredReview: response.stringAt(
-        calibration.paths['featuredReview'],
+        calibration.paths[PlaceCalibrationPath.featuredReview],
         from: entry,
       ),
       editorialSummary: response.stringAt(
-        calibration.paths['editorialSummary'],
+        calibration.paths[PlaceCalibrationPath.editorialSummary],
         from: entry,
       ),
       sourceCheckedAt: checkedAt.toUtc(),
@@ -183,9 +222,15 @@ class SearchParser {
   }
 
   List<OpeningPeriod> _hours(GoogleResponse response, Object? entry) {
-    Object? block = response.at(calibration.paths['hours203'], from: entry);
+    Object? block = response.at(
+      calibration.paths[PlaceCalibrationPath.hours203],
+      from: entry,
+    );
     if (block is! List || block.isEmpty) {
-      block = response.at(calibration.paths['hours118'], from: entry);
+      block = response.at(
+        calibration.paths[PlaceCalibrationPath.hours118],
+        from: entry,
+      );
     }
     if (block is! List) return const [];
     final periods = <OpeningPeriod>[];

@@ -542,6 +542,25 @@ class Endpoints extends _i1.EndpointDispatch {
                     sessionId: params['sessionId'],
                   ),
         ),
+        'abandon': _i1.MethodConnector(
+          name: 'abandon',
+          params: {
+            'sessionId': _i1.ParameterDescription(
+              name: 'sessionId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+                  .abandon(
+                    session,
+                    sessionId: params['sessionId'],
+                  ),
+        ),
         'swipe': _i1.MethodConnector(
           name: 'swipe',
           params: {
@@ -643,6 +662,37 @@ class Endpoints extends _i1.EndpointDispatch {
                 longitude: params['longitude'],
                 countryCode: params['countryCode'],
               ),
+        ),
+        'reverseGeocode': _i1.MethodConnector(
+          name: 'reverseGeocode',
+          params: {
+            'latitude': _i1.ParameterDescription(
+              name: 'latitude',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'longitude': _i1.ParameterDescription(
+              name: 'longitude',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'languageCode': _i1.ParameterDescription(
+              name: 'languageCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['place'] as _i5.PlaceEndpoint).reverseGeocode(
+                    session,
+                    latitude: params['latitude'],
+                    longitude: params['longitude'],
+                    languageCode: params['languageCode'],
+                  ),
         ),
       },
     );

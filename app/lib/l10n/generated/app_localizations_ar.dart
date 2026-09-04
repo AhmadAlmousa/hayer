@@ -42,6 +42,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get setupModeTitle => 'كيف بنقرر؟';
 
   @override
+  String get setupTimelineType => 'النوع';
+
+  @override
+  String get setupTimelineWhere => 'المكان';
+
+  @override
+  String get setupTimelineOptions => 'الخيارات';
+
+  @override
+  String get setupTimelineMode => 'النمط';
+
+  @override
   String get continueLabel => 'متابعة';
 
   @override
@@ -60,6 +72,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get useCurrentLocation => 'استخدم موقعي الحالي';
 
   @override
+  String get locatingYou => 'نحدد عنوانك…';
+
+  @override
+  String get currentLocation => 'موقعي الحالي';
+
+  @override
+  String get locationPermissionRequired =>
+      'يلزم السماح بالوصول إلى الموقع لاستخدام موقعك الحالي.';
+
+  @override
+  String get locationAddressAttribution => 'العنوان من OpenStreetMap';
+
+  @override
   String get searchLocation => 'ابحث عن مكان أو حي';
 
   @override
@@ -69,22 +94,67 @@ class AppLocalizationsAr extends AppLocalizations {
   String get price => 'الحد الأعلى للسعر';
 
   @override
+  String get priceDescription =>
+      'اعرض كل الأماكن، أو حدد أعلى مستوى سعر يناسبك.';
+
+  @override
   String get deckSize => 'عدد البطاقات';
+
+  @override
+  String get deckSizeDescription => 'اختر عدد الأماكن التي تريد السحب بينها.';
+
+  @override
+  String get visitTime => 'متى بتروحون؟';
+
+  @override
+  String get visitTimeDescription =>
+      'اختر اليوم والوقت، وحيّر يستبعد الأماكن المعروفة بأنها مغلقة وقتها.';
+
+  @override
+  String get anyTime => 'أي وقت';
+
+  @override
+  String get chooseVisitTime => 'اختر اليوم والوقت';
+
+  @override
+  String get clearVisitTime => 'إلغاء الوقت';
+
+  @override
+  String placesCount(int count) {
+    return '$count أماكن';
+  }
 
   @override
   String get anyPrice => 'الكل';
 
   @override
+  String priceLevelValue(int level) {
+    return 'المستوى $level';
+  }
+
+  @override
   String get solo => 'فردي';
+
+  @override
+  String get soloDescription => 'قرار سريع لك وحدك';
 
   @override
   String get multiplayer => 'مجموعة';
 
   @override
+  String get multiplayerDescription => 'ادعُ أصحابك وابحثوا عن تطابق';
+
+  @override
   String get majority => 'الأغلبية';
 
   @override
+  String get majorityTip => 'يتطابق المكان عندما يعجب أكثر من نصف المجموعة.';
+
+  @override
   String get unanimous => 'بالإجماع';
+
+  @override
+  String get unanimousTip => 'يتطابق المكان فقط عندما يعجب الجميع.';
 
   @override
   String get stopOnFirstMatch => 'توقف عند أول تطابق';
@@ -114,6 +184,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'مصدر الأماكن غير متاح مؤقتاً. حاول مرة أخرى.';
 
   @override
+  String get serverUnavailable =>
+      'تعذّر الاتصال بخادم حيّر. تحقق من اتصالك وحاول مرة أخرى.';
+
+  @override
   String get noPlaces => 'لم نجد أماكن مناسبة. جرّب نطاقاً أكبر أو فئة أوسع.';
 
   @override
@@ -133,6 +207,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get navigate => 'الاتجاهات';
+
+  @override
+  String get sharePicks => 'مشاركة الاختيارات';
+
+  @override
+  String get shareResults => 'مشاركة النتائج';
 
   @override
   String get details => 'التفاصيل';
@@ -188,5 +268,261 @@ class AppLocalizationsAr extends AppLocalizations {
   String get resumeSession => 'متابعة الجلسة';
 
   @override
+  String get resumeSoloSession => 'جلسة فردية';
+
+  @override
+  String get resumeMultiplayerSession => 'جلسة جماعية';
+
+  @override
+  String createdAt(String time) {
+    return 'أُنشئت $time';
+  }
+
+  @override
+  String get endSoloSessionTitle => 'إنهاء هذه الجلسة الفردية؟';
+
+  @override
+  String get endSoloSessionMessage => 'سيتم حذف البطاقات وتقدم السحب نهائياً.';
+
+  @override
+  String get keepSwiping => 'متابعة السحب';
+
+  @override
+  String get endSession => 'إنهاء الجلسة';
+
+  @override
+  String get endSessionFailed => 'تعذر إنهاء الجلسة. حاول مرة أخرى.';
+
+  @override
+  String get installHayerTitle => 'استمتعت بالاختيار مع حيّر؟';
+
+  @override
+  String get installHayerMessage =>
+      'ثبّت التطبيق للانضمام بشكل أسرع ولقرار مجموعتك القادم.';
+
+  @override
+  String get getItOnGooglePlay => 'احصل عليه من Google Play';
+
+  @override
+  String get downloadOnAppStore => 'حمّله من App Store';
+
+  @override
   String get resumeFailed => 'الجلسة المحفوظة لم تعد متاحة.';
+
+  @override
+  String get allLabel => 'كل';
+
+  @override
+  String typesCount(int count) {
+    return '$count أنواع';
+  }
+
+  @override
+  String get showQrCode => 'عرض رمز QR';
+
+  @override
+  String get sessionQrTitle => 'رمز QR للجلسة';
+
+  @override
+  String get codeCopied => 'تم نسخ الرمز';
+
+  @override
+  String get copyLabel => 'نسخ';
+
+  @override
+  String get shareLabel => 'مشاركة';
+
+  @override
+  String joinMySession(String url) {
+    return 'انضم إلى جلستي في حيّر: $url';
+  }
+
+  @override
+  String get firstMatch => 'أول تطابق';
+
+  @override
+  String get fullDeck => 'كل البطاقات';
+
+  @override
+  String get host => 'المضيف';
+
+  @override
+  String get done => 'انتهى';
+
+  @override
+  String participantProgress(int current, int total) {
+    return '$current/$total';
+  }
+
+  @override
+  String get couldNotLoadSession => 'تعذر تحميل الجلسة. حاول مرة أخرى.';
+
+  @override
+  String get couldNotLoadResults => 'تعذر تحميل النتائج. حاول مرة أخرى.';
+
+  @override
+  String get groupResults => 'نتائج المجموعة';
+
+  @override
+  String get yourPicks => 'اختياراتك';
+
+  @override
+  String codeLabel(String code) {
+    return 'الرمز $code';
+  }
+
+  @override
+  String participantsCount(int count) {
+    return '$count مشاركين';
+  }
+
+  @override
+  String matchesCount(int count) {
+    return '$count تطابقات';
+  }
+
+  @override
+  String completedCount(int completed, int total) {
+    return 'انتهى $completed/$total';
+  }
+
+  @override
+  String groupProgress(int completed, int total) {
+    return 'أكمل $completed/$total';
+  }
+
+  @override
+  String get sortBy => 'الترتيب حسب:';
+
+  @override
+  String get rating => 'التقييم';
+
+  @override
+  String get reviews => 'المراجعات';
+
+  @override
+  String get distance => 'المسافة';
+
+  @override
+  String reviewsCount(int count) {
+    return '$count مراجعة';
+  }
+
+  @override
+  String likedPercent(int percent, int likes, int voters) {
+    return '$percent٪ · أعجب $likes/$voters';
+  }
+
+  @override
+  String get ourGroupPicks => 'اختيارات مجموعة حيّر';
+
+  @override
+  String get myPicks => 'اختياراتي في حيّر';
+
+  @override
+  String participantsCompleted(int completed, int total) {
+    return 'أكمل $completed/$total مشاركين';
+  }
+
+  @override
+  String get hayerPicks => 'اختيارات حيّر';
+
+  @override
+  String get weeklyHours => 'ساعات الأسبوع';
+
+  @override
+  String get website => 'الموقع الإلكتروني';
+
+  @override
+  String get directions => 'الاتجاهات';
+
+  @override
+  String checkedAt(String time) {
+    return 'تم التحقق $time';
+  }
+
+  @override
+  String get cachedDetailsHidden =>
+      'التفاصيل محفوظة؛ تم إخفاء الحقول المتغيرة.';
+
+  @override
+  String get closed => 'مغلق';
+
+  @override
+  String selectedTime(String time) {
+    return 'المحدد $time';
+  }
+
+  @override
+  String get midnight => 'منتصف الليل';
+
+  @override
+  String get scanQrCode => 'مسح رمز QR';
+
+  @override
+  String get scanInstructions => 'ضع رمز QR الخاص بحيّر داخل الإطار';
+
+  @override
+  String get cameraPermissionNeeded => 'يلزم السماح للكاميرا لمسح رمز الجلسة.';
+
+  @override
+  String get cameraStartFailed =>
+      'تعذر تشغيل الكاميرا. ارجع وأدخل الرمز يدوياً.';
+
+  @override
+  String get joinFailed => 'تعذر الانضمام إلى هذه الجلسة.';
+
+  @override
+  String get undoLastSwipe => 'تراجع عن آخر سحب';
+
+  @override
+  String cardProgress(int current, int total) {
+    return 'البطاقة $current من $total';
+  }
+
+  @override
+  String get likeStamp => 'أعجبني';
+
+  @override
+  String get passStamp => 'تخطي';
+
+  @override
+  String get openInGoogleMaps => 'فتح في خرائط Google';
+
+  @override
+  String get openWebsite => 'فتح الموقع الإلكتروني';
+
+  @override
+  String get placeFallback => 'مكان';
+
+  @override
+  String get futureVisitTime => 'اختر وقت زيارة في المستقبل.';
+
+  @override
+  String get noSavedSession => 'لا توجد جلسة محفوظة بعد.';
+
+  @override
+  String get whatsNew => 'ما الجديد';
+
+  @override
+  String get couldNotOpenDirections => 'تعذر فتح الاتجاهات.';
+
+  @override
+  String get mapEditHint =>
+      'خريطة نطاق البحث. اسحب نقطة المركز لتحريك النطاق ومقبض الحافة لتغيير حجمه.';
+
+  @override
+  String mapSelectedHint(String distance) {
+    return 'خريطة نطاق البحث المحدد، بنصف قطر $distance.';
+  }
+
+  @override
+  String dragMapHint(String distance) {
+    return 'اسحب المركز أو الحافة · $distance';
+  }
+
+  @override
+  String radiusDistance(String distance) {
+    return 'نصف القطر $distance';
+  }
 }

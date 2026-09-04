@@ -25,6 +25,13 @@ class MaintenanceService {
         session,
         where: (table) => table.expiresAt <= now,
       );
+      // Three-character join codes are intentionally short-lived. Cascading
+      // deletes release codes after a small recovery window and bound storage.
+      await HayerSessionRow.db.deleteWhere(
+        session,
+        where: (table) =>
+            table.expiresAt <= now.subtract(const Duration(days: 7)),
+      );
       final settings = await CacheSettingsRow.db.findFirstRow(
         session,
         where: (table) => table.settingsKey.equals('default'),

@@ -16,11 +16,13 @@ hayerSession:
   - create:
   - join:
   - load:
+  - abandon:
   - swipe:
   - results:
   - watch:
 place:
   - suggest:
+  - reverseGeocode:
 anonymousIdp:
   - login:
 jwtRefresh:

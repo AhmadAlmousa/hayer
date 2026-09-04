@@ -252,6 +252,14 @@ class EndpointHayerSession extends _i1.EndpointRef {
         {'sessionId': sessionId},
       );
 
+  /// Permanently deletes an active solo session owned by the caller.
+  _i2.Future<void> abandon({required String sessionId}) =>
+      caller.callServerEndpoint<void>(
+        'hayerSession',
+        'abandon',
+        {'sessionId': sessionId},
+      );
+
   _i2.Future<_i8.SessionBundle> swipe({required _i10.SwipeCommand command}) =>
       caller.callServerEndpoint<_i8.SessionBundle>(
         'hayerSession',
@@ -298,6 +306,20 @@ class EndpointPlace extends _i1.EndpointRef {
       'latitude': latitude,
       'longitude': longitude,
       'countryCode': countryCode,
+    },
+  );
+
+  _i2.Future<String> reverseGeocode({
+    required double latitude,
+    required double longitude,
+    required String languageCode,
+  }) => caller.callServerEndpoint<String>(
+    'place',
+    'reverseGeocode',
+    {
+      'latitude': latitude,
+      'longitude': longitude,
+      'languageCode': languageCode,
     },
   );
 }

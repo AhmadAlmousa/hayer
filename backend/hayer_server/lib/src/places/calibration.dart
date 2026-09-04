@@ -1,6 +1,62 @@
 import 'dart:convert';
 import 'dart:io';
 
+abstract final class PlaceCalibrationPath {
+  static const results = 'results';
+  static const single = 'single';
+  static const atThisPlace = 'atThisPlace';
+  static const name = 'name';
+  static const lat = 'lat';
+  static const lng = 'lng';
+  static const address = 'address';
+  static const category = 'category';
+  static const rating = 'rating';
+  static const reviewCount = 'reviewCount';
+  static const priceText = 'priceText';
+  static const website = 'website';
+  static const phone = 'phone';
+  static const featureId = 'featureId';
+  static const placeId = 'placeId';
+  static const photos = 'photos';
+  static const featuredReview = 'featuredReview';
+  static const openStatus = 'openStatus';
+  static const statusRich = 'statusRich';
+  static const status118 = 'status118';
+  static const hours203 = 'hours203';
+  static const hours118 = 'hours118';
+  static const editorialSummary = 'editorialSummary';
+
+  /// The complete set of Vela paths consumed by Hayer's search parser.
+  ///
+  /// The remote importer projects only these keys and ignores unrelated Vela
+  /// fields. Missing remote keys retain Hayer's bundled defaults.
+  static const consumed = <String>[
+    results,
+    single,
+    atThisPlace,
+    name,
+    lat,
+    lng,
+    address,
+    category,
+    rating,
+    reviewCount,
+    priceText,
+    website,
+    phone,
+    featureId,
+    placeId,
+    photos,
+    featuredReview,
+    openStatus,
+    statusRich,
+    status118,
+    hours203,
+    hours118,
+    editorialSummary,
+  ];
+}
+
 class PlaceCalibration {
   const PlaceCalibration({
     required this.version,
@@ -30,10 +86,10 @@ class PlaceCalibration {
     final paths = <String, List<int>>{};
     for (final entry in pathsJson.entries) {
       final value = entry.value;
-      if (value is! List || value.any((item) => item is! num)) {
+      if (value is! List || value.any((item) => item is! int)) {
         throw FormatException('Invalid path ${entry.key}.');
       }
-      paths[entry.key] = value.cast<num>().map((item) => item.toInt()).toList();
+      paths[entry.key] = value.cast<int>().toList();
     }
     final calibration = PlaceCalibration(
       version: _requiredString(json, 'version'),
@@ -75,10 +131,27 @@ class PlaceCalibration {
         'Search template placeholders are incomplete.',
       );
     }
-    const requiredPaths = ['results', 'name', 'lat', 'lng'];
+    const requiredPaths = [
+      PlaceCalibrationPath.results,
+      PlaceCalibrationPath.name,
+      PlaceCalibrationPath.lat,
+      PlaceCalibrationPath.lng,
+    ];
     for (final name in requiredPaths) {
       if (!(paths[name]?.isNotEmpty ?? false)) {
         throw FormatException('Required calibration path missing: $name');
+      }
+    }
+    if (!(paths[PlaceCalibrationPath.featureId]?.isNotEmpty ?? false) &&
+        !(paths[PlaceCalibrationPath.placeId]?.isNotEmpty ?? false)) {
+      throw const FormatException(
+        'A feature ID or place ID calibration path is required.',
+      );
+    }
+    for (final entry in paths.entries) {
+      if (entry.value.length > 16 ||
+          entry.value.any((index) => index < 0 || index > 4096)) {
+        throw FormatException('Calibration path ${entry.key} is invalid.');
       }
     }
     if (pageSize < 1 || pageSize > 50) {

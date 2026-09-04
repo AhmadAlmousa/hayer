@@ -1,0 +1,28 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.5-alpine
+    environment:
+      POSTGRES_DB: hayer_test
+      POSTGRES_PASSWORD: hayer_test
+      POSTGRES_USER: postgres
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hayer_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  integration-tests:
+    build:
+      context: ../..
+      dockerfile: backend/hayer_server/Dockerfile.integration
+    depends_on:
+      postgis:
+        condition: service_healthy
+    environment:
+      SERVERPOD_DATABASE_HOST: postgis
+      SERVERPOD_DATABASE_PORT: 5432
+      SERVERPOD_DATABASE_NAME: hayer_test
+      SERVERPOD_DATABASE_USER: postgres
+      SERVERPOD_DATABASE_PASSWORD: hayer_test

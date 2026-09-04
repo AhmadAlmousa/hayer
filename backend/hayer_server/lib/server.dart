@@ -8,6 +8,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart' show RateLimit;
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+import 'src/places/vela_calibration_sync.dart';
 import 'src/storage/maintenance_service.dart';
 import 'src/web/routes/app_config_route.dart';
 import 'src/web/routes/root.dart';
@@ -95,8 +96,14 @@ void run(List<String> args) async {
   // Start the server.
   await pod.start();
   unawaited(MaintenanceService.run(pod));
+  final velaCalibrationSync = VelaCalibrationSync();
+  unawaited(velaCalibrationSync.run(pod));
   Timer.periodic(
     const Duration(minutes: 15),
     (_) => unawaited(MaintenanceService.run(pod)),
+  );
+  Timer.periodic(
+    VelaCalibrationSync.interval,
+    (_) => unawaited(velaCalibrationSync.run(pod)),
   );
 }

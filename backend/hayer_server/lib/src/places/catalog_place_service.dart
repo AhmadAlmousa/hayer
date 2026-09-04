@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import 'catalog_spatial_query.dart';
 import 'google_web_place_source.dart';
 import 'place_candidate.dart';
 import 'place_search_policy.dart';
@@ -224,28 +225,32 @@ class CatalogPlaceService {
     required String countryCode,
     required DateTime seenAfter,
   }) async {
-    final spatialRows = await session.db.unsafeQuery(
-      '''
-SELECT "providerPlaceId"
-FROM "hayer_poi_catalog"
-WHERE "countryCode" = @country
-  AND "quarantinedAt" IS NULL
-  AND "sourceCheckedAt" >= @seenAfter
-  AND ST_DWithin(
-    "location",
-    ST_SetSRID(ST_MakePoint(@longitude, @latitude), 4326)::geography,
-    @radius
-  )
-LIMIT 500
-''',
-      parameters: QueryParameters.named({
-        'country': countryCode,
-        'seenAfter': seenAfter,
-        'longitude': longitude,
-        'latitude': latitude,
-        'radius': radiusMeters,
-      }),
-    );
+    final parameters = QueryParameters.named({
+      'country': countryCode,
+      'seenAfter': seenAfter,
+      'longitude': longitude,
+      'latitude': latitude,
+      'radius': radiusMeters,
+    });
+    late final DatabaseResult spatialRows;
+    try {
+      spatialRows = await session.db.unsafeQuery(
+        nearbyCatalogByLocationSql,
+        parameters: parameters,
+      );
+    } on DatabaseQueryException catch (error, stackTrace) {
+      if (!isMissingCatalogLocation(error)) rethrow;
+      session.log(
+        'PostGIS location column is unavailable; using coordinate fallback.',
+        level: LogLevel.warning,
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      spatialRows = await session.db.unsafeQuery(
+        nearbyCatalogByCoordinatesSql,
+        parameters: parameters,
+      );
+    }
     final identities = spatialRows
         .map((row) => row.toColumnMap()['providerPlaceId'] as String)
         .toSet();

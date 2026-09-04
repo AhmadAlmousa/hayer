@@ -1,10 +1,10 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-01
+Last updated: 2026-09-04
 
 Status: beta implementation complete; environment and release verification in progress
 
-Current focus: M7 — Docker/PostGIS, signed APK, and multi-device beta proof
+Current focus: M7 — Docker/PostGIS deployment and multi-device beta proof
 
 Product brief: [`overview.md`](overview.md)
 
@@ -20,6 +20,18 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   command, build, migration, or manual test to the evidence log.
 - `overview.md` remains the product brief. This file is authoritative for the
   implementation choices made during planning.
+
+## Required completion workflow
+
+- Do not report a development task as finished until a release APK has been
+  built successfully with `scripts/build-release-apk.sh`.
+- If release signing or compilation is unavailable, keep the task explicitly
+  blocked and report the missing prerequisite instead of substituting a debug
+  APK.
+- At the end of every completed task, stage the task's changes and create a Git
+  commit with a clear summary and an explanatory commit message when useful.
+- Record material implementation or verification decisions in this tracker's
+  evidence or change log before committing.
 
 ## Locked decisions
 
@@ -73,10 +85,11 @@ repository interfaces. Platform/API/database operations stay in services;
 business rules live in domain services and use cases. Drift is the local
 source of truth for the active session snapshot and pending swipe outbox.
 
-The public gateway routes `/api/*` to the Serverpod API, `/admin-api/*` to
-the Basic-Auth-protected admin API, `/admin/cache/*` to dashboard assets, and
-join/download/release/App-Link/media paths to the Serverpod web service. Only
-port `8432` is exposed by Compose; PostgreSQL and Insights stay internal.
+The public gateway routes `/api/*` to the Serverpod API,
+`/admin/cache/api/*` to the Basic-Auth-protected admin API,
+`/admin/cache/*` to dashboard assets, and join/download/release/App-Link/media
+paths to the Serverpod web service. Only port `8432` is exposed by Compose;
+PostgreSQL and Insights stay internal.
 
 The backend is a JIT Dart process in production mode supervised by a Dart
 source watcher. Code generation, analysis, tests, and migrations are explicit
@@ -142,6 +155,9 @@ are `hayer_sessions`, `participants`, `session_places`, `swipes`,
 - Strip the XSSI prefix and safely traverse positional JSON through a
   versioned calibration document. Reject consent redirects, bot-degraded or
   oversized responses, invalid hosts, and parser drift.
+- Check Vela's signed calibration feed at startup and hourly. Project only the
+  search endpoint/template and positional paths Hayer consumes, ignore
+  irrelevant upstream changes, and auto-activate only after the Riyadh canary.
 - Require stable identity, name, latitude, and longitude. Deduplicate by
   feature ID, provider place ID, then normalized name and rounded coordinates.
 - On successful extraction, batch-upsert normalized records and coverage.
@@ -215,8 +231,11 @@ drift fails safely, and spatial queries use their indexes.
   routes.
 - [ ] Add the authenticated consumer-web photo proxy before enabling consumer
   web; native Android currently loads only allowlisted HTTPS source photos.
-- [!] Run generated Serverpod database integration tests against PostGIS;
-  local unit tests do not substitute for transactional concurrency proof.
+- [~] A generated Serverpod/PostGIS integration suite now covers concurrent
+  create retries, immutable decks, late joins, private aggregate results,
+  duplicate swipes, majority/unanimous convergence, and authoritative expiry.
+  Its isolated database runner is wired into CI; a green containerized run is
+  still required before this gate is verified.
 
 Exit: integration tests prove identical decks, private votes, correct
 consensus, late joins, retry safety, and expiry.
@@ -244,12 +263,12 @@ pass in light, dark, large-text, narrow/wide, and RTL harnesses.
   solo/multiplayer setup steps.
 - [x] Connect setup to catalog-backed creation with supported GCC bounds,
   underfill, stale, no-place, and temporary-source messaging.
-- [x] Build optimistic photo-led swiping with durable replay, termination
-  resume, results filtering/sorting, full details sheet, attribution, and
-  phone/site/external-navigation handoff.
+- [x] Build optimistic photo-led swiping with `flutter_card_swiper`, durable
+  native/browser replay, termination resume, results filtering/sorting, full
+  details sheet, attribution, and phone/site/external-navigation handoff.
 - [!] Complete a signed APK create → forced restart → resume → results test
-  against the deployed backend. No release keystore or runtime backend is
-  available here.
+  against the deployed backend. Release signing works locally; the deployed
+  runtime and physical-device proof remain outstanding.
 
 Exit: a signed test build completes create, swipe, forced restart/resume, and
 results against the backend.
@@ -276,7 +295,8 @@ results through duplicate requests and disconnects.
   editor whose values drive runtime extraction/cache behavior.
 - [x] Implement coverage invalidation/refresh request creation, reversible
   quarantine/restore, calibration schema validation plus Riyadh live canary,
-  activation, runtime version selection, and rollback.
+  signed hourly Vela synchronization, automatic activation, runtime version
+  selection, and rollback.
 - [~] Add dedicated coverage/job/audit inspector pages, refresh-job execution
   and cancellation, manual prune controls, and KPI trend charts.
 - [!] Verify nginx authentication, exact-origin/CSRF posture, auditing, and
@@ -289,17 +309,24 @@ calibration cannot activate.
 
 - [x] Implement offline swipe replay, missing-photo fallback, stale/underfill/
   source/expiry states, active-session resume, update-required download gate,
-  and privacy-conscious diagnostics without behavioral analytics.
-- [x] Add the Unraid Compose topology, nginx gateway, JIT source supervisor,
+  action-level anonymous-authentication recovery after startup outages, and
+  privacy-conscious diagnostics without behavioral analytics.
+- [x] Add the Unraid Compose topology, nginx gateway, native AOT runtime,
   health checks, migrations-on-start, daily 03:00 backups, seven-day
-  retention, guarded restore, secret templates, and deploy preflight.
+  retention, guarded restore, named-volume runtime credential initialization,
+  cached image-built Flutter web apps, and Compose-native source/public
+  canaries. Routine startup never rebuilds or pulls the local server image.
 - [x] Add external release-keystore configuration, APK/checksum build script,
   download artifact staging, and certificate-derived `assetlinks.json`.
-- [x] Pass fatal-info analysis, 12 backend unit tests, consumer/admin widget
+- [x] Make place-session warm-up retryable, preserve successful category
+  results during partial source outages, stop unnecessary query batches, log
+  sanitized source failures, distinguish client transport failures from source
+  outages, and gate deployment on live source plus public RPC canaries.
+- [x] Pass fatal-info analysis, 28 backend unit tests, consumer/admin widget
   tests, shell syntax, and production web compilation for both Flutter apps.
-- [x] Android debug compilation passed under the constrained 2 GB/two-worker
-  Gradle profile and produced `app-debug.apk`; signed release still needs the
-  external keystore.
+- [x] Android debug and release compilation pass under the constrained
+  2 GB/two-worker Gradle profile. The signed release build is staged with its
+  SHA-256 checksum under `backend/deploy/releases/`.
 - [!] Deploy Compose to Unraid; verify migrations, TLS/WSS/API prefixes, live
   extraction, App Links, backup restore, accessibility, performance, and
   newest/previous-build compatibility; then tag the invited beta.
@@ -379,12 +406,77 @@ solo and multiplayer flows without developer intervention.
   PostGIS migrations/integration tests, nginx API/WSS routing, provider live
   search, App Links, backup restore, and signed installation remain external
   verification gates rather than claimed passes.
+- 2026-09-01: `scripts/preflight.sh` passed after making Flutter, Dart, and
+  Serverpod resolution independent of the caller's interactive `PATH`; fatal-
+  info analysis, 19 backend unit tests, five consumer tests, and the admin
+  widget test passed.
+- 2026-09-01: the live Riyadh place-deck canary passed with 10 strict in-radius
+  results on calibration `hayer-google-web-18`. Deployment now runs the same
+  canary against the newly built server image before replacing the live
+  container, then verifies the bootstrap RPC through public DNS, TLS, and the
+  `/api/` gateway route.
+- 2026-09-01: the Pangolin VPS initially served Traefik's self-signed default
+  certificate for `hayer.almou.sa`. After its public TLS configuration was
+  corrected, certificate verification succeeded and `/api/` returned the Hayer
+  health response through Pangolin/Newt to Unraid.
+- 2026-09-01: authenticated consumer actions now recover an anonymous session
+  after a startup network/TLS outage instead of relying on the login controller
+  that suppresses its error. Focused auth/error tests, full consumer tests,
+  fatal-info analysis, and Android debug compilation passed.
+- 2026-09-01: the first authenticated production deck request exposed migration
+  drift: the latest clean-database definition omitted the custom PostGIS
+  `hayer_poi_catalog.location` column used by the indexed radius query. Added an
+  idempotent forward migration plus matching clean-database DDL for both POI
+  spatial columns, GiST/GIN/trigram/partial indexes, foreign keys, and domain
+  checks. All 28 backend unit tests and backend analysis passed; Unraid
+  applied migration `20260901083702427-spatial-schema-repair` successfully.
+  Serverpod 3.4 then reported the deliberately unmanaged PostGIS objects as
+  absent from its generated target model, so deployment documentation now
+  distinguishes that expected integrity warning from a failed migration. The
+  catalog lookup also retains its indexed path while falling back to an exact
+  coordinate-based PostGIS query if an older database lacks `location`.
+- 2026-09-01: Unraid deployment was simplified to one Compose invocation. The
+  image now builds both Flutter web bundles, Compose runs source and public RPC
+  canaries, and the sole published gateway port remains 8432.
+- 2026-09-01: a clean Chrome reproduction isolated web deck creation failing
+  locally before `/api/hayerSession`: the native Drift outbox was constructed
+  without Drift's required web database assets. Web now uses a browser-safe
+  secure-storage outbox while Android retains Drift. The consumer also moved
+  to `flutter_card_swiper` 7.2.0 and gained explicit selected/unselected chip
+  contrast. All 14 consumer tests, the Chrome-specific provider test, fatal-
+  info analysis, the `/app/` release build, and Android debug compilation
+  passed. A clean-browser smoke test against `https://hayer.almou.sa/api/`
+  received HTTP 200 for authentication and deck creation and rendered card 1
+  of a 20-place deck.
+- 2026-09-02: added an isolated PostGIS integration suite for the
+  server-authoritative session lifecycle and made it a required CI step.
+  Concurrent first-use rate limiting and create-session idempotency now use
+  conflict-safe inserts so duplicate requests serialize without leaking a
+  database uniqueness failure. The full repository preflight passes after
+  exporting the resolved Dart SDK path for Serverpod's child process: generated
+  code, formatting, fatal-info analysis, 28 backend unit tests, 14 consumer
+  tests, the admin widget test, script syntax, and diff checks all pass. The
+  integration runtime awaits Docker or CI because this development environment
+  has no container runtime or test database listener.
+- 2026-09-02: added startup-plus-hourly synchronization of Vela's signed
+  calibration. The backend verifies the pinned P-256 signature, projects only
+  Hayer's 23 consumed paths over bundled defaults, rejects version replays,
+  ignores irrelevant upstream changes, and auto-activates only after its Riyadh
+  canary. All 46 backend unit tests, fatal-info analysis, and native server
+  compilation pass; the new PostGIS activation/fallback tests await CI because
+  Docker remains unavailable locally.
+- 2026-09-04: `scripts/build-release-apk.sh` produced the signed 113.0 MB
+  `hayer-0.1.0-1.apk` and staged the current `hayer.apk`. SHA-256:
+  `b9335bf0875607636897e88016a30d22471ffd3c436a9bd8a24764f529d48590`.
 
 ## Decision and change log
 
 - 2026-08-31: Approved Serverpod-only backend instead of Supabase.
 - 2026-08-31: Approved shared PostGIS POI catalog rather than a simple query
   response cache.
+- 2026-09-01: Keep Drift for the Android swipe outbox and use secure browser
+  storage for the web outbox; full web SQLite/Wasm adds deployment weight
+  without improving this small sequential replay queue.
 - 2026-08-31: Set 72-hour refresh, two attempts, 30-day guarded stale fallback,
   and 365-day retention, all dashboard-controllable.
 - 2026-08-31: Added the protected Flutter web cache dashboard with map,
@@ -393,6 +485,12 @@ solo and multiplayer flows without developer intervention.
 - 2026-08-31: Wired policy values into extraction retries/concurrency/global
   traffic limits, added identical-refresh coalescing and scheduled cleanup,
   and required a Riyadh live canary before calibration activation or rollback.
+- 2026-09-02: Automatically adopt relevant signed Vela calibration changes
+  after validation, checking at startup and once per hour; keep manual rollback
+  and the last working calibration as the failure path.
 - 2026-08-31: Added secure active-session restoration, bootstrap build gating,
   QR scanning, and full provider-neutral result details/navigation to the
   consumer app.
+- 2026-09-04: Every completed development task must finish with a successful
+  signed release APK build, a material verification/change-log entry when
+  applicable, and a descriptive Git commit.

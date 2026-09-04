@@ -13,6 +13,7 @@ class SessionMapper {
     anchorLatitude: row.anchorLatitude,
     anchorLongitude: row.anchorLongitude,
     anchorAddress: row.anchorAddress,
+    visitAt: row.visitAt,
     countryCode: row.countryCode,
     radiusMeters: row.radiusMeters,
     deckSizeRequested: row.deckSizeRequested,

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ContentShell extends StatelessWidget {
   const ContentShell({super.key, required this.child, this.maxWidth = 720});

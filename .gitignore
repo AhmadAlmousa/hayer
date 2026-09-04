@@ -19,6 +19,7 @@ backend/deploy/backups/
 backend/deploy/secrets/*
 !backend/deploy/secrets/README.md
 backend/deploy/releases/*.apk
+backend/deploy/releases/*.apk.sha256
 backend/deploy/releases/*.aab
 backend/hayer_server/web/app/
 backend/hayer_server/web/admin/

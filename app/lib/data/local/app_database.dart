@@ -32,4 +32,8 @@ class AppDatabase extends _$AppDatabase {
   Future<void> removePending(String idempotencyKey) => (delete(
     pendingSwipes,
   )..where((row) => row.idempotencyKey.equals(idempotencyKey))).go();
+
+  Future<void> removePendingSession(String sessionId) => (delete(
+    pendingSwipes,
+  )..where((row) => row.sessionId.equals(sessionId))).go();
 }
