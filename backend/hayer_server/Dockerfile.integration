@@ -20,4 +20,6 @@ COPY backend/hayer_server backend/hayer_server
 
 WORKDIR /workspace/backend/hayer_server
 
-CMD ["dart", "test", "integration_test"]
+# The session integration suite uses RollbackDatabase.disabled and shares this
+# PostGIS database with the other integration suites.
+CMD ["dart", "test", "integration_test", "--concurrency=1"]

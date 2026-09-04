@@ -72,7 +72,10 @@ jobs:
         working-directory: backend/hayer_server
         env:
           SERVERPOD_DATABASE_PASSWORD: hayer_test
-        run: dart test integration_test
+        # The session suite disables Serverpod's rollback wrapper so it can
+        # exercise concurrent transactions. Keep test files on one shared
+        # PostGIS database sequential to prevent cross-suite schema/data races.
+        run: dart test integration_test --concurrency=1
 
       - name: Check operational scripts
         run: |
