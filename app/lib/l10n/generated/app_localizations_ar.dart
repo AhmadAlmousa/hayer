@@ -197,6 +197,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'تعذّر الاتصال بخادم حيّر. تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
+  String get serverRequestFailed =>
+      'تعذّر على خادم حيّر إكمال الطلب. حاول مرة أخرى.';
+
+  @override
   String get noPlaces => 'لم نجد أماكن مناسبة. جرّب نطاقاً أكبر أو فئة أوسع.';
 
   @override

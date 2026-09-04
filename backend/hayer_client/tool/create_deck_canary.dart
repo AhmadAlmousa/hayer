@@ -26,7 +26,9 @@ Future<void> main(List<String> args) async {
         anchorLatitude: 24.7136,
         anchorLongitude: 46.6753,
         anchorAddress: 'Riyadh',
-        radiusMeters: 3000,
+        // Exercise the continuous radius supported by the resizable map,
+        // rather than one of the legacy preset values.
+        radiusMeters: 2750,
         deckSize: 10,
         displayName: 'Canary',
         consensusRule: ConsensusRule.majority,

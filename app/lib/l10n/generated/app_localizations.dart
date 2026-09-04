@@ -452,6 +452,12 @@ abstract class AppLocalizations {
   /// **'Hayer cannot reach the server. Check your connection and try again.'**
   String get serverUnavailable;
 
+  /// No description provided for @serverRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The Hayer server could not complete the request. Please try again.'**
+  String get serverRequestFailed;
+
   /// No description provided for @noPlaces.
   ///
   /// In en, this message translates to:

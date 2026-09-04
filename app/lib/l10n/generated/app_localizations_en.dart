@@ -200,6 +200,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hayer cannot reach the server. Check your connection and try again.';
 
   @override
+  String get serverRequestFailed =>
+      'The Hayer server could not complete the request. Please try again.';
+
+  @override
   String get noPlaces =>
       'No eligible places were found. Try a larger radius or broader category.';
 

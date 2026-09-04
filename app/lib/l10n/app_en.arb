@@ -65,6 +65,7 @@
   "underfilledDeck": "We found fewer places than requested. Try a larger radius or broader category.",
   "temporarySourceError": "The place source is temporarily unavailable. Please try again.",
   "serverUnavailable": "Hayer cannot reach the server. Check your connection and try again.",
+  "serverRequestFailed": "The Hayer server could not complete the request. Please try again.",
   "noPlaces": "No eligible places were found. Try a larger radius or broader category.",
   "lobby": "Lobby",
   "shareCode": "Share code",

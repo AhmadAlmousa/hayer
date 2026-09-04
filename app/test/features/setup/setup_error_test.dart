@@ -13,6 +13,13 @@ void main() {
     );
   });
 
+  test('reports HTTP server failures without blaming connectivity', () {
+    expect(
+      setupErrorMessage(ServerpodClientInternalServerError(), strings),
+      strings.serverRequestFailed,
+    );
+  });
+
   test('reports provider outages separately from server failures', () {
     final error = ApiException(
       code: 'place_source_unavailable',

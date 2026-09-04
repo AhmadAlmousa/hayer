@@ -22,7 +22,7 @@ void main() {
         'migrations/$migrationId/definition.sql',
       ).readAsString();
 
-      expect(registered.last, migrationId);
+      expect(registered, contains(migrationId));
       expect(migration, contains(r"^[A-HJ-NP-Z][0-9]{2}$"));
       expect(definition, contains(r"^[A-HJ-NP-Z][0-9]{2}$"));
       expect(
