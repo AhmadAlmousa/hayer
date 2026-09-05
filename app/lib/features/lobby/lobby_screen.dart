@@ -124,6 +124,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     Text(
                       bundle.session.code,
                       textAlign: TextAlign.center,
+                      textDirection: TextDirection.ltr,
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(
                             fontWeight: FontWeight.w900,

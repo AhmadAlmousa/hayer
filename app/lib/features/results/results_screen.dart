@@ -6,7 +6,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:intl/intl.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,6 +19,7 @@ import '../../core/place_links.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../core/widgets/install_app_card.dart';
+import '../../core/widgets/weekly_hours_calendar.dart';
 import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -274,7 +274,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                         values: values,
                         showConsensus:
                             bundle?.session.mode == SessionMode.multiplayer,
-                        visitAt: bundle?.session.visitAt,
                         countryCode: bundle?.session.countryCode,
                       ),
                     if (kIsWeb) const InstallAppCard(),
@@ -365,14 +364,12 @@ class _AnimatedResultsList extends StatelessWidget {
   const _AnimatedResultsList({
     required this.values,
     required this.showConsensus,
-    required this.visitAt,
     required this.countryCode,
   });
 
   static const _itemExtent = 162.0;
   final List<SessionResult> values;
   final bool showConsensus;
-  final DateTime? visitAt;
   final String? countryCode;
 
   @override
@@ -397,7 +394,6 @@ class _AnimatedResultsList extends StatelessWidget {
                 result: values[index],
                 rank: index + 1,
                 showConsensus: showConsensus,
-                visitAt: visitAt,
                 countryCode: countryCode,
               ),
             ),
@@ -412,13 +408,11 @@ class _ResultCard extends StatelessWidget {
     required this.result,
     required this.rank,
     required this.showConsensus,
-    required this.visitAt,
     required this.countryCode,
   });
   final SessionResult result;
   final int rank;
   final bool showConsensus;
-  final DateTime? visitAt;
   final String? countryCode;
   @override
   Widget build(BuildContext context) {
@@ -438,7 +432,6 @@ class _ResultCard extends StatelessWidget {
             showDragHandle: true,
             builder: (_) => _PlaceDetailsSheet(
               place: place,
-              visitAt: visitAt,
               countryCode: countryCode,
             ),
           );
@@ -575,12 +568,10 @@ class _ResultCard extends StatelessWidget {
 class _PlaceDetailsSheet extends StatelessWidget {
   const _PlaceDetailsSheet({
     required this.place,
-    required this.visitAt,
     required this.countryCode,
   });
 
   final PlaceSnapshot place;
-  final DateTime? visitAt;
   final String? countryCode;
 
   @override
@@ -673,9 +664,8 @@ class _PlaceDetailsSheet extends StatelessWidget {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 10),
-              _WeeklyHoursTimeline(
+              WeeklyHoursCalendar(
                 hours: place.hours,
-                selectedAt: visitAt,
                 countryCode: countryCode,
               ),
             ],
@@ -734,227 +724,6 @@ class _PlaceDetailsSheet extends StatelessWidget {
       ),
     );
   }
-}
-
-class _WeeklyHoursTimeline extends StatelessWidget {
-  const _WeeklyHoursTimeline({
-    required this.hours,
-    required this.selectedAt,
-    required this.countryCode,
-  });
-
-  final List<OpeningPeriod> hours;
-  final DateTime? selectedAt;
-  final String? countryCode;
-
-  @override
-  Widget build(BuildContext context) {
-    final localSelection = selectedAt?.toUtc().add(
-      Duration(hours: _offset(countryCode)),
-    );
-    final selectedDay = localSelection?.weekday;
-    final selectedMinute = localSelection == null
-        ? null
-        : localSelection.hour * 60 + localSelection.minute;
-    return Column(
-      children: [
-        for (var day = DateTime.monday; day <= DateTime.sunday; day++)
-          _HoursDayRow(
-            day: day,
-            segments: _segmentsForDay(day),
-            selected: day == selectedDay,
-            selectedMinute: day == selectedDay ? selectedMinute : null,
-          ),
-      ],
-    );
-  }
-
-  List<_HourSegment> _segmentsForDay(int day) {
-    final segments = <_HourSegment>[];
-    for (final period in hours) {
-      final overnight =
-          period.overnight ||
-          (period.closeMinutes <= period.openMinutes &&
-              period.closeMinutes != 1440);
-      if (period.day == day) {
-        segments.add(
-          _HourSegment(
-            period.openMinutes,
-            overnight ? 1440 : period.closeMinutes,
-          ),
-        );
-      }
-      final followingDay = period.day == DateTime.sunday
-          ? DateTime.monday
-          : period.day + 1;
-      if (overnight && followingDay == day && period.closeMinutes > 0) {
-        segments.add(_HourSegment(0, period.closeMinutes));
-      }
-    }
-    return segments..sort((a, b) => a.start.compareTo(b.start));
-  }
-
-  static int _offset(String? countryCode) => switch (countryCode) {
-    'AE' || 'OM' => 4,
-    _ => 3,
-  };
-}
-
-class _HoursDayRow extends StatelessWidget {
-  const _HoursDayRow({
-    required this.day,
-    required this.segments,
-    required this.selected,
-    required this.selectedMinute,
-  });
-
-  final int day;
-  final List<_HourSegment> segments;
-  final bool selected;
-  final int? selectedMinute;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final strings = AppLocalizations.of(context)!;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: BoxDecoration(
-        color: selected ? colors.primaryContainer : colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(13),
-        border: Border.all(
-          color: selected ? colors.primary : colors.outlineVariant,
-        ),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 42,
-            child: Text(
-              _day(context, day),
-              style: TextStyle(
-                color: selected ? colors.primary : colors.onSurfaceVariant,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  segments.isEmpty
-                      ? strings.closed
-                      : segments
-                            .map(
-                              (segment) =>
-                                  '${_time(context, segment.start)}–${_time(context, segment.end)}',
-                            )
-                            .join(', '),
-                  style: TextStyle(
-                    color: segments.isEmpty
-                        ? HayerTheme.coral
-                        : colors.onSurface,
-                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 7),
-                LayoutBuilder(
-                  builder: (context, constraints) => SizedBox(
-                    height: 10,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Positioned.fill(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: colors.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(99),
-                            ),
-                          ),
-                        ),
-                        for (final segment in segments)
-                          Positioned(
-                            left: constraints.maxWidth * segment.start / 1440,
-                            width:
-                                (constraints.maxWidth *
-                                        (segment.end - segment.start) /
-                                        1440)
-                                    .clamp(3, constraints.maxWidth),
-                            top: 1,
-                            bottom: 1,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: colors.primary.withValues(alpha: .55),
-                                borderRadius: BorderRadius.circular(99),
-                              ),
-                            ),
-                          ),
-                        if (selectedMinute != null)
-                          Positioned(
-                            left:
-                                (constraints.maxWidth * selectedMinute! / 1440 -
-                                        2)
-                                    .clamp(0, constraints.maxWidth - 4),
-                            top: -3,
-                            child: Container(
-                              width: 4,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: colors.primary,
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (selectedMinute != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    strings.selectedTime(_time(context, selectedMinute!)),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (selected)
-            Icon(
-              Icons.event_available_rounded,
-              color: colors.primary,
-              size: 19,
-            ),
-        ],
-      ),
-    );
-  }
-
-  static String _day(BuildContext context, int day) => DateFormat.E(
-    Localizations.localeOf(context).toLanguageTag(),
-  ).format(DateTime(2024, 1, day));
-
-  static String _time(BuildContext context, int minutes) {
-    if (minutes == 1440) return AppLocalizations.of(context)!.midnight;
-    final hour = (minutes ~/ 60) % 24;
-    final minute = minutes % 60;
-    return DateFormat.jm(
-      Localizations.localeOf(context).toLanguageTag(),
-    ).format(DateTime(2024, 1, 1, hour, minute));
-  }
-}
-
-class _HourSegment {
-  const _HourSegment(this.start, this.end);
-
-  final int start;
-  final int end;
 }
 
 class _PlacePhotoGallery extends StatefulWidget {

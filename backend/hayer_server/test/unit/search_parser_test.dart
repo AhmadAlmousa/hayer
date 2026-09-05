@@ -125,6 +125,64 @@ void main() {
     expect(result.places.single.name, 'Focused Place');
   });
 
+  test('parses Arabic weekdays, digits, open state, and overnight hours', () {
+    final entry = [
+      null,
+      [
+        'مطعم الليل',
+        24.71,
+        46.67,
+        'place-ar',
+        'feature-ar',
+        'مطعم',
+        4.5,
+        120,
+        null,
+        'مفتوح الآن',
+        'الرياض',
+        const [],
+        [
+          [
+            'الإثنين',
+            null,
+            null,
+            [
+              ['٩:٣٠ م–١:١٥ ص'],
+            ],
+          ],
+          [
+            'الجمعة',
+            null,
+            null,
+            [
+              ['مفتوح على مدار ٢٤ ساعة'],
+            ],
+          ],
+        ],
+      ],
+    ];
+    final body =
+        ")]}'\n${jsonEncode([
+          [entry],
+        ])}";
+
+    final result = SearchParser(calibration).parse(
+      body,
+      checkedAt: DateTime.utc(2026, 9, 5),
+    );
+
+    final place = result.places.single;
+    expect(place.isOpen, isTrue);
+    expect(place.hours, hasLength(2));
+    expect(place.hours.first.day, 1);
+    expect(place.hours.first.openMinutes, 21 * 60 + 30);
+    expect(place.hours.first.closeMinutes, 75);
+    expect(place.hours.first.overnight, isTrue);
+    expect(place.hours.last.day, 5);
+    expect(place.hours.last.openMinutes, 0);
+    expect(place.hours.last.closeMinutes, 1440);
+  });
+
   test('flags structural drift instead of returning malformed data', () {
     final result = SearchParser(calibration).parse(
       jsonEncode({'unexpected': true}),

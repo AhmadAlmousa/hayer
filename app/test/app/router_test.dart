@@ -5,6 +5,7 @@ import 'package:hayer_app/app/router.dart';
 import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/data/display_name_store.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
+import 'package:hayer_app/l10n/localization_delegates.dart';
 
 void main() {
   testWidgets('a browser join path opens the named-session form', (
@@ -17,7 +18,7 @@ void main() {
       ProviderScope(
         child: MaterialApp.router(
           routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: hayerLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
@@ -47,7 +48,7 @@ void main() {
       ProviderScope(
         child: MaterialApp.router(
           routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: hayerLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
@@ -71,7 +72,7 @@ void main() {
       ProviderScope(
         child: MaterialApp.router(
           routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: hayerLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
@@ -101,7 +102,7 @@ void main() {
         ],
         child: MaterialApp.router(
           routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: hayerLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
@@ -112,6 +113,40 @@ void main() {
         .widgetList<TextField>(find.byType(TextField))
         .toList();
     expect(fields.last.controller?.text, 'Ahmad');
+  });
+
+  testWidgets('Arabic join form keeps the code LTR and accepts Arabic digits', (
+    tester,
+  ) async {
+    final router = createAppRouter(initialLocation: '/join');
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          displayNameStoreProvider.overrideWithValue(
+            _MemoryDisplayNameStore(null),
+          ),
+        ],
+        child: MaterialApp.router(
+          locale: const Locale('ar'),
+          routerConfig: router,
+          localizationsDelegates: hayerLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final fields = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
+    await tester.enterText(find.byType(TextField).first, 'Z٧٠');
+    await tester.enterText(find.byType(TextField).last, 'أحمد');
+
+    expect(fields.first.textDirection, TextDirection.ltr);
+    expect(fields.first.controller?.text, 'Z70');
+    expect(tester.state<FormState>(find.byType(Form)).validate(), isTrue);
   });
 }
 

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../l10n/localization_delegates.dart';
 import '../core/providers.dart';
 import 'locale_controller.dart';
 import 'router.dart';
@@ -40,7 +41,7 @@ class HayerApp extends ConsumerWidget {
         themeMode: themeMode,
         locale: locale,
         builder: builder,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: hayerLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const _UpdateRequiredScreen(),
       );
@@ -54,7 +55,7 @@ class HayerApp extends ConsumerWidget {
       locale: locale,
       builder: builder,
       routerConfig: appRouter,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: hayerLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );
   }

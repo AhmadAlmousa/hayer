@@ -6,6 +6,8 @@ void main() {
     test('extracts a three-character code from a public join URL', () {
       expect(extractSessionCode('https://hayer.almou.sa/join/a37'), 'A37');
       expect(extractSessionCode('https://hayer.almou.sa/app/join/a37'), 'A37');
+      expect(extractSessionCode('Z٧٠'), 'Z70');
+      expect(extractSessionCode('https://hayer.almou.sa/app/join/Z۷۰'), 'Z70');
     });
 
     test('accepts new and legacy codes but rejects invalid values', () {

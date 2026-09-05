@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 Uri sessionJoinUri(String code) =>
-    Uri.https('hayer.almou.sa', '/join/${code.toUpperCase()}');
+    Uri.https('hayer.almou.sa', '/app/join/${code.toUpperCase()}');
 
 /// A high-contrast, standards-first QR code for a public session link.
 class SessionQrCode extends StatelessWidget {

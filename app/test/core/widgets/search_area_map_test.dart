@@ -35,6 +35,15 @@ void main() {
     );
     expect(handle.longitude, greaterThan(46.6753));
   });
+
+  test('radius bounds contain the entire rendered circle', () {
+    final polygon = searchRadiusPolygon(24.7136, 46.6753, 10000);
+    final bounds = searchRadiusBounds(24.7136, 46.6753, 10000);
+
+    expect(polygon.every(bounds.contains), isTrue);
+    expect(bounds.southwest.latitude, lessThan(24.7136));
+    expect(bounds.northeast.latitude, greaterThan(24.7136));
+  });
 }
 
 double _distanceMeters(

@@ -31,4 +31,11 @@ void main() {
       );
     },
   );
+
+  test('clean join links accept every decimal digit', () async {
+    final configuration = await File('../deploy/nginx.conf').readAsString();
+
+    expect(configuration, contains('[A-HJ-NP-Za-hj-np-z0-9]'));
+    expect(configuration, isNot(contains('[A-HJ-NP-Za-hj-np-z2-9]')));
+  });
 }

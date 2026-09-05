@@ -89,12 +89,14 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
                       onChanged: (_) => _clearError(),
                       onFieldSubmitted: (_) => _nameFocus.requestFocus(),
                       textAlign: TextAlign.center,
+                      textDirection: TextDirection.ltr,
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 8,
                       ),
                       inputFormatters: [
+                        _LocalizedSessionCodeFormatter(),
                         LengthLimitingTextInputFormatter(
                           maxSessionCodeLength,
                         ),
@@ -196,6 +198,17 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     if (!mounted || value == null || _name.text.isNotEmpty) return;
     setState(() => _name.text = value);
   }
+}
+
+class _LocalizedSessionCodeFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) => newValue.copyWith(
+    text: normalizeSessionCodeCharacters(newValue.text),
+    selection: newValue.selection,
+  );
 }
 
 class _UpperCaseFormatter extends TextInputFormatter {

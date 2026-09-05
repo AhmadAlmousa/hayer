@@ -16,8 +16,8 @@ const maxSearchRadiusMeters = 10000;
 /// Displays the chosen search center and its radius on an interactive map.
 ///
 /// When [editable] is true, drag the center dot to move the area and drag the
-/// handle on the circle edge to resize it. The map itself remains pannable and
-/// pinch-zoomable.
+/// arrow handle on the circle edge to resize it. The map itself remains
+/// pannable and pinch-zoomable.
 class SearchAreaMap extends StatefulWidget {
   const SearchAreaMap({
     super.key,
@@ -49,11 +49,12 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
   bool _drawAgain = false;
   Fill? _areaFill;
   Circle? _centerMarker;
-  Circle? _radiusMarker;
+  Symbol? _radiusMarker;
   double? _previewLatitude;
   double? _previewLongitude;
   int? _previewRadius;
   LatLng? _pendingCameraCenter;
+  bool _fittingCamera = false;
 
   @override
   void didUpdateWidget(SearchAreaMap oldWidget) {
@@ -105,11 +106,10 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
                   annotationOrder: const [
                     AnnotationType.fill,
                     AnnotationType.circle,
+                    AnnotationType.symbol,
                   ],
                   onMapCreated: _onMapCreated,
-                  onCameraMove: widget.editable
-                      ? (position) => _pendingCameraCenter = position.target
-                      : null,
+                  onCameraMove: widget.editable ? _trackCameraMove : null,
                   onCameraIdle: widget.editable ? _commitCameraCenter : null,
                   onStyleLoadedCallback: () {
                     _styleLoaded = true;
@@ -183,6 +183,10 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
   }
 
   void _commitCameraCenter() {
+    if (_fittingCamera) {
+      _pendingCameraCenter = null;
+      return;
+    }
     final center = _pendingCameraCenter;
     _pendingCameraCenter = null;
     if (center == null ||
@@ -198,6 +202,10 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
     widget.onCenterChanged?.call(center.latitude, center.longitude);
   }
 
+  void _trackCameraMove(CameraPosition position) {
+    if (!_fittingCamera) _pendingCameraCenter = position.target;
+  }
+
   void _onFeatureDrag(
     math.Point<double> _,
     LatLng _,
@@ -207,10 +215,8 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
     Annotation? annotation,
     DragEventType eventType,
   ) {
-    if (!widget.editable || annotation is! Circle) {
-      return;
-    }
-    if (id == _centerMarker?.id) {
+    if (!widget.editable) return;
+    if (id == _centerMarker?.id && annotation is Circle) {
       _previewLatitude = current.latitude;
       _previewLongitude = current.longitude;
       unawaited(_previewArea());
@@ -219,7 +225,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
       }
       return;
     }
-    if (id == _radiusMarker?.id) {
+    if (id == _radiusMarker?.id && annotation is Symbol) {
       final radius = distanceMeters(
         _previewLatitude ?? widget.latitude,
         _previewLongitude ?? widget.longitude,
@@ -250,9 +256,9 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
     if (marker != null &&
         marker.id != _centerMarker?.id &&
         (_previewLatitude != null || _previewLongitude != null)) {
-      await controller.updateCircle(
+      await controller.updateSymbol(
         marker,
-        CircleOptions(geometry: radiusHandlePoint(latitude, longitude, radius)),
+        SymbolOptions(geometry: radiusHandlePoint(latitude, longitude, radius)),
       );
     }
   }
@@ -271,6 +277,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
       _previewRadius = null;
       await controller.clearFills();
       await controller.clearCircles();
+      await controller.clearSymbols();
       _areaFill = await controller.addFill(
         FillOptions(
           geometry: [
@@ -296,29 +303,56 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
         ),
       );
       if (widget.editable) {
-        _radiusMarker = await controller.addCircle(
-          CircleOptions(
+        _radiusMarker = await controller.addSymbol(
+          SymbolOptions(
             geometry: radiusHandlePoint(
               widget.latitude,
               widget.longitude,
               widget.radiusMeters,
             ),
-            circleColor: '#087F7E',
-            circleRadius: 13,
-            circleStrokeColor: '#FFFFFF',
-            circleStrokeWidth: 4,
+            textField: '↔',
+            textSize: 28,
+            textColor: '#FFFFFF',
+            textHaloColor: '#087F7E',
+            textHaloWidth: 5,
             draggable: true,
           ),
         );
       } else {
         _radiusMarker = null;
       }
+      await _fitArea();
     } finally {
       _drawing = false;
       if (_drawAgain) {
         _drawAgain = false;
         unawaited(_draw());
       }
+    }
+  }
+
+  Future<void> _fitArea() async {
+    final controller = _controller;
+    if (controller == null) return;
+    _fittingCamera = true;
+    _pendingCameraCenter = null;
+    try {
+      await controller.moveCamera(
+        CameraUpdate.newLatLngBounds(
+          searchRadiusBounds(
+            widget.latitude,
+            widget.longitude,
+            widget.radiusMeters,
+          ),
+          left: 44,
+          top: 44,
+          right: 44,
+          bottom: 44,
+        ),
+      );
+    } finally {
+      _fittingCamera = false;
+      _pendingCameraCenter = null;
     }
   }
 }
@@ -389,8 +423,31 @@ List<LatLng> searchRadiusPolygon(
   ];
 }
 
+/// Returns bounds that contain every point of the rendered radius circle.
+LatLngBounds searchRadiusBounds(
+  double latitude,
+  double longitude,
+  int radiusMeters,
+) {
+  final polygon = searchRadiusPolygon(latitude, longitude, radiusMeters);
+  var south = polygon.first.latitude;
+  var north = polygon.first.latitude;
+  var west = polygon.first.longitude;
+  var east = polygon.first.longitude;
+  for (final point in polygon.skip(1)) {
+    south = math.min(south, point.latitude);
+    north = math.max(north, point.latitude);
+    west = math.min(west, point.longitude);
+    east = math.max(east, point.longitude);
+  }
+  return LatLngBounds(
+    southwest: LatLng(south, west),
+    northeast: LatLng(north, east),
+  );
+}
+
 double _zoomForRadius(int meters) =>
-    (15.4 - math.log(meters / 500) / math.ln2).clamp(9.5, 15.4);
+    (14.2 - math.log(meters / 500) / math.ln2).clamp(8.5, 14.2);
 
 String _distance(int meters) =>
     meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';

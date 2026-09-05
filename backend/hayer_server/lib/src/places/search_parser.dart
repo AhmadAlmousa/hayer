@@ -211,12 +211,15 @@ class SearchParser {
 
   bool? _openState(String? status) {
     if (status == null) return null;
-    final normalized = status.toLowerCase();
+    final normalized = _normalizedLabel(status);
     if (normalized.contains('temporarily closed') ||
-        normalized.contains('permanently closed')) {
+        normalized.contains('permanently closed') ||
+        normalized.contains('مغلق')) {
       return false;
     }
-    if (normalized.contains('open')) return true;
+    if (normalized.contains('open') || normalized.contains('مفتوح')) {
+      return true;
+    }
     if (normalized.contains('closed')) return false;
     return null;
   }
@@ -242,8 +245,8 @@ class SearchParser {
       if (ranges is! List) continue;
       for (final range in ranges) {
         final label = GoogleResponse(range).stringAt(const [0]);
-        if (label == null || label.toLowerCase().contains('closed')) continue;
-        if (label.toLowerCase().contains('24 hours')) {
+        if (label == null || _isClosedLabel(label)) continue;
+        if (_isAlwaysOpenLabel(label)) {
           periods.add(
             OpeningPeriod(
               day: dayIndex,
@@ -282,20 +285,71 @@ class SearchParser {
       'friday': 5,
       'saturday': 6,
       'sunday': 7,
-    }[value.toLowerCase()];
+      'الاثنين': 1,
+      'الثلاثاء': 2,
+      'الاربعاء': 3,
+      'الخميس': 4,
+      'الجمعة': 5,
+      'السبت': 6,
+      'الاحد': 7,
+    }[_normalizedLabel(value)];
   }
 
   int? _timeMinutes(String value) {
+    final normalized = _normalizedLabel(
+      value,
+    ).replaceAll('.', '').toUpperCase();
     final match = RegExp(
-      r'^(\d{1,2})(?::(\d{2}))?\s*([AP]M)$',
+      r'^(\d{1,2})(?::(\d{1,2}))?\s*(AM|PM|ص|م)$',
       caseSensitive: false,
-    ).firstMatch(value.trim());
+    ).firstMatch(normalized);
     if (match == null) return null;
     var hour = int.parse(match.group(1)!);
     final minute = int.tryParse(match.group(2) ?? '0') ?? 0;
     final meridiem = match.group(3)!.toUpperCase();
+    if (hour < 1 || hour > 12 || minute > 59) return null;
     if (hour == 12) hour = 0;
-    if (meridiem == 'PM') hour += 12;
+    if (meridiem == 'PM' || meridiem == 'م') hour += 12;
     return hour * 60 + minute;
   }
+
+  bool _isClosedLabel(String label) {
+    final normalized = _normalizedLabel(label);
+    return normalized.contains('closed') || normalized.contains('مغلق');
+  }
+
+  bool _isAlwaysOpenLabel(String label) {
+    final normalized = _normalizedLabel(label);
+    return normalized.contains('24 hours') ||
+        normalized.contains('على مدار الساعة') ||
+        (normalized.contains('24') && normalized.contains('ساعة'));
+  }
+
+  String _normalizedLabel(String value) => value
+      .toLowerCase()
+      .replaceAll(RegExp('[\u064B-\u065F\u0670\u0640]'), '')
+      .replaceAll(RegExp('[آأإ]'), 'ا')
+      .replaceAll('\u00a0', ' ')
+      .replaceAll('\u202f', ' ')
+      .replaceAll('٠', '0')
+      .replaceAll('١', '1')
+      .replaceAll('٢', '2')
+      .replaceAll('٣', '3')
+      .replaceAll('٤', '4')
+      .replaceAll('٥', '5')
+      .replaceAll('٦', '6')
+      .replaceAll('٧', '7')
+      .replaceAll('٨', '8')
+      .replaceAll('٩', '9')
+      .replaceAll('۰', '0')
+      .replaceAll('۱', '1')
+      .replaceAll('۲', '2')
+      .replaceAll('۳', '3')
+      .replaceAll('۴', '4')
+      .replaceAll('۵', '5')
+      .replaceAll('۶', '6')
+      .replaceAll('۷', '7')
+      .replaceAll('۸', '8')
+      .replaceAll('۹', '9')
+      .trim();
 }

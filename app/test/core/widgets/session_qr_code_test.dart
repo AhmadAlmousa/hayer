@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_app/core/widgets/session_qr_code.dart';
 
 void main() {
-  test('uses the public join URL without the web app mount path', () {
-    final uri = sessionJoinUri('a37');
+  test('uses the deployed web app join route', () {
+    final uri = sessionJoinUri('z70');
 
-    expect(uri.toString(), 'https://hayer.almou.sa/join/A37');
-    expect(uri.pathSegments, ['join', 'A37']);
+    expect(uri.toString(), 'https://hayer.almou.sa/app/join/Z70');
+    expect(uri.pathSegments, ['app', 'join', 'Z70']);
   });
 
   testWidgets('renders a session-specific join QR code', (tester) async {
