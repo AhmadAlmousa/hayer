@@ -45,4 +45,4 @@ serverpod:
     admin_build:
       posix: |
         cd ../../admin
-        flutter build web --base-href /admin/cache/ --wasm --output ../backend/hayer_server/web/admin
+        flutter build web --base-href /admin/ --wasm --output ../backend/hayer_server/web/admin

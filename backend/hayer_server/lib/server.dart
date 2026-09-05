@@ -91,7 +91,7 @@ void run(List<String> args) async {
   if (adminDir.existsSync()) {
     pod.webServer.addRoute(
       FlutterRoute(adminDir),
-      '/admin/cache',
+      '/admin',
     );
   }
 

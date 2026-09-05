@@ -98,8 +98,8 @@ business rules live in domain services and use cases. Drift is the local
 source of truth for the active session snapshot and pending swipe outbox.
 
 The public gateway routes `/api/*` to the Serverpod API,
-`/admin/cache/api/*` to the Basic-Auth-protected admin API,
-`/admin/cache/*` to dashboard assets, and join/download/release/App-Link/media
+`/admin/api/*` to the Basic-Auth-protected admin API, `/admin/*` to dashboard
+assets, and join/download/release/App-Link/media
 paths to the Serverpod web service. Only port `8432` is exposed by Compose;
 PostgreSQL and Insights stay internal.
 
@@ -558,6 +558,17 @@ solo and multiplayer flows without developer intervention.
   `025f39828aaff09513f289a072c5636fbf756848c07ed1676d2e7e63818fd13f`.
   Applying the new PostGIS migration and validating populated production
   analytics through the protected gateway remain deployment gates.
+- 2026-09-05: made `https://hayer.almou.sa/admin` the canonical protected
+  admin entry point. nginx redirects `/admin` to the trailing-slash asset mount,
+  serves RPCs at `/admin/api/`, and preserves `/admin/cache/...` bookmarks and
+  request methods with 308 redirects. The Flutter bundle, Serverpod web route,
+  runtime config, production image, CI, tests, and deployment documentation now
+  share the `/admin/` base. A pre-deployment live check returned 404 at
+  `/admin` and 401 at the old protected path, confirming that the new image is
+  still required in production. `scripts/preflight.sh` passed all 60 backend,
+  64 consumer, and four admin tests; the `/admin/` production web build and
+  signed `hayer-0.1.0-4.apk` build passed. APK SHA-256:
+  `025f39828aaff09513f289a072c5636fbf756848c07ed1676d2e7e63818fd13f`.
 - 2026-09-05: `main` and `origin/main` both point to `d79ac35`. CI and the
   unsigned iOS build are manual-dispatch workflows, and no beta Git tag exists
   locally yet.
@@ -594,5 +605,6 @@ solo and multiplayer flows without developer intervention.
   live counts. Categories, cuisines, and POI types share one bilingual,
   versioned taxonomy; clients adopt published versions at runtime and retain a
   bundled fallback. Admin areas use path-based routes beneath the protected
-  `/admin/cache/` mount so views are bookmarkable without weakening the
-  existing gateway controls.
+  `/admin/` mount so views are bookmarkable without weakening the existing
+  gateway controls. The public entry URL is `https://hayer.almou.sa/admin`,
+  with `/admin/cache/` retained only as a compatibility redirect.

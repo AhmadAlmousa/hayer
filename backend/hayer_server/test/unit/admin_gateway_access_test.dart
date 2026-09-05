@@ -70,8 +70,15 @@ void main() {
           contains(r'map $http_origin $hayer_admin_origin_allowed'),
         );
         expect(configuration, contains('"https://hayer.almou.sa" 1;'));
-        expect(configuration, contains(r'~^/admin/cache/api/ 1;'));
-        expect(configuration, contains('location /admin/cache/api/'));
+        expect(configuration, contains(r'~^/admin/api/ 1;'));
+        expect(configuration, contains('location = /admin {'));
+        expect(configuration, contains('return 308 /admin/;'));
+        expect(configuration, contains('location /admin/api/'));
+        expect(configuration, contains('location /admin/'));
+        expect(
+          configuration,
+          contains(r'location ~ ^/admin/cache(?:/(.*))?$'),
+        );
         expect(
           configuration,
           contains(

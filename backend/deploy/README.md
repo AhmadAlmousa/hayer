@@ -46,7 +46,7 @@ unauthenticated public bootstrap RPC canary after the gateway is healthy. Set
 
 The external proxy must terminate TLS for `hayer.almou.sa`, forward to 8432,
 and retain WebSocket upgrade headers. After deployment, verify `/api/`,
-`/admin/cache/`, `/admin/cache/api/`, `/.well-known/assetlinks.json`, and the
+`/admin/`, `/admin/api/`, `/.well-known/assetlinks.json`, and the
 APK checksum/download route. The admin API accepts only browser RPCs whose
 exact origin is `https://hayer.almou.sa`; nginx overwrites the internal origin
 marker before forwarding requests.
@@ -60,9 +60,9 @@ silence this warning, because it can remove those custom objects.
 
 If Compose generated the initial admin password, read the `runtime-init`
 container logs in Unraid (or run `docker compose logs runtime-init`) and save
-the displayed credentials. The nginx Basic Auth prompt at `/admin/cache/` is
-the dashboard's only sign-in; the same cached browser credentials protect its
-`/admin/cache/api/` requests.
+the displayed credentials. The nginx Basic Auth prompt at `/admin/` is the
+dashboard's only sign-in; the same cached browser credentials protect its
+`/admin/api/` requests.
 
 Docker caches the web build separately from backend compilation. Backend-only
 changes therefore reuse the Flutter layer unless the generated client changed.

@@ -34,7 +34,7 @@ COPY backend/hayer_client backend/hayer_client
 RUN cd app \
   && flutter build web --release --no-pub --base-href /app/ \
   && cd ../admin \
-  && flutter build web --release --no-pub --base-href /admin/cache/
+  && flutter build web --release --no-pub --base-href /admin/
 
 # Dart is also build-only. Production runs standalone native executables and
 # does not contain the SDK, package cache, source tree, or development watcher.
