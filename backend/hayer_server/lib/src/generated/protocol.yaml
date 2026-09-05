@@ -44,7 +44,17 @@ place:
   - reverseGeocode:
 taxonomy:
   - current:
+adminAuth:
+  - currentOperator:
+  - logout:
+adminEnrollment:
+  - begin:
 anonymousIdp:
   - login:
 jwtRefresh:
   - refreshAccessToken:
+passkeyIdp:
+  - createChallenge:
+  - register:
+  - login:
+  - hasAccount:

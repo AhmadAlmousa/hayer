@@ -62,6 +62,10 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 - Use a protected Flutter web admin suite with anonymous product analytics,
   place insights, versioned taxonomy, cache/catalog controls, maps, guarded
   management, versioned calibration, and audit history.
+- Protect routine admin access with WebAuthn passkeys and server-issued JWTs.
+  Every admin RPC requires the `admin` scope plus the exact production origin.
+  Keep nginx Basic Auth only as an offline-held break-glass path for initial
+  passkey enrollment and recovery; never store its password in Hayer.
 - Retain anonymous product events for at most 14 days and privacy-preserving
   hourly aggregates for 12 months. Reports use Asia/Riyadh time and Sunday–
   Saturday weeks; analytics never store user/session IDs, codes, names,
@@ -97,9 +101,10 @@ repository interfaces. Platform/API/database operations stay in services;
 business rules live in domain services and use cases. Drift is the local
 source of truth for the active session snapshot and pending swipe outbox.
 
-The public gateway routes `/api/*` to the Serverpod API,
-`/admin/api/*` to the Basic-Auth-protected admin API, `/admin/*` to dashboard
-assets, and join/download/release/App-Link/media
+The public gateway routes `/api/*` to the Serverpod API, `/admin/api/*` to the
+passkey/JWT API, `/admin/enroll-api/*` to the Basic-Auth-protected enrollment
+API, `/admin/*` to the public login shell and authenticated dashboard assets,
+and join/download/release/App-Link/media
 paths to the Serverpod web service. Only port `8432` is exposed by Compose;
 PostgreSQL and Insights stay internal.
 
@@ -134,6 +139,10 @@ Public generated Serverpod endpoint groups:
   rankings, taxonomy draft/validate/publish/rollback, location canaries,
   metrics, catalog/coverage/job/audit pages, refresh, quarantine/restore,
   invalidation, pruning, settings changes, and calibration rollout.
+- `passkeyIdp.createChallenge/login` performs WebAuthn authentication;
+  `adminEnrollment.begin` is reachable only through the Basic-Auth recovery
+  route and issues enrollment scope only; `adminAuth.currentOperator/logout`
+  validates or revokes the passkey-backed admin session.
 
 Stable error codes are `invalid_request`, `invalid_code`, `name_taken`,
 `session_full`, `session_expired`, `no_places`, `place_source_unavailable`,
@@ -428,8 +437,10 @@ solo and multiplayer flows without developer intervention.
 - Admin mutations never rewrite an existing session snapshot.
 - Native Android may load allowlisted source photos directly. Consumer web
   must use the authenticated bounded media proxy.
-- The release keystore, production passwords, Basic Auth hash, IP-hash salt,
-  database password, and signing material never enter Git.
+- The release keystore, production passwords, Basic Auth recovery hash,
+  IP-hash salt, database password, passkey private keys, and signing material
+  never enter Git. Passkey private keys and biometrics remain in the user's
+  authenticator.
 
 ## Evidence log
 
@@ -569,6 +580,28 @@ solo and multiplayer flows without developer intervention.
   64 consumer, and four admin tests; the `/admin/` production web build and
   signed `hayer-0.1.0-4.apk` build passed. APK SHA-256:
   `025f39828aaff09513f289a072c5636fbf756848c07ed1676d2e7e63818fd13f`.
+- 2026-09-05: replaced routine admin Basic Auth with a complete WebAuthn
+  passkey flow. The Flutter admin now has guarded `/login` and `/enroll`
+  routes, secure JWT restoration, operator identity, sign-out/revocation, and
+  a self-hosted verified browser bridge. Serverpod registers
+  `hayer.almou.sa` as the production relying party; all admin endpoints require
+  `admin` scope and the nginx-set exact-origin marker. Hayer additionally
+  validates WebAuthn client type/origin, rejects cross-origin ceremonies, and
+  checks the authenticator RP hash. Basic Auth is confined to the separate
+  enrollment page/API, which issues only `admin-enrollment` scope and revokes
+  it after registration. Legacy empty credential/operator RPC parameters were
+  removed from the generated contract.
+- 2026-09-05: final `scripts/preflight.sh` passed Serverpod generation,
+  formatting, fatal-info analysis, 63 backend tests, 64 consumer tests, six
+  admin tests, script syntax, and diff checks. The `/admin/` Wasm production
+  web build passed; its vendored passkey bridge passed `node --check` and
+  matches upstream SHA-384
+  `9495da6d52154e99599fc1aad2bafb1dc87129261a5657835db06a8850b0af9c09f5c4271d919dc7cf679d95fdc4771a`.
+  `scripts/build-release-apk.sh` produced the signed 100.1 MB
+  `hayer-0.1.0-4.apk` and stable `hayer.apk`, both with SHA-256
+  `e4f8efd2a8e26a76378eba0215af69a132319c0f6d951596cde8df84f6302b93`.
+  Building/deploying the new server image and completing the first live
+  passkey ceremony remain production gates.
 - 2026-09-05: `main` and `origin/main` both point to `d79ac35`. CI and the
   unsigned iOS build are manual-dispatch workflows, and no beta Git tag exists
   locally yet.
@@ -608,3 +641,11 @@ solo and multiplayer flows without developer intervention.
   `/admin/` mount so views are bookmarkable without weakening the existing
   gateway controls. The public entry URL is `https://hayer.almou.sa/admin`,
   with `/admin/cache/` retained only as a compatibility redirect.
+- 2026-09-05: Replaced routine admin Basic Auth with discoverable WebAuthn
+  passkeys verified by Serverpod. Admin data remains server-protected by JWT
+  `admin` scope and exact-origin checks; the public `/admin/` shell contains no
+  data. Basic Auth is retained only on `/admin/enroll` and
+  `/admin/enroll-api/` as break-glass enrollment/recovery. Its token carries
+  enrollment scope only and is revoked after successful registration. This is
+  server authentication rather than `local_auth`, which cannot authenticate a
+  web administrator or prove identity to the backend.

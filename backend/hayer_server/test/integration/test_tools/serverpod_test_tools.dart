@@ -46,6 +46,10 @@ import 'package:hayer_server/src/generated/session_event.dart' as _i30;
 import 'package:hayer_server/src/generated/taxonomy_snapshot.dart' as _i31;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i32;
+import 'package:hayer_server/src/generated/protocol.dart' as _i33;
+import 'dart:typed_data' as _i34;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i35;
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:hayer_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -170,9 +174,15 @@ class TestEndpoints {
 
   late final _TaxonomyEndpoint taxonomy;
 
+  late final _AdminAuthEndpoint adminAuth;
+
+  late final _AdminEnrollmentEndpoint adminEnrollment;
+
   late final _AnonymousIdpEndpoint anonymousIdp;
 
   late final _JwtRefreshEndpoint jwtRefresh;
+
+  late final _PasskeyIdpEndpoint passkeyIdp;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -202,11 +212,23 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    adminAuth = _AdminAuthEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    adminEnrollment = _AdminEnrollmentEndpoint(
+      endpoints,
+      serializationManager,
+    );
     anonymousIdp = _AnonymousIdpEndpoint(
       endpoints,
       serializationManager,
     );
     jwtRefresh = _JwtRefreshEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    passkeyIdp = _PasskeyIdpEndpoint(
       endpoints,
       serializationManager,
     );
@@ -224,9 +246,8 @@ class _AdminEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<_i4.AdminLiveUsage> liveUsage(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-  }) async {
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -238,7 +259,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'liveUsage',
-          parameters: _i1.testObjectToJson({'credentials': credentials}),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -256,7 +277,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i5.AdminAnalyticsOverview> analyticsOverview(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required _i6.AnalyticsFilter filter,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -270,10 +290,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'analyticsOverview',
-          parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'filter': filter,
-          }),
+          parameters: _i1.testObjectToJson({'filter': filter}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -291,7 +308,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i7.AdminUsageAnalytics> usageAnalytics(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required _i6.AnalyticsFilter filter,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -305,10 +321,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'usageAnalytics',
-          parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'filter': filter,
-          }),
+          parameters: _i1.testObjectToJson({'filter': filter}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -326,7 +339,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i8.AdminPlaceAnalytics> placeAnalytics(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required _i6.AnalyticsFilter filter,
     required _i9.PlaceRanking ranking,
     required int minimumSamples,
@@ -343,7 +355,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'placeAnalytics',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
             'filter': filter,
             'ranking': ranking,
             'minimumSamples': minimumSamples,
@@ -365,7 +376,6 @@ class _AdminEndpoint {
 
   _i3.Future<List<_i10.LocationSuggestion>> suggestAdminLocation(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required String query,
     required String countryCode,
   }) async {
@@ -381,7 +391,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'suggestAdminLocation',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
             'query': query,
             'countryCode': countryCode,
           }),
@@ -402,7 +411,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i11.AdminMapLocation> reverseAdminLocation(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required double latitude,
     required double longitude,
     required String countryCode,
@@ -419,7 +427,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'reverseAdminLocation',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
             'latitude': latitude,
             'longitude': longitude,
             'countryCode': countryCode,
@@ -440,10 +447,8 @@ class _AdminEndpoint {
   }
 
   _i3.Future<_i12.AdminTaxonomyVersion> taxonomyDraft(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
-  }) async {
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -455,10 +460,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'taxonomyDraft',
-          parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
-          }),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -475,9 +477,8 @@ class _AdminEndpoint {
   }
 
   _i3.Future<List<_i12.AdminTaxonomyVersion>> taxonomyHistory(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-  }) async {
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -489,7 +490,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'taxonomyHistory',
-          parameters: _i1.testObjectToJson({'credentials': credentials}),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -507,8 +508,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i12.AdminTaxonomyVersion> saveTaxonomyDraft(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
@@ -526,8 +525,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'saveTaxonomyDraft',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -550,8 +547,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i14.TaxonomyValidation> validateTaxonomyDraft(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
@@ -570,8 +565,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'validateTaxonomyDraft',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -595,8 +588,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i12.AdminTaxonomyVersion> publishTaxonomy(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
@@ -613,8 +604,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'publishTaxonomy',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -636,8 +625,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i12.AdminTaxonomyVersion> rollbackTaxonomy(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
   }) async {
@@ -653,8 +640,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'rollbackTaxonomy',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'reason': reason,
             'version': version,
           }),
@@ -674,9 +659,8 @@ class _AdminEndpoint {
   }
 
   _i3.Future<_i15.CacheDashboardSummary> summary(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-  }) async {
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -688,7 +672,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'summary',
-          parameters: _i1.testObjectToJson({'credentials': credentials}),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -706,7 +690,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i16.CatalogPlacePage> catalog(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -724,7 +707,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'catalog',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -747,7 +729,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i17.CoveragePage> coverage(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -764,7 +745,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'coverage',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -786,7 +766,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i18.RefreshJobPage> refreshJobs(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -804,7 +783,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'refreshJobs',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -827,7 +805,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i20.AdminAuditPage> auditLog(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -844,7 +821,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'auditLog',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -866,7 +842,6 @@ class _AdminEndpoint {
 
   _i3.Future<List<_i21.MetricPoint>> metricTrend(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
     required int hours,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -880,10 +855,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'metricTrend',
-          parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'hours': hours,
-          }),
+          parameters: _i1.testObjectToJson({'hours': hours}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -900,9 +872,8 @@ class _AdminEndpoint {
   }
 
   _i3.Future<_i22.CatalogPrunePreview> prunePreview(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-  }) async {
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -914,7 +885,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'prunePreview',
-          parameters: _i1.testObjectToJson({'credentials': credentials}),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -932,8 +903,6 @@ class _AdminEndpoint {
 
   _i3.Future<int> pruneCatalog(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String reason,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -947,11 +916,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'pruneCatalog',
-          parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
-            'reason': reason,
-          }),
+          parameters: _i1.testObjectToJson({'reason': reason}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -968,9 +933,8 @@ class _AdminEndpoint {
   }
 
   _i3.Future<_i23.CachePolicy> policy(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-  }) async {
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -982,7 +946,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'policy',
-          parameters: _i1.testObjectToJson({'credentials': credentials}),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1000,8 +964,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i23.CachePolicy> updatePolicy(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required _i23.CachePolicy policy,
   }) async {
@@ -1017,8 +979,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'updatePolicy',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'reason': reason,
             'policy': policy,
           }),
@@ -1039,8 +999,6 @@ class _AdminEndpoint {
 
   _i3.Future<bool> quarantine(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String providerPlaceId,
     required String reason,
   }) async {
@@ -1056,8 +1014,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'quarantine',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'providerPlaceId': providerPlaceId,
             'reason': reason,
           }),
@@ -1078,8 +1034,6 @@ class _AdminEndpoint {
 
   _i3.Future<bool> restore(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String providerPlaceId,
     required String reason,
   }) async {
@@ -1095,8 +1049,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'restore',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'providerPlaceId': providerPlaceId,
             'reason': reason,
           }),
@@ -1117,8 +1069,6 @@ class _AdminEndpoint {
 
   _i3.Future<String> refreshCoverage(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String coverageKey,
     required String reason,
   }) async {
@@ -1134,8 +1084,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'refreshCoverage',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'coverageKey': coverageKey,
             'reason': reason,
           }),
@@ -1156,8 +1104,6 @@ class _AdminEndpoint {
 
   _i3.Future<bool> cancelRefreshJob(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String jobId,
     required String reason,
   }) async {
@@ -1173,8 +1119,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'cancelRefreshJob',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'jobId': jobId,
             'reason': reason,
           }),
@@ -1195,8 +1139,6 @@ class _AdminEndpoint {
 
   _i3.Future<int> invalidateCoverage(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String coverageKey,
     required String reason,
   }) async {
@@ -1212,8 +1154,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'invalidateCoverage',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'coverageKey': coverageKey,
             'reason': reason,
           }),
@@ -1234,8 +1174,6 @@ class _AdminEndpoint {
 
   _i3.Future<_i24.CalibrationValidation> validateCalibration(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String version,
     required String documentJson,
   }) async {
@@ -1251,8 +1189,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'validateCalibration',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'version': version,
             'documentJson': documentJson,
           }),
@@ -1273,8 +1209,6 @@ class _AdminEndpoint {
 
   _i3.Future<bool> activateCalibration(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String version,
     required String reason,
   }) async {
@@ -1290,8 +1224,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'activateCalibration',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'version': version,
             'reason': reason,
           }),
@@ -1312,8 +1244,6 @@ class _AdminEndpoint {
 
   _i3.Future<bool> rollbackCalibration(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String credentials,
-    required String operatorName,
     required String version,
     required String reason,
   }) async {
@@ -1329,8 +1259,6 @@ class _AdminEndpoint {
           endpointPath: 'admin',
           methodName: 'rollbackCalibration',
           parameters: _i1.testObjectToJson({
-            'credentials': credentials,
-            'operatorName': operatorName,
             'version': version,
             'reason': reason,
           }),
@@ -1757,6 +1685,121 @@ class _TaxonomyEndpoint {
   }
 }
 
+class _AdminAuthEndpoint {
+  _AdminAuthEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> currentOperator(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'adminAuth',
+            method: 'currentOperator',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'adminAuth',
+          methodName: 'currentOperator',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> logout(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'adminAuth',
+            method: 'logout',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'adminAuth',
+          methodName: 'logout',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _AdminEnrollmentEndpoint {
+  _AdminEnrollmentEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<({_i32.AuthSuccess auth, String operator})> begin(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'adminEnrollment',
+            method: 'begin',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'adminEnrollment',
+          methodName: 'begin',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _i33.Protocol()
+                  .deserialize<({_i32.AuthSuccess auth, String operator})>(
+                    record,
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _AnonymousIdpEndpoint {
   _AnonymousIdpEndpoint(
     this._endpointDispatch,
@@ -1833,6 +1876,144 @@ class _JwtRefreshEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<_i32.AuthSuccess>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _PasskeyIdpEndpoint {
+  _PasskeyIdpEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<({_i34.ByteData challenge, _i2.UuidValue id})> createChallenge(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'passkeyIdp',
+            method: 'createChallenge',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'passkeyIdp',
+          methodName: 'createChallenge',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) => _i33.Protocol()
+                  .deserialize<({_i34.ByteData challenge, _i2.UuidValue id})>(
+                    record,
+                  ),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> register(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i35.PasskeyRegistrationRequest registrationRequest,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'passkeyIdp',
+            method: 'register',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'passkeyIdp',
+          methodName: 'register',
+          parameters: _i1.testObjectToJson({
+            'registrationRequest': registrationRequest,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i32.AuthSuccess> login(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i35.PasskeyLoginRequest loginRequest,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'passkeyIdp',
+            method: 'login',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'passkeyIdp',
+          methodName: 'login',
+          parameters: _i1.testObjectToJson({'loginRequest': loginRequest}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i32.AuthSuccess>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> hasAccount(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'passkeyIdp',
+            method: 'hasAccount',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'passkeyIdp',
+          methodName: 'hasAccount',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

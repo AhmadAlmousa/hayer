@@ -13,7 +13,7 @@ release gates live in [`PROJECT.md`](PROJECT.md). The longer product brief is
 
 ```text
 app/                    Flutter consumer app (Android beta target)
-admin/                  Flutter web cache/calibration console
+admin/                  Flutter web analytics/operations console with passkeys
 backend/hayer_server/   Serverpod API, catalog, extractor, migrations, web
 backend/hayer_client/   Generated shared client and protocol models
 backend/deploy/         Unraid Compose stack, gateway, backup and restore
@@ -66,6 +66,13 @@ cd app && flutter run --dart-define=SERVER_URL=http://localhost:8080/
 cd admin && flutter run -d chrome
 ```
 
+The production admin entry point is `https://hayer.almou.sa/admin`. First-time
+setup and recovery use `https://hayer.almou.sa/admin/enroll`: enter the
+break-glass `HAYER_ADMIN_USER`/`HAYER_ADMIN_PASSWORD` credentials in the native
+browser prompt, then create a passkey. Routine visits to `/admin` use the
+passkey and never ask Hayer to store that Basic Auth password. Admin JWTs are
+kept in the platform's secure client storage and are revoked on sign-out.
+
 `config/passwords.yaml`, signing keys, built web assets, and release APKs are
 intentionally ignored. Production Compose credentials are generated into
 private Docker volumes when the stack first starts.
@@ -99,6 +106,8 @@ This runner is fully containerized; the host only needs Docker Compose.
 3. Clone or copy the repository to the Docker host and place the release files
    under `backend/deploy`. Optionally set `HAYER_ADMIN_USER`,
    `HAYER_ADMIN_PASSWORD`, and `HAYER_ANDROID_SHA256` in the Compose stack.
+   The admin username/password are recovery-only credentials used to enroll a
+   passkey, so keep them outside the browser password store.
 4. Run `scripts/build-server-image.sh` once to build the native production
    image. Flutter and Dart are build-only and are absent from the runtime image.
 5. Run `docker compose up -d` from `backend/deploy`. Startup never builds or
@@ -106,8 +115,9 @@ This runner is fully containerized; the host only needs Docker Compose.
    and runs the source and public-gateway canaries automatically. Re-run the
    image build script only after application, generated-client, or server code
    changes—not after Compose, nginx, environment, or APK changes. If no admin
-   password was supplied, save the generated password shown in the
-   `runtime-init` container logs.
+   password was supplied, save the generated recovery password shown in the
+   `runtime-init` container logs, then use `/admin/enroll` to create the first
+   passkey.
 6. Point the external TLS reverse proxy at port `8432`, verify HTTPS/WSS and
    App Links, and complete the backup restore drill before tagging a beta.
 

@@ -69,10 +69,11 @@ import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i55;
 import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i56;
 import 'package:hayer_client/src/protocol/metric_point.dart' as _i57;
 import 'package:hayer_client/src/protocol/session_result.dart' as _i58;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i59;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i60;
+    as _i59;
+import 'dart:typed_data' as _i60;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i61;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -618,11 +619,29 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
+    if (t == _i1.getType<({_i59.AuthSuccess auth, String operator})>()) {
+      return (
+            auth: deserialize<_i59.AuthSuccess>(
+              ((data as Map)['n'] as Map)['auth'],
+            ),
+            operator: deserialize<String>(data['n']['operator']),
+          )
+          as T;
+    }
+    if (t == _i1.getType<({_i60.ByteData challenge, _i1.UuidValue id})>()) {
+      return (
+            challenge: deserialize<_i60.ByteData>(
+              ((data as Map)['n'] as Map)['challenge'],
+            ),
+            id: deserialize<_i1.UuidValue>(data['n']['id']),
+          )
+          as T;
+    }
     try {
-      return _i59.Protocol().deserialize<T>(data, t);
+      return _i61.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i60.Protocol().deserialize<T>(data, t);
+      return _i59.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -800,11 +819,11 @@ class Protocol extends _i1.SerializationManager {
       case _i53.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
-    className = _i59.Protocol().getClassNameForObject(data);
+    className = _i61.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i60.Protocol().getClassNameForObject(data);
+    className = _i59.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -975,11 +994,11 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i59.Protocol().deserializeByClassName(data);
+      return _i61.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i60.Protocol().deserializeByClassName(data);
+      return _i59.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -993,12 +1012,80 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
+    if (record is ({_i59.AuthSuccess auth, String operator})) {
+      return {
+        "n": {
+          "auth": record.auth.toJson(),
+          "operator": record.operator,
+        },
+      };
+    }
+    if (record is ({_i60.ByteData challenge, _i1.UuidValue id})) {
+      return {
+        "n": {
+          "challenge": record.challenge.toJson(),
+          "id": record.id.toJson(),
+        },
+      };
+    }
+    try {
+      return _i61.Protocol().mapRecordToJson(record);
+    } catch (_) {}
     try {
       return _i59.Protocol().mapRecordToJson(record);
     } catch (_) {}
-    try {
-      return _i60.Protocol().mapRecordToJson(record);
-    } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  /// Maps container types (like [List], [Map], [Set]) containing
+  /// [Record]s or non-String-keyed [Map]s to their JSON representation.
+  ///
+  /// It should not be called for [SerializableModel] types. These
+  /// handle the "[Record] in container" mapping internally already.
+  ///
+  /// It is only supposed to be called from generated protocol code.
+  ///
+  /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+  /// non-String keys) or a `Map<String, dynamic>` in case the input was
+  /// a `Map<String, …>`.
+  Object? mapContainerToJson(Object obj) {
+    if (obj is! Iterable && obj is! Map) {
+      throw ArgumentError.value(
+        obj,
+        'obj',
+        'The object to serialize should be of type List, Map, or Set',
+      );
+    }
+
+    dynamic mapIfNeeded(Object? obj) {
+      return switch (obj) {
+        Record record => mapRecordToJson(record),
+        Iterable iterable => mapContainerToJson(iterable),
+        Map map => mapContainerToJson(map),
+        Object? value => value,
+      };
+    }
+
+    switch (obj) {
+      case Map<String, dynamic>():
+        return {
+          for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        };
+      case Map():
+        return [
+          for (var entry in obj.entries)
+            {
+              'k': mapIfNeeded(entry.key),
+              'v': mapIfNeeded(entry.value),
+            },
+        ];
+
+      case Iterable():
+        return [
+          for (var e in obj) mapIfNeeded(e),
+        ];
+    }
+
+    return obj;
   }
 }

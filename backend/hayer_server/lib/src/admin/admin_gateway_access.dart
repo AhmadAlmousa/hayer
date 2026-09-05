@@ -1,15 +1,19 @@
+import 'package:serverpod/serverpod.dart';
+
 abstract final class AdminGatewayAccess {
-  static const authenticatedHeader = 'x-hayer-admin-authenticated';
+  static const enrollmentHeader = 'x-hayer-admin-enrollment';
   static const usernameHeader = 'x-hayer-admin-user';
   static const originAllowedHeader = 'x-hayer-admin-origin-allowed';
+  static const adminScope = Scope('admin');
+  static const enrollmentScope = Scope('admin-enrollment');
 
-  /// Resolves the nginx-authenticated operator or rejects an incomplete marker.
-  static String? resolveOperator({
-    required Iterable<String>? authenticatedValues,
+  /// Resolves the nginx-authenticated recovery operator.
+  static String? resolveEnrollmentOperator({
+    required Iterable<String>? enrollmentValues,
     required Iterable<String>? usernameValues,
     required Iterable<String>? originAllowedValues,
   }) {
-    if (_single(authenticatedValues) != '1') return null;
+    if (_single(enrollmentValues) != '1') return null;
     if (_single(originAllowedValues) != '1') return null;
     final username = _single(usernameValues)?.trim();
     if (username == null ||
@@ -18,6 +22,9 @@ abstract final class AdminGatewayAccess {
     }
     return username;
   }
+
+  static bool isOriginAllowed(Iterable<String>? values) =>
+      _single(values) == '1';
 
   static String? _single(Iterable<String>? values) {
     if (values == null) return null;

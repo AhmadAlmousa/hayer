@@ -5,6 +5,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart' show RateLimit;
+import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
@@ -34,6 +35,11 @@ void run(List<String> args) async {
           maxAttempts: 30,
           timeframe: Duration(hours: 1),
         ),
+      ),
+      PasskeyIdpConfig(
+        hostname: pod.runMode == ServerpodRunMode.production
+            ? 'hayer.almou.sa'
+            : 'localhost',
       ),
     ],
   );

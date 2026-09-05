@@ -2,7 +2,8 @@
 
 Serverpod monolith containing the authenticated session engine, shared
 PostGIS POI catalog, calibrated Google web extractor, maintenance jobs, admin
-API, and public web routes. Redis is deliberately disabled for the beta.
+API, WebAuthn passkey verifier, and public web routes. Redis is deliberately
+disabled for the beta.
 
 The bundled place calibration is the offline fallback. The running server
 checks Vela's detached-signature-protected calibration feed at startup and once
@@ -22,6 +23,12 @@ dart test
 Runtime and database integration require PostgreSQL 16 with PostGIS. Production
 deployment is defined in `../deploy/`; broader setup and verification status
 are in the repository `README.md` and `PROJECT.md`.
+
+Production configures the Serverpod passkey relying party as
+`hayer.almou.sa`; development/test use `localhost`. Admin endpoints require an
+authenticated `admin` scope and the gateway's exact-origin marker. The separate
+Basic-Auth enrollment endpoint issues only a short bootstrap flow, and its
+token is revoked immediately after a passkey is registered.
 
 The production Docker image compiles the server, runtime initializer, and both
 canaries to standalone native executables. Its final Debian stage contains no

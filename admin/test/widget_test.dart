@@ -2,9 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_admin/admin_app.dart';
 import 'package:hayer_admin/admin_operations.dart';
+import 'package:hayer_admin/features/auth/admin_auth_controller.dart';
+import 'package:hayer_admin/features/auth/admin_auth_repository.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
+  testWidgets('passkey sign-in unlocks the dashboard', (tester) async {
+    await _setSurface(tester, const Size(900, 800));
+    final client = Client('http://localhost:8080/');
+    addTearDown(client.close);
+    final repository = _FakeAdminAuthRepository(authenticated: false);
+    final controller = AdminAuthController(repository);
+    await tester.pumpWidget(
+      AdminApp(
+        client: client,
+        authController: controller,
+        operations: _FakeAdminOperations(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hayer Admin'), findsOneWidget);
+    expect(find.byKey(const Key('sign-in-passkey')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('sign-in-passkey')));
+    await tester.pumpAndSettle();
+
+    expect(repository.signInCount, 1);
+    expect(find.text('Most popular cities'), findsOneWidget);
+  });
+
+  testWidgets('recovery link opens the protected enrollment flow', (
+    tester,
+  ) async {
+    await _setSurface(tester, const Size(900, 800));
+    final client = Client('http://localhost:8080/');
+    addTearDown(client.close);
+    final controller = AdminAuthController(
+      _FakeAdminAuthRepository(authenticated: false),
+    );
+    await tester.pumpWidget(
+      AdminApp(
+        client: client,
+        authController: controller,
+        operations: _FakeAdminOperations(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Enroll or recover a passkey'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enroll a passkey'), findsOneWidget);
+    expect(find.byKey(const Key('enroll-passkey')), findsOneWidget);
+    expect(find.textContaining('never stored by Hayer'), findsOneWidget);
+  });
+
   testWidgets('wide dashboard shows product analytics and live usage', (
     tester,
   ) async {
@@ -92,8 +143,43 @@ Future<void> _pumpDashboard(
 ) async {
   final client = Client('http://localhost:8080/');
   addTearDown(client.close);
-  await tester.pumpWidget(AdminApp(client: client, operations: operations));
+  final controller = AdminAuthController(
+    _FakeAdminAuthRepository(authenticated: true),
+  );
+  await controller.restore();
+  await tester.pumpWidget(
+    AdminApp(
+      client: client,
+      authController: controller,
+      operations: operations,
+    ),
+  );
   await tester.pumpAndSettle();
+}
+
+class _FakeAdminAuthRepository implements AdminAuthRepository {
+  _FakeAdminAuthRepository({required this.authenticated});
+
+  bool authenticated;
+  int signInCount = 0;
+
+  @override
+  bool get hasAdminSession => authenticated;
+
+  @override
+  Future<void> enroll() async => authenticated = true;
+
+  @override
+  Future<void> signIn() async {
+    signInCount++;
+    authenticated = true;
+  }
+
+  @override
+  Future<void> signOut() async => authenticated = false;
+
+  @override
+  Future<String> verifySession() async => 'operator';
 }
 
 class _FakeAdminOperations implements AdminOperations {

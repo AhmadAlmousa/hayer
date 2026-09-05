@@ -141,20 +141,16 @@ class ServerpodAdminOperations implements AdminOperations {
 
   final Client client;
 
-  static const _credentials = '';
-  static const _operatorName = 'gateway';
-
   @override
-  Future<AdminLiveUsage> liveUsage() =>
-      client.admin.liveUsage(credentials: _credentials);
+  Future<AdminLiveUsage> liveUsage() => client.admin.liveUsage();
 
   @override
   Future<AdminAnalyticsOverview> analyticsOverview(AnalyticsFilter filter) =>
-      client.admin.analyticsOverview(credentials: _credentials, filter: filter);
+      client.admin.analyticsOverview(filter: filter);
 
   @override
   Future<AdminUsageAnalytics> usageAnalytics(AnalyticsFilter filter) =>
-      client.admin.usageAnalytics(credentials: _credentials, filter: filter);
+      client.admin.usageAnalytics(filter: filter);
 
   @override
   Future<AdminPlaceAnalytics> placeAnalytics({
@@ -162,7 +158,6 @@ class ServerpodAdminOperations implements AdminOperations {
     required PlaceRanking ranking,
     required int minimumSamples,
   }) => client.admin.placeAnalytics(
-    credentials: _credentials,
     filter: filter,
     ranking: ranking,
     minimumSamples: minimumSamples,
@@ -172,11 +167,8 @@ class ServerpodAdminOperations implements AdminOperations {
   Future<List<LocationSuggestion>> suggestAdminLocation({
     required String query,
     required String countryCode,
-  }) => client.admin.suggestAdminLocation(
-    credentials: _credentials,
-    query: query,
-    countryCode: countryCode,
-  );
+  }) =>
+      client.admin.suggestAdminLocation(query: query, countryCode: countryCode);
 
   @override
   Future<AdminMapLocation> reverseAdminLocation({
@@ -184,21 +176,17 @@ class ServerpodAdminOperations implements AdminOperations {
     required double longitude,
     required String countryCode,
   }) => client.admin.reverseAdminLocation(
-    credentials: _credentials,
     latitude: latitude,
     longitude: longitude,
     countryCode: countryCode,
   );
 
   @override
-  Future<AdminTaxonomyVersion> taxonomyDraft() => client.admin.taxonomyDraft(
-    credentials: _credentials,
-    operatorName: _operatorName,
-  );
+  Future<AdminTaxonomyVersion> taxonomyDraft() => client.admin.taxonomyDraft();
 
   @override
   Future<List<AdminTaxonomyVersion>> taxonomyHistory() =>
-      client.admin.taxonomyHistory(credentials: _credentials);
+      client.admin.taxonomyHistory();
 
   @override
   Future<AdminTaxonomyVersion> saveTaxonomyDraft({
@@ -207,8 +195,6 @@ class ServerpodAdminOperations implements AdminOperations {
     required int revision,
     required List<AdminTaxonomyItem> items,
   }) => client.admin.saveTaxonomyDraft(
-    credentials: _credentials,
-    operatorName: _operatorName,
     reason: reason,
     version: version,
     revision: revision,
@@ -223,8 +209,6 @@ class ServerpodAdminOperations implements AdminOperations {
     required AdminMapLocation location,
     required int radiusMeters,
   }) => client.admin.validateTaxonomyDraft(
-    credentials: _credentials,
-    operatorName: _operatorName,
     reason: reason,
     version: version,
     revision: revision,
@@ -238,8 +222,6 @@ class ServerpodAdminOperations implements AdminOperations {
     required String version,
     required int revision,
   }) => client.admin.publishTaxonomy(
-    credentials: _credentials,
-    operatorName: _operatorName,
     reason: reason,
     version: version,
     revision: revision,
@@ -249,16 +231,10 @@ class ServerpodAdminOperations implements AdminOperations {
   Future<AdminTaxonomyVersion> rollbackTaxonomy({
     required String reason,
     required String version,
-  }) => client.admin.rollbackTaxonomy(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    reason: reason,
-    version: version,
-  );
+  }) => client.admin.rollbackTaxonomy(reason: reason, version: version);
 
   @override
-  Future<CacheDashboardSummary> summary() =>
-      client.admin.summary(credentials: _credentials);
+  Future<CacheDashboardSummary> summary() => client.admin.summary();
 
   @override
   Future<CatalogPlacePage> catalog({
@@ -267,7 +243,6 @@ class ServerpodAdminOperations implements AdminOperations {
     required String query,
     required bool includeQuarantined,
   }) => client.admin.catalog(
-    credentials: _credentials,
     page: page,
     pageSize: pageSize,
     query: query,
@@ -279,12 +254,7 @@ class ServerpodAdminOperations implements AdminOperations {
     required int page,
     required int pageSize,
     required String query,
-  }) => client.admin.coverage(
-    credentials: _credentials,
-    page: page,
-    pageSize: pageSize,
-    query: query,
-  );
+  }) => client.admin.coverage(page: page, pageSize: pageSize, query: query);
 
   @override
   Future<RefreshJobPage> refreshJobs({
@@ -293,7 +263,6 @@ class ServerpodAdminOperations implements AdminOperations {
     required String query,
     JobStatus? status,
   }) => client.admin.refreshJobs(
-    credentials: _credentials,
     page: page,
     pageSize: pageSize,
     query: query,
@@ -305,106 +274,65 @@ class ServerpodAdminOperations implements AdminOperations {
     required int page,
     required int pageSize,
     required String query,
-  }) => client.admin.auditLog(
-    credentials: _credentials,
-    page: page,
-    pageSize: pageSize,
-    query: query,
-  );
+  }) => client.admin.auditLog(page: page, pageSize: pageSize, query: query);
 
   @override
   Future<List<MetricPoint>> metricTrend({int hours = 24}) =>
-      client.admin.metricTrend(credentials: _credentials, hours: hours);
+      client.admin.metricTrend(hours: hours);
 
   @override
-  Future<CatalogPrunePreview> prunePreview() =>
-      client.admin.prunePreview(credentials: _credentials);
+  Future<CatalogPrunePreview> prunePreview() => client.admin.prunePreview();
 
   @override
   Future<int> pruneCatalog({required String reason}) =>
-      client.admin.pruneCatalog(
-        credentials: _credentials,
-        operatorName: _operatorName,
-        reason: reason,
-      );
+      client.admin.pruneCatalog(reason: reason);
 
   @override
-  Future<CachePolicy> policy() =>
-      client.admin.policy(credentials: _credentials);
+  Future<CachePolicy> policy() => client.admin.policy();
 
   @override
   Future<CachePolicy> updatePolicy({
     required String reason,
     required CachePolicy policy,
-  }) => client.admin.updatePolicy(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    reason: reason,
-    policy: policy,
-  );
+  }) => client.admin.updatePolicy(reason: reason, policy: policy);
 
   @override
   Future<bool> quarantine({
     required String providerPlaceId,
     required String reason,
-  }) => client.admin.quarantine(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    providerPlaceId: providerPlaceId,
-    reason: reason,
-  );
+  }) =>
+      client.admin.quarantine(providerPlaceId: providerPlaceId, reason: reason);
 
   @override
   Future<bool> restore({
     required String providerPlaceId,
     required String reason,
-  }) => client.admin.restore(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    providerPlaceId: providerPlaceId,
-    reason: reason,
-  );
+  }) => client.admin.restore(providerPlaceId: providerPlaceId, reason: reason);
 
   @override
   Future<String> refreshCoverage({
     required String coverageKey,
     required String reason,
-  }) => client.admin.refreshCoverage(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    coverageKey: coverageKey,
-    reason: reason,
-  );
+  }) => client.admin.refreshCoverage(coverageKey: coverageKey, reason: reason);
 
   @override
   Future<bool> cancelRefreshJob({
     required String jobId,
     required String reason,
-  }) => client.admin.cancelRefreshJob(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    jobId: jobId,
-    reason: reason,
-  );
+  }) => client.admin.cancelRefreshJob(jobId: jobId, reason: reason);
 
   @override
   Future<int> invalidateCoverage({
     required String coverageKey,
     required String reason,
-  }) => client.admin.invalidateCoverage(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    coverageKey: coverageKey,
-    reason: reason,
-  );
+  }) =>
+      client.admin.invalidateCoverage(coverageKey: coverageKey, reason: reason);
 
   @override
   Future<CalibrationValidation> validateCalibration({
     required String version,
     required String documentJson,
   }) => client.admin.validateCalibration(
-    credentials: _credentials,
-    operatorName: _operatorName,
     version: version,
     documentJson: documentJson,
   );
@@ -413,21 +341,11 @@ class ServerpodAdminOperations implements AdminOperations {
   Future<bool> activateCalibration({
     required String version,
     required String reason,
-  }) => client.admin.activateCalibration(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    version: version,
-    reason: reason,
-  );
+  }) => client.admin.activateCalibration(version: version, reason: reason);
 
   @override
   Future<bool> rollbackCalibration({
     required String version,
     required String reason,
-  }) => client.admin.rollbackCalibration(
-    credentials: _credentials,
-    operatorName: _operatorName,
-    version: version,
-    reason: reason,
-  );
+  }) => client.admin.rollbackCalibration(version: version, reason: reason);
 }

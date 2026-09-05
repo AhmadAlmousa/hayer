@@ -1,6 +1,6 @@
 # Hayer admin
 
-Protected Flutter web suite for anonymous product analytics, live usage,
+Passkey-protected Flutter web suite for anonymous product analytics, live usage,
 place-vote insights, versioned taxonomy, catalog and coverage inspection,
 refresh jobs, cache policy, audit history, and calibration rollout.
 
@@ -20,7 +20,25 @@ flutter test
 flutter build web --base-href /admin/
 ```
 
-The production gateway protects `/admin/` and its nested API route with
-the same nginx Basic Auth credentials. Mutating and read RPCs also require an
-exact `https://hayer.almou.sa` browser origin marker set by nginx. See
-`../backend/deploy/secrets/README.md`.
+The production entry point is `https://hayer.almou.sa/admin`. The public shell
+shows no dashboard data until a Serverpod JWT with the `admin` scope has been
+obtained through a WebAuthn passkey. Every read and mutation RPC independently
+requires that scope and an exact `https://hayer.almou.sa` origin marker set by
+nginx. Sign-out revokes the server token and clears secure client storage.
+
+For the first passkey, or recovery, open
+`https://hayer.almou.sa/admin/enroll`. nginx protects that page and
+`/admin/enroll-api/` with the break-glass Basic Auth account. It issues an
+`admin-enrollment`-only token, registers one discoverable passkey with required
+user verification, revokes the enrollment token, and performs a fresh passkey
+login. Hayer never saves the Basic Auth password. `local_auth` is not used:
+local device approval alone cannot authenticate a web administrator to the
+server.
+
+The web build self-hosts the `passkeys` package's documented browser bridge as
+`web/passkeys_bundle.js` alongside its redistribution license; its verified
+upstream SHA-384 is
+`lJXabVIVTplZn8Gq0rr7HchxKSYaVleDXbBqiFCwr5wJ9cQnHZGdx89nnZX9xHcavar`.
+Refresh the vendored bridge and recorded hash together when upgrading
+`passkeys`. See `../backend/deploy/secrets/README.md` for recovery credential
+handling.

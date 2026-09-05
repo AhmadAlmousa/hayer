@@ -41,11 +41,12 @@ import 'package:hayer_client/src/protocol/swipe_command.dart' as _i27;
 import 'package:hayer_client/src/protocol/session_result.dart' as _i28;
 import 'package:hayer_client/src/protocol/session_event.dart' as _i29;
 import 'package:hayer_client/src/protocol/taxonomy_snapshot.dart' as _i30;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i31;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i31;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i32;
-import 'protocol.dart' as _i33;
+import 'dart:typed_data' as _i33;
+import 'protocol.dart' as _i34;
 
 /// {@category Endpoint}
 class EndpointAdmin extends _i1.EndpointRef {
@@ -54,39 +55,30 @@ class EndpointAdmin extends _i1.EndpointRef {
   @override
   String get name => 'admin';
 
-  _i2.Future<_i3.AdminLiveUsage> liveUsage({required String credentials}) =>
+  _i2.Future<_i3.AdminLiveUsage> liveUsage() =>
       caller.callServerEndpoint<_i3.AdminLiveUsage>(
         'admin',
         'liveUsage',
-        {'credentials': credentials},
+        {},
       );
 
   _i2.Future<_i4.AdminAnalyticsOverview> analyticsOverview({
-    required String credentials,
     required _i5.AnalyticsFilter filter,
   }) => caller.callServerEndpoint<_i4.AdminAnalyticsOverview>(
     'admin',
     'analyticsOverview',
-    {
-      'credentials': credentials,
-      'filter': filter,
-    },
+    {'filter': filter},
   );
 
   _i2.Future<_i6.AdminUsageAnalytics> usageAnalytics({
-    required String credentials,
     required _i5.AnalyticsFilter filter,
   }) => caller.callServerEndpoint<_i6.AdminUsageAnalytics>(
     'admin',
     'usageAnalytics',
-    {
-      'credentials': credentials,
-      'filter': filter,
-    },
+    {'filter': filter},
   );
 
   _i2.Future<_i7.AdminPlaceAnalytics> placeAnalytics({
-    required String credentials,
     required _i5.AnalyticsFilter filter,
     required _i8.PlaceRanking ranking,
     required int minimumSamples,
@@ -94,7 +86,6 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'placeAnalytics',
     {
-      'credentials': credentials,
       'filter': filter,
       'ranking': ranking,
       'minimumSamples': minimumSamples,
@@ -102,21 +93,18 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   _i2.Future<List<_i9.LocationSuggestion>> suggestAdminLocation({
-    required String credentials,
     required String query,
     required String countryCode,
   }) => caller.callServerEndpoint<List<_i9.LocationSuggestion>>(
     'admin',
     'suggestAdminLocation',
     {
-      'credentials': credentials,
       'query': query,
       'countryCode': countryCode,
     },
   );
 
   _i2.Future<_i10.AdminMapLocation> reverseAdminLocation({
-    required String credentials,
     required double latitude,
     required double longitude,
     required String countryCode,
@@ -124,36 +112,27 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'reverseAdminLocation',
     {
-      'credentials': credentials,
       'latitude': latitude,
       'longitude': longitude,
       'countryCode': countryCode,
     },
   );
 
-  _i2.Future<_i11.AdminTaxonomyVersion> taxonomyDraft({
-    required String credentials,
-    required String operatorName,
-  }) => caller.callServerEndpoint<_i11.AdminTaxonomyVersion>(
-    'admin',
-    'taxonomyDraft',
-    {
-      'credentials': credentials,
-      'operatorName': operatorName,
-    },
-  );
+  _i2.Future<_i11.AdminTaxonomyVersion> taxonomyDraft() =>
+      caller.callServerEndpoint<_i11.AdminTaxonomyVersion>(
+        'admin',
+        'taxonomyDraft',
+        {},
+      );
 
-  _i2.Future<List<_i11.AdminTaxonomyVersion>> taxonomyHistory({
-    required String credentials,
-  }) => caller.callServerEndpoint<List<_i11.AdminTaxonomyVersion>>(
-    'admin',
-    'taxonomyHistory',
-    {'credentials': credentials},
-  );
+  _i2.Future<List<_i11.AdminTaxonomyVersion>> taxonomyHistory() =>
+      caller.callServerEndpoint<List<_i11.AdminTaxonomyVersion>>(
+        'admin',
+        'taxonomyHistory',
+        {},
+      );
 
   _i2.Future<_i11.AdminTaxonomyVersion> saveTaxonomyDraft({
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
@@ -162,8 +141,6 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'saveTaxonomyDraft',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'reason': reason,
       'version': version,
       'revision': revision,
@@ -172,8 +149,6 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   _i2.Future<_i13.TaxonomyValidation> validateTaxonomyDraft({
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
@@ -183,8 +158,6 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'validateTaxonomyDraft',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'reason': reason,
       'version': version,
       'revision': revision,
@@ -194,8 +167,6 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   _i2.Future<_i11.AdminTaxonomyVersion> publishTaxonomy({
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
@@ -203,8 +174,6 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'publishTaxonomy',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'reason': reason,
       'version': version,
       'revision': revision,
@@ -212,31 +181,25 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   _i2.Future<_i11.AdminTaxonomyVersion> rollbackTaxonomy({
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
   }) => caller.callServerEndpoint<_i11.AdminTaxonomyVersion>(
     'admin',
     'rollbackTaxonomy',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'reason': reason,
       'version': version,
     },
   );
 
-  _i2.Future<_i14.CacheDashboardSummary> summary({
-    required String credentials,
-  }) => caller.callServerEndpoint<_i14.CacheDashboardSummary>(
-    'admin',
-    'summary',
-    {'credentials': credentials},
-  );
+  _i2.Future<_i14.CacheDashboardSummary> summary() =>
+      caller.callServerEndpoint<_i14.CacheDashboardSummary>(
+        'admin',
+        'summary',
+        {},
+      );
 
   _i2.Future<_i15.CatalogPlacePage> catalog({
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -245,7 +208,6 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'catalog',
     {
-      'credentials': credentials,
       'page': page,
       'pageSize': pageSize,
       'query': query,
@@ -254,7 +216,6 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   _i2.Future<_i16.CoveragePage> coverage({
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -262,7 +223,6 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'coverage',
     {
-      'credentials': credentials,
       'page': page,
       'pageSize': pageSize,
       'query': query,
@@ -270,7 +230,6 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   _i2.Future<_i17.RefreshJobPage> refreshJobs({
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -279,7 +238,6 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'refreshJobs',
     {
-      'credentials': credentials,
       'page': page,
       'pageSize': pageSize,
       'query': query,
@@ -288,7 +246,6 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   _i2.Future<_i19.AdminAuditPage> auditLog({
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
@@ -296,193 +253,143 @@ class EndpointAdmin extends _i1.EndpointRef {
     'admin',
     'auditLog',
     {
-      'credentials': credentials,
       'page': page,
       'pageSize': pageSize,
       'query': query,
     },
   );
 
-  _i2.Future<List<_i20.MetricPoint>> metricTrend({
-    required String credentials,
-    required int hours,
-  }) => caller.callServerEndpoint<List<_i20.MetricPoint>>(
-    'admin',
-    'metricTrend',
-    {
-      'credentials': credentials,
-      'hours': hours,
-    },
-  );
+  _i2.Future<List<_i20.MetricPoint>> metricTrend({required int hours}) =>
+      caller.callServerEndpoint<List<_i20.MetricPoint>>(
+        'admin',
+        'metricTrend',
+        {'hours': hours},
+      );
 
-  _i2.Future<_i21.CatalogPrunePreview> prunePreview({
-    required String credentials,
-  }) => caller.callServerEndpoint<_i21.CatalogPrunePreview>(
-    'admin',
-    'prunePreview',
-    {'credentials': credentials},
-  );
+  _i2.Future<_i21.CatalogPrunePreview> prunePreview() =>
+      caller.callServerEndpoint<_i21.CatalogPrunePreview>(
+        'admin',
+        'prunePreview',
+        {},
+      );
 
-  _i2.Future<int> pruneCatalog({
-    required String credentials,
-    required String operatorName,
-    required String reason,
-  }) => caller.callServerEndpoint<int>(
-    'admin',
-    'pruneCatalog',
-    {
-      'credentials': credentials,
-      'operatorName': operatorName,
-      'reason': reason,
-    },
-  );
+  _i2.Future<int> pruneCatalog({required String reason}) =>
+      caller.callServerEndpoint<int>(
+        'admin',
+        'pruneCatalog',
+        {'reason': reason},
+      );
 
-  _i2.Future<_i22.CachePolicy> policy({required String credentials}) =>
+  _i2.Future<_i22.CachePolicy> policy() =>
       caller.callServerEndpoint<_i22.CachePolicy>(
         'admin',
         'policy',
-        {'credentials': credentials},
+        {},
       );
 
   _i2.Future<_i22.CachePolicy> updatePolicy({
-    required String credentials,
-    required String operatorName,
     required String reason,
     required _i22.CachePolicy policy,
   }) => caller.callServerEndpoint<_i22.CachePolicy>(
     'admin',
     'updatePolicy',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'reason': reason,
       'policy': policy,
     },
   );
 
   _i2.Future<bool> quarantine({
-    required String credentials,
-    required String operatorName,
     required String providerPlaceId,
     required String reason,
   }) => caller.callServerEndpoint<bool>(
     'admin',
     'quarantine',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'providerPlaceId': providerPlaceId,
       'reason': reason,
     },
   );
 
   _i2.Future<bool> restore({
-    required String credentials,
-    required String operatorName,
     required String providerPlaceId,
     required String reason,
   }) => caller.callServerEndpoint<bool>(
     'admin',
     'restore',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'providerPlaceId': providerPlaceId,
       'reason': reason,
     },
   );
 
   _i2.Future<String> refreshCoverage({
-    required String credentials,
-    required String operatorName,
     required String coverageKey,
     required String reason,
   }) => caller.callServerEndpoint<String>(
     'admin',
     'refreshCoverage',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'coverageKey': coverageKey,
       'reason': reason,
     },
   );
 
   _i2.Future<bool> cancelRefreshJob({
-    required String credentials,
-    required String operatorName,
     required String jobId,
     required String reason,
   }) => caller.callServerEndpoint<bool>(
     'admin',
     'cancelRefreshJob',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'jobId': jobId,
       'reason': reason,
     },
   );
 
   _i2.Future<int> invalidateCoverage({
-    required String credentials,
-    required String operatorName,
     required String coverageKey,
     required String reason,
   }) => caller.callServerEndpoint<int>(
     'admin',
     'invalidateCoverage',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'coverageKey': coverageKey,
       'reason': reason,
     },
   );
 
   _i2.Future<_i23.CalibrationValidation> validateCalibration({
-    required String credentials,
-    required String operatorName,
     required String version,
     required String documentJson,
   }) => caller.callServerEndpoint<_i23.CalibrationValidation>(
     'admin',
     'validateCalibration',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'version': version,
       'documentJson': documentJson,
     },
   );
 
   _i2.Future<bool> activateCalibration({
-    required String credentials,
-    required String operatorName,
     required String version,
     required String reason,
   }) => caller.callServerEndpoint<bool>(
     'admin',
     'activateCalibration',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'version': version,
       'reason': reason,
     },
   );
 
   _i2.Future<bool> rollbackCalibration({
-    required String credentials,
-    required String operatorName,
     required String version,
     required String reason,
   }) => caller.callServerEndpoint<bool>(
     'admin',
     'rollbackCalibration',
     {
-      'credentials': credentials,
-      'operatorName': operatorName,
       'version': version,
       'reason': reason,
     },
@@ -630,7 +537,42 @@ class EndpointTaxonomy extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointAnonymousIdp extends _i31.EndpointAnonymousIdpBase {
+class EndpointAdminAuth extends _i1.EndpointRef {
+  EndpointAdminAuth(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'adminAuth';
+
+  _i2.Future<String> currentOperator() => caller.callServerEndpoint<String>(
+    'adminAuth',
+    'currentOperator',
+    {},
+  );
+
+  _i2.Future<void> logout() => caller.callServerEndpoint<void>(
+    'adminAuth',
+    'logout',
+    {},
+  );
+}
+
+/// {@category Endpoint}
+class EndpointAdminEnrollment extends _i1.EndpointRef {
+  EndpointAdminEnrollment(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'adminEnrollment';
+
+  _i2.Future<({_i31.AuthSuccess auth, String operator})> begin() =>
+      caller.callServerEndpoint<({_i31.AuthSuccess auth, String operator})>(
+        'adminEnrollment',
+        'begin',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAnonymousIdp extends _i32.EndpointAnonymousIdpBase {
   EndpointAnonymousIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -641,8 +583,8 @@ class EndpointAnonymousIdp extends _i31.EndpointAnonymousIdpBase {
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
   @override
-  _i2.Future<_i32.AuthSuccess> login({String? token}) =>
-      caller.callServerEndpoint<_i32.AuthSuccess>(
+  _i2.Future<_i31.AuthSuccess> login({String? token}) =>
+      caller.callServerEndpoint<_i31.AuthSuccess>(
         'anonymousIdp',
         'login',
         {'token': token},
@@ -652,7 +594,7 @@ class EndpointAnonymousIdp extends _i31.EndpointAnonymousIdpBase {
 /// By extending [RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i32.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i31.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -677,9 +619,9 @@ class EndpointJwtRefresh extends _i32.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i32.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i31.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i32.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i31.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -687,15 +629,56 @@ class EndpointJwtRefresh extends _i32.EndpointRefreshJwtTokens {
   );
 }
 
+/// {@category Endpoint}
+class EndpointPasskeyIdp extends _i32.EndpointPasskeyIdpBase {
+  EndpointPasskeyIdp(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'passkeyIdp';
+
+  @override
+  _i2.Future<({_i33.ByteData challenge, _i1.UuidValue id})> createChallenge() =>
+      caller.callServerEndpoint<({_i33.ByteData challenge, _i1.UuidValue id})>(
+        'passkeyIdp',
+        'createChallenge',
+        {},
+      );
+
+  @override
+  _i2.Future<void> register({
+    required _i32.PasskeyRegistrationRequest registrationRequest,
+  }) => caller.callServerEndpoint<void>(
+    'passkeyIdp',
+    'register',
+    {'registrationRequest': registrationRequest},
+  );
+
+  @override
+  _i2.Future<_i31.AuthSuccess> login({
+    required _i32.PasskeyLoginRequest loginRequest,
+  }) => caller.callServerEndpoint<_i31.AuthSuccess>(
+    'passkeyIdp',
+    'login',
+    {'loginRequest': loginRequest},
+  );
+
+  @override
+  _i2.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'passkeyIdp',
+    'hasAccount',
+    {},
+  );
+}
+
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i31.Caller(client);
-    serverpod_auth_core = _i32.Caller(client);
+    serverpod_auth_idp = _i32.Caller(client);
+    serverpod_auth_core = _i31.Caller(client);
   }
 
-  late final _i31.Caller serverpod_auth_idp;
+  late final _i32.Caller serverpod_auth_idp;
 
-  late final _i32.Caller serverpod_auth_core;
+  late final _i31.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -718,7 +701,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i33.Protocol(),
+         _i34.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -732,8 +715,11 @@ class Client extends _i1.ServerpodClientShared {
     hayerSession = EndpointHayerSession(this);
     place = EndpointPlace(this);
     taxonomy = EndpointTaxonomy(this);
+    adminAuth = EndpointAdminAuth(this);
+    adminEnrollment = EndpointAdminEnrollment(this);
     anonymousIdp = EndpointAnonymousIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    passkeyIdp = EndpointPasskeyIdp(this);
     modules = Modules(this);
   }
 
@@ -747,9 +733,15 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointTaxonomy taxonomy;
 
+  late final EndpointAdminAuth adminAuth;
+
+  late final EndpointAdminEnrollment adminEnrollment;
+
   late final EndpointAnonymousIdp anonymousIdp;
 
   late final EndpointJwtRefresh jwtRefresh;
+
+  late final EndpointPasskeyIdp passkeyIdp;
 
   late final Modules modules;
 
@@ -760,8 +752,11 @@ class Client extends _i1.ServerpodClientShared {
     'hayerSession': hayerSession,
     'place': place,
     'taxonomy': taxonomy,
+    'adminAuth': adminAuth,
+    'adminEnrollment': adminEnrollment,
     'anonymousIdp': anonymousIdp,
     'jwtRefresh': jwtRefresh,
+    'passkeyIdp': passkeyIdp,
   };
 
   @override

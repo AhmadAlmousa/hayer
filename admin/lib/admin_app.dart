@@ -6,12 +6,20 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 
 import 'admin_operations.dart';
 import 'features/analytics/analytics_pages.dart';
+import 'features/auth/admin_auth_controller.dart';
+import 'features/auth/admin_auth_page.dart';
 import 'features/taxonomy/taxonomy_page.dart';
 import 'l10n/generated/admin_localizations.dart';
 
 class AdminApp extends StatefulWidget {
-  const AdminApp({super.key, required this.client, this.operations});
+  const AdminApp({
+    super.key,
+    required this.client,
+    required this.authController,
+    this.operations,
+  });
   final Client client;
+  final AdminAuthController authController;
   final AdminOperations? operations;
 
   @override
@@ -22,13 +30,34 @@ class _AdminAppState extends State<AdminApp> {
   late final AdminOperations _operations =
       widget.operations ?? ServerpodAdminOperations(widget.client);
   late final GoRouter _router = GoRouter(
-    initialLocation: '/overview',
+    refreshListenable: widget.authController,
+    redirect: (context, state) {
+      final authRoute =
+          state.uri.path == '/login' || state.uri.path == '/enroll';
+      if (!widget.authController.isAuthenticated) {
+        return authRoute ? null : '/login';
+      }
+      return authRoute ? '/overview' : null;
+    },
     routes: [
       GoRoute(path: '/', redirect: (_, _) => '/overview'),
+      GoRoute(
+        path: '/login',
+        pageBuilder: (_, _) => _page(
+          AdminAuthPage(controller: widget.authController, enrollment: false),
+        ),
+      ),
+      GoRoute(
+        path: '/enroll',
+        pageBuilder: (_, _) => _page(
+          AdminAuthPage(controller: widget.authController, enrollment: true),
+        ),
+      ),
       ShellRoute(
         builder: (context, state, child) => _Dashboard(
           selectedIndex: _adminRoutes.indexOf(state.uri.path).clamp(0, 9),
           onSelect: (index) => context.go(_adminRoutes[index]),
+          authController: widget.authController,
           child: child,
         ),
         routes: [
@@ -143,11 +172,13 @@ class _Dashboard extends StatelessWidget {
   const _Dashboard({
     required this.selectedIndex,
     required this.onSelect,
+    required this.authController,
     required this.child,
   });
 
   final int selectedIndex;
   final ValueChanged<int> onSelect;
+  final AdminAuthController authController;
   final Widget child;
 
   @override
@@ -186,6 +217,27 @@ class _Dashboard extends StatelessWidget {
               strings.appName,
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
+            actions: [
+              if (wide)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Center(
+                    child: Text(
+                      authController.operator ?? '',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                ),
+              IconButton(
+                key: const Key('admin-sign-out'),
+                tooltip: 'Sign out',
+                onPressed: authController.isBusy
+                    ? null
+                    : authController.signOut,
+                icon: const Icon(Icons.logout_rounded),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
           body: Row(
             children: [

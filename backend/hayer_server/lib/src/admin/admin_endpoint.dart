@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../analytics/analytics_query_service.dart';
+import 'admin_authorization.dart';
 import 'admin_gateway_access.dart';
 import '../generated/protocol.dart';
 import '../places/calibration.dart';
@@ -17,49 +18,46 @@ import '../storage/catalog_pruner.dart';
 
 class AdminEndpoint extends Endpoint {
   @override
-  bool get requireLogin => false;
+  bool get requireLogin => true;
+
+  @override
+  Set<Scope> get requiredScopes => {AdminGatewayAccess.adminScope};
 
   static const _uuid = Uuid();
   static final _geocoder = ReverseGeocodingService();
 
-  Future<AdminLiveUsage> liveUsage(
-    Session session, {
-    required String credentials,
-  }) async {
-    _authorize(session, credentials);
+  Future<AdminLiveUsage> liveUsage(Session session) async {
+    await _authorize(session);
     return AnalyticsQueryService.live(session);
   }
 
   Future<AdminAnalyticsOverview> analyticsOverview(
     Session session, {
-    required String credentials,
     required AnalyticsFilter filter,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     return AnalyticsQueryService.overview(
       session,
       filter: filter,
-      cacheSummary: await summary(session, credentials: credentials),
+      cacheSummary: await summary(session),
     );
   }
 
   Future<AdminUsageAnalytics> usageAnalytics(
     Session session, {
-    required String credentials,
     required AnalyticsFilter filter,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     return AnalyticsQueryService.usage(session, filter: filter);
   }
 
   Future<AdminPlaceAnalytics> placeAnalytics(
     Session session, {
-    required String credentials,
     required AnalyticsFilter filter,
     required PlaceRanking ranking,
     int minimumSamples = 5,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     return AnalyticsQueryService.places(
       session,
       filter: filter,
@@ -70,11 +68,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<List<LocationSuggestion>> suggestAdminLocation(
     Session session, {
-    required String credentials,
     required String query,
     String countryCode = 'SA',
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     final normalized = query.trim();
     if (normalized.length < 3 || normalized.length > 120) return const [];
     try {
@@ -90,12 +87,11 @@ class AdminEndpoint extends Endpoint {
 
   Future<AdminMapLocation> reverseAdminLocation(
     Session session, {
-    required String credentials,
     required double latitude,
     required double longitude,
     String countryCode = 'SA',
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     _coordinates(latitude, longitude);
     try {
       final value = await _geocoder.reverseDetails(
@@ -115,36 +111,27 @@ class AdminEndpoint extends Endpoint {
     }
   }
 
-  Future<AdminTaxonomyVersion> taxonomyDraft(
-    Session session, {
-    required String credentials,
-    required String operatorName,
-  }) async {
-    operatorName = _authorize(session, credentials);
+  Future<AdminTaxonomyVersion> taxonomyDraft(Session session) async {
+    final operatorName = await _authorize(session);
     return TaxonomyService.editableDraft(
       session,
       operatorName: operatorName,
     );
   }
 
-  Future<List<AdminTaxonomyVersion>> taxonomyHistory(
-    Session session, {
-    required String credentials,
-  }) async {
-    _authorize(session, credentials);
+  Future<List<AdminTaxonomyVersion>> taxonomyHistory(Session session) async {
+    await _authorize(session);
     return TaxonomyService.history(session);
   }
 
   Future<AdminTaxonomyVersion> saveTaxonomyDraft(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
     required List<AdminTaxonomyItem> items,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final draft = await TaxonomyService.saveDraft(
       session,
@@ -170,15 +157,13 @@ class AdminEndpoint extends Endpoint {
 
   Future<TaxonomyValidation> validateTaxonomyDraft(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
     required AdminMapLocation location,
     int radiusMeters = 3000,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     _coordinates(location.latitude, location.longitude);
     if (radiusMeters < 500 || radiusMeters > 10000) {
@@ -275,13 +260,11 @@ class AdminEndpoint extends Endpoint {
 
   Future<AdminTaxonomyVersion> publishTaxonomy(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
     required int revision,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final result = await TaxonomyService.publish(
       session,
@@ -302,12 +285,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<AdminTaxonomyVersion> rollbackTaxonomy(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required String version,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final result = await TaxonomyService.rollback(session, version: version);
     await _audit(
@@ -321,11 +302,8 @@ class AdminEndpoint extends Endpoint {
     return result;
   }
 
-  Future<CacheDashboardSummary> summary(
-    Session session, {
-    required String credentials,
-  }) async {
-    _authorize(session, credentials);
+  Future<CacheDashboardSummary> summary(Session session) async {
+    await _authorize(session);
     final now = DateTime.now().toUtc();
     final freshAfter = now.subtract(const Duration(hours: 72));
     final catalogCount = await PoiCatalogRow.db.count(session);
@@ -371,13 +349,12 @@ class AdminEndpoint extends Endpoint {
 
   Future<CatalogPlacePage> catalog(
     Session session, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
     bool includeQuarantined = false,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     final safePage = page.clamp(0, 100000);
     final safeSize = pageSize.clamp(1, 100);
     final search = query?.trim();
@@ -411,12 +388,11 @@ class AdminEndpoint extends Endpoint {
 
   Future<CoveragePage> coverage(
     Session session, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     final safePage = page.clamp(0, 100000);
     final safeSize = pageSize.clamp(1, 100);
     final search = query?.trim();
@@ -446,13 +422,12 @@ class AdminEndpoint extends Endpoint {
 
   Future<RefreshJobPage> refreshJobs(
     Session session, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
     JobStatus? status,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     final safePage = page.clamp(0, 100000);
     final safeSize = pageSize.clamp(1, 100);
     final search = query?.trim();
@@ -488,12 +463,11 @@ class AdminEndpoint extends Endpoint {
 
   Future<AdminAuditPage> auditLog(
     Session session, {
-    required String credentials,
     required int page,
     required int pageSize,
     String? query,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     final safePage = page.clamp(0, 100000);
     final safeSize = pageSize.clamp(1, 100);
     final search = query?.trim();
@@ -524,10 +498,9 @@ class AdminEndpoint extends Endpoint {
 
   Future<List<MetricPoint>> metricTrend(
     Session session, {
-    required String credentials,
     int hours = 24,
   }) async {
-    _authorize(session, credentials);
+    await _authorize(session);
     final safeHours = hours.clamp(1, 168);
     final rows = await OperationalMetricRow.db.find(
       session,
@@ -555,11 +528,8 @@ class AdminEndpoint extends Endpoint {
     return result;
   }
 
-  Future<CatalogPrunePreview> prunePreview(
-    Session session, {
-    required String credentials,
-  }) async {
-    _authorize(session, credentials);
+  Future<CatalogPrunePreview> prunePreview(Session session) async {
+    await _authorize(session);
     final policy = await _policyRow(session);
     final retentionDays = policy?.retentionDays ?? 365;
     final cutoff = DateTime.now().toUtc().subtract(
@@ -577,13 +547,11 @@ class AdminEndpoint extends Endpoint {
 
   Future<int> pruneCatalog(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String reason,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
-    final preview = await prunePreview(session, credentials: credentials);
+    final preview = await prunePreview(session);
     final removed = await CatalogPruner.prune(
       session,
       cutoff: preview.cutoff,
@@ -601,11 +569,8 @@ class AdminEndpoint extends Endpoint {
     return removed;
   }
 
-  Future<CachePolicy> policy(
-    Session session, {
-    required String credentials,
-  }) async {
-    _authorize(session, credentials);
+  Future<CachePolicy> policy(Session session) async {
+    await _authorize(session);
     final row = await CacheSettingsRow.db.findFirstRow(
       session,
       where: (table) => table.settingsKey.equals('default'),
@@ -616,12 +581,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<CachePolicy> updatePolicy(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String reason,
     required CachePolicy policy,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     _validatePolicy(policy);
     final now = DateTime.now().toUtc();
@@ -675,14 +638,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<bool> quarantine(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String providerPlaceId,
     required String reason,
   }) => _setQuarantine(
     session,
-    credentials: credentials,
-    operatorName: operatorName,
     providerPlaceId: providerPlaceId,
     reason: reason,
     quarantine: true,
@@ -690,14 +649,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<bool> restore(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String providerPlaceId,
     required String reason,
   }) => _setQuarantine(
     session,
-    credentials: credentials,
-    operatorName: operatorName,
     providerPlaceId: providerPlaceId,
     reason: reason,
     quarantine: false,
@@ -705,12 +660,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<String> refreshCoverage(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String coverageKey,
     required String reason,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final existing = await RefreshJobRow.db.findFirstRow(
       session,
@@ -745,12 +698,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<bool> cancelRefreshJob(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String jobId,
     required String reason,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final row = await RefreshJobRow.db.findFirstRow(
       session,
@@ -798,12 +749,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<int> invalidateCoverage(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String coverageKey,
     required String reason,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final rows = await PoiCoverageRow.db.updateWhere(
       session,
@@ -823,12 +772,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<CalibrationValidation> validateCalibration(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String version,
     required String documentJson,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     final normalizedVersion = version.trim();
     if (!RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$').hasMatch(
       normalizedVersion,
@@ -925,12 +872,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<bool> activateCalibration(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String version,
     required String reason,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final candidate = await CalibrationRow.db.findFirstRow(
       session,
@@ -973,12 +918,10 @@ class AdminEndpoint extends Endpoint {
 
   Future<bool> rollbackCalibration(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String version,
     required String reason,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final candidate = await CalibrationRow.db.findFirstRow(
       session,
@@ -1021,13 +964,11 @@ class AdminEndpoint extends Endpoint {
 
   Future<bool> _setQuarantine(
     Session session, {
-    required String credentials,
-    required String operatorName,
     required String providerPlaceId,
     required String reason,
     required bool quarantine,
   }) async {
-    operatorName = _authorize(session, credentials);
+    final operatorName = await _authorize(session);
     _reason(reason);
     final row = await PoiCatalogRow.db.findFirstRow(
       session,
@@ -1242,23 +1183,8 @@ WHERE "metricName" = @name
     }
   }
 
-  String _authorize(Session session, String _) {
-    final request = session.request;
-    final operator = AdminGatewayAccess.resolveOperator(
-      authenticatedValues:
-          request?.headers[AdminGatewayAccess.authenticatedHeader],
-      usernameValues: request?.headers[AdminGatewayAccess.usernameHeader],
-      originAllowedValues:
-          request?.headers[AdminGatewayAccess.originAllowedHeader],
-    );
-    if (operator == null) {
-      throw ApiException(
-        code: 'unauthorized',
-        message: 'Dashboard access must pass through the protected gateway.',
-      );
-    }
-    return operator;
-  }
+  Future<String> _authorize(Session session) =>
+      AdminAuthorization.requireOperator(session);
 
   String _operator(String value) {
     final result = value.trim();

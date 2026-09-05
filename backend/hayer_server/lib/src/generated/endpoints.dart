@@ -17,20 +17,24 @@ import '../api/bootstrap_endpoint.dart' as _i3;
 import '../api/hayer_session_endpoint.dart' as _i4;
 import '../api/place_endpoint.dart' as _i5;
 import '../api/taxonomy_endpoint.dart' as _i6;
-import '../auth/anonymous_idp_endpoint.dart' as _i7;
-import '../auth/jwt_refresh_endpoint.dart' as _i8;
-import 'package:hayer_server/src/generated/analytics_filter.dart' as _i9;
-import 'package:hayer_server/src/generated/place_ranking.dart' as _i10;
-import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i11;
-import 'package:hayer_server/src/generated/admin_map_location.dart' as _i12;
-import 'package:hayer_server/src/generated/job_status.dart' as _i13;
-import 'package:hayer_server/src/generated/cache_policy.dart' as _i14;
-import 'package:hayer_server/src/generated/create_session_request.dart' as _i15;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i16;
+import '../auth/admin_auth_endpoint.dart' as _i7;
+import '../auth/admin_enrollment_endpoint.dart' as _i8;
+import '../auth/anonymous_idp_endpoint.dart' as _i9;
+import '../auth/jwt_refresh_endpoint.dart' as _i10;
+import '../auth/passkey_idp_endpoint.dart' as _i11;
+import 'package:hayer_server/src/generated/analytics_filter.dart' as _i12;
+import 'package:hayer_server/src/generated/place_ranking.dart' as _i13;
+import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i14;
+import 'package:hayer_server/src/generated/admin_map_location.dart' as _i15;
+import 'package:hayer_server/src/generated/job_status.dart' as _i16;
+import 'package:hayer_server/src/generated/cache_policy.dart' as _i17;
+import 'package:hayer_server/src/generated/create_session_request.dart' as _i18;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i19;
+import 'package:hayer_server/src/generated/protocol.dart' as _i20;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i17;
+    as _i21;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i18;
+    as _i22;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -66,16 +70,34 @@ class Endpoints extends _i1.EndpointDispatch {
           'taxonomy',
           null,
         ),
-      'anonymousIdp': _i7.AnonymousIdpEndpoint()
+      'adminAuth': _i7.AdminAuthEndpoint()
+        ..initialize(
+          server,
+          'adminAuth',
+          null,
+        ),
+      'adminEnrollment': _i8.AdminEnrollmentEndpoint()
+        ..initialize(
+          server,
+          'adminEnrollment',
+          null,
+        ),
+      'anonymousIdp': _i9.AnonymousIdpEndpoint()
         ..initialize(
           server,
           'anonymousIdp',
           null,
         ),
-      'jwtRefresh': _i8.JwtRefreshEndpoint()
+      'jwtRefresh': _i10.JwtRefreshEndpoint()
         ..initialize(
           server,
           'jwtRefresh',
+          null,
+        ),
+      'passkeyIdp': _i11.PasskeyIdpEndpoint()
+        ..initialize(
+          server,
+          'passkeyIdp',
           null,
         ),
     };
@@ -85,33 +107,20 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'liveUsage': _i1.MethodConnector(
           name: 'liveUsage',
-          params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['admin'] as _i2.AdminEndpoint).liveUsage(
-                session,
-                credentials: params['credentials'],
-              ),
+              ) async =>
+                  (endpoints['admin'] as _i2.AdminEndpoint).liveUsage(session),
         ),
         'analyticsOverview': _i1.MethodConnector(
           name: 'analyticsOverview',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i9.AnalyticsFilter>(),
+              type: _i1.getType<_i12.AnalyticsFilter>(),
               nullable: false,
             ),
           },
@@ -122,21 +131,15 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).analyticsOverview(
                     session,
-                    credentials: params['credentials'],
                     filter: params['filter'],
                   ),
         ),
         'usageAnalytics': _i1.MethodConnector(
           name: 'usageAnalytics',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i9.AnalyticsFilter>(),
+              type: _i1.getType<_i12.AnalyticsFilter>(),
               nullable: false,
             ),
           },
@@ -147,26 +150,20 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).usageAnalytics(
                     session,
-                    credentials: params['credentials'],
                     filter: params['filter'],
                   ),
         ),
         'placeAnalytics': _i1.MethodConnector(
           name: 'placeAnalytics',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i9.AnalyticsFilter>(),
+              type: _i1.getType<_i12.AnalyticsFilter>(),
               nullable: false,
             ),
             'ranking': _i1.ParameterDescription(
               name: 'ranking',
-              type: _i1.getType<_i10.PlaceRanking>(),
+              type: _i1.getType<_i13.PlaceRanking>(),
               nullable: false,
             ),
             'minimumSamples': _i1.ParameterDescription(
@@ -182,7 +179,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).placeAnalytics(
                     session,
-                    credentials: params['credentials'],
                     filter: params['filter'],
                     ranking: params['ranking'],
                     minimumSamples: params['minimumSamples'],
@@ -191,11 +187,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'suggestAdminLocation': _i1.MethodConnector(
           name: 'suggestAdminLocation',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'query': _i1.ParameterDescription(
               name: 'query',
               type: _i1.getType<String>(),
@@ -214,7 +205,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['admin'] as _i2.AdminEndpoint)
                   .suggestAdminLocation(
                     session,
-                    credentials: params['credentials'],
                     query: params['query'],
                     countryCode: params['countryCode'],
                   ),
@@ -222,11 +212,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'reverseAdminLocation': _i1.MethodConnector(
           name: 'reverseAdminLocation',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'latitude': _i1.ParameterDescription(
               name: 'latitude',
               type: _i1.getType<double>(),
@@ -250,7 +235,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['admin'] as _i2.AdminEndpoint)
                   .reverseAdminLocation(
                     session,
-                    credentials: params['credentials'],
                     latitude: params['latitude'],
                     longitude: params['longitude'],
                     countryCode: params['countryCode'],
@@ -258,61 +242,27 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
         'taxonomyDraft': _i1.MethodConnector(
           name: 'taxonomyDraft',
-          params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['admin'] as _i2.AdminEndpoint).taxonomyDraft(
-                    session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
-                  ),
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .taxonomyDraft(session),
         ),
         'taxonomyHistory': _i1.MethodConnector(
           name: 'taxonomyHistory',
-          params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['admin'] as _i2.AdminEndpoint).taxonomyHistory(
-                    session,
-                    credentials: params['credentials'],
-                  ),
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .taxonomyHistory(session),
         ),
         'saveTaxonomyDraft': _i1.MethodConnector(
           name: 'saveTaxonomyDraft',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'reason': _i1.ParameterDescription(
               name: 'reason',
               type: _i1.getType<String>(),
@@ -330,7 +280,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'items': _i1.ParameterDescription(
               name: 'items',
-              type: _i1.getType<List<_i11.AdminTaxonomyItem>>(),
+              type: _i1.getType<List<_i14.AdminTaxonomyItem>>(),
               nullable: false,
             ),
           },
@@ -341,8 +291,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).saveTaxonomyDraft(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     reason: params['reason'],
                     version: params['version'],
                     revision: params['revision'],
@@ -352,16 +300,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'validateTaxonomyDraft': _i1.MethodConnector(
           name: 'validateTaxonomyDraft',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'reason': _i1.ParameterDescription(
               name: 'reason',
               type: _i1.getType<String>(),
@@ -379,7 +317,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'location': _i1.ParameterDescription(
               name: 'location',
-              type: _i1.getType<_i12.AdminMapLocation>(),
+              type: _i1.getType<_i15.AdminMapLocation>(),
               nullable: false,
             ),
             'radiusMeters': _i1.ParameterDescription(
@@ -395,8 +333,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['admin'] as _i2.AdminEndpoint)
                   .validateTaxonomyDraft(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     reason: params['reason'],
                     version: params['version'],
                     revision: params['revision'],
@@ -407,16 +343,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'publishTaxonomy': _i1.MethodConnector(
           name: 'publishTaxonomy',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'reason': _i1.ParameterDescription(
               name: 'reason',
               type: _i1.getType<String>(),
@@ -440,8 +366,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).publishTaxonomy(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     reason: params['reason'],
                     version: params['version'],
                     revision: params['revision'],
@@ -450,16 +374,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'rollbackTaxonomy': _i1.MethodConnector(
           name: 'rollbackTaxonomy',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'reason': _i1.ParameterDescription(
               name: 'reason',
               type: _i1.getType<String>(),
@@ -478,38 +392,23 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).rollbackTaxonomy(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     reason: params['reason'],
                     version: params['version'],
                   ),
         ),
         'summary': _i1.MethodConnector(
           name: 'summary',
-          params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['admin'] as _i2.AdminEndpoint).summary(
-                session,
-                credentials: params['credentials'],
-              ),
+              ) async =>
+                  (endpoints['admin'] as _i2.AdminEndpoint).summary(session),
         ),
         'catalog': _i1.MethodConnector(
           name: 'catalog',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'page': _i1.ParameterDescription(
               name: 'page',
               type: _i1.getType<int>(),
@@ -537,7 +436,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).catalog(
                 session,
-                credentials: params['credentials'],
                 page: params['page'],
                 pageSize: params['pageSize'],
                 query: params['query'],
@@ -547,11 +445,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'coverage': _i1.MethodConnector(
           name: 'coverage',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'page': _i1.ParameterDescription(
               name: 'page',
               type: _i1.getType<int>(),
@@ -574,7 +467,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).coverage(
                 session,
-                credentials: params['credentials'],
                 page: params['page'],
                 pageSize: params['pageSize'],
                 query: params['query'],
@@ -583,11 +475,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'refreshJobs': _i1.MethodConnector(
           name: 'refreshJobs',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'page': _i1.ParameterDescription(
               name: 'page',
               type: _i1.getType<int>(),
@@ -605,7 +492,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i13.JobStatus?>(),
+              type: _i1.getType<_i16.JobStatus?>(),
               nullable: true,
             ),
           },
@@ -615,7 +502,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).refreshJobs(
                 session,
-                credentials: params['credentials'],
                 page: params['page'],
                 pageSize: params['pageSize'],
                 query: params['query'],
@@ -625,11 +511,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'auditLog': _i1.MethodConnector(
           name: 'auditLog',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'page': _i1.ParameterDescription(
               name: 'page',
               type: _i1.getType<int>(),
@@ -652,7 +533,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).auditLog(
                 session,
-                credentials: params['credentials'],
                 page: params['page'],
                 pageSize: params['pageSize'],
                 query: params['query'],
@@ -661,11 +541,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'metricTrend': _i1.MethodConnector(
           name: 'metricTrend',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'hours': _i1.ParameterDescription(
               name: 'hours',
               type: _i1.getType<int>(),
@@ -678,41 +553,23 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).metricTrend(
                 session,
-                credentials: params['credentials'],
                 hours: params['hours'],
               ),
         ),
         'prunePreview': _i1.MethodConnector(
           name: 'prunePreview',
-          params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).prunePreview(
                 session,
-                credentials: params['credentials'],
               ),
         ),
         'pruneCatalog': _i1.MethodConnector(
           name: 'pruneCatalog',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'reason': _i1.ParameterDescription(
               name: 'reason',
               type: _i1.getType<String>(),
@@ -725,42 +582,22 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).pruneCatalog(
                 session,
-                credentials: params['credentials'],
-                operatorName: params['operatorName'],
                 reason: params['reason'],
               ),
         ),
         'policy': _i1.MethodConnector(
           name: 'policy',
-          params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['admin'] as _i2.AdminEndpoint).policy(
-                session,
-                credentials: params['credentials'],
-              ),
+              ) async =>
+                  (endpoints['admin'] as _i2.AdminEndpoint).policy(session),
         ),
         'updatePolicy': _i1.MethodConnector(
           name: 'updatePolicy',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'reason': _i1.ParameterDescription(
               name: 'reason',
               type: _i1.getType<String>(),
@@ -768,7 +605,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'policy': _i1.ParameterDescription(
               name: 'policy',
-              type: _i1.getType<_i14.CachePolicy>(),
+              type: _i1.getType<_i17.CachePolicy>(),
               nullable: false,
             ),
           },
@@ -778,8 +615,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).updatePolicy(
                 session,
-                credentials: params['credentials'],
-                operatorName: params['operatorName'],
                 reason: params['reason'],
                 policy: params['policy'],
               ),
@@ -787,16 +622,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'quarantine': _i1.MethodConnector(
           name: 'quarantine',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'providerPlaceId': _i1.ParameterDescription(
               name: 'providerPlaceId',
               type: _i1.getType<String>(),
@@ -814,8 +639,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).quarantine(
                 session,
-                credentials: params['credentials'],
-                operatorName: params['operatorName'],
                 providerPlaceId: params['providerPlaceId'],
                 reason: params['reason'],
               ),
@@ -823,16 +646,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'restore': _i1.MethodConnector(
           name: 'restore',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'providerPlaceId': _i1.ParameterDescription(
               name: 'providerPlaceId',
               type: _i1.getType<String>(),
@@ -850,8 +663,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['admin'] as _i2.AdminEndpoint).restore(
                 session,
-                credentials: params['credentials'],
-                operatorName: params['operatorName'],
                 providerPlaceId: params['providerPlaceId'],
                 reason: params['reason'],
               ),
@@ -859,16 +670,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'refreshCoverage': _i1.MethodConnector(
           name: 'refreshCoverage',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'coverageKey': _i1.ParameterDescription(
               name: 'coverageKey',
               type: _i1.getType<String>(),
@@ -887,8 +688,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).refreshCoverage(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     coverageKey: params['coverageKey'],
                     reason: params['reason'],
                   ),
@@ -896,16 +695,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'cancelRefreshJob': _i1.MethodConnector(
           name: 'cancelRefreshJob',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'jobId': _i1.ParameterDescription(
               name: 'jobId',
               type: _i1.getType<String>(),
@@ -924,8 +713,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).cancelRefreshJob(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     jobId: params['jobId'],
                     reason: params['reason'],
                   ),
@@ -933,16 +720,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'invalidateCoverage': _i1.MethodConnector(
           name: 'invalidateCoverage',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'coverageKey': _i1.ParameterDescription(
               name: 'coverageKey',
               type: _i1.getType<String>(),
@@ -961,8 +738,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).invalidateCoverage(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     coverageKey: params['coverageKey'],
                     reason: params['reason'],
                   ),
@@ -970,16 +745,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'validateCalibration': _i1.MethodConnector(
           name: 'validateCalibration',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'version': _i1.ParameterDescription(
               name: 'version',
               type: _i1.getType<String>(),
@@ -998,8 +763,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).validateCalibration(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     version: params['version'],
                     documentJson: params['documentJson'],
                   ),
@@ -1007,16 +770,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'activateCalibration': _i1.MethodConnector(
           name: 'activateCalibration',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'version': _i1.ParameterDescription(
               name: 'version',
               type: _i1.getType<String>(),
@@ -1035,8 +788,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).activateCalibration(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     version: params['version'],
                     reason: params['reason'],
                   ),
@@ -1044,16 +795,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'rollbackCalibration': _i1.MethodConnector(
           name: 'rollbackCalibration',
           params: {
-            'credentials': _i1.ParameterDescription(
-              name: 'credentials',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'operatorName': _i1.ParameterDescription(
-              name: 'operatorName',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
             'version': _i1.ParameterDescription(
               name: 'version',
               type: _i1.getType<String>(),
@@ -1072,8 +813,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['admin'] as _i2.AdminEndpoint).rollbackCalibration(
                     session,
-                    credentials: params['credentials'],
-                    operatorName: params['operatorName'],
                     version: params['version'],
                     reason: params['reason'],
                   ),
@@ -1114,7 +853,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'request': _i1.ParameterDescription(
               name: 'request',
-              type: _i1.getType<_i15.CreateSessionRequest>(),
+              type: _i1.getType<_i18.CreateSessionRequest>(),
               nullable: false,
             ),
             'idempotencyKey': _i1.ParameterDescription(
@@ -1202,7 +941,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'command': _i1.ParameterDescription(
               name: 'command',
-              type: _i1.getType<_i16.SwipeCommand>(),
+              type: _i1.getType<_i19.SwipeCommand>(),
               nullable: false,
             ),
           },
@@ -1348,6 +1087,52 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['adminAuth'] = _i1.EndpointConnector(
+      name: 'adminAuth',
+      endpoint: endpoints['adminAuth']!,
+      methodConnectors: {
+        'currentOperator': _i1.MethodConnector(
+          name: 'currentOperator',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['adminAuth'] as _i7.AdminAuthEndpoint)
+                  .currentOperator(session),
+        ),
+        'logout': _i1.MethodConnector(
+          name: 'logout',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['adminAuth'] as _i7.AdminAuthEndpoint)
+                  .logout(session),
+        ),
+      },
+    );
+    connectors['adminEnrollment'] = _i1.EndpointConnector(
+      name: 'adminEnrollment',
+      endpoint: endpoints['adminEnrollment']!,
+      methodConnectors: {
+        'begin': _i1.MethodConnector(
+          name: 'begin',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['adminEnrollment'] as _i8.AdminEnrollmentEndpoint)
+                      .begin(session)
+                      .then(
+                        (record) => _i20.Protocol().mapRecordToJson(record),
+                      ),
+        ),
+      },
+    );
     connectors['anonymousIdp'] = _i1.EndpointConnector(
       name: 'anonymousIdp',
       endpoint: endpoints['anonymousIdp']!,
@@ -1366,7 +1151,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['anonymousIdp'] as _i7.AnonymousIdpEndpoint).login(
+                  (endpoints['anonymousIdp'] as _i9.AnonymousIdpEndpoint).login(
                     session,
                     token: params['token'],
                   ),
@@ -1390,7 +1175,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['jwtRefresh'] as _i8.JwtRefreshEndpoint)
+              ) async => (endpoints['jwtRefresh'] as _i10.JwtRefreshEndpoint)
                   .refreshAccessToken(
                     session,
                     refreshToken: params['refreshToken'],
@@ -1398,9 +1183,74 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i17.Endpoints()
+    connectors['passkeyIdp'] = _i1.EndpointConnector(
+      name: 'passkeyIdp',
+      endpoint: endpoints['passkeyIdp']!,
+      methodConnectors: {
+        'createChallenge': _i1.MethodConnector(
+          name: 'createChallenge',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint)
+                  .createChallenge(session)
+                  .then((record) => _i20.Protocol().mapRecordToJson(record)),
+        ),
+        'register': _i1.MethodConnector(
+          name: 'register',
+          params: {
+            'registrationRequest': _i1.ParameterDescription(
+              name: 'registrationRequest',
+              type: _i1.getType<_i21.PasskeyRegistrationRequest>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint).register(
+                    session,
+                    registrationRequest: params['registrationRequest'],
+                  ),
+        ),
+        'login': _i1.MethodConnector(
+          name: 'login',
+          params: {
+            'loginRequest': _i1.ParameterDescription(
+              name: 'loginRequest',
+              type: _i1.getType<_i21.PasskeyLoginRequest>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint).login(
+                    session,
+                    loginRequest: params['loginRequest'],
+                  ),
+        ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint)
+                  .hasAccount(session),
+        ),
+      },
+    );
+    modules['serverpod_auth_idp'] = _i21.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i18.Endpoints()
+    modules['serverpod_auth_core'] = _i22.Endpoints()
       ..initializeEndpoints(server);
   }
 }
