@@ -1,0 +1,11 @@
+class: AdminAuditEntry
+fields:
+  auditId: String
+  operatorName: String
+  action: String
+  targetType: String
+  targetId: String?
+  reason: String
+  beforeData: Map<String, String>?
+  afterData: Map<String, String>?
+  occurredAt: DateTime

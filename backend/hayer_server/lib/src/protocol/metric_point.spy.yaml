@@ -1,0 +1,6 @@
+class: MetricPoint
+fields:
+  bucketStartedAt: DateTime
+  metricName: String
+  metricValue: double
+  sampleCount: int

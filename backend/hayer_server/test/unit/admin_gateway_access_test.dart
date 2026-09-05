@@ -10,6 +10,7 @@ void main() {
         AdminGatewayAccess.resolveOperator(
           authenticatedValues: const ['1'],
           usernameValues: const ['operator'],
+          originAllowedValues: const ['1'],
         ),
         'operator',
       );
@@ -20,6 +21,7 @@ void main() {
         AdminGatewayAccess.resolveOperator(
           authenticatedValues: null,
           usernameValues: const ['attacker'],
+          originAllowedValues: const ['1'],
         ),
         isNull,
       );
@@ -27,6 +29,7 @@ void main() {
         AdminGatewayAccess.resolveOperator(
           authenticatedValues: const ['1'],
           usernameValues: null,
+          originAllowedValues: const ['1'],
         ),
         isNull,
       );
@@ -34,6 +37,23 @@ void main() {
         AdminGatewayAccess.resolveOperator(
           authenticatedValues: const ['1', '1'],
           usernameValues: const ['operator'],
+          originAllowedValues: const ['1'],
+        ),
+        isNull,
+      );
+      expect(
+        AdminGatewayAccess.resolveOperator(
+          authenticatedValues: const ['1'],
+          usernameValues: const ['operator'],
+          originAllowedValues: const ['0'],
+        ),
+        isNull,
+      );
+      expect(
+        AdminGatewayAccess.resolveOperator(
+          authenticatedValues: const ['1'],
+          usernameValues: const ['operator'],
+          originAllowedValues: null,
         ),
         isNull,
       );
@@ -45,6 +65,11 @@ void main() {
         final configuration = await File('../deploy/nginx.conf').readAsString();
 
         expect(configuration, contains(r'map $uri $hayer_admin_authenticated'));
+        expect(
+          configuration,
+          contains(r'map $http_origin $hayer_admin_origin_allowed'),
+        );
+        expect(configuration, contains('"https://hayer.almou.sa" 1;'));
         expect(configuration, contains(r'~^/admin/cache/api/ 1;'));
         expect(configuration, contains('location /admin/cache/api/'));
         expect(
@@ -56,6 +81,12 @@ void main() {
         expect(
           configuration,
           contains(r'proxy_set_header X-Hayer-Admin-User $remote_user;'),
+        );
+        expect(
+          configuration,
+          contains(
+            r'proxy_set_header X-Hayer-Admin-Origin-Allowed $hayer_admin_origin_allowed;',
+          ),
         );
         expect(configuration, contains('location /admin-api/ {'));
       },

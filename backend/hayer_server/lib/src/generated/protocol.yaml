@@ -1,11 +1,18 @@
 admin:
   - summary:
   - catalog:
+  - coverage:
+  - refreshJobs:
+  - auditLog:
+  - metricTrend:
+  - prunePreview:
+  - pruneCatalog:
   - policy:
   - updatePolicy:
   - quarantine:
   - restore:
   - refreshCoverage:
+  - cancelRefreshJob:
   - invalidateCoverage:
   - validateCalibration:
   - activateCalibration:

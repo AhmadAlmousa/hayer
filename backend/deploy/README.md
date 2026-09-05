@@ -47,7 +47,9 @@ unauthenticated public bootstrap RPC canary after the gateway is healthy. Set
 The external proxy must terminate TLS for `hayer.almou.sa`, forward to 8432,
 and retain WebSocket upgrade headers. After deployment, verify `/api/`,
 `/admin/cache/`, `/admin/cache/api/`, `/.well-known/assetlinks.json`, and the
-APK checksum/download route.
+APK checksum/download route. The admin API accepts only browser RPCs whose
+exact origin is `https://hayer.almou.sa`; nginx overwrites the internal origin
+marker before forwarding requests.
 
 Serverpod 3.4 may print a database-integrity warning that its target schema is
 missing the custom `location` columns, spatial/search indexes, and cascading

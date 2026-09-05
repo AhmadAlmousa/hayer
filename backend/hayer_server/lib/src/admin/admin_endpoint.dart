@@ -7,6 +7,7 @@ import 'admin_gateway_access.dart';
 import '../generated/protocol.dart';
 import '../places/calibration.dart';
 import '../places/google_web_place_source.dart';
+import '../storage/catalog_pruner.dart';
 
 class AdminEndpoint extends Endpoint {
   @override
@@ -100,6 +101,198 @@ class AdminEndpoint extends Endpoint {
       page: safePage,
       pageSize: safeSize,
     );
+  }
+
+  Future<CoveragePage> coverage(
+    Session session, {
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+  }) async {
+    _authorize(session, credentials);
+    final safePage = page.clamp(0, 100000);
+    final safeSize = pageSize.clamp(1, 100);
+    final search = query?.trim();
+    final hasSearch = search != null && search.isNotEmpty;
+    final pattern = hasSearch ? '%${_escapeLike(search)}%' : '';
+    Expression<dynamic> where(PoiCoverageRowTable table) => hasSearch
+        ? table.coverageKey.ilike(pattern) |
+              table.queryKey.ilike(pattern) |
+              table.countryCode.ilike(pattern)
+        : table.coverageKey.notEquals('');
+    final total = await PoiCoverageRow.db.count(session, where: where);
+    final rows = await PoiCoverageRow.db.find(
+      session,
+      where: where,
+      orderBy: (table) => table.refreshedAt,
+      orderDescending: true,
+      offset: safePage * safeSize,
+      limit: safeSize,
+    );
+    return CoveragePage(
+      items: rows.map(_coverageRecord).toList(growable: false),
+      total: total,
+      page: safePage,
+      pageSize: safeSize,
+    );
+  }
+
+  Future<RefreshJobPage> refreshJobs(
+    Session session, {
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+    JobStatus? status,
+  }) async {
+    _authorize(session, credentials);
+    final safePage = page.clamp(0, 100000);
+    final safeSize = pageSize.clamp(1, 100);
+    final search = query?.trim();
+    final hasSearch = search != null && search.isNotEmpty;
+    final pattern = hasSearch ? '%${_escapeLike(search)}%' : '';
+    Expression<dynamic> where(RefreshJobRowTable table) {
+      final searchExpression = hasSearch
+          ? table.jobId.ilike(pattern) |
+                table.coverageKey.ilike(pattern) |
+                table.requestedBy.ilike(pattern)
+          : table.jobId.notEquals('');
+      return status == null
+          ? searchExpression
+          : table.status.equals(status) & searchExpression;
+    }
+
+    final total = await RefreshJobRow.db.count(session, where: where);
+    final rows = await RefreshJobRow.db.find(
+      session,
+      where: where,
+      orderBy: (table) => table.createdAt,
+      orderDescending: true,
+      offset: safePage * safeSize,
+      limit: safeSize,
+    );
+    return RefreshJobPage(
+      items: rows.map(_refreshJobView).toList(growable: false),
+      total: total,
+      page: safePage,
+      pageSize: safeSize,
+    );
+  }
+
+  Future<AdminAuditPage> auditLog(
+    Session session, {
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+  }) async {
+    _authorize(session, credentials);
+    final safePage = page.clamp(0, 100000);
+    final safeSize = pageSize.clamp(1, 100);
+    final search = query?.trim();
+    final hasSearch = search != null && search.isNotEmpty;
+    final pattern = hasSearch ? '%${_escapeLike(search)}%' : '';
+    Expression<dynamic> where(AdminAuditRowTable table) => hasSearch
+        ? table.operatorName.ilike(pattern) |
+              table.action.ilike(pattern) |
+              table.targetType.ilike(pattern) |
+              table.reason.ilike(pattern)
+        : table.auditId.notEquals('');
+    final total = await AdminAuditRow.db.count(session, where: where);
+    final rows = await AdminAuditRow.db.find(
+      session,
+      where: where,
+      orderBy: (table) => table.occurredAt,
+      orderDescending: true,
+      offset: safePage * safeSize,
+      limit: safeSize,
+    );
+    return AdminAuditPage(
+      items: rows.map(_adminAuditEntry).toList(growable: false),
+      total: total,
+      page: safePage,
+      pageSize: safeSize,
+    );
+  }
+
+  Future<List<MetricPoint>> metricTrend(
+    Session session, {
+    required String credentials,
+    int hours = 24,
+  }) async {
+    _authorize(session, credentials);
+    final safeHours = hours.clamp(1, 168);
+    final rows = await OperationalMetricRow.db.find(
+      session,
+      where: (table) =>
+          table.metricName.inSet(const {
+            'cache_hit_rate',
+            'source_success_rate',
+          }) &
+          (table.bucketStartedAt >=
+              DateTime.now().toUtc().subtract(Duration(hours: safeHours))),
+      orderBy: (table) => table.bucketStartedAt,
+    );
+    final aggregates = <String, _MetricAggregate>{};
+    for (final row in rows) {
+      final key = '${row.bucketStartedAt.toIso8601String()}:${row.metricName}';
+      aggregates.putIfAbsent(key, () => _MetricAggregate(row)).add(row);
+    }
+    final result = aggregates.values.map((value) => value.toPoint()).toList()
+      ..sort((left, right) {
+        final byTime = left.bucketStartedAt.compareTo(right.bucketStartedAt);
+        return byTime != 0
+            ? byTime
+            : left.metricName.compareTo(right.metricName);
+      });
+    return result;
+  }
+
+  Future<CatalogPrunePreview> prunePreview(
+    Session session, {
+    required String credentials,
+  }) async {
+    _authorize(session, credentials);
+    final policy = await _policyRow(session);
+    final retentionDays = policy?.retentionDays ?? 365;
+    final cutoff = DateTime.now().toUtc().subtract(
+      Duration(days: retentionDays),
+    );
+    return CatalogPrunePreview(
+      eligibleCount: await CatalogPruner.eligibleCount(
+        session,
+        cutoff: cutoff,
+      ),
+      retentionDays: retentionDays,
+      cutoff: cutoff,
+    );
+  }
+
+  Future<int> pruneCatalog(
+    Session session, {
+    required String credentials,
+    required String operatorName,
+    required String reason,
+  }) async {
+    operatorName = _authorize(session, credentials);
+    _reason(reason);
+    final preview = await prunePreview(session, credentials: credentials);
+    final removed = await CatalogPruner.prune(
+      session,
+      cutoff: preview.cutoff,
+    );
+    await _audit(
+      session,
+      operatorName: operatorName,
+      action: 'catalog.prune',
+      targetType: 'poi',
+      targetId: 'retention',
+      reason: reason,
+      before: {'eligibleCount': '${preview.eligibleCount}'},
+      after: {'removedCount': '$removed', 'cutoff': '${preview.cutoff}'},
+    );
+    return removed;
   }
 
   Future<CachePolicy> policy(
@@ -242,6 +435,59 @@ class AdminEndpoint extends Endpoint {
       reason: reason,
     );
     return jobId;
+  }
+
+  Future<bool> cancelRefreshJob(
+    Session session, {
+    required String credentials,
+    required String operatorName,
+    required String jobId,
+    required String reason,
+  }) async {
+    operatorName = _authorize(session, credentials);
+    _reason(reason);
+    final row = await RefreshJobRow.db.findFirstRow(
+      session,
+      where: (table) => table.jobId.equals(jobId),
+    );
+    if (row == null) {
+      throw ApiException(code: 'not_found', message: 'Refresh job not found.');
+    }
+    if (row.status != JobStatus.pending && row.status != JobStatus.running) {
+      throw ApiException(
+        code: 'conflict',
+        message: 'Only pending or running refresh jobs can be cancelled.',
+      );
+    }
+    final previousStatus = row.status;
+    final updated = await RefreshJobRow.db.updateWhere(
+      session,
+      where: (table) =>
+          table.jobId.equals(jobId) &
+          (table.status.equals(JobStatus.pending) |
+              table.status.equals(JobStatus.running)),
+      columnValues: (table) => [
+        table.status(JobStatus.cancelled),
+        table.completedAt(DateTime.now().toUtc()),
+      ],
+    );
+    if (updated.isEmpty) {
+      throw ApiException(
+        code: 'conflict',
+        message: 'The refresh job finished before it could be cancelled.',
+      );
+    }
+    await _audit(
+      session,
+      operatorName: operatorName,
+      action: 'coverage.refresh.cancel',
+      targetType: 'refresh_job',
+      targetId: jobId,
+      reason: reason,
+      before: {'status': previousStatus.name},
+      after: {'status': JobStatus.cancelled.name},
+    );
+    return true;
   }
 
   Future<int> invalidateCoverage(
@@ -504,7 +750,10 @@ class AdminEndpoint extends Endpoint {
   Future<double> _metric(Session session, String name) async {
     final rows = await session.db.unsafeQuery(
       '''
-SELECT COALESCE(AVG("metricValue"), 0) AS value
+SELECT COALESCE(
+  SUM("metricValue" * "sampleCount") / NULLIF(SUM("sampleCount"), 0),
+  0
+) AS value
 FROM "hayer_operational_metric"
 WHERE "metricName" = @name
   AND "bucketStartedAt" >= @after
@@ -517,6 +766,57 @@ WHERE "metricName" = @name
     if (rows.isEmpty) return 0;
     return (rows.first.toColumnMap()['value'] as num?)?.toDouble() ?? 0;
   }
+
+  Future<CacheSettingsRow?> _policyRow(Session session) =>
+      CacheSettingsRow.db.findFirstRow(
+        session,
+        where: (table) => table.settingsKey.equals('default'),
+      );
+
+  CoverageRecord _coverageRecord(PoiCoverageRow row) => CoverageRecord(
+    coverageKey: row.coverageKey,
+    queryKey: row.queryKey,
+    language: row.language,
+    countryCode: row.countryCode,
+    anchorLatitude: row.anchorLatitude,
+    anchorLongitude: row.anchorLongitude,
+    radiusMeters: row.radiusMeters,
+    calibrationVersion: row.calibrationVersion,
+    resultCount: row.resultCount,
+    refreshedAt: row.refreshedAt,
+    expiresAt: row.expiresAt,
+    lastFailureCode: row.lastFailureCode,
+    invalidatedAt: row.invalidatedAt,
+  );
+
+  RefreshJobView _refreshJobView(RefreshJobRow row) => RefreshJobView(
+    jobId: row.jobId,
+    coverageKey: row.coverageKey,
+    status: row.status,
+    requestedBy: row.requestedBy,
+    reason: row.reason,
+    createdAt: row.createdAt,
+    startedAt: row.startedAt,
+    completedAt: row.completedAt,
+    errorCode: row.errorCode,
+  );
+
+  AdminAuditEntry _adminAuditEntry(AdminAuditRow row) => AdminAuditEntry(
+    auditId: row.auditId,
+    operatorName: row.operatorName,
+    action: row.action,
+    targetType: row.targetType,
+    targetId: row.targetId,
+    reason: row.reason,
+    beforeData: row.beforeData,
+    afterData: row.afterData,
+    occurredAt: row.occurredAt,
+  );
+
+  String _escapeLike(String value) => value
+      .replaceAll(r'\', r'\\')
+      .replaceAll('%', r'\%')
+      .replaceAll('_', r'\_');
 
   CachePolicy _defaultPolicy() => CachePolicy(
     version: 0,
@@ -572,6 +872,8 @@ WHERE "metricName" = @name
       authenticatedValues:
           request?.headers[AdminGatewayAccess.authenticatedHeader],
       usernameValues: request?.headers[AdminGatewayAccess.usernameHeader],
+      originAllowedValues:
+          request?.headers[AdminGatewayAccess.originAllowedHeader],
     );
     if (operator == null) {
       throw ApiException(
@@ -630,4 +932,27 @@ WHERE "metricName" = @name
       ),
     );
   }
+}
+
+class _MetricAggregate {
+  _MetricAggregate(OperationalMetricRow row)
+    : bucketStartedAt = row.bucketStartedAt,
+      metricName = row.metricName;
+
+  final DateTime bucketStartedAt;
+  final String metricName;
+  double weightedTotal = 0;
+  int sampleCount = 0;
+
+  void add(OperationalMetricRow row) {
+    weightedTotal += row.metricValue * row.sampleCount;
+    sampleCount += row.sampleCount;
+  }
+
+  MetricPoint toPoint() => MetricPoint(
+    bucketStartedAt: bucketStartedAt,
+    metricName: metricName,
+    metricValue: sampleCount == 0 ? 0 : weightedTotal / sampleCount,
+    sampleCount: sampleCount,
+  );
 }

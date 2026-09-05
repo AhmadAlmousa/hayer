@@ -1,0 +1,6 @@
+class: RefreshJobPage
+fields:
+  items: List<RefreshJobView>
+  total: int
+  page: int
+  pageSize: int

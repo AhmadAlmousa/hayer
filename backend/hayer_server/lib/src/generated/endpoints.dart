@@ -18,13 +18,14 @@ import '../api/hayer_session_endpoint.dart' as _i4;
 import '../api/place_endpoint.dart' as _i5;
 import '../auth/anonymous_idp_endpoint.dart' as _i6;
 import '../auth/jwt_refresh_endpoint.dart' as _i7;
-import 'package:hayer_server/src/generated/cache_policy.dart' as _i8;
-import 'package:hayer_server/src/generated/create_session_request.dart' as _i9;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i10;
+import 'package:hayer_server/src/generated/job_status.dart' as _i8;
+import 'package:hayer_server/src/generated/cache_policy.dart' as _i9;
+import 'package:hayer_server/src/generated/create_session_request.dart' as _i10;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i11;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i11;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i12;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i13;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -131,6 +132,192 @@ class Endpoints extends _i1.EndpointDispatch {
                 includeQuarantined: params['includeQuarantined'],
               ),
         ),
+        'coverage': _i1.MethodConnector(
+          name: 'coverage',
+          params: {
+            'credentials': _i1.ParameterDescription(
+              name: 'credentials',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'page': _i1.ParameterDescription(
+              name: 'page',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'pageSize': _i1.ParameterDescription(
+              name: 'pageSize',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint).coverage(
+                session,
+                credentials: params['credentials'],
+                page: params['page'],
+                pageSize: params['pageSize'],
+                query: params['query'],
+              ),
+        ),
+        'refreshJobs': _i1.MethodConnector(
+          name: 'refreshJobs',
+          params: {
+            'credentials': _i1.ParameterDescription(
+              name: 'credentials',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'page': _i1.ParameterDescription(
+              name: 'page',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'pageSize': _i1.ParameterDescription(
+              name: 'pageSize',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'status': _i1.ParameterDescription(
+              name: 'status',
+              type: _i1.getType<_i8.JobStatus?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint).refreshJobs(
+                session,
+                credentials: params['credentials'],
+                page: params['page'],
+                pageSize: params['pageSize'],
+                query: params['query'],
+                status: params['status'],
+              ),
+        ),
+        'auditLog': _i1.MethodConnector(
+          name: 'auditLog',
+          params: {
+            'credentials': _i1.ParameterDescription(
+              name: 'credentials',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'page': _i1.ParameterDescription(
+              name: 'page',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'pageSize': _i1.ParameterDescription(
+              name: 'pageSize',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint).auditLog(
+                session,
+                credentials: params['credentials'],
+                page: params['page'],
+                pageSize: params['pageSize'],
+                query: params['query'],
+              ),
+        ),
+        'metricTrend': _i1.MethodConnector(
+          name: 'metricTrend',
+          params: {
+            'credentials': _i1.ParameterDescription(
+              name: 'credentials',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'hours': _i1.ParameterDescription(
+              name: 'hours',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint).metricTrend(
+                session,
+                credentials: params['credentials'],
+                hours: params['hours'],
+              ),
+        ),
+        'prunePreview': _i1.MethodConnector(
+          name: 'prunePreview',
+          params: {
+            'credentials': _i1.ParameterDescription(
+              name: 'credentials',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint).prunePreview(
+                session,
+                credentials: params['credentials'],
+              ),
+        ),
+        'pruneCatalog': _i1.MethodConnector(
+          name: 'pruneCatalog',
+          params: {
+            'credentials': _i1.ParameterDescription(
+              name: 'credentials',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'operatorName': _i1.ParameterDescription(
+              name: 'operatorName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'reason': _i1.ParameterDescription(
+              name: 'reason',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint).pruneCatalog(
+                session,
+                credentials: params['credentials'],
+                operatorName: params['operatorName'],
+                reason: params['reason'],
+              ),
+        ),
         'policy': _i1.MethodConnector(
           name: 'policy',
           params: {
@@ -169,7 +356,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'policy': _i1.ParameterDescription(
               name: 'policy',
-              type: _i1.getType<_i8.CachePolicy>(),
+              type: _i1.getType<_i9.CachePolicy>(),
               nullable: false,
             ),
           },
@@ -291,6 +478,43 @@ class Endpoints extends _i1.EndpointDispatch {
                     credentials: params['credentials'],
                     operatorName: params['operatorName'],
                     coverageKey: params['coverageKey'],
+                    reason: params['reason'],
+                  ),
+        ),
+        'cancelRefreshJob': _i1.MethodConnector(
+          name: 'cancelRefreshJob',
+          params: {
+            'credentials': _i1.ParameterDescription(
+              name: 'credentials',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'operatorName': _i1.ParameterDescription(
+              name: 'operatorName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'jobId': _i1.ParameterDescription(
+              name: 'jobId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'reason': _i1.ParameterDescription(
+              name: 'reason',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['admin'] as _i2.AdminEndpoint).cancelRefreshJob(
+                    session,
+                    credentials: params['credentials'],
+                    operatorName: params['operatorName'],
+                    jobId: params['jobId'],
                     reason: params['reason'],
                   ),
         ),
@@ -478,7 +702,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'request': _i1.ParameterDescription(
               name: 'request',
-              type: _i1.getType<_i9.CreateSessionRequest>(),
+              type: _i1.getType<_i10.CreateSessionRequest>(),
               nullable: false,
             ),
             'idempotencyKey': _i1.ParameterDescription(
@@ -566,7 +790,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'command': _i1.ParameterDescription(
               name: 'command',
-              type: _i1.getType<_i10.SwipeCommand>(),
+              type: _i1.getType<_i11.SwipeCommand>(),
               nullable: false,
             ),
           },
@@ -746,9 +970,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i11.Endpoints()
+    modules['serverpod_auth_idp'] = _i12.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i12.Endpoints()
+    modules['serverpod_auth_core'] = _i13.Endpoints()
       ..initializeEndpoints(server);
   }
 }

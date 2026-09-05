@@ -16,17 +16,23 @@ import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:hayer_server/src/generated/cache_dashboard_summary.dart' as _i4;
 import 'package:hayer_server/src/generated/catalog_place_page.dart' as _i5;
-import 'package:hayer_server/src/generated/cache_policy.dart' as _i6;
-import 'package:hayer_server/src/generated/calibration_validation.dart' as _i7;
-import 'package:hayer_server/src/generated/bootstrap_info.dart' as _i8;
-import 'package:hayer_server/src/generated/session_bundle.dart' as _i9;
-import 'package:hayer_server/src/generated/create_session_request.dart' as _i10;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i11;
-import 'package:hayer_server/src/generated/session_result.dart' as _i12;
-import 'package:hayer_server/src/generated/session_event.dart' as _i13;
-import 'package:hayer_server/src/generated/location_suggestion.dart' as _i14;
+import 'package:hayer_server/src/generated/coverage_page.dart' as _i6;
+import 'package:hayer_server/src/generated/refresh_job_page.dart' as _i7;
+import 'package:hayer_server/src/generated/job_status.dart' as _i8;
+import 'package:hayer_server/src/generated/admin_audit_page.dart' as _i9;
+import 'package:hayer_server/src/generated/metric_point.dart' as _i10;
+import 'package:hayer_server/src/generated/catalog_prune_preview.dart' as _i11;
+import 'package:hayer_server/src/generated/cache_policy.dart' as _i12;
+import 'package:hayer_server/src/generated/calibration_validation.dart' as _i13;
+import 'package:hayer_server/src/generated/bootstrap_info.dart' as _i14;
+import 'package:hayer_server/src/generated/session_bundle.dart' as _i15;
+import 'package:hayer_server/src/generated/create_session_request.dart' as _i16;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i17;
+import 'package:hayer_server/src/generated/session_result.dart' as _i18;
+import 'package:hayer_server/src/generated/session_event.dart' as _i19;
+import 'package:hayer_server/src/generated/location_suggestion.dart' as _i20;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i15;
+    as _i21;
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:hayer_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -270,7 +276,229 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i6.CachePolicy> policy(
+  _i3.Future<_i6.CoveragePage> coverage(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'coverage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'coverage',
+          parameters: _i1.testObjectToJson({
+            'credentials': credentials,
+            'page': page,
+            'pageSize': pageSize,
+            'query': query,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i6.CoveragePage>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.RefreshJobPage> refreshJobs(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+    _i8.JobStatus? status,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'refreshJobs',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'refreshJobs',
+          parameters: _i1.testObjectToJson({
+            'credentials': credentials,
+            'page': page,
+            'pageSize': pageSize,
+            'query': query,
+            'status': status,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i7.RefreshJobPage>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i9.AdminAuditPage> auditLog(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'auditLog',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'auditLog',
+          parameters: _i1.testObjectToJson({
+            'credentials': credentials,
+            'page': page,
+            'pageSize': pageSize,
+            'query': query,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i9.AdminAuditPage>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i10.MetricPoint>> metricTrend(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String credentials,
+    required int hours,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'metricTrend',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'metricTrend',
+          parameters: _i1.testObjectToJson({
+            'credentials': credentials,
+            'hours': hours,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i10.MetricPoint>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i11.CatalogPrunePreview> prunePreview(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String credentials,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'prunePreview',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'prunePreview',
+          parameters: _i1.testObjectToJson({'credentials': credentials}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i11.CatalogPrunePreview>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<int> pruneCatalog(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String credentials,
+    required String operatorName,
+    required String reason,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'pruneCatalog',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'pruneCatalog',
+          parameters: _i1.testObjectToJson({
+            'credentials': credentials,
+            'operatorName': operatorName,
+            'reason': reason,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<int>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i12.CachePolicy> policy(
     _i1.TestSessionBuilder sessionBuilder, {
     required String credentials,
   }) async {
@@ -293,7 +521,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i6.CachePolicy>);
+                as _i3.Future<_i12.CachePolicy>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -301,12 +529,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i6.CachePolicy> updatePolicy(
+  _i3.Future<_i12.CachePolicy> updatePolicy(
     _i1.TestSessionBuilder sessionBuilder, {
     required String credentials,
     required String operatorName,
     required String reason,
-    required _i6.CachePolicy policy,
+    required _i12.CachePolicy policy,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -332,7 +560,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i6.CachePolicy>);
+                as _i3.Future<_i12.CachePolicy>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -457,6 +685,45 @@ class _AdminEndpoint {
     });
   }
 
+  _i3.Future<bool> cancelRefreshJob(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String credentials,
+    required String operatorName,
+    required String jobId,
+    required String reason,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'cancelRefreshJob',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'cancelRefreshJob',
+          parameters: _i1.testObjectToJson({
+            'credentials': credentials,
+            'operatorName': operatorName,
+            'jobId': jobId,
+            'reason': reason,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<int> invalidateCoverage(
     _i1.TestSessionBuilder sessionBuilder, {
     required String credentials,
@@ -496,7 +763,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i7.CalibrationValidation> validateCalibration(
+  _i3.Future<_i13.CalibrationValidation> validateCalibration(
     _i1.TestSessionBuilder sessionBuilder, {
     required String credentials,
     required String operatorName,
@@ -527,7 +794,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i7.CalibrationValidation>);
+                as _i3.Future<_i13.CalibrationValidation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -624,7 +891,7 @@ class _BootstrapEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i8.BootstrapInfo> getInfo(
+  _i3.Future<_i14.BootstrapInfo> getInfo(
     _i1.TestSessionBuilder sessionBuilder, {
     required int build,
   }) async {
@@ -647,7 +914,7 @@ class _BootstrapEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i8.BootstrapInfo>);
+                as _i3.Future<_i14.BootstrapInfo>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -666,9 +933,9 @@ class _HayerSessionEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i9.SessionBundle> create(
+  _i3.Future<_i15.SessionBundle> create(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i10.CreateSessionRequest request,
+    required _i16.CreateSessionRequest request,
     required String idempotencyKey,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -693,7 +960,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i9.SessionBundle>);
+                as _i3.Future<_i15.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -701,7 +968,7 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i9.SessionBundle> join(
+  _i3.Future<_i15.SessionBundle> join(
     _i1.TestSessionBuilder sessionBuilder, {
     required String code,
     required String displayName,
@@ -728,7 +995,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i9.SessionBundle>);
+                as _i3.Future<_i15.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -736,7 +1003,7 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i9.SessionBundle> load(
+  _i3.Future<_i15.SessionBundle> load(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
@@ -759,7 +1026,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i9.SessionBundle>);
+                as _i3.Future<_i15.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -798,9 +1065,9 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i9.SessionBundle> swipe(
+  _i3.Future<_i15.SessionBundle> swipe(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i11.SwipeCommand command,
+    required _i17.SwipeCommand command,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -821,7 +1088,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i9.SessionBundle>);
+                as _i3.Future<_i15.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -829,7 +1096,7 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<List<_i12.SessionResult>> results(
+  _i3.Future<List<_i18.SessionResult>> results(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
@@ -852,7 +1119,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i12.SessionResult>>);
+                as _i3.Future<List<_i18.SessionResult>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -860,11 +1127,11 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Stream<_i13.SessionEvent> watch(
+  _i3.Stream<_i19.SessionEvent> watch(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i13.SessionEvent>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i19.SessionEvent>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -903,7 +1170,7 @@ class _PlaceEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i14.LocationSuggestion>> suggest(
+  _i3.Future<List<_i20.LocationSuggestion>> suggest(
     _i1.TestSessionBuilder sessionBuilder, {
     required String query,
     double? latitude,
@@ -934,7 +1201,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i14.LocationSuggestion>>);
+                as _i3.Future<List<_i20.LocationSuggestion>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -990,7 +1257,7 @@ class _AnonymousIdpEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i15.AuthSuccess> login(
+  _i3.Future<_i21.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     String? token,
   }) async {
@@ -1013,7 +1280,7 @@ class _AnonymousIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.AuthSuccess>);
+                as _i3.Future<_i21.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1032,7 +1299,7 @@ class _JwtRefreshEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i15.AuthSuccess> refreshAccessToken(
+  _i3.Future<_i21.AuthSuccess> refreshAccessToken(
     _i1.TestSessionBuilder sessionBuilder, {
     required String refreshToken,
   }) async {
@@ -1055,7 +1322,7 @@ class _JwtRefreshEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.AuthSuccess>);
+                as _i3.Future<_i21.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

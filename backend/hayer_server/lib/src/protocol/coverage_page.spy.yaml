@@ -1,0 +1,6 @@
+class: CoveragePage
+fields:
+  items: List<CoverageRecord>
+  total: int
+  page: int
+  pageSize: int

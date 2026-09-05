@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-05
 
-Status: Android beta deployed; release verification and admin operations work remain
+Status: Android beta deployed; release and admin production verification remain
 
 Current focus: M7 — invited-beta verification and release tag
 
@@ -304,12 +304,13 @@ results through duplicate requests and disconnects.
   quarantine/restore, calibration schema validation plus Riyadh live canary,
   signed hourly Vela synchronization, automatic activation, runtime version
   selection, and rollback.
-- [~] Add dedicated coverage/job/audit inspector pages, refresh-job execution
-  and cancellation, manual prune controls, and KPI trend charts.
+- [x] Add dedicated coverage/job/audit inspector pages, refresh-job execution
+  and cancellation, snapshot-safe manual prune controls, and KPI trend charts.
 - [x] Verify that the deployed dashboard and admin RPC route reject
   unauthenticated requests with HTTP 401.
-- [!] Add and verify an explicit exact-origin/CSRF posture, then verify
-  auditing and reversible mutations through the deployed gateway.
+- [x] Add an explicit exact-origin/CSRF posture at the protected gateway.
+- [!] Deploy and verify exact-origin enforcement, auditing, and reversible
+  mutations through the production gateway.
 
 Exit: unauthorized access fails, mutations are reversible/audited, and broken
 calibration cannot activate.
@@ -331,8 +332,8 @@ calibration cannot activate.
   results during partial source outages, stop unnecessary query batches, log
   sanitized source failures, distinguish client transport failures from source
   outages, and gate deployment on live source plus public RPC canaries.
-- [x] Pass fatal-info analysis, 50 backend unit tests, 63 consumer tests, the
-  admin widget test, shell syntax, and production web compilation for both
+- [x] Pass fatal-info analysis, 54 backend unit tests, 63 consumer tests, four
+  admin widget tests, shell syntax, and production web compilation for both
   Flutter apps. The PostGIS integration suite remains a separate gate.
 - [x] Android debug and release compilation pass under the constrained
   2 GB/two-worker Gradle profile. The signed release build is staged with its
@@ -499,6 +500,16 @@ solo and multiplayer flows without developer intervention.
   `f1310ca113ea30a945fb5cdb6d8154df96ab32a976a510c9bd2392d0b66984f6`.
   Daily backup artifacts exist through 2026-09-05, but a restore drill remains
   outstanding.
+- 2026-09-05: completed the local cache-dashboard operations surface with
+  responsive coverage, refresh-job, and audit inspectors; cancellable refresh
+  execution; immutable-snapshot-safe pruning; hourly KPI trends; and exact
+  production-origin enforcement in nginx. `scripts/preflight.sh` passed with
+  clean fatal-info analysis, 54 backend tests, 63 consumer tests, and four
+  dashboard tests. The production admin web build passed at
+  `/admin/cache/`. The signed `0.1.0+4` APK was rebuilt and staged with SHA-256
+  `04153904339a408b87c604d9984cf4cc66701f5ba112b5694ec6b16d4312b1d8`.
+  Containerized PostGIS tests and deployed mutation/origin verification remain
+  external gates.
 - 2026-09-05: `main` and `origin/main` both point to `d79ac35`. CI and the
   unsigned iOS build are manual-dispatch workflows, and no beta Git tag exists
   locally yet.
@@ -515,7 +526,9 @@ solo and multiplayer flows without developer intervention.
   and 365-day retention, all dashboard-controllable.
 - 2026-08-31: Added the protected Flutter web cache dashboard with map,
   audited quarantine-first management, bounded policy editing, and validated
-  calibration rollout; job/audit inspector depth remains tracked in M6.
+  calibration rollout. Coverage/job/audit inspectors, refresh execution and
+  cancellation, safe manual pruning, and KPI trends were completed on
+  2026-09-05.
 - 2026-08-31: Wired policy values into extraction retries/concurrency/global
   traffic limits, added identical-refresh coalescing and scheduled cleanup,
   and required a Riyadh live canary before calibration activation or rollback.

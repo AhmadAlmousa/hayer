@@ -15,20 +15,26 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:hayer_client/src/protocol/cache_dashboard_summary.dart' as _i3;
 import 'package:hayer_client/src/protocol/catalog_place_page.dart' as _i4;
-import 'package:hayer_client/src/protocol/cache_policy.dart' as _i5;
-import 'package:hayer_client/src/protocol/calibration_validation.dart' as _i6;
-import 'package:hayer_client/src/protocol/bootstrap_info.dart' as _i7;
-import 'package:hayer_client/src/protocol/session_bundle.dart' as _i8;
-import 'package:hayer_client/src/protocol/create_session_request.dart' as _i9;
-import 'package:hayer_client/src/protocol/swipe_command.dart' as _i10;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i11;
-import 'package:hayer_client/src/protocol/session_event.dart' as _i12;
-import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i13;
+import 'package:hayer_client/src/protocol/coverage_page.dart' as _i5;
+import 'package:hayer_client/src/protocol/refresh_job_page.dart' as _i6;
+import 'package:hayer_client/src/protocol/job_status.dart' as _i7;
+import 'package:hayer_client/src/protocol/admin_audit_page.dart' as _i8;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i9;
+import 'package:hayer_client/src/protocol/catalog_prune_preview.dart' as _i10;
+import 'package:hayer_client/src/protocol/cache_policy.dart' as _i11;
+import 'package:hayer_client/src/protocol/calibration_validation.dart' as _i12;
+import 'package:hayer_client/src/protocol/bootstrap_info.dart' as _i13;
+import 'package:hayer_client/src/protocol/session_bundle.dart' as _i14;
+import 'package:hayer_client/src/protocol/create_session_request.dart' as _i15;
+import 'package:hayer_client/src/protocol/swipe_command.dart' as _i16;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i17;
+import 'package:hayer_client/src/protocol/session_event.dart' as _i18;
+import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i19;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i14;
+    as _i20;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i15;
-import 'protocol.dart' as _i16;
+    as _i21;
+import 'protocol.dart' as _i22;
 
 /// {@category Endpoint}
 class EndpointAdmin extends _i1.EndpointRef {
@@ -63,19 +69,103 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i5.CachePolicy> policy({required String credentials}) =>
-      caller.callServerEndpoint<_i5.CachePolicy>(
+  _i2.Future<_i5.CoveragePage> coverage({
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+  }) => caller.callServerEndpoint<_i5.CoveragePage>(
+    'admin',
+    'coverage',
+    {
+      'credentials': credentials,
+      'page': page,
+      'pageSize': pageSize,
+      'query': query,
+    },
+  );
+
+  _i2.Future<_i6.RefreshJobPage> refreshJobs({
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+    _i7.JobStatus? status,
+  }) => caller.callServerEndpoint<_i6.RefreshJobPage>(
+    'admin',
+    'refreshJobs',
+    {
+      'credentials': credentials,
+      'page': page,
+      'pageSize': pageSize,
+      'query': query,
+      'status': status,
+    },
+  );
+
+  _i2.Future<_i8.AdminAuditPage> auditLog({
+    required String credentials,
+    required int page,
+    required int pageSize,
+    String? query,
+  }) => caller.callServerEndpoint<_i8.AdminAuditPage>(
+    'admin',
+    'auditLog',
+    {
+      'credentials': credentials,
+      'page': page,
+      'pageSize': pageSize,
+      'query': query,
+    },
+  );
+
+  _i2.Future<List<_i9.MetricPoint>> metricTrend({
+    required String credentials,
+    required int hours,
+  }) => caller.callServerEndpoint<List<_i9.MetricPoint>>(
+    'admin',
+    'metricTrend',
+    {
+      'credentials': credentials,
+      'hours': hours,
+    },
+  );
+
+  _i2.Future<_i10.CatalogPrunePreview> prunePreview({
+    required String credentials,
+  }) => caller.callServerEndpoint<_i10.CatalogPrunePreview>(
+    'admin',
+    'prunePreview',
+    {'credentials': credentials},
+  );
+
+  _i2.Future<int> pruneCatalog({
+    required String credentials,
+    required String operatorName,
+    required String reason,
+  }) => caller.callServerEndpoint<int>(
+    'admin',
+    'pruneCatalog',
+    {
+      'credentials': credentials,
+      'operatorName': operatorName,
+      'reason': reason,
+    },
+  );
+
+  _i2.Future<_i11.CachePolicy> policy({required String credentials}) =>
+      caller.callServerEndpoint<_i11.CachePolicy>(
         'admin',
         'policy',
         {'credentials': credentials},
       );
 
-  _i2.Future<_i5.CachePolicy> updatePolicy({
+  _i2.Future<_i11.CachePolicy> updatePolicy({
     required String credentials,
     required String operatorName,
     required String reason,
-    required _i5.CachePolicy policy,
-  }) => caller.callServerEndpoint<_i5.CachePolicy>(
+    required _i11.CachePolicy policy,
+  }) => caller.callServerEndpoint<_i11.CachePolicy>(
     'admin',
     'updatePolicy',
     {
@@ -134,6 +224,22 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
+  _i2.Future<bool> cancelRefreshJob({
+    required String credentials,
+    required String operatorName,
+    required String jobId,
+    required String reason,
+  }) => caller.callServerEndpoint<bool>(
+    'admin',
+    'cancelRefreshJob',
+    {
+      'credentials': credentials,
+      'operatorName': operatorName,
+      'jobId': jobId,
+      'reason': reason,
+    },
+  );
+
   _i2.Future<int> invalidateCoverage({
     required String credentials,
     required String operatorName,
@@ -150,12 +256,12 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i6.CalibrationValidation> validateCalibration({
+  _i2.Future<_i12.CalibrationValidation> validateCalibration({
     required String credentials,
     required String operatorName,
     required String version,
     required String documentJson,
-  }) => caller.callServerEndpoint<_i6.CalibrationValidation>(
+  }) => caller.callServerEndpoint<_i12.CalibrationValidation>(
     'admin',
     'validateCalibration',
     {
@@ -206,8 +312,8 @@ class EndpointBootstrap extends _i1.EndpointRef {
   @override
   String get name => 'bootstrap';
 
-  _i2.Future<_i7.BootstrapInfo> getInfo({required int build}) =>
-      caller.callServerEndpoint<_i7.BootstrapInfo>(
+  _i2.Future<_i13.BootstrapInfo> getInfo({required int build}) =>
+      caller.callServerEndpoint<_i13.BootstrapInfo>(
         'bootstrap',
         'getInfo',
         {'build': build},
@@ -221,10 +327,10 @@ class EndpointHayerSession extends _i1.EndpointRef {
   @override
   String get name => 'hayerSession';
 
-  _i2.Future<_i8.SessionBundle> create({
-    required _i9.CreateSessionRequest request,
+  _i2.Future<_i14.SessionBundle> create({
+    required _i15.CreateSessionRequest request,
     required String idempotencyKey,
-  }) => caller.callServerEndpoint<_i8.SessionBundle>(
+  }) => caller.callServerEndpoint<_i14.SessionBundle>(
     'hayerSession',
     'create',
     {
@@ -233,10 +339,10 @@ class EndpointHayerSession extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i8.SessionBundle> join({
+  _i2.Future<_i14.SessionBundle> join({
     required String code,
     required String displayName,
-  }) => caller.callServerEndpoint<_i8.SessionBundle>(
+  }) => caller.callServerEndpoint<_i14.SessionBundle>(
     'hayerSession',
     'join',
     {
@@ -245,8 +351,8 @@ class EndpointHayerSession extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i8.SessionBundle> load({required String sessionId}) =>
-      caller.callServerEndpoint<_i8.SessionBundle>(
+  _i2.Future<_i14.SessionBundle> load({required String sessionId}) =>
+      caller.callServerEndpoint<_i14.SessionBundle>(
         'hayerSession',
         'load',
         {'sessionId': sessionId},
@@ -260,24 +366,24 @@ class EndpointHayerSession extends _i1.EndpointRef {
         {'sessionId': sessionId},
       );
 
-  _i2.Future<_i8.SessionBundle> swipe({required _i10.SwipeCommand command}) =>
-      caller.callServerEndpoint<_i8.SessionBundle>(
+  _i2.Future<_i14.SessionBundle> swipe({required _i16.SwipeCommand command}) =>
+      caller.callServerEndpoint<_i14.SessionBundle>(
         'hayerSession',
         'swipe',
         {'command': command},
       );
 
-  _i2.Future<List<_i11.SessionResult>> results({required String sessionId}) =>
-      caller.callServerEndpoint<List<_i11.SessionResult>>(
+  _i2.Future<List<_i17.SessionResult>> results({required String sessionId}) =>
+      caller.callServerEndpoint<List<_i17.SessionResult>>(
         'hayerSession',
         'results',
         {'sessionId': sessionId},
       );
 
-  _i2.Stream<_i12.SessionEvent> watch({required String sessionId}) =>
+  _i2.Stream<_i18.SessionEvent> watch({required String sessionId}) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i12.SessionEvent>,
-        _i12.SessionEvent
+        _i2.Stream<_i18.SessionEvent>,
+        _i18.SessionEvent
       >(
         'hayerSession',
         'watch',
@@ -293,12 +399,12 @@ class EndpointPlace extends _i1.EndpointRef {
   @override
   String get name => 'place';
 
-  _i2.Future<List<_i13.LocationSuggestion>> suggest({
+  _i2.Future<List<_i19.LocationSuggestion>> suggest({
     required String query,
     double? latitude,
     double? longitude,
     required String countryCode,
-  }) => caller.callServerEndpoint<List<_i13.LocationSuggestion>>(
+  }) => caller.callServerEndpoint<List<_i19.LocationSuggestion>>(
     'place',
     'suggest',
     {
@@ -325,7 +431,7 @@ class EndpointPlace extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointAnonymousIdp extends _i14.EndpointAnonymousIdpBase {
+class EndpointAnonymousIdp extends _i20.EndpointAnonymousIdpBase {
   EndpointAnonymousIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -336,8 +442,8 @@ class EndpointAnonymousIdp extends _i14.EndpointAnonymousIdpBase {
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
   @override
-  _i2.Future<_i15.AuthSuccess> login({String? token}) =>
-      caller.callServerEndpoint<_i15.AuthSuccess>(
+  _i2.Future<_i21.AuthSuccess> login({String? token}) =>
+      caller.callServerEndpoint<_i21.AuthSuccess>(
         'anonymousIdp',
         'login',
         {'token': token},
@@ -347,7 +453,7 @@ class EndpointAnonymousIdp extends _i14.EndpointAnonymousIdpBase {
 /// By extending [RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i15.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i21.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -372,9 +478,9 @@ class EndpointJwtRefresh extends _i15.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i15.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i21.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i15.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i21.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -384,13 +490,13 @@ class EndpointJwtRefresh extends _i15.EndpointRefreshJwtTokens {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i14.Caller(client);
-    serverpod_auth_core = _i15.Caller(client);
+    serverpod_auth_idp = _i20.Caller(client);
+    serverpod_auth_core = _i21.Caller(client);
   }
 
-  late final _i14.Caller serverpod_auth_idp;
+  late final _i20.Caller serverpod_auth_idp;
 
-  late final _i15.Caller serverpod_auth_core;
+  late final _i21.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -413,7 +519,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i16.Protocol(),
+         _i22.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

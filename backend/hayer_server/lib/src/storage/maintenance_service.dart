@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import 'catalog_pruner.dart';
 
 /// Bounded housekeeping that complements expiry checks on every API call.
 class MaintenanceService {
@@ -39,12 +40,7 @@ class MaintenanceService {
       final retentionCutoff = now.subtract(
         Duration(days: settings?.retentionDays ?? 365),
       );
-      await PoiCatalogRow.db.deleteWhere(
-        session,
-        where: (table) =>
-            (table.lastSeenAt < retentionCutoff) &
-            table.quarantinedAt.equals(null),
-      );
+      await CatalogPruner.prune(session, cutoff: retentionCutoff);
       await OperationalMetricRow.db.deleteWhere(
         session,
         where: (table) =>

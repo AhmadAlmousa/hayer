@@ -1,0 +1,5 @@
+class: CatalogPrunePreview
+fields:
+  eligibleCount: int
+  retentionDays: int
+  cutoff: DateTime

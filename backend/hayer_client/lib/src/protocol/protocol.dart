@@ -12,35 +12,46 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'api_exception.dart' as _i2;
-import 'bootstrap_info.dart' as _i3;
-import 'cache_dashboard_summary.dart' as _i4;
-import 'cache_policy.dart' as _i5;
-import 'calibration_status.dart' as _i6;
-import 'calibration_validation.dart' as _i7;
-import 'catalog_place_page.dart' as _i8;
-import 'consensus_rule.dart' as _i9;
-import 'create_session_request.dart' as _i10;
-import 'job_status.dart' as _i11;
-import 'location_suggestion.dart' as _i12;
-import 'matching_timing.dart' as _i13;
-import 'opening_period.dart' as _i14;
-import 'participant_view.dart' as _i15;
-import 'place_snapshot.dart' as _i16;
-import 'session_bundle.dart' as _i17;
-import 'session_event.dart' as _i18;
-import 'session_event_type.dart' as _i19;
-import 'session_mode.dart' as _i20;
-import 'session_result.dart' as _i21;
-import 'session_status.dart' as _i22;
-import 'session_view.dart' as _i23;
-import 'swipe_command.dart' as _i24;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i25;
-import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i26;
+import 'admin_audit_entry.dart' as _i2;
+import 'admin_audit_page.dart' as _i3;
+import 'api_exception.dart' as _i4;
+import 'bootstrap_info.dart' as _i5;
+import 'cache_dashboard_summary.dart' as _i6;
+import 'cache_policy.dart' as _i7;
+import 'calibration_status.dart' as _i8;
+import 'calibration_validation.dart' as _i9;
+import 'catalog_place_page.dart' as _i10;
+import 'catalog_prune_preview.dart' as _i11;
+import 'consensus_rule.dart' as _i12;
+import 'coverage_page.dart' as _i13;
+import 'coverage_record.dart' as _i14;
+import 'create_session_request.dart' as _i15;
+import 'job_status.dart' as _i16;
+import 'location_suggestion.dart' as _i17;
+import 'matching_timing.dart' as _i18;
+import 'metric_point.dart' as _i19;
+import 'opening_period.dart' as _i20;
+import 'participant_view.dart' as _i21;
+import 'place_snapshot.dart' as _i22;
+import 'refresh_job_page.dart' as _i23;
+import 'refresh_job_view.dart' as _i24;
+import 'session_bundle.dart' as _i25;
+import 'session_event.dart' as _i26;
+import 'session_event_type.dart' as _i27;
+import 'session_mode.dart' as _i28;
+import 'session_result.dart' as _i29;
+import 'session_status.dart' as _i30;
+import 'session_view.dart' as _i31;
+import 'swipe_command.dart' as _i32;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i33;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i34;
+import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i35;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i27;
+    as _i36;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i28;
+    as _i37;
+export 'admin_audit_entry.dart';
+export 'admin_audit_page.dart';
 export 'api_exception.dart';
 export 'bootstrap_info.dart';
 export 'cache_dashboard_summary.dart';
@@ -48,14 +59,20 @@ export 'cache_policy.dart';
 export 'calibration_status.dart';
 export 'calibration_validation.dart';
 export 'catalog_place_page.dart';
+export 'catalog_prune_preview.dart';
 export 'consensus_rule.dart';
+export 'coverage_page.dart';
+export 'coverage_record.dart';
 export 'create_session_request.dart';
 export 'job_status.dart';
 export 'location_suggestion.dart';
 export 'matching_timing.dart';
+export 'metric_point.dart';
 export 'opening_period.dart';
 export 'participant_view.dart';
 export 'place_snapshot.dart';
+export 'refresh_job_page.dart';
+export 'refresh_job_view.dart';
 export 'session_bundle.dart';
 export 'session_event.dart';
 export 'session_event_type.dart';
@@ -100,215 +117,311 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.ApiException) {
-      return _i2.ApiException.fromJson(data) as T;
+    if (t == _i2.AdminAuditEntry) {
+      return _i2.AdminAuditEntry.fromJson(data) as T;
     }
-    if (t == _i3.BootstrapInfo) {
-      return _i3.BootstrapInfo.fromJson(data) as T;
+    if (t == _i3.AdminAuditPage) {
+      return _i3.AdminAuditPage.fromJson(data) as T;
     }
-    if (t == _i4.CacheDashboardSummary) {
-      return _i4.CacheDashboardSummary.fromJson(data) as T;
+    if (t == _i4.ApiException) {
+      return _i4.ApiException.fromJson(data) as T;
     }
-    if (t == _i5.CachePolicy) {
-      return _i5.CachePolicy.fromJson(data) as T;
+    if (t == _i5.BootstrapInfo) {
+      return _i5.BootstrapInfo.fromJson(data) as T;
     }
-    if (t == _i6.CalibrationStatus) {
-      return _i6.CalibrationStatus.fromJson(data) as T;
+    if (t == _i6.CacheDashboardSummary) {
+      return _i6.CacheDashboardSummary.fromJson(data) as T;
     }
-    if (t == _i7.CalibrationValidation) {
-      return _i7.CalibrationValidation.fromJson(data) as T;
+    if (t == _i7.CachePolicy) {
+      return _i7.CachePolicy.fromJson(data) as T;
     }
-    if (t == _i8.CatalogPlacePage) {
-      return _i8.CatalogPlacePage.fromJson(data) as T;
+    if (t == _i8.CalibrationStatus) {
+      return _i8.CalibrationStatus.fromJson(data) as T;
     }
-    if (t == _i9.ConsensusRule) {
-      return _i9.ConsensusRule.fromJson(data) as T;
+    if (t == _i9.CalibrationValidation) {
+      return _i9.CalibrationValidation.fromJson(data) as T;
     }
-    if (t == _i10.CreateSessionRequest) {
-      return _i10.CreateSessionRequest.fromJson(data) as T;
+    if (t == _i10.CatalogPlacePage) {
+      return _i10.CatalogPlacePage.fromJson(data) as T;
     }
-    if (t == _i11.JobStatus) {
-      return _i11.JobStatus.fromJson(data) as T;
+    if (t == _i11.CatalogPrunePreview) {
+      return _i11.CatalogPrunePreview.fromJson(data) as T;
     }
-    if (t == _i12.LocationSuggestion) {
-      return _i12.LocationSuggestion.fromJson(data) as T;
+    if (t == _i12.ConsensusRule) {
+      return _i12.ConsensusRule.fromJson(data) as T;
     }
-    if (t == _i13.MatchingTiming) {
-      return _i13.MatchingTiming.fromJson(data) as T;
+    if (t == _i13.CoveragePage) {
+      return _i13.CoveragePage.fromJson(data) as T;
     }
-    if (t == _i14.OpeningPeriod) {
-      return _i14.OpeningPeriod.fromJson(data) as T;
+    if (t == _i14.CoverageRecord) {
+      return _i14.CoverageRecord.fromJson(data) as T;
     }
-    if (t == _i15.ParticipantView) {
-      return _i15.ParticipantView.fromJson(data) as T;
+    if (t == _i15.CreateSessionRequest) {
+      return _i15.CreateSessionRequest.fromJson(data) as T;
     }
-    if (t == _i16.PlaceSnapshot) {
-      return _i16.PlaceSnapshot.fromJson(data) as T;
+    if (t == _i16.JobStatus) {
+      return _i16.JobStatus.fromJson(data) as T;
     }
-    if (t == _i17.SessionBundle) {
-      return _i17.SessionBundle.fromJson(data) as T;
+    if (t == _i17.LocationSuggestion) {
+      return _i17.LocationSuggestion.fromJson(data) as T;
     }
-    if (t == _i18.SessionEvent) {
-      return _i18.SessionEvent.fromJson(data) as T;
+    if (t == _i18.MatchingTiming) {
+      return _i18.MatchingTiming.fromJson(data) as T;
     }
-    if (t == _i19.SessionEventType) {
-      return _i19.SessionEventType.fromJson(data) as T;
+    if (t == _i19.MetricPoint) {
+      return _i19.MetricPoint.fromJson(data) as T;
     }
-    if (t == _i20.SessionMode) {
-      return _i20.SessionMode.fromJson(data) as T;
+    if (t == _i20.OpeningPeriod) {
+      return _i20.OpeningPeriod.fromJson(data) as T;
     }
-    if (t == _i21.SessionResult) {
-      return _i21.SessionResult.fromJson(data) as T;
+    if (t == _i21.ParticipantView) {
+      return _i21.ParticipantView.fromJson(data) as T;
     }
-    if (t == _i22.SessionStatus) {
-      return _i22.SessionStatus.fromJson(data) as T;
+    if (t == _i22.PlaceSnapshot) {
+      return _i22.PlaceSnapshot.fromJson(data) as T;
     }
-    if (t == _i23.SessionView) {
-      return _i23.SessionView.fromJson(data) as T;
+    if (t == _i23.RefreshJobPage) {
+      return _i23.RefreshJobPage.fromJson(data) as T;
     }
-    if (t == _i24.SwipeCommand) {
-      return _i24.SwipeCommand.fromJson(data) as T;
+    if (t == _i24.RefreshJobView) {
+      return _i24.RefreshJobView.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.ApiException?>()) {
-      return (data != null ? _i2.ApiException.fromJson(data) : null) as T;
+    if (t == _i25.SessionBundle) {
+      return _i25.SessionBundle.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.BootstrapInfo?>()) {
-      return (data != null ? _i3.BootstrapInfo.fromJson(data) : null) as T;
+    if (t == _i26.SessionEvent) {
+      return _i26.SessionEvent.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.CacheDashboardSummary?>()) {
-      return (data != null ? _i4.CacheDashboardSummary.fromJson(data) : null)
+    if (t == _i27.SessionEventType) {
+      return _i27.SessionEventType.fromJson(data) as T;
+    }
+    if (t == _i28.SessionMode) {
+      return _i28.SessionMode.fromJson(data) as T;
+    }
+    if (t == _i29.SessionResult) {
+      return _i29.SessionResult.fromJson(data) as T;
+    }
+    if (t == _i30.SessionStatus) {
+      return _i30.SessionStatus.fromJson(data) as T;
+    }
+    if (t == _i31.SessionView) {
+      return _i31.SessionView.fromJson(data) as T;
+    }
+    if (t == _i32.SwipeCommand) {
+      return _i32.SwipeCommand.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.AdminAuditEntry?>()) {
+      return (data != null ? _i2.AdminAuditEntry.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i3.AdminAuditPage?>()) {
+      return (data != null ? _i3.AdminAuditPage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.ApiException?>()) {
+      return (data != null ? _i4.ApiException.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.BootstrapInfo?>()) {
+      return (data != null ? _i5.BootstrapInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.CacheDashboardSummary?>()) {
+      return (data != null ? _i6.CacheDashboardSummary.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i5.CachePolicy?>()) {
-      return (data != null ? _i5.CachePolicy.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.CachePolicy?>()) {
+      return (data != null ? _i7.CachePolicy.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.CalibrationStatus?>()) {
-      return (data != null ? _i6.CalibrationStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.CalibrationStatus?>()) {
+      return (data != null ? _i8.CalibrationStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.CalibrationValidation?>()) {
-      return (data != null ? _i7.CalibrationValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i9.CalibrationValidation?>()) {
+      return (data != null ? _i9.CalibrationValidation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i8.CatalogPlacePage?>()) {
-      return (data != null ? _i8.CatalogPlacePage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.CatalogPlacePage?>()) {
+      return (data != null ? _i10.CatalogPlacePage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.ConsensusRule?>()) {
-      return (data != null ? _i9.ConsensusRule.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.CreateSessionRequest?>()) {
-      return (data != null ? _i10.CreateSessionRequest.fromJson(data) : null)
+    if (t == _i1.getType<_i11.CatalogPrunePreview?>()) {
+      return (data != null ? _i11.CatalogPrunePreview.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i11.JobStatus?>()) {
-      return (data != null ? _i11.JobStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.ConsensusRule?>()) {
+      return (data != null ? _i12.ConsensusRule.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.LocationSuggestion?>()) {
-      return (data != null ? _i12.LocationSuggestion.fromJson(data) : null)
+    if (t == _i1.getType<_i13.CoveragePage?>()) {
+      return (data != null ? _i13.CoveragePage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i14.CoverageRecord?>()) {
+      return (data != null ? _i14.CoverageRecord.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.CreateSessionRequest?>()) {
+      return (data != null ? _i15.CreateSessionRequest.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i13.MatchingTiming?>()) {
-      return (data != null ? _i13.MatchingTiming.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.JobStatus?>()) {
+      return (data != null ? _i16.JobStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.OpeningPeriod?>()) {
-      return (data != null ? _i14.OpeningPeriod.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.LocationSuggestion?>()) {
+      return (data != null ? _i17.LocationSuggestion.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i15.ParticipantView?>()) {
-      return (data != null ? _i15.ParticipantView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.MatchingTiming?>()) {
+      return (data != null ? _i18.MatchingTiming.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.PlaceSnapshot?>()) {
-      return (data != null ? _i16.PlaceSnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.MetricPoint?>()) {
+      return (data != null ? _i19.MetricPoint.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.SessionBundle?>()) {
-      return (data != null ? _i17.SessionBundle.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.OpeningPeriod?>()) {
+      return (data != null ? _i20.OpeningPeriod.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.SessionEvent?>()) {
-      return (data != null ? _i18.SessionEvent.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i21.ParticipantView?>()) {
+      return (data != null ? _i21.ParticipantView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.SessionEventType?>()) {
-      return (data != null ? _i19.SessionEventType.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i22.PlaceSnapshot?>()) {
+      return (data != null ? _i22.PlaceSnapshot.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i20.SessionMode?>()) {
-      return (data != null ? _i20.SessionMode.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i23.RefreshJobPage?>()) {
+      return (data != null ? _i23.RefreshJobPage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.SessionResult?>()) {
-      return (data != null ? _i21.SessionResult.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.RefreshJobView?>()) {
+      return (data != null ? _i24.RefreshJobView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i22.SessionStatus?>()) {
-      return (data != null ? _i22.SessionStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i25.SessionBundle?>()) {
+      return (data != null ? _i25.SessionBundle.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i23.SessionView?>()) {
-      return (data != null ? _i23.SessionView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i26.SessionEvent?>()) {
+      return (data != null ? _i26.SessionEvent.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.SwipeCommand?>()) {
-      return (data != null ? _i24.SwipeCommand.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i27.SessionEventType?>()) {
+      return (data != null ? _i27.SessionEventType.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i28.SessionMode?>()) {
+      return (data != null ? _i28.SessionMode.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i29.SessionResult?>()) {
+      return (data != null ? _i29.SessionResult.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i30.SessionStatus?>()) {
+      return (data != null ? _i30.SessionStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.SessionView?>()) {
+      return (data != null ? _i31.SessionView.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.SwipeCommand?>()) {
+      return (data != null ? _i32.SwipeCommand.fromJson(data) : null) as T;
+    }
+    if (t == Map<String, String>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
+          )
+          as T;
+    }
+    if (t == _i1.getType<Map<String, String>?>()) {
+      return (data != null
+              ? (data as Map).map(
+                  (k, v) =>
+                      MapEntry(deserialize<String>(k), deserialize<String>(v)),
+                )
+              : null)
+          as T;
+    }
+    if (t == List<_i2.AdminAuditEntry>) {
+      return (data as List)
+              .map((e) => deserialize<_i2.AdminAuditEntry>(e))
+              .toList()
+          as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i16.PlaceSnapshot>) {
+    if (t == List<_i22.PlaceSnapshot>) {
       return (data as List)
-              .map((e) => deserialize<_i16.PlaceSnapshot>(e))
+              .map((e) => deserialize<_i22.PlaceSnapshot>(e))
               .toList()
           as T;
     }
-    if (t == List<_i14.OpeningPeriod>) {
+    if (t == List<_i14.CoverageRecord>) {
       return (data as List)
-              .map((e) => deserialize<_i14.OpeningPeriod>(e))
+              .map((e) => deserialize<_i14.CoverageRecord>(e))
               .toList()
           as T;
     }
-    if (t == List<_i15.ParticipantView>) {
+    if (t == List<_i20.OpeningPeriod>) {
       return (data as List)
-              .map((e) => deserialize<_i15.ParticipantView>(e))
+              .map((e) => deserialize<_i20.OpeningPeriod>(e))
               .toList()
           as T;
     }
-    if (t == List<_i25.SessionResult>) {
+    if (t == List<_i24.RefreshJobView>) {
       return (data as List)
-              .map((e) => deserialize<_i25.SessionResult>(e))
+              .map((e) => deserialize<_i24.RefreshJobView>(e))
               .toList()
           as T;
     }
-    if (t == List<_i26.LocationSuggestion>) {
+    if (t == List<_i21.ParticipantView>) {
       return (data as List)
-              .map((e) => deserialize<_i26.LocationSuggestion>(e))
+              .map((e) => deserialize<_i21.ParticipantView>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i33.MetricPoint>) {
+      return (data as List)
+              .map((e) => deserialize<_i33.MetricPoint>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i34.SessionResult>) {
+      return (data as List)
+              .map((e) => deserialize<_i34.SessionResult>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i35.LocationSuggestion>) {
+      return (data as List)
+              .map((e) => deserialize<_i35.LocationSuggestion>(e))
               .toList()
           as T;
     }
     try {
-      return _i27.Protocol().deserialize<T>(data, t);
+      return _i36.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i28.Protocol().deserialize<T>(data, t);
+      return _i37.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.ApiException => 'ApiException',
-      _i3.BootstrapInfo => 'BootstrapInfo',
-      _i4.CacheDashboardSummary => 'CacheDashboardSummary',
-      _i5.CachePolicy => 'CachePolicy',
-      _i6.CalibrationStatus => 'CalibrationStatus',
-      _i7.CalibrationValidation => 'CalibrationValidation',
-      _i8.CatalogPlacePage => 'CatalogPlacePage',
-      _i9.ConsensusRule => 'ConsensusRule',
-      _i10.CreateSessionRequest => 'CreateSessionRequest',
-      _i11.JobStatus => 'JobStatus',
-      _i12.LocationSuggestion => 'LocationSuggestion',
-      _i13.MatchingTiming => 'MatchingTiming',
-      _i14.OpeningPeriod => 'OpeningPeriod',
-      _i15.ParticipantView => 'ParticipantView',
-      _i16.PlaceSnapshot => 'PlaceSnapshot',
-      _i17.SessionBundle => 'SessionBundle',
-      _i18.SessionEvent => 'SessionEvent',
-      _i19.SessionEventType => 'SessionEventType',
-      _i20.SessionMode => 'SessionMode',
-      _i21.SessionResult => 'SessionResult',
-      _i22.SessionStatus => 'SessionStatus',
-      _i23.SessionView => 'SessionView',
-      _i24.SwipeCommand => 'SwipeCommand',
+      _i2.AdminAuditEntry => 'AdminAuditEntry',
+      _i3.AdminAuditPage => 'AdminAuditPage',
+      _i4.ApiException => 'ApiException',
+      _i5.BootstrapInfo => 'BootstrapInfo',
+      _i6.CacheDashboardSummary => 'CacheDashboardSummary',
+      _i7.CachePolicy => 'CachePolicy',
+      _i8.CalibrationStatus => 'CalibrationStatus',
+      _i9.CalibrationValidation => 'CalibrationValidation',
+      _i10.CatalogPlacePage => 'CatalogPlacePage',
+      _i11.CatalogPrunePreview => 'CatalogPrunePreview',
+      _i12.ConsensusRule => 'ConsensusRule',
+      _i13.CoveragePage => 'CoveragePage',
+      _i14.CoverageRecord => 'CoverageRecord',
+      _i15.CreateSessionRequest => 'CreateSessionRequest',
+      _i16.JobStatus => 'JobStatus',
+      _i17.LocationSuggestion => 'LocationSuggestion',
+      _i18.MatchingTiming => 'MatchingTiming',
+      _i19.MetricPoint => 'MetricPoint',
+      _i20.OpeningPeriod => 'OpeningPeriod',
+      _i21.ParticipantView => 'ParticipantView',
+      _i22.PlaceSnapshot => 'PlaceSnapshot',
+      _i23.RefreshJobPage => 'RefreshJobPage',
+      _i24.RefreshJobView => 'RefreshJobView',
+      _i25.SessionBundle => 'SessionBundle',
+      _i26.SessionEvent => 'SessionEvent',
+      _i27.SessionEventType => 'SessionEventType',
+      _i28.SessionMode => 'SessionMode',
+      _i29.SessionResult => 'SessionResult',
+      _i30.SessionStatus => 'SessionStatus',
+      _i31.SessionView => 'SessionView',
+      _i32.SwipeCommand => 'SwipeCommand',
       _ => null,
     };
   }
@@ -323,58 +436,74 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.ApiException():
+      case _i2.AdminAuditEntry():
+        return 'AdminAuditEntry';
+      case _i3.AdminAuditPage():
+        return 'AdminAuditPage';
+      case _i4.ApiException():
         return 'ApiException';
-      case _i3.BootstrapInfo():
+      case _i5.BootstrapInfo():
         return 'BootstrapInfo';
-      case _i4.CacheDashboardSummary():
+      case _i6.CacheDashboardSummary():
         return 'CacheDashboardSummary';
-      case _i5.CachePolicy():
+      case _i7.CachePolicy():
         return 'CachePolicy';
-      case _i6.CalibrationStatus():
+      case _i8.CalibrationStatus():
         return 'CalibrationStatus';
-      case _i7.CalibrationValidation():
+      case _i9.CalibrationValidation():
         return 'CalibrationValidation';
-      case _i8.CatalogPlacePage():
+      case _i10.CatalogPlacePage():
         return 'CatalogPlacePage';
-      case _i9.ConsensusRule():
+      case _i11.CatalogPrunePreview():
+        return 'CatalogPrunePreview';
+      case _i12.ConsensusRule():
         return 'ConsensusRule';
-      case _i10.CreateSessionRequest():
+      case _i13.CoveragePage():
+        return 'CoveragePage';
+      case _i14.CoverageRecord():
+        return 'CoverageRecord';
+      case _i15.CreateSessionRequest():
         return 'CreateSessionRequest';
-      case _i11.JobStatus():
+      case _i16.JobStatus():
         return 'JobStatus';
-      case _i12.LocationSuggestion():
+      case _i17.LocationSuggestion():
         return 'LocationSuggestion';
-      case _i13.MatchingTiming():
+      case _i18.MatchingTiming():
         return 'MatchingTiming';
-      case _i14.OpeningPeriod():
+      case _i19.MetricPoint():
+        return 'MetricPoint';
+      case _i20.OpeningPeriod():
         return 'OpeningPeriod';
-      case _i15.ParticipantView():
+      case _i21.ParticipantView():
         return 'ParticipantView';
-      case _i16.PlaceSnapshot():
+      case _i22.PlaceSnapshot():
         return 'PlaceSnapshot';
-      case _i17.SessionBundle():
+      case _i23.RefreshJobPage():
+        return 'RefreshJobPage';
+      case _i24.RefreshJobView():
+        return 'RefreshJobView';
+      case _i25.SessionBundle():
         return 'SessionBundle';
-      case _i18.SessionEvent():
+      case _i26.SessionEvent():
         return 'SessionEvent';
-      case _i19.SessionEventType():
+      case _i27.SessionEventType():
         return 'SessionEventType';
-      case _i20.SessionMode():
+      case _i28.SessionMode():
         return 'SessionMode';
-      case _i21.SessionResult():
+      case _i29.SessionResult():
         return 'SessionResult';
-      case _i22.SessionStatus():
+      case _i30.SessionStatus():
         return 'SessionStatus';
-      case _i23.SessionView():
+      case _i31.SessionView():
         return 'SessionView';
-      case _i24.SwipeCommand():
+      case _i32.SwipeCommand():
         return 'SwipeCommand';
     }
-    className = _i27.Protocol().getClassNameForObject(data);
+    className = _i36.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i28.Protocol().getClassNameForObject(data);
+    className = _i37.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -387,82 +516,106 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'AdminAuditEntry') {
+      return deserialize<_i2.AdminAuditEntry>(data['data']);
+    }
+    if (dataClassName == 'AdminAuditPage') {
+      return deserialize<_i3.AdminAuditPage>(data['data']);
+    }
     if (dataClassName == 'ApiException') {
-      return deserialize<_i2.ApiException>(data['data']);
+      return deserialize<_i4.ApiException>(data['data']);
     }
     if (dataClassName == 'BootstrapInfo') {
-      return deserialize<_i3.BootstrapInfo>(data['data']);
+      return deserialize<_i5.BootstrapInfo>(data['data']);
     }
     if (dataClassName == 'CacheDashboardSummary') {
-      return deserialize<_i4.CacheDashboardSummary>(data['data']);
+      return deserialize<_i6.CacheDashboardSummary>(data['data']);
     }
     if (dataClassName == 'CachePolicy') {
-      return deserialize<_i5.CachePolicy>(data['data']);
+      return deserialize<_i7.CachePolicy>(data['data']);
     }
     if (dataClassName == 'CalibrationStatus') {
-      return deserialize<_i6.CalibrationStatus>(data['data']);
+      return deserialize<_i8.CalibrationStatus>(data['data']);
     }
     if (dataClassName == 'CalibrationValidation') {
-      return deserialize<_i7.CalibrationValidation>(data['data']);
+      return deserialize<_i9.CalibrationValidation>(data['data']);
     }
     if (dataClassName == 'CatalogPlacePage') {
-      return deserialize<_i8.CatalogPlacePage>(data['data']);
+      return deserialize<_i10.CatalogPlacePage>(data['data']);
+    }
+    if (dataClassName == 'CatalogPrunePreview') {
+      return deserialize<_i11.CatalogPrunePreview>(data['data']);
     }
     if (dataClassName == 'ConsensusRule') {
-      return deserialize<_i9.ConsensusRule>(data['data']);
+      return deserialize<_i12.ConsensusRule>(data['data']);
+    }
+    if (dataClassName == 'CoveragePage') {
+      return deserialize<_i13.CoveragePage>(data['data']);
+    }
+    if (dataClassName == 'CoverageRecord') {
+      return deserialize<_i14.CoverageRecord>(data['data']);
     }
     if (dataClassName == 'CreateSessionRequest') {
-      return deserialize<_i10.CreateSessionRequest>(data['data']);
+      return deserialize<_i15.CreateSessionRequest>(data['data']);
     }
     if (dataClassName == 'JobStatus') {
-      return deserialize<_i11.JobStatus>(data['data']);
+      return deserialize<_i16.JobStatus>(data['data']);
     }
     if (dataClassName == 'LocationSuggestion') {
-      return deserialize<_i12.LocationSuggestion>(data['data']);
+      return deserialize<_i17.LocationSuggestion>(data['data']);
     }
     if (dataClassName == 'MatchingTiming') {
-      return deserialize<_i13.MatchingTiming>(data['data']);
+      return deserialize<_i18.MatchingTiming>(data['data']);
+    }
+    if (dataClassName == 'MetricPoint') {
+      return deserialize<_i19.MetricPoint>(data['data']);
     }
     if (dataClassName == 'OpeningPeriod') {
-      return deserialize<_i14.OpeningPeriod>(data['data']);
+      return deserialize<_i20.OpeningPeriod>(data['data']);
     }
     if (dataClassName == 'ParticipantView') {
-      return deserialize<_i15.ParticipantView>(data['data']);
+      return deserialize<_i21.ParticipantView>(data['data']);
     }
     if (dataClassName == 'PlaceSnapshot') {
-      return deserialize<_i16.PlaceSnapshot>(data['data']);
+      return deserialize<_i22.PlaceSnapshot>(data['data']);
+    }
+    if (dataClassName == 'RefreshJobPage') {
+      return deserialize<_i23.RefreshJobPage>(data['data']);
+    }
+    if (dataClassName == 'RefreshJobView') {
+      return deserialize<_i24.RefreshJobView>(data['data']);
     }
     if (dataClassName == 'SessionBundle') {
-      return deserialize<_i17.SessionBundle>(data['data']);
+      return deserialize<_i25.SessionBundle>(data['data']);
     }
     if (dataClassName == 'SessionEvent') {
-      return deserialize<_i18.SessionEvent>(data['data']);
+      return deserialize<_i26.SessionEvent>(data['data']);
     }
     if (dataClassName == 'SessionEventType') {
-      return deserialize<_i19.SessionEventType>(data['data']);
+      return deserialize<_i27.SessionEventType>(data['data']);
     }
     if (dataClassName == 'SessionMode') {
-      return deserialize<_i20.SessionMode>(data['data']);
+      return deserialize<_i28.SessionMode>(data['data']);
     }
     if (dataClassName == 'SessionResult') {
-      return deserialize<_i21.SessionResult>(data['data']);
+      return deserialize<_i29.SessionResult>(data['data']);
     }
     if (dataClassName == 'SessionStatus') {
-      return deserialize<_i22.SessionStatus>(data['data']);
+      return deserialize<_i30.SessionStatus>(data['data']);
     }
     if (dataClassName == 'SessionView') {
-      return deserialize<_i23.SessionView>(data['data']);
+      return deserialize<_i31.SessionView>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i24.SwipeCommand>(data['data']);
+      return deserialize<_i32.SwipeCommand>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i27.Protocol().deserializeByClassName(data);
+      return _i36.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i28.Protocol().deserializeByClassName(data);
+      return _i37.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -477,10 +630,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i27.Protocol().mapRecordToJson(record);
+      return _i36.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i28.Protocol().mapRecordToJson(record);
+      return _i37.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

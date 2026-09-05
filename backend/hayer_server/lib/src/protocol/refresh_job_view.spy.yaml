@@ -1,0 +1,11 @@
+class: RefreshJobView
+fields:
+  jobId: String
+  coverageKey: String
+  status: JobStatus
+  requestedBy: String
+  reason: String
+  createdAt: DateTime
+  startedAt: DateTime?
+  completedAt: DateTime?
+  errorCode: String?

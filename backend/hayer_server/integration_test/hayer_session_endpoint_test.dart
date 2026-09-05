@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
+import 'package:hayer_server/src/storage/catalog_pruner.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
@@ -64,6 +65,40 @@ void main() {
           ),
           throwsA(_apiError('conflict')),
         );
+      });
+
+      test('catalog pruning preserves places in immutable decks', () async {
+        final created = await endpoints.hayerSession.create(
+          host,
+          request: _request(),
+          idempotencyKey: 'create-prune-proof',
+        );
+        final session = sessionBuilder.build();
+        try {
+          final cutoff = DateTime.utc(2026, 1, 1);
+          await PoiCatalogRow.db.updateWhere(
+            session,
+            where: (table) => table.provider.equals('google-web'),
+            columnValues: (table) => [
+              table.lastSeenAt(DateTime.utc(2025, 1, 1)),
+            ],
+          );
+
+          final removed = await CatalogPruner.prune(session, cutoff: cutoff);
+          final remaining = await PoiCatalogRow.db.find(session);
+          final remainingIds = remaining
+              .map((row) => row.providerPlaceId)
+              .toSet();
+
+          expect(removed, greaterThan(0));
+          expect(
+            remainingIds,
+            containsAll(created.deck.map((place) => place.placeId)),
+          );
+          expect(remaining, hasLength(created.deck.length));
+        } finally {
+          await session.close();
+        }
       });
 
       test(

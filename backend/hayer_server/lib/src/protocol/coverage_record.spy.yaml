@@ -1,0 +1,15 @@
+class: CoverageRecord
+fields:
+  coverageKey: String
+  queryKey: String
+  language: String
+  countryCode: String
+  anchorLatitude: double
+  anchorLongitude: double
+  radiusMeters: int
+  calibrationVersion: String
+  resultCount: int
+  refreshedAt: DateTime
+  expiresAt: DateTime
+  lastFailureCode: String?
+  invalidatedAt: DateTime?

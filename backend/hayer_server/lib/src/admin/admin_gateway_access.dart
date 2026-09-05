@@ -1,13 +1,16 @@
 abstract final class AdminGatewayAccess {
   static const authenticatedHeader = 'x-hayer-admin-authenticated';
   static const usernameHeader = 'x-hayer-admin-user';
+  static const originAllowedHeader = 'x-hayer-admin-origin-allowed';
 
   /// Resolves the nginx-authenticated operator or rejects an incomplete marker.
   static String? resolveOperator({
     required Iterable<String>? authenticatedValues,
     required Iterable<String>? usernameValues,
+    required Iterable<String>? originAllowedValues,
   }) {
     if (_single(authenticatedValues) != '1') return null;
+    if (_single(originAllowedValues) != '1') return null;
     final username = _single(usernameValues)?.trim();
     if (username == null ||
         !RegExp(r'^[A-Za-z0-9._-]{1,64}$').hasMatch(username)) {

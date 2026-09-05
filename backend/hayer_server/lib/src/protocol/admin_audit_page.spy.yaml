@@ -1,0 +1,6 @@
+class: AdminAuditPage
+fields:
+  items: List<AdminAuditEntry>
+  total: int
+  page: int
+  pageSize: int
