@@ -1,10 +1,10 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
-Status: beta implementation complete; environment and release verification in progress
+Status: Android beta deployed; release verification and admin operations work remain
 
-Current focus: M7 — Docker/PostGIS deployment and multi-device beta proof
+Current focus: M7 — invited-beta verification and release tag
 
 Product brief: [`overview.md`](overview.md)
 
@@ -190,8 +190,12 @@ session-creation deadline. Cache policy validation enforces
   root Dart workspace, and deployment directories.
 - [x] Pin Flutter 3.44.2, Dart 3.12.2, Serverpod 3.4.13, generated code,
   fatal-info analysis, ignores, secret templates, and CI.
-- [!] Prove RPC and WSS gateway-prefix routing on the Compose stack. Docker is
-  unavailable in this development environment.
+- [x] Prove RPC and WSS gateway-prefix routing through the deployed Compose
+  stack. The public API is healthy and `/api/websocket` returns a successful
+  HTTP 101 upgrade through nginx and the external TLS proxy.
+- [!] Run a fresh-clone bootstrap and a green full CI workflow. CI is
+  manual-only, and the local development environment has no Docker runtime for
+  its PostGIS integration job.
 
 Exit: a fresh clone bootstraps, CI is green, and API plus streaming smoke tests
 pass through the intended public gateway.
@@ -210,8 +214,10 @@ pass through the intended public gateway.
   coalescing, English/Arabic fallback, configurable attempts/concurrency,
   global token-bucket source limits, 30-second deadline, stale suppression,
   metrics, and scheduled retention.
-- [!] Run Saudi live canaries and `EXPLAIN ANALYZE` spatial-index proof against
-  a migrated PostGIS database.
+- [x] Run the Riyadh live canary against the migrated production PostGIS
+  database.
+- [!] Capture `EXPLAIN ANALYZE` spatial-index proof against a representative
+  migrated PostGIS database.
 
 Exit: a Riyadh request makes a deterministic deck, a covered repeat is local,
 drift fails safely, and spatial queries use their indexes.
@@ -230,8 +236,9 @@ drift fails safely, and spatial queries use their indexes.
   revision updates, location suggestions, join App Links, and download/static
   routes.
 - [ ] Add the authenticated consumer-web photo proxy before enabling consumer
-  web; native Android currently loads only allowlisted HTTPS source photos.
-- [~] A generated Serverpod/PostGIS integration suite now covers concurrent
+  web; this is deferred to M8 and does not block the Android beta. Native
+  Android currently loads only allowlisted HTTPS source photos.
+- [!] A generated Serverpod/PostGIS integration suite now covers concurrent
   create retries, immutable decks, late joins, private aggregate results,
   duplicate swipes, majority/unanimous convergence, and authoritative expiry.
   Its isolated database runner is wired into CI; a green containerized run is
@@ -267,8 +274,8 @@ pass in light, dark, large-text, narrow/wide, and RTL harnesses.
   native/browser replay, termination resume, results filtering/sorting, full
   details sheet, attribution, and phone/site/external-navigation handoff.
 - [!] Complete a signed APK create → forced restart → resume → results test
-  against the deployed backend. Release signing works locally; the deployed
-  runtime and physical-device proof remain outstanding.
+  against the deployed backend. Signed build `0.1.0+4` is served from the
+  production domain; the physical-device proof remains outstanding.
 
 Exit: a signed test build completes create, swipe, forced restart/resume, and
 results against the backend.
@@ -299,8 +306,10 @@ results through duplicate requests and disconnects.
   selection, and rollback.
 - [~] Add dedicated coverage/job/audit inspector pages, refresh-job execution
   and cancellation, manual prune controls, and KPI trend charts.
-- [!] Verify nginx authentication, exact-origin/CSRF posture, auditing, and
-  reversible mutations through the deployed gateway.
+- [x] Verify that the deployed dashboard and admin RPC route reject
+  unauthenticated requests with HTTP 401.
+- [!] Add and verify an explicit exact-origin/CSRF posture, then verify
+  auditing and reversible mutations through the deployed gateway.
 
 Exit: unauthorized access fails, mutations are reversible/audited, and broken
 calibration cannot activate.
@@ -322,14 +331,19 @@ calibration cannot activate.
   results during partial source outages, stop unnecessary query batches, log
   sanitized source failures, distinguish client transport failures from source
   outages, and gate deployment on live source plus public RPC canaries.
-- [x] Pass fatal-info analysis, 28 backend unit tests, consumer/admin widget
-  tests, shell syntax, and production web compilation for both Flutter apps.
+- [x] Pass fatal-info analysis, 50 backend unit tests, 63 consumer tests, the
+  admin widget test, shell syntax, and production web compilation for both
+  Flutter apps. The PostGIS integration suite remains a separate gate.
 - [x] Android debug and release compilation pass under the constrained
   2 GB/two-worker Gradle profile. The signed release build is staged with its
   SHA-256 checksum under `backend/deploy/releases/`.
-- [!] Deploy Compose to Unraid; verify migrations, TLS/WSS/API prefixes, live
-  extraction, App Links, backup restore, accessibility, performance, and
-  newest/previous-build compatibility; then tag the invited beta.
+- [x] Deploy Compose to Unraid and verify public TLS/API health, the WSS
+  gateway prefix, App Links metadata, APK/checksum download, Basic Auth
+  rejection, live Riyadh extraction, and creation of daily backups.
+- [!] Run the current-HEAD containerized integration/CI gates; verify current
+  migrations, backup restore, signed solo and multiplayer physical-device
+  flows, accessibility, performance, and newest/previous-build compatibility;
+  then tag the invited beta.
 
 Exit: an invited user installs from the Hayer domain and completes the full
 solo and multiplayer flows without developer intervention.
@@ -338,7 +352,9 @@ solo and multiplayer flows without developer intervention.
 
 - [ ] Harden parser reliability and add app attestation.
 - [ ] Certify each non-Saudi GCC calibration.
-- [ ] Complete Arabic/RTL, iOS, and consumer web/PWA releases.
+- [ ] Complete Arabic/RTL release certification, a signed iOS release, and
+  consumer web/PWA releases. Core Arabic/RTL support and an unsigned iOS build
+  workflow already exist.
 - [ ] Add the authenticated web photo proxy, then evaluate a consumer map and
   richer details from measured demand.
 - [ ] Add Redis/horizontal Serverpod instances only when measurements require
@@ -468,6 +484,24 @@ solo and multiplayer flows without developer intervention.
 - 2026-09-04: `scripts/build-release-apk.sh` produced the signed 113.0 MB
   `hayer-0.1.0-1.apk` and staged the current `hayer.apk`. SHA-256:
   `b9335bf0875607636897e88016a30d22471ffd3c436a9bd8a24764f529d48590`.
+- 2026-09-05: `scripts/preflight.sh` passed on `d79ac35`: Serverpod generation
+  and formatting were current; fatal-info analysis passed for the server,
+  generated client, consumer, and admin; 50 backend unit tests, 63 consumer
+  tests, and the admin widget test passed; operational-script syntax and Git
+  diff checks also passed. The containerized PostGIS integration suite is not
+  part of this local preflight and remains unverified on the current revision.
+- 2026-09-05: live public checks returned HTTP 200 from `/api/`, HTTP 101 from
+  `/api/websocket`, a certificate fingerprint for `sa.almou.hayer` from
+  `/.well-known/assetlinks.json`, and HTTP 401 from both protected admin
+  routes without credentials. `/download/` redirected to the current APK.
+- 2026-09-05: signed Android build `0.1.0+4` is staged and served as
+  `hayer.apk`; the public checksum matches the local SHA-256
+  `f1310ca113ea30a945fb5cdb6d8154df96ab32a976a510c9bd2392d0b66984f6`.
+  Daily backup artifacts exist through 2026-09-05, but a restore drill remains
+  outstanding.
+- 2026-09-05: `main` and `origin/main` both point to `d79ac35`. CI and the
+  unsigned iOS build are manual-dispatch workflows, and no beta Git tag exists
+  locally yet.
 
 ## Decision and change log
 
