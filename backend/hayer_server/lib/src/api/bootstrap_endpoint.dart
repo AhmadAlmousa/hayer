@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
-import '../places/taxonomy.dart';
+import '../places/taxonomy_service.dart';
 
 class BootstrapEndpoint extends Endpoint {
   @override
@@ -15,7 +15,7 @@ class BootstrapEndpoint extends Endpoint {
       updateRequired: build < minimumBuild,
       supportedCountries: const ['SA', 'AE', 'KW', 'QA', 'BH', 'OM'],
       certifiedCountries: const ['SA'],
-      taxonomyVersion: PlaceTaxonomy.version,
+      taxonomyVersion: (await TaxonomyService.publicSnapshot(session)).version,
       configVersion: 1,
       serverTime: DateTime.now().toUtc(),
     );

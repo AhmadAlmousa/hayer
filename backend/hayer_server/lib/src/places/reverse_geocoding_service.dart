@@ -34,12 +34,22 @@ class ReverseGeocodingService {
   final Duration cacheDuration;
   final Uri endpoint;
   final DateTime Function() _clock;
-  final Map<String, _CachedAddress> _cache = {};
-  final Map<String, Future<String>> _inFlight = {};
+  final Map<String, _CachedLocation> _cache = {};
+  final Map<String, Future<ResolvedLocation>> _inFlight = {};
   Future<void> _requestQueue = Future.value();
   DateTime? _nextRequestAt;
 
   Future<String> reverse({
+    required double latitude,
+    required double longitude,
+    required String languageCode,
+  }) async => (await reverseDetails(
+    latitude: latitude,
+    longitude: longitude,
+    languageCode: languageCode,
+  )).formattedAddress;
+
+  Future<ResolvedLocation> reverseDetails({
     required double latitude,
     required double longitude,
     required String languageCode,
@@ -49,32 +59,32 @@ class ReverseGeocodingService {
         '${longitude.toStringAsFixed(4)}:$languageCode';
     final cached = _cache[key];
     if (cached != null && cached.expiresAt.isAfter(_clock())) {
-      return Future.value(cached.address);
+      return Future.value(cached.location);
     }
     return _inFlight.putIfAbsent(key, () async {
       try {
-        final address = await _enqueueRequest(
+        final location = await _enqueueRequest(
           latitude: latitude,
           longitude: longitude,
           languageCode: languageCode,
         );
-        _cache[key] = _CachedAddress(
-          address: address,
+        _cache[key] = _CachedLocation(
+          location: location,
           expiresAt: _clock().add(cacheDuration),
         );
-        return address;
+        return location;
       } finally {
         unawaited(_inFlight.remove(key));
       }
     });
   }
 
-  Future<String> _enqueueRequest({
+  Future<ResolvedLocation> _enqueueRequest({
     required double latitude,
     required double longitude,
     required String languageCode,
   }) {
-    final completer = Completer<String>();
+    final completer = Completer<ResolvedLocation>();
     _requestQueue = _requestQueue.then((_) async {
       final next = _nextRequestAt;
       if (next != null) {
@@ -97,7 +107,7 @@ class ReverseGeocodingService {
     return completer.future;
   }
 
-  Future<String> _request({
+  Future<ResolvedLocation> _request({
     required double latitude,
     required double longitude,
     required String languageCode,
@@ -142,7 +152,7 @@ class ReverseGeocodingService {
       if (body is! Map<String, dynamic>) {
         throw const FormatException('Expected a JSON object.');
       }
-      return _formatAddress(body);
+      return _location(body);
     } on FormatException {
       throw const ReverseGeocodingException(
         'The address service returned unreadable data.',
@@ -150,7 +160,7 @@ class ReverseGeocodingService {
     }
   }
 
-  String _formatAddress(Map<String, dynamic> body) {
+  ResolvedLocation _location(Map<String, dynamic> body) {
     final rawAddress = body['address'];
     final address = rawAddress is Map
         ? rawAddress.cast<String, dynamic>()
@@ -195,10 +205,19 @@ class ReverseGeocodingService {
         unique.add(value);
       }
     }
-    if (unique.isNotEmpty) return unique.join(', ');
-    final displayName = body['display_name'];
-    if (displayName is String && displayName.trim().isNotEmpty) {
-      return displayName.trim();
+    final formattedAddress = unique.isNotEmpty
+        ? unique.join(', ')
+        : body['display_name'] is String &&
+              (body['display_name'] as String).trim().isNotEmpty
+        ? (body['display_name'] as String).trim()
+        : null;
+    if (formattedAddress != null) {
+      return ResolvedLocation(
+        formattedAddress: formattedAddress,
+        city: city,
+        region: state,
+        countryCode: _first(address, const ['country_code'])?.toUpperCase(),
+      );
     }
     throw const ReverseGeocodingException(
       'No readable address was found for this location.',
@@ -214,9 +233,23 @@ class ReverseGeocodingService {
   }
 }
 
-class _CachedAddress {
-  const _CachedAddress({required this.address, required this.expiresAt});
+class ResolvedLocation {
+  const ResolvedLocation({
+    required this.formattedAddress,
+    this.city,
+    this.region,
+    this.countryCode,
+  });
 
-  final String address;
+  final String formattedAddress;
+  final String? city;
+  final String? region;
+  final String? countryCode;
+}
+
+class _CachedLocation {
+  const _CachedLocation({required this.location, required this.expiresAt});
+
+  final ResolvedLocation location;
   final DateTime expiresAt;
 }

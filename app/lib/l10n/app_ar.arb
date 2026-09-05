@@ -112,6 +112,8 @@
   "resumeFailed": "الجلسة المحفوظة لم تعد متاحة.",
   "allLabel": "كل",
   "typesCount": "{count} أنواع",
+  "cuisinesLabel": "المطابخ",
+  "poiTypesLabel": "أنواع الأماكن",
   "@typesCount": {"placeholders": {"count": {"type": "int"}}},
   "showQrCode": "عرض رمز QR",
   "qrLabel": "QR",

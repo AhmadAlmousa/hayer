@@ -1,0 +1,7 @@
+class: AdminMapLocation
+fields:
+  address: String
+  latitude: double
+  longitude: double
+  countryCode: String
+  cityName: String?

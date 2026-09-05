@@ -1,3 +1,5 @@
+import 'package:hayer_client/hayer_client.dart';
+
 class SetupCategory {
   const SetupCategory(
     this.id,
@@ -13,39 +15,165 @@ class SetupCategory {
   final String emoji;
   final Map<String, SetupSubcategory> subcategories;
 
+  Map<String, SetupSubcategory> get cuisines => Map.fromEntries(
+    subcategories.entries.where(
+      (entry) => entry.value.kind == SetupOptionKind.cuisine,
+    ),
+  );
+
+  Map<String, SetupSubcategory> get types => Map.fromEntries(
+    subcategories.entries.where(
+      (entry) => entry.value.kind == SetupOptionKind.poiType,
+    ),
+  );
+
   String label(String languageCode) =>
       languageCode == 'ar' ? arabicLabel : englishLabel;
 }
 
 class SetupSubcategory {
-  const SetupSubcategory(this.emoji, this.englishLabel, this.arabicLabel);
+  const SetupSubcategory(
+    this.emoji,
+    this.englishLabel,
+    this.arabicLabel, {
+    this.kind = SetupOptionKind.poiType,
+  });
 
   final String emoji;
   final String englishLabel;
   final String arabicLabel;
+  final SetupOptionKind kind;
 
   String label(String languageCode) =>
       '$emoji ${languageCode == 'ar' ? arabicLabel : englishLabel}';
 }
 
+enum SetupOptionKind { cuisine, poiType }
+
+List<SetupCategory> setupCategoriesFromSnapshot(TaxonomySnapshot snapshot) {
+  final categories =
+      snapshot.items
+          .where((item) => item.enabled && item.kind == TaxonomyKind.category)
+          .toList()
+        ..sort((left, right) => left.sortOrder.compareTo(right.sortOrder));
+  return categories
+      .map((category) {
+        final options =
+            snapshot.items
+                .where(
+                  (item) =>
+                      item.enabled &&
+                      item.kind != TaxonomyKind.category &&
+                      item.parentCategoryIds.contains(category.id),
+                )
+                .toList()
+              ..sort(
+                (left, right) => left.sortOrder.compareTo(right.sortOrder),
+              );
+        return SetupCategory(
+          category.id,
+          category.labelEn,
+          category.labelAr,
+          category.emoji,
+          {
+            for (final option in options)
+              option.id: SetupSubcategory(
+                option.emoji,
+                option.labelEn,
+                option.labelAr,
+                kind: option.kind == TaxonomyKind.cuisine
+                    ? SetupOptionKind.cuisine
+                    : SetupOptionKind.poiType,
+              ),
+          },
+        );
+      })
+      .toList(growable: false);
+}
+
 const setupCategories = [
   SetupCategory('restaurant', 'Restaurants', 'مطاعم', '🍽️', {
-    'italian': SetupSubcategory('🍝', 'Italian', 'إيطالي'),
+    'italian': SetupSubcategory(
+      '🍝',
+      'Italian',
+      'إيطالي',
+      kind: SetupOptionKind.cuisine,
+    ),
     'hamburger': SetupSubcategory('🍔', 'Burgers', 'برغر'),
     'pizza': SetupSubcategory('🍕', 'Pizza', 'بيتزا'),
     'sushi': SetupSubcategory('🍣', 'Sushi', 'سوشي'),
-    'japanese': SetupSubcategory('🍱', 'Japanese', 'ياباني'),
-    'chinese': SetupSubcategory('🥡', 'Chinese', 'صيني'),
-    'thai': SetupSubcategory('🍜', 'Thai', 'تايلندي'),
-    'indian': SetupSubcategory('🍛', 'Indian', 'هندي'),
-    'mexican': SetupSubcategory('🌮', 'Mexican', 'مكسيكي'),
-    'mediterranean': SetupSubcategory('🫒', 'Mediterranean', 'متوسطي'),
-    'middle_eastern': SetupSubcategory('🥙', 'Middle Eastern', 'شرق أوسطي'),
-    'lebanese': SetupSubcategory('🧆', 'Lebanese', 'لبناني'),
-    'turkish': SetupSubcategory('🥘', 'Turkish', 'تركي'),
-    'greek': SetupSubcategory('🥗', 'Greek', 'يوناني'),
-    'korean': SetupSubcategory('🍲', 'Korean', 'كوري'),
-    'american': SetupSubcategory('🥪', 'American', 'أمريكي'),
+    'japanese': SetupSubcategory(
+      '🍱',
+      'Japanese',
+      'ياباني',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'chinese': SetupSubcategory(
+      '🥡',
+      'Chinese',
+      'صيني',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'thai': SetupSubcategory(
+      '🍜',
+      'Thai',
+      'تايلندي',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'indian': SetupSubcategory(
+      '🍛',
+      'Indian',
+      'هندي',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'mexican': SetupSubcategory(
+      '🌮',
+      'Mexican',
+      'مكسيكي',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'mediterranean': SetupSubcategory(
+      '🫒',
+      'Mediterranean',
+      'متوسطي',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'middle_eastern': SetupSubcategory(
+      '🥙',
+      'Middle Eastern',
+      'شرق أوسطي',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'lebanese': SetupSubcategory(
+      '🧆',
+      'Lebanese',
+      'لبناني',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'turkish': SetupSubcategory(
+      '🥘',
+      'Turkish',
+      'تركي',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'greek': SetupSubcategory(
+      '🥗',
+      'Greek',
+      'يوناني',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'korean': SetupSubcategory(
+      '🍲',
+      'Korean',
+      'كوري',
+      kind: SetupOptionKind.cuisine,
+    ),
+    'american': SetupSubcategory(
+      '🥪',
+      'American',
+      'أمريكي',
+      kind: SetupOptionKind.cuisine,
+    ),
     'steakhouse': SetupSubcategory('🥩', 'Steakhouse', 'ستيك'),
     'seafood': SetupSubcategory('🦐', 'Seafood', 'مأكولات بحرية'),
     'bbq': SetupSubcategory('🍖', 'BBQ', 'مشويات'),

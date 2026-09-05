@@ -1,0 +1,6 @@
+class: TaxonomyCanarySample
+fields:
+  itemId: String
+  resultCount: int
+  sampleNames: List<String>
+  errorCode: String?

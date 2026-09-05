@@ -336,6 +336,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get cuisinesLabel => 'Cuisines';
+
+  @override
+  String get poiTypesLabel => 'Place types';
+
+  @override
   String get showQrCode => 'Show QR code';
 
   @override

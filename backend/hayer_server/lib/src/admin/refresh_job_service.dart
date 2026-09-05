@@ -7,6 +7,7 @@ import '../places/catalog_place_service.dart';
 import '../places/place_services.dart';
 import '../places/place_source.dart';
 import '../places/taxonomy.dart';
+import '../places/taxonomy_service.dart';
 
 /// Executes refresh requests created by the operations dashboard.
 abstract final class RefreshJobService {
@@ -80,7 +81,10 @@ abstract final class RefreshJobService {
       return;
     }
     try {
-      final plan = RefreshJobPlan.fromCoverage(coverage);
+      final plan = RefreshJobPlan.fromCoverage(
+        coverage,
+        taxonomyItems: await TaxonomyService.activeItems(session),
+      );
       coverage.invalidatedAt = DateTime.now().toUtc();
       coverage.lastFailureCode = null;
       await PoiCoverageRow.db.updateRow(session, coverage);
@@ -176,15 +180,25 @@ class RefreshJobPlan {
     required this.countryCode,
   });
 
-  factory RefreshJobPlan.fromCoverage(PoiCoverageRow coverage) {
+  factory RefreshJobPlan.fromCoverage(
+    PoiCoverageRow coverage, {
+    List<AdminTaxonomyItem>? taxonomyItems,
+  }) {
     final categoryIds = coverage.queryKey
         .split(',')
         .map((value) => value.trim())
         .where((value) => value.isNotEmpty)
         .toSet();
     String? categoryId;
+    final dynamicCategories = {
+      for (final item in taxonomyItems ?? const <AdminTaxonomyItem>[])
+        if (item.kind == TaxonomyKind.category) item.id,
+    };
+    bool isCategory(String value) => taxonomyItems == null
+        ? PlaceTaxonomy.categories.containsKey(value)
+        : dynamicCategories.contains(value);
     for (final value in categoryIds) {
-      if (!PlaceTaxonomy.categories.containsKey(value)) continue;
+      if (!isCategory(value)) continue;
       if (categoryId != null) {
         throw const FormatException('Coverage contains multiple categories.');
       }
@@ -193,11 +207,18 @@ class RefreshJobPlan {
     if (categoryId == null) {
       throw const FormatException('Coverage category is missing.');
     }
-    final category = PlaceTaxonomy.categories[categoryId]!;
     final subcategories = categoryIds.where((value) => value != categoryId);
-    if (subcategories.any(
-      (value) => !category.subcategories.containsKey(value),
-    )) {
+    final validChildren = taxonomyItems == null
+        ? PlaceTaxonomy.categories[categoryId]!.subcategories.keys.toSet()
+        : taxonomyItems
+              .where(
+                (item) =>
+                    item.kind != TaxonomyKind.category &&
+                    item.parentCategoryIds.contains(categoryId),
+              )
+              .map((item) => item.id)
+              .toSet();
+    if (subcategories.any((value) => !validChildren.contains(value))) {
       throw const FormatException('Coverage contains an unknown subcategory.');
     }
     return RefreshJobPlan(

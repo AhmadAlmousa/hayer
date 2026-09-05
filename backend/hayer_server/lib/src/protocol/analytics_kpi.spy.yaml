@@ -1,0 +1,7 @@
+class: AnalyticsKpi
+fields:
+  key: String
+  label: String
+  value: double
+  previousValue: double
+  unit: String

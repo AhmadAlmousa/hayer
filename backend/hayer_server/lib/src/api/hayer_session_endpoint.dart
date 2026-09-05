@@ -4,12 +4,14 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../analytics/product_analytics.dart';
 import '../generated/protocol.dart';
 import '../places/catalog_place_service.dart';
+import '../places/city_resolution_service.dart';
 import '../places/place_services.dart';
 import '../places/place_availability.dart';
 import '../places/place_source.dart';
-import '../places/taxonomy.dart';
+import '../places/taxonomy_service.dart';
 import '../sessions/consensus.dart';
 import '../sessions/session_code.dart';
 import '../sessions/session_mapper.dart';
@@ -34,7 +36,7 @@ class HayerSessionEndpoint extends Endpoint {
       limit: 10,
       window: const Duration(hours: 1),
     );
-    _validateCreate(request, idempotencyKey);
+    await _validateCreate(session, request, idempotencyKey);
     final requestHash = sha256
         .convert(utf8.encode(jsonEncode(request.toJsonForProtocol())))
         .toString();
@@ -65,6 +67,12 @@ class HayerSessionEndpoint extends Endpoint {
         message: 'Hayer currently supports locations in GCC countries only.',
       );
     }
+    final cityFuture = CityResolutionService.resolve(
+      session,
+      latitude: request.anchorLatitude,
+      longitude: request.anchorLongitude,
+      countryCode: countryCode,
+    );
     late final List<PlaceSnapshot> candidates;
     try {
       final services = await PlaceServices.forSession(session);
@@ -87,6 +95,7 @@ class HayerSessionEndpoint extends Endpoint {
             countryCode: countryCode,
           );
     } on PlaceSourceException catch (error, stackTrace) {
+      await cityFuture;
       session.log(
         'Session creation place source failure (${error.code}): '
         '${error.message}',
@@ -98,6 +107,9 @@ class HayerSessionEndpoint extends Endpoint {
         code: error.code,
         message: error.message,
       );
+    } catch (_) {
+      await cityFuture;
+      rethrow;
     }
     final deck = request.visitAt == null
         ? candidates
@@ -111,6 +123,7 @@ class HayerSessionEndpoint extends Endpoint {
               )
               .take(request.deckSize)
               .toList(growable: false);
+    final city = await cityFuture;
     if (deck.isEmpty) {
       throw ApiException(
         code: 'no_places',
@@ -123,6 +136,36 @@ class HayerSessionEndpoint extends Endpoint {
     final participantId = _uuid.v7();
     final code = await _unusedCode(session);
     final displayName = _displayName(request.displayName, fallback: 'Host');
+    final taxonomyItems = await TaxonomyService.activeItems(session);
+    final taxonomyById = {for (final item in taxonomyItems) item.id: item};
+    final sessionRow = HayerSessionRow(
+      sessionId: sessionId,
+      code: code,
+      hostUserId: userId,
+      mode: request.mode,
+      categoryId: request.categoryId,
+      subcategoryIds: request.subcategoryIds,
+      priceLevel: request.priceLevel,
+      anchorLatitude: request.anchorLatitude,
+      anchorLongitude: request.anchorLongitude,
+      anchorAddress: request.anchorAddress?.trim(),
+      visitAt: request.visitAt?.toUtc(),
+      countryCode: countryCode,
+      cityKey: city.cityKey,
+      cityName: city.cityName,
+      radiusMeters: request.radiusMeters,
+      deckSizeRequested: request.deckSize,
+      deckSizeActual: deck.length,
+      consensusRule: request.consensusRule,
+      matchingTiming: request.matchingTiming,
+      status: SessionStatus.active,
+      revision: 1,
+      freshnessWarning: deck.any((place) => place.isStale)
+          ? 'Some place details may be out of date.'
+          : null,
+      createdAt: now,
+      expiresAt: now.add(const Duration(hours: 24)),
+    );
 
     final persistedSessionId = await session.db.transaction((
       transaction,
@@ -168,32 +211,7 @@ class HayerSessionEndpoint extends Endpoint {
 
       await HayerSessionRow.db.insertRow(
         session,
-        HayerSessionRow(
-          sessionId: sessionId,
-          code: code,
-          hostUserId: userId,
-          mode: request.mode,
-          categoryId: request.categoryId,
-          subcategoryIds: request.subcategoryIds,
-          priceLevel: request.priceLevel,
-          anchorLatitude: request.anchorLatitude,
-          anchorLongitude: request.anchorLongitude,
-          anchorAddress: request.anchorAddress?.trim(),
-          visitAt: request.visitAt?.toUtc(),
-          countryCode: countryCode,
-          radiusMeters: request.radiusMeters,
-          deckSizeRequested: request.deckSize,
-          deckSizeActual: deck.length,
-          consensusRule: request.consensusRule,
-          matchingTiming: request.matchingTiming,
-          status: SessionStatus.active,
-          revision: 1,
-          freshnessWarning: deck.any((place) => place.isStale)
-              ? 'Some place details may be out of date.'
-              : null,
-          createdAt: now,
-          expiresAt: now.add(const Duration(hours: 24)),
-        ),
+        sessionRow,
         transaction: transaction,
       );
       await ParticipantRow.db.insertRow(
@@ -220,6 +238,92 @@ class HayerSessionEndpoint extends Endpoint {
               placeId: deck[index].placeId,
               deckOrder: index,
               snapshot: deck[index],
+            ),
+        ],
+        transaction: transaction,
+      );
+      await ProductAnalyticsRecorder.record(
+        session,
+        [
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: AnalyticsMetric.sessionCreated,
+            sessionRow: sessionRow,
+          ),
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: AnalyticsMetric.participantJoined,
+            sessionRow: sessionRow,
+          ),
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: AnalyticsMetric.radiusSelected,
+            sessionRow: sessionRow,
+            taxonomyId: '${request.radiusMeters}',
+          ),
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: AnalyticsMetric.deckSizeSelected,
+            sessionRow: sessionRow,
+            taxonomyId: '${request.deckSize}',
+          ),
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: AnalyticsMetric.priceSelected,
+            sessionRow: sessionRow,
+            taxonomyId: request.priceLevel?.toString() ?? 'any',
+          ),
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: AnalyticsMetric.visitScheduled,
+            sessionRow: sessionRow,
+            taxonomyId: request.visitAt == null ? 'now' : 'scheduled',
+          ),
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: AnalyticsMetric.taxonomySelected,
+            sessionRow: sessionRow,
+            taxonomyKind: TaxonomyKind.category.name,
+            taxonomyId: request.categoryId,
+          ),
+          for (final id in request.subcategoryIds)
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.taxonomySelected,
+              sessionRow: sessionRow,
+              taxonomyKind: taxonomyById[id]?.kind.name ?? '',
+              taxonomyId: id,
+            ),
+          for (final place in deck)
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.deckExposure,
+              sessionRow: sessionRow,
+              placeId: place.placeId,
+              placeName: place.name,
+            ),
+          if (deck.any((place) => place.isStale))
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.staleDeck,
+              sessionRow: sessionRow,
+            ),
+          if (deck.length < request.deckSize)
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.underfilledDeck,
+              sessionRow: sessionRow,
             ),
         ],
         transaction: transaction,
@@ -343,6 +447,18 @@ class HayerSessionEndpoint extends Endpoint {
         await HayerSessionRow.db.updateRow(
           session,
           lockedSession,
+          transaction: transaction,
+        );
+        await ProductAnalyticsRecorder.record(
+          session,
+          [
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.participantJoined,
+              sessionRow: lockedSession,
+            ),
+          ],
           transaction: transaction,
         );
       });
@@ -472,6 +588,8 @@ class HayerSessionEndpoint extends Endpoint {
             table.placeId.equals(command.placeId),
         transaction: transaction,
       );
+      final analyticsEvents = <AnalyticsEvent>[];
+      final wasCompleted = participant.hasCompleted;
       var revisingPreviousSwipe = false;
       if (already != null) {
         if (already.swipeIndex != command.swipeIndex) {
@@ -487,6 +605,7 @@ class HayerSessionEndpoint extends Endpoint {
             message: 'Only your most recent swipe can be changed.',
           );
         }
+        final previousLiked = already.liked;
         already
           ..liked = command.liked
           ..clientSwipedAt = command.clientSwipedAt.toUtc()
@@ -504,6 +623,33 @@ class HayerSessionEndpoint extends Endpoint {
         );
         revisingPreviousSwipe = true;
         event = SessionEventType.resultsChanged;
+        analyticsEvents
+          ..add(
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: previousLiked
+                  ? AnalyticsMetric.swipeLike
+                  : AnalyticsMetric.swipeDislike,
+              sessionRow: row,
+              placeId: place.placeId,
+              placeName: place.snapshot.name,
+              value: -1,
+              sampleCount: -1,
+            ),
+          )
+          ..add(
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: command.liked
+                  ? AnalyticsMetric.swipeLike
+                  : AnalyticsMetric.swipeDislike,
+              sessionRow: row,
+              placeId: place.placeId,
+              placeName: place.snapshot.name,
+            ),
+          );
       }
       if (!revisingPreviousSwipe &&
           command.swipeIndex != participant.currentIndex) {
@@ -536,6 +682,38 @@ class HayerSessionEndpoint extends Endpoint {
           participant,
           transaction: transaction,
         );
+        analyticsEvents.add(
+          ProductAnalyticsRecorder.event(
+            eventId: _uuid.v7(),
+            occurredAt: now,
+            metricName: command.liked
+                ? AnalyticsMetric.swipeLike
+                : AnalyticsMetric.swipeDislike,
+            sessionRow: row,
+            placeId: place.placeId,
+            placeName: place.snapshot.name,
+          ),
+        );
+        if (!wasCompleted && participant.hasCompleted) {
+          analyticsEvents
+            ..add(
+              ProductAnalyticsRecorder.event(
+                eventId: _uuid.v7(),
+                occurredAt: now,
+                metricName: AnalyticsMetric.participantCompleted,
+                sessionRow: row,
+              ),
+            )
+            ..add(
+              ProductAnalyticsRecorder.event(
+                eventId: _uuid.v7(),
+                occurredAt: now,
+                metricName: AnalyticsMetric.swipeDepth,
+                sessionRow: row,
+                value: participant.currentIndex.toDouble(),
+              ),
+            );
+        }
       }
 
       if (row.matchingTiming == MatchingTiming.instant && command.liked) {
@@ -565,11 +743,101 @@ class HayerSessionEndpoint extends Endpoint {
         row.status = SessionStatus.completed;
         event = SessionEventType.resultsChanged;
       }
+      var reachedDecision = row.status == SessionStatus.completed;
+      var decisionHasMatch = row.matchedPlaceId != null;
+      int? decisionParticipantCount;
+      if (!reachedDecision &&
+          row.mode == SessionMode.multiplayer &&
+          row.matchingTiming == MatchingTiming.afterDeck &&
+          participant.hasCompleted &&
+          row.decisionAt == null) {
+        final participants = await ParticipantRow.db.find(
+          session,
+          where: (table) => table.sessionId.equals(row.sessionId),
+          transaction: transaction,
+        );
+        reachedDecision =
+            participants.isNotEmpty &&
+            participants.every((value) => value.hasCompleted);
+        decisionParticipantCount = participants.length;
+        if (reachedDecision) {
+          final allSwipes = await SwipeRow.db.find(
+            session,
+            where: (table) => table.sessionId.equals(row.sessionId),
+            transaction: transaction,
+          );
+          final tallies = <String, VoteTally>{};
+          for (final swipe in allSwipes) {
+            final previous = tallies[swipe.placeId];
+            tallies[swipe.placeId] = VoteTally(
+              likes: (previous?.likes ?? 0) + (swipe.liked ? 1 : 0),
+              voters: (previous?.voters ?? 0) + 1,
+            );
+          }
+          decisionHasMatch = tallies.values.any(
+            (tally) => Consensus.isMatch(row.consensusRule, tally),
+          );
+        }
+      }
+      if (reachedDecision && row.decisionAt == null) {
+        row.decisionAt = now;
+        final participantCount =
+            decisionParticipantCount ??
+            await ParticipantRow.db.count(
+              session,
+              where: (table) => table.sessionId.equals(row.sessionId),
+              transaction: transaction,
+            );
+        analyticsEvents
+          ..add(
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.decisionCompleted,
+              sessionRow: row,
+            ),
+          )
+          ..add(
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.decisionTimeSeconds,
+              sessionRow: row,
+              value: now.difference(row.createdAt).inSeconds.toDouble(),
+            ),
+          )
+          ..add(
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.groupSize,
+              sessionRow: row,
+              taxonomyId: '$participantCount',
+            ),
+          );
+        if (decisionHasMatch) {
+          analyticsEvents.add(
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.matchCompleted,
+              sessionRow: row,
+              placeId: place.placeId,
+              placeName: place.snapshot.name,
+            ),
+          );
+        }
+      }
       row.revision++;
       revision = row.revision;
       await HayerSessionRow.db.updateRow(
         session,
         row,
+        transaction: transaction,
+      );
+      await ProductAnalyticsRecorder.record(
+        session,
+        analyticsEvents,
         transaction: transaction,
       );
     });
@@ -725,9 +993,17 @@ class HayerSessionEndpoint extends Endpoint {
     );
   }
 
-  void _validateCreate(CreateSessionRequest request, String idempotencyKey) {
+  Future<void> _validateCreate(
+    Session session,
+    CreateSessionRequest request,
+    String idempotencyKey,
+  ) async {
     try {
-      PlaceTaxonomy.resolve(request.categoryId, request.subcategoryIds);
+      await TaxonomyService.resolve(
+        session,
+        request.categoryId,
+        request.subcategoryIds,
+      );
     } on ArgumentError {
       throw ApiException(
         code: 'bad_request',

@@ -1,0 +1,8 @@
+class: AdminLiveUsage
+fields:
+  ongoingSessions: int
+  soloSessions: int
+  multiplayerSessions: int
+  enrolledParticipants: int
+  activeParticipants: int
+  generatedAt: DateTime

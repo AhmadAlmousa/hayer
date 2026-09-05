@@ -21,7 +21,7 @@ void main() {
       'migrations/$migrationId/definition.sql',
     ).readAsString();
 
-    expect(registered.last, migrationId);
+    expect(registered, contains(migrationId));
     expect(continuousRadiusCheck.allMatches(migration), hasLength(2));
     expect(continuousRadiusCheck.allMatches(definition), hasLength(2));
     expect(

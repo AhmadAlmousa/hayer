@@ -704,6 +704,18 @@ abstract class AppLocalizations {
   /// **'{count} types'**
   String typesCount(int count);
 
+  /// No description provided for @cuisinesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cuisines'**
+  String get cuisinesLabel;
+
+  /// No description provided for @poiTypesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Place types'**
+  String get poiTypesLabel;
+
   /// No description provided for @showQrCode.
   ///
   /// In en, this message translates to:

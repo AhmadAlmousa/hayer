@@ -1,0 +1,4 @@
+class: TaxonomySnapshot
+fields:
+  version: String
+  items: List<TaxonomyItem>

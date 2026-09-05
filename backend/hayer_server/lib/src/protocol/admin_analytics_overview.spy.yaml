@@ -1,0 +1,13 @@
+class: AdminAnalyticsOverview
+fields:
+  live: AdminLiveUsage
+  kpis: List<AnalyticsKpi>
+  sessionTrend: List<AnalyticsPoint>
+  modeBreakdown: List<AnalyticsBreakdown>
+  participantModeBreakdown: List<AnalyticsBreakdown>
+  topCities: List<AnalyticsBreakdown>
+  topCategories: List<AnalyticsBreakdown>
+  topCuisines: List<AnalyticsBreakdown>
+  topTypes: List<AnalyticsBreakdown>
+  cacheSummary: CacheDashboardSummary
+  generatedAt: DateTime

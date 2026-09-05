@@ -1,0 +1,6 @@
+class: TaxonomyValidation
+fields:
+  passed: bool
+  errors: List<String>
+  samples: List<TaxonomyCanarySample>
+  validatedAt: DateTime

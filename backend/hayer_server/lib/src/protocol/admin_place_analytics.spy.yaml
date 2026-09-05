@@ -1,0 +1,6 @@
+class: AdminPlaceAnalytics
+fields:
+  items: List<PlaceInsight>
+  topCuisines: List<AnalyticsBreakdown>
+  topTypes: List<AnalyticsBreakdown>
+  generatedAt: DateTime

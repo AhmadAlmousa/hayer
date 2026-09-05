@@ -1,0 +1,12 @@
+class: AdminTaxonomyItem
+fields:
+  id: String
+  kind: TaxonomyKind
+  parentCategoryIds: List<String>
+  labelEn: String
+  labelAr: String
+  emoji: String
+  searchQueryEn: String
+  searchQueryAr: String?
+  sortOrder: int
+  enabled: bool

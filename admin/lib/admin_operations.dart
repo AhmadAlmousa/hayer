@@ -1,6 +1,59 @@
 import 'package:hayer_client/hayer_client.dart';
 
 abstract interface class AdminOperations {
+  Future<AdminLiveUsage> liveUsage();
+
+  Future<AdminAnalyticsOverview> analyticsOverview(AnalyticsFilter filter);
+
+  Future<AdminUsageAnalytics> usageAnalytics(AnalyticsFilter filter);
+
+  Future<AdminPlaceAnalytics> placeAnalytics({
+    required AnalyticsFilter filter,
+    required PlaceRanking ranking,
+    required int minimumSamples,
+  });
+
+  Future<List<LocationSuggestion>> suggestAdminLocation({
+    required String query,
+    required String countryCode,
+  });
+
+  Future<AdminMapLocation> reverseAdminLocation({
+    required double latitude,
+    required double longitude,
+    required String countryCode,
+  });
+
+  Future<AdminTaxonomyVersion> taxonomyDraft();
+
+  Future<List<AdminTaxonomyVersion>> taxonomyHistory();
+
+  Future<AdminTaxonomyVersion> saveTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required List<AdminTaxonomyItem> items,
+  });
+
+  Future<TaxonomyValidation> validateTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required AdminMapLocation location,
+    required int radiusMeters,
+  });
+
+  Future<AdminTaxonomyVersion> publishTaxonomy({
+    required String reason,
+    required String version,
+    required int revision,
+  });
+
+  Future<AdminTaxonomyVersion> rollbackTaxonomy({
+    required String reason,
+    required String version,
+  });
+
   Future<CacheDashboardSummary> summary();
 
   Future<CatalogPlacePage> catalog({
@@ -90,6 +143,118 @@ class ServerpodAdminOperations implements AdminOperations {
 
   static const _credentials = '';
   static const _operatorName = 'gateway';
+
+  @override
+  Future<AdminLiveUsage> liveUsage() =>
+      client.admin.liveUsage(credentials: _credentials);
+
+  @override
+  Future<AdminAnalyticsOverview> analyticsOverview(AnalyticsFilter filter) =>
+      client.admin.analyticsOverview(credentials: _credentials, filter: filter);
+
+  @override
+  Future<AdminUsageAnalytics> usageAnalytics(AnalyticsFilter filter) =>
+      client.admin.usageAnalytics(credentials: _credentials, filter: filter);
+
+  @override
+  Future<AdminPlaceAnalytics> placeAnalytics({
+    required AnalyticsFilter filter,
+    required PlaceRanking ranking,
+    required int minimumSamples,
+  }) => client.admin.placeAnalytics(
+    credentials: _credentials,
+    filter: filter,
+    ranking: ranking,
+    minimumSamples: minimumSamples,
+  );
+
+  @override
+  Future<List<LocationSuggestion>> suggestAdminLocation({
+    required String query,
+    required String countryCode,
+  }) => client.admin.suggestAdminLocation(
+    credentials: _credentials,
+    query: query,
+    countryCode: countryCode,
+  );
+
+  @override
+  Future<AdminMapLocation> reverseAdminLocation({
+    required double latitude,
+    required double longitude,
+    required String countryCode,
+  }) => client.admin.reverseAdminLocation(
+    credentials: _credentials,
+    latitude: latitude,
+    longitude: longitude,
+    countryCode: countryCode,
+  );
+
+  @override
+  Future<AdminTaxonomyVersion> taxonomyDraft() => client.admin.taxonomyDraft(
+    credentials: _credentials,
+    operatorName: _operatorName,
+  );
+
+  @override
+  Future<List<AdminTaxonomyVersion>> taxonomyHistory() =>
+      client.admin.taxonomyHistory(credentials: _credentials);
+
+  @override
+  Future<AdminTaxonomyVersion> saveTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required List<AdminTaxonomyItem> items,
+  }) => client.admin.saveTaxonomyDraft(
+    credentials: _credentials,
+    operatorName: _operatorName,
+    reason: reason,
+    version: version,
+    revision: revision,
+    items: items,
+  );
+
+  @override
+  Future<TaxonomyValidation> validateTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required AdminMapLocation location,
+    required int radiusMeters,
+  }) => client.admin.validateTaxonomyDraft(
+    credentials: _credentials,
+    operatorName: _operatorName,
+    reason: reason,
+    version: version,
+    revision: revision,
+    location: location,
+    radiusMeters: radiusMeters,
+  );
+
+  @override
+  Future<AdminTaxonomyVersion> publishTaxonomy({
+    required String reason,
+    required String version,
+    required int revision,
+  }) => client.admin.publishTaxonomy(
+    credentials: _credentials,
+    operatorName: _operatorName,
+    reason: reason,
+    version: version,
+    revision: revision,
+  );
+
+  @override
+  Future<AdminTaxonomyVersion> rollbackTaxonomy({
+    required String reason,
+    required String version,
+  }) => client.admin.rollbackTaxonomy(
+    credentials: _credentials,
+    operatorName: _operatorName,
+    reason: reason,
+    version: version,
+  );
 
   @override
   Future<CacheDashboardSummary> summary() =>

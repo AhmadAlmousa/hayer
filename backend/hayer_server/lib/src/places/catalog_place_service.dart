@@ -10,6 +10,8 @@ import 'place_candidate.dart';
 import 'place_search_policy.dart';
 import 'place_search_service.dart';
 import 'place_source.dart';
+import 'taxonomy.dart';
+import 'taxonomy_service.dart';
 
 class CatalogPlaceService {
   const CatalogPlaceService({
@@ -34,6 +36,11 @@ class CatalogPlaceService {
     int? maximumPriceLevel,
     required String countryCode,
   }) async {
+    final queries = await TaxonomyService.resolve(
+      session,
+      categoryId,
+      subcategoryIds,
+    );
     final settings = await _settings(session);
     final now = DateTime.now().toUtc();
     final requiredCategoryIds = subcategoryIds.isEmpty
@@ -114,6 +121,7 @@ class CatalogPlaceService {
           maximumPriceLevel: maximumPriceLevel,
           countryCode: countryCode,
           now: now,
+          queries: queries,
         ),
       );
       final live = await refresh;
@@ -157,6 +165,7 @@ class CatalogPlaceService {
     required int? maximumPriceLevel,
     required String countryCode,
     required DateTime now,
+    required List<PlaceQuery> queries,
   }) async {
     final typedSource = source;
     if (typedSource is GoogleWebPlaceSource) {
@@ -185,6 +194,7 @@ class CatalogPlaceService {
               deckSize: deckSize,
               maximumPriceLevel: maximumPriceLevel,
               countryCode: countryCode,
+              queries: queries,
             )
             .timeout(remaining);
         await _persist(

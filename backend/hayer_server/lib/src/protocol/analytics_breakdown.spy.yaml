@@ -1,0 +1,7 @@
+class: AnalyticsBreakdown
+fields:
+  key: String
+  label: String
+  value: double
+  percentage: double
+  sampleCount: int

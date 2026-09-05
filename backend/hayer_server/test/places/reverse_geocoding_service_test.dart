@@ -49,6 +49,14 @@ void main() {
         expect(requestUri.queryParameters['accept-language'], 'en');
         expect(requestHeaders['user-agent'], contains('Hayer/0.1'));
         expect(requestHeaders['referer'], 'https://hayer.almou.sa/');
+
+        final details = await service.reverseDetails(
+          latitude: 24.7136,
+          longitude: 46.6753,
+          languageCode: 'en',
+        );
+        expect(details.city, 'Riyadh');
+        expect(details.region, 'Riyadh Region');
       },
     );
 

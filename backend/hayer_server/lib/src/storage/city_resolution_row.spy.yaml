@@ -1,0 +1,17 @@
+class: CityResolutionRow
+serverOnly: true
+table: hayer_city_resolution
+fields:
+  cellKey: String
+  countryCode: String
+  cityKey: String
+  cityName: String
+  regionName: String?
+  resolvedAt: DateTime
+  expiresAt: DateTime
+indexes:
+  hayer_city_resolution_cell:
+    fields: cellKey
+    unique: true
+  hayer_city_resolution_expiry:
+    fields: expiresAt

@@ -53,12 +53,14 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   List<LocationSuggestion> _suggestions = const [];
   Timer? _debounce;
   Timer? _mapDebounce;
+  List<SetupCategory> _categories = setupCategories;
 
   @override
   void initState() {
     super.initState();
     unawaited(_adoptWarmedLocation());
     unawaited(_restoreDisplayName());
+    unawaited(_loadTaxonomy());
   }
 
   @override
@@ -181,7 +183,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Heading(strings.setupWhatTitle),
-        for (final category in setupCategories) ...[
+        for (final category in _categories) ...[
           _CategoryCard(
             category: category,
             label: category.label(languageCode),
@@ -194,30 +196,30 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
           if (_categoryId == category.id)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  M3EChip(
-                    type: M3EChipType.filter,
-                    label:
-                        '${strings.allLabel} ${category.label(languageCode)}',
-                    selected: _subcategories.isEmpty,
-                    onPressed: () => setState(_subcategories.clear),
-                  ),
-                  for (final item in category.subcategories.entries)
-                    M3EChip(
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: M3EChip(
                       type: M3EChipType.filter,
-                      label: item.value.label(languageCode),
-                      selected: _subcategories.contains(item.key),
-                      onPressed: () => setState(() {
-                        if (!_subcategories.contains(item.key) &&
-                            _subcategories.length < 5) {
-                          _subcategories.add(item.key);
-                        } else {
-                          _subcategories.remove(item.key);
-                        }
-                      }),
+                      label:
+                          '${strings.allLabel} ${category.label(languageCode)}',
+                      selected: _subcategories.isEmpty,
+                      onPressed: () => setState(_subcategories.clear),
+                    ),
+                  ),
+                  if (category.cuisines.isNotEmpty)
+                    _taxonomyOptions(
+                      strings.cuisinesLabel,
+                      category.cuisines,
+                      languageCode,
+                    ),
+                  if (category.types.isNotEmpty)
+                    _taxonomyOptions(
+                      strings.poiTypesLabel,
+                      category.types,
+                      languageCode,
                     ),
                 ],
               ),
@@ -225,6 +227,70 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         ],
       ],
     );
+  }
+
+  Widget _taxonomyOptions(
+    String title,
+    Map<String, SetupSubcategory> values,
+    String languageCode,
+  ) => Padding(
+    padding: const EdgeInsets.only(top: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 7),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final item in values.entries)
+              M3EChip(
+                type: M3EChipType.filter,
+                label: item.value.label(languageCode),
+                selected: _subcategories.contains(item.key),
+                onPressed: () => setState(() {
+                  if (!_subcategories.contains(item.key) &&
+                      _subcategories.length < 5) {
+                    _subcategories.add(item.key);
+                  } else {
+                    _subcategories.remove(item.key);
+                  }
+                }),
+              ),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _loadTaxonomy() async {
+    try {
+      final snapshot = await ref.read(clientProvider).taxonomy.current();
+      final categories = setupCategoriesFromSnapshot(snapshot);
+      if (!mounted || categories.isEmpty) return;
+      setState(() {
+        _categories = categories;
+        if (_categoryId != null &&
+            !_categories.any((category) => category.id == _categoryId)) {
+          _categoryId = null;
+          _subcategories.clear();
+        } else if (_categoryId != null) {
+          final valid = _categories
+              .firstWhere((category) => category.id == _categoryId)
+              .subcategories
+              .keys;
+          _subcategories.removeWhere((id) => !valid.contains(id));
+        }
+      });
+    } catch (_) {
+      // The bundled taxonomy remains available for cold starts and old servers.
+    }
   }
 
   Widget _whereStep(AppLocalizations strings) {

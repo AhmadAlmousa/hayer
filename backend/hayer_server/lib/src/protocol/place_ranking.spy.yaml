@@ -1,0 +1,6 @@
+enum: PlaceRanking
+values:
+  - liked
+  - disliked
+  - approval
+  - rejection

@@ -1,0 +1,31 @@
+class: ProductAnalyticsHourRow
+serverOnly: true
+table: hayer_product_analytics_hour
+fields:
+  aggregateKey: String
+  bucketStartedAt: DateTime
+  metricName: String
+  modeKey: String
+  countryCode: String
+  cityKey: String
+  cityName: String
+  categoryId: String
+  taxonomyKind: String
+  taxonomyId: String
+  placeId: String
+  placeName: String
+  total: double
+  sampleCount: int
+  updatedAt: DateTime
+indexes:
+  hayer_analytics_hour_key:
+    fields: aggregateKey
+    unique: true
+  hayer_analytics_hour_metric_time:
+    fields: metricName, bucketStartedAt
+  hayer_analytics_hour_city_time:
+    fields: cityKey, metricName, bucketStartedAt
+  hayer_analytics_hour_taxonomy_time:
+    fields: taxonomyKind, metricName, bucketStartedAt
+  hayer_analytics_hour_place_time:
+    fields: placeId, metricName, bucketStartedAt

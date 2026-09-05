@@ -32,6 +32,8 @@ abstract class HayerSessionRow
     required this.anchorLatitude,
     required this.anchorLongitude,
     this.anchorAddress,
+    this.cityKey,
+    this.cityName,
     this.visitAt,
     required this.countryCode,
     required this.radiusMeters,
@@ -41,6 +43,7 @@ abstract class HayerSessionRow
     required this.matchingTiming,
     required this.status,
     this.matchedPlaceId,
+    this.decisionAt,
     required this.revision,
     this.freshnessWarning,
     required this.createdAt,
@@ -59,6 +62,8 @@ abstract class HayerSessionRow
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    String? cityKey,
+    String? cityName,
     DateTime? visitAt,
     required String countryCode,
     required int radiusMeters,
@@ -68,6 +73,7 @@ abstract class HayerSessionRow
     required _i4.MatchingTiming matchingTiming,
     required _i5.SessionStatus status,
     String? matchedPlaceId,
+    DateTime? decisionAt,
     required int revision,
     String? freshnessWarning,
     required DateTime createdAt,
@@ -91,6 +97,8 @@ abstract class HayerSessionRow
       anchorLatitude: (jsonSerialization['anchorLatitude'] as num).toDouble(),
       anchorLongitude: (jsonSerialization['anchorLongitude'] as num).toDouble(),
       anchorAddress: jsonSerialization['anchorAddress'] as String?,
+      cityKey: jsonSerialization['cityKey'] as String?,
+      cityName: jsonSerialization['cityName'] as String?,
       visitAt: jsonSerialization['visitAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
@@ -108,6 +116,9 @@ abstract class HayerSessionRow
         (jsonSerialization['status'] as String),
       ),
       matchedPlaceId: jsonSerialization['matchedPlaceId'] as String?,
+      decisionAt: jsonSerialization['decisionAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['decisionAt']),
       revision: jsonSerialization['revision'] as int,
       freshnessWarning: jsonSerialization['freshnessWarning'] as String?,
       createdAt: _i1.DateTimeJsonExtension.fromJson(
@@ -146,6 +157,10 @@ abstract class HayerSessionRow
 
   String? anchorAddress;
 
+  String? cityKey;
+
+  String? cityName;
+
   DateTime? visitAt;
 
   String countryCode;
@@ -163,6 +178,8 @@ abstract class HayerSessionRow
   _i5.SessionStatus status;
 
   String? matchedPlaceId;
+
+  DateTime? decisionAt;
 
   int revision;
 
@@ -190,6 +207,8 @@ abstract class HayerSessionRow
     double? anchorLatitude,
     double? anchorLongitude,
     String? anchorAddress,
+    String? cityKey,
+    String? cityName,
     DateTime? visitAt,
     String? countryCode,
     int? radiusMeters,
@@ -199,6 +218,7 @@ abstract class HayerSessionRow
     _i4.MatchingTiming? matchingTiming,
     _i5.SessionStatus? status,
     String? matchedPlaceId,
+    DateTime? decisionAt,
     int? revision,
     String? freshnessWarning,
     DateTime? createdAt,
@@ -219,6 +239,8 @@ abstract class HayerSessionRow
       'anchorLatitude': anchorLatitude,
       'anchorLongitude': anchorLongitude,
       if (anchorAddress != null) 'anchorAddress': anchorAddress,
+      if (cityKey != null) 'cityKey': cityKey,
+      if (cityName != null) 'cityName': cityName,
       if (visitAt != null) 'visitAt': visitAt?.toJson(),
       'countryCode': countryCode,
       'radiusMeters': radiusMeters,
@@ -228,6 +250,7 @@ abstract class HayerSessionRow
       'matchingTiming': matchingTiming.toJson(),
       'status': status.toJson(),
       if (matchedPlaceId != null) 'matchedPlaceId': matchedPlaceId,
+      if (decisionAt != null) 'decisionAt': decisionAt?.toJson(),
       'revision': revision,
       if (freshnessWarning != null) 'freshnessWarning': freshnessWarning,
       'createdAt': createdAt.toJson(),
@@ -285,6 +308,8 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     required double anchorLatitude,
     required double anchorLongitude,
     String? anchorAddress,
+    String? cityKey,
+    String? cityName,
     DateTime? visitAt,
     required String countryCode,
     required int radiusMeters,
@@ -294,6 +319,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     required _i4.MatchingTiming matchingTiming,
     required _i5.SessionStatus status,
     String? matchedPlaceId,
+    DateTime? decisionAt,
     required int revision,
     String? freshnessWarning,
     required DateTime createdAt,
@@ -310,6 +336,8 @@ class _HayerSessionRowImpl extends HayerSessionRow {
          anchorLatitude: anchorLatitude,
          anchorLongitude: anchorLongitude,
          anchorAddress: anchorAddress,
+         cityKey: cityKey,
+         cityName: cityName,
          visitAt: visitAt,
          countryCode: countryCode,
          radiusMeters: radiusMeters,
@@ -319,6 +347,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
          matchingTiming: matchingTiming,
          status: status,
          matchedPlaceId: matchedPlaceId,
+         decisionAt: decisionAt,
          revision: revision,
          freshnessWarning: freshnessWarning,
          createdAt: createdAt,
@@ -341,6 +370,8 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     double? anchorLatitude,
     double? anchorLongitude,
     Object? anchorAddress = _Undefined,
+    Object? cityKey = _Undefined,
+    Object? cityName = _Undefined,
     Object? visitAt = _Undefined,
     String? countryCode,
     int? radiusMeters,
@@ -350,6 +381,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     _i4.MatchingTiming? matchingTiming,
     _i5.SessionStatus? status,
     Object? matchedPlaceId = _Undefined,
+    Object? decisionAt = _Undefined,
     int? revision,
     Object? freshnessWarning = _Undefined,
     DateTime? createdAt,
@@ -370,6 +402,8 @@ class _HayerSessionRowImpl extends HayerSessionRow {
       anchorAddress: anchorAddress is String?
           ? anchorAddress
           : this.anchorAddress,
+      cityKey: cityKey is String? ? cityKey : this.cityKey,
+      cityName: cityName is String? ? cityName : this.cityName,
       visitAt: visitAt is DateTime? ? visitAt : this.visitAt,
       countryCode: countryCode ?? this.countryCode,
       radiusMeters: radiusMeters ?? this.radiusMeters,
@@ -381,6 +415,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
       matchedPlaceId: matchedPlaceId is String?
           ? matchedPlaceId
           : this.matchedPlaceId,
+      decisionAt: decisionAt is DateTime? ? decisionAt : this.decisionAt,
       revision: revision ?? this.revision,
       freshnessWarning: freshnessWarning is String?
           ? freshnessWarning
@@ -451,6 +486,16 @@ class HayerSessionRowUpdateTable extends _i1.UpdateTable<HayerSessionRowTable> {
         value,
       );
 
+  _i1.ColumnValue<String, String> cityKey(String? value) => _i1.ColumnValue(
+    table.cityKey,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> cityName(String? value) => _i1.ColumnValue(
+    table.cityName,
+    value,
+  );
+
   _i1.ColumnValue<DateTime, DateTime> visitAt(DateTime? value) =>
       _i1.ColumnValue(
         table.visitAt,
@@ -501,6 +546,12 @@ class HayerSessionRowUpdateTable extends _i1.UpdateTable<HayerSessionRowTable> {
   _i1.ColumnValue<String, String> matchedPlaceId(String? value) =>
       _i1.ColumnValue(
         table.matchedPlaceId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> decisionAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.decisionAt,
         value,
       );
 
@@ -573,6 +624,14 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
       'anchorAddress',
       this,
     );
+    cityKey = _i1.ColumnString(
+      'cityKey',
+      this,
+    );
+    cityName = _i1.ColumnString(
+      'cityName',
+      this,
+    );
     visitAt = _i1.ColumnDateTime(
       'visitAt',
       this,
@@ -610,6 +669,10 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
     );
     matchedPlaceId = _i1.ColumnString(
       'matchedPlaceId',
+      this,
+    );
+    decisionAt = _i1.ColumnDateTime(
+      'decisionAt',
       this,
     );
     revision = _i1.ColumnInt(
@@ -652,6 +715,10 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnString anchorAddress;
 
+  late final _i1.ColumnString cityKey;
+
+  late final _i1.ColumnString cityName;
+
   late final _i1.ColumnDateTime visitAt;
 
   late final _i1.ColumnString countryCode;
@@ -669,6 +736,8 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnEnum<_i5.SessionStatus> status;
 
   late final _i1.ColumnString matchedPlaceId;
+
+  late final _i1.ColumnDateTime decisionAt;
 
   late final _i1.ColumnInt revision;
 
@@ -691,6 +760,8 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
     anchorLatitude,
     anchorLongitude,
     anchorAddress,
+    cityKey,
+    cityName,
     visitAt,
     countryCode,
     radiusMeters,
@@ -700,6 +771,7 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
     matchingTiming,
     status,
     matchedPlaceId,
+    decisionAt,
     revision,
     freshnessWarning,
     createdAt,

@@ -1,0 +1,8 @@
+class: PlaceInsight
+fields:
+  placeId: String
+  name: String
+  likes: int
+  dislikes: int
+  deckAppearances: int
+  approvalRate: double

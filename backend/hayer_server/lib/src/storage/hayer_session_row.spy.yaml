@@ -13,6 +13,8 @@ fields:
   anchorLatitude: double
   anchorLongitude: double
   anchorAddress: String?
+  cityKey: String?
+  cityName: String?
   visitAt: DateTime?
   countryCode: String
   radiusMeters: int
@@ -22,6 +24,7 @@ fields:
   matchingTiming: MatchingTiming
   status: SessionStatus
   matchedPlaceId: String?
+  decisionAt: DateTime?
   revision: int
   freshnessWarning: String?
   createdAt: DateTime
@@ -35,3 +38,5 @@ indexes:
     unique: true
   hayer_session_status_expires:
     fields: status, expiresAt
+  hayer_session_created:
+    fields: createdAt

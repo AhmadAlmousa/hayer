@@ -1,0 +1,14 @@
+class: AdminUsageAnalytics
+fields:
+  averageSwipeDepth: double
+  sessionTrend: List<AnalyticsPoint>
+  participantTrend: List<AnalyticsPoint>
+  decisionTrend: List<AnalyticsPoint>
+  peakUsage: List<AnalyticsHeatCell>
+  groupSizes: List<AnalyticsBreakdown>
+  radiusChoices: List<AnalyticsBreakdown>
+  deckSizeChoices: List<AnalyticsBreakdown>
+  priceChoices: List<AnalyticsBreakdown>
+  visitChoices: List<AnalyticsBreakdown>
+  qualityBreakdown: List<AnalyticsBreakdown>
+  generatedAt: DateTime

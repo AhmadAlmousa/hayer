@@ -59,20 +59,32 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 - Exclude temporary and permanent closures. Current open state is
   informational. Search English first and Arabic only to fill shortages.
 - Show source attribution on results and in full in the POI details sheet.
-- Use a separate protected Flutter web cache dashboard with map, records,
-  metrics, full guarded management, versioned calibration, and audit history.
+- Use a protected Flutter web admin suite with anonymous product analytics,
+  place insights, versioned taxonomy, cache/catalog controls, maps, guarded
+  management, versioned calibration, and audit history.
+- Retain anonymous product events for at most 14 days and privacy-preserving
+  hourly aggregates for 12 months. Reports use Asia/Riyadh time and Sunday–
+  Saturday weeks; analytics never store user/session IDs, codes, names,
+  addresses, or precise coordinates.
+- Resolve session cities through Nominatim with a coarse roughly 1 km,
+  30-day cache and an eight-second ceiling. Attribution failure never blocks
+  session creation and is reported under a country-specific Unknown bucket.
+- Version categories, cuisines, and POI types as a bilingual published
+  taxonomy. Published IDs and kinds are immutable, retirement replaces
+  deletion, and validation requires structural checks plus admin-selected
+  address/map live canaries before audited publish or rollback.
 - Use Material 3 Expressive behind Hayer-owned components, teal `#0E9594`,
   amber `#F5A623`, bundled Nunito, light/dark themes, reduced motion, and
   RTL-ready layouts.
-- Defer the consumer embedded map, app attestation, accounts, behavioral
-  analytics, full galleries/reviews, popular times, iOS, and consumer web/PWA
-  until their roadmap milestones.
+- Defer the consumer embedded map, app attestation, accounts, identifiable or
+  user-level analytics, full galleries/reviews, popular times, iOS, and
+  consumer web/PWA until their roadmap milestones.
 
 ## Target architecture
 
 ```text
 app/                         Flutter Android-first consumer application
-admin/                       Protected Flutter web cache dashboard
+admin/                       Protected Flutter web administration suite
 backend/
   hayer_server/              Serverpod endpoints, domain, data, web routes
   hayer_client/              Generated shared Serverpod client and models
@@ -116,9 +128,12 @@ Public generated Serverpod endpoint groups:
   individual votes.
 - `sessions.watch(sessionId)` emits refresh hints. Clients poll every five
   seconds when streaming is unavailable.
-- Admin endpoints expose metrics, catalog/coverage/job/audit pages, refresh,
-  quarantine/restore, invalidation, pruning, settings changes, and calibration
-  draft/validate/activate/rollback operations.
+- `taxonomy.current()` exposes the active display-only bilingual taxonomy;
+  the consumer uses its bundled taxonomy when that endpoint is unavailable.
+- Admin endpoints expose live and historical product analytics, place vote
+  rankings, taxonomy draft/validate/publish/rollback, location canaries,
+  metrics, catalog/coverage/job/audit pages, refresh, quarantine/restore,
+  invalidation, pruning, settings changes, and calibration rollout.
 
 Stable error codes are `invalid_request`, `invalid_code`, `name_taken`,
 `session_full`, `session_expired`, `no_places`, `place_source_unavailable`,
@@ -133,11 +148,12 @@ snapshots never change after creation.
 
 ## POI catalog and acquisition
 
-Catalog tables are `poi_catalog`, `poi_categories`, `poi_coverage`,
-`poi_refresh_jobs`, `poi_calibrations`, `cache_settings`,
-`admin_audit_log`, and hourly operational metric aggregates. Session tables
-are `hayer_sessions`, `participants`, `session_places`, `swipes`,
-`idempotency_keys`, and `rate_limits`.
+Catalog and administration tables include `poi_catalog`, `poi_categories`,
+`poi_coverage`, `poi_refresh_jobs`, `poi_calibrations`, `cache_settings`,
+`admin_audit_log`, `taxonomy_versions`, the coarse city-resolution cache, and
+hourly operational/product aggregates. Session tables are `hayer_sessions`,
+`participants`, `session_places`, `swipes`, `idempotency_keys`, and
+`rate_limits`.
 
 - Store POI coordinates as `geography(Point,4326)` with a GiST index.
 - Use composite/partial indexes for active/fresh lookups, index every foreign
@@ -292,7 +308,7 @@ results against the backend.
 Exit: two or more clients share the identical deck and converge on correct
 results through duplicate requests and disconnects.
 
-### M6 — Cache administration `[!]`
+### M6 — Administration `[!]`
 
 - [x] Protect dashboard assets and RPCs behind nginx Basic Auth plus a
   constant-time server secret; require named operators/reasons and append
@@ -309,6 +325,17 @@ results through duplicate requests and disconnects.
 - [x] Verify that the deployed dashboard and admin RPC route reject
   unauthenticated requests with HTTP 401.
 - [x] Add an explicit exact-origin/CSRF posture at the protected gateway.
+- [x] Expand the cache console into grouped, deep-linkable Overview, Usage,
+  Places, Taxonomy, Operations, and Governance areas. Add 30-second live KPIs,
+  five-minute hourly analytics rollups, daily/weekly interactive trends,
+  Riyadh-time peak heatmaps, city/category/mode filters, completion/match/
+  decision/swipe-depth insights, setup and cache-quality breakdowns, and
+  vote-total/rate place rankings with a minimum-sample control.
+- [x] Add privacy-bounded event capture, 12-month aggregates, retained-session
+  backfill, coarse non-blocking city attribution, and versioned bilingual
+  category/cuisine/POI-type controls with retirement, selected-location live
+  validation, audited publish/rollback, and consumer runtime adoption with a
+  bundled fallback.
 - [!] Deploy and verify exact-origin enforcement, auditing, and reversible
   mutations through the production gateway.
 
@@ -319,8 +346,8 @@ calibration cannot activate.
 
 - [x] Implement offline swipe replay, missing-photo fallback, stale/underfill/
   source/expiry states, active-session resume, update-required download gate,
-  action-level anonymous-authentication recovery after startup outages, and
-  privacy-conscious diagnostics without behavioral analytics.
+  action-level anonymous-authentication recovery after startup outages,
+  privacy-conscious diagnostics, and anonymous aggregate product analytics.
 - [x] Add the Unraid Compose topology, nginx gateway, native AOT runtime,
   health checks, migrations-on-start, daily 03:00 backups, seven-day
   retention, guarded restore, named-volume runtime credential initialization,
@@ -332,7 +359,7 @@ calibration cannot activate.
   results during partial source outages, stop unnecessary query batches, log
   sanitized source failures, distinguish client transport failures from source
   outages, and gate deployment on live source plus public RPC canaries.
-- [x] Pass fatal-info analysis, 54 backend unit tests, 63 consumer tests, four
+- [x] Pass fatal-info analysis, 60 backend unit tests, 64 consumer tests, four
   admin widget tests, shell syntax, and production web compilation for both
   Flutter apps. The PostGIS integration suite remains a separate gate.
 - [x] Android debug and release compilation pass under the constrained
@@ -383,6 +410,9 @@ solo and multiplayer flows without developer intervention.
   additive unless bootstrap forces an update-required screen.
 - Logs never contain cookie values, auth tokens, raw precise user coordinates,
   or complete typed queries.
+- Product analytics never contain user/session identifiers, join codes,
+  participant names, typed addresses, or precise coordinates. Processed events
+  expire after 14 days and hourly aggregates after 12 months.
 
 ## Operational defaults
 
@@ -392,6 +422,9 @@ solo and multiplayer flows without developer intervention.
 - Dynamic cache freshness: 72 hours; stale deck fallback: 30 days; retention:
   365 days.
 - Dashboard changes are versioned, bounded, reasoned, confirmed, and audited.
+- Admin historical analytics refresh every five minutes; live session and
+  participant KPIs refresh every 30 seconds. Reporting uses Asia/Riyadh and
+  Sunday–Saturday weeks.
 - Admin mutations never rewrite an existing session snapshot.
 - Native Android may load allowlisted source photos directly. Consumer web
   must use the authenticated bounded media proxy.
@@ -510,6 +543,21 @@ solo and multiplayer flows without developer intervention.
   `04153904339a408b87c604d9984cf4cc66701f5ba112b5694ec6b16d4312b1d8`.
   Containerized PostGIS tests and deployed mutation/origin verification remain
   external gates.
+- 2026-09-05: expanded the console into the responsive Hayer admin suite with
+  deep-linkable analytics, usage, place-insight, taxonomy, operations, and
+  governance routes. Added anonymous event capture and five-minute hourly
+  rollups, 12-month aggregate/14-day event retention, Riyadh daily and Sunday-
+  weekly reporting, 30-second aggregate-only live usage, coarse non-blocking
+  city attribution, vote-rate rankings, and bilingual versioned taxonomy with
+  live location canaries, audited publish/rollback, and consumer fallback.
+  `scripts/preflight.sh` passed Serverpod generation, formatting, fatal-info
+  analysis, all 60 backend, 64 consumer, and four admin tests, script syntax,
+  and Git diff checks. Production web builds passed at `/app/` and
+  `/admin/cache/`. `scripts/build-release-apk.sh` produced and staged the signed
+  100.1 MB `hayer-0.1.0-4.apk` with SHA-256
+  `025f39828aaff09513f289a072c5636fbf756848c07ed1676d2e7e63818fd13f`.
+  Applying the new PostGIS migration and validating populated production
+  analytics through the protected gateway remain deployment gates.
 - 2026-09-05: `main` and `origin/main` both point to `d79ac35`. CI and the
   unsigned iOS build are manual-dispatch workflows, and no beta Git tag exists
   locally yet.
@@ -541,3 +589,10 @@ solo and multiplayer flows without developer intervention.
 - 2026-09-04: Every completed development task must finish with a successful
   signed release APK build, a material verification/change-log entry when
   applicable, and a descriptive Git commit.
+- 2026-09-05: Product analytics are anonymous by construction: no user/session
+  identifiers or precise locations, bounded raw retention, and aggregate-only
+  live counts. Categories, cuisines, and POI types share one bilingual,
+  versioned taxonomy; clients adopt published versions at runtime and retain a
+  bundled fallback. Admin areas use path-based routes beneath the protected
+  `/admin/cache/` mount so views are bookmarkable without weakening the
+  existing gateway controls.

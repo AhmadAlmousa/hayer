@@ -1,0 +1,22 @@
+class: TaxonomyVersionRow
+serverOnly: true
+table: hayer_taxonomy_version
+fields:
+  version: String
+  revision: int
+  status: TaxonomyStatus
+  documentJson: String
+  validationPassed: bool
+  validationErrors: List<String>
+  validationLocationJson: String?
+  validationRadiusMeters: int?
+  createdBy: String
+  createdAt: DateTime
+  validatedAt: DateTime?
+  publishedAt: DateTime?
+indexes:
+  hayer_taxonomy_version_key:
+    fields: version
+    unique: true
+  hayer_taxonomy_status:
+    fields: status, publishedAt

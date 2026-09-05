@@ -24,13 +24,15 @@ class PlaceSearchService {
     required int deckSize,
     int? maximumPriceLevel,
     required String countryCode,
+    List<PlaceQuery>? queries,
   }) async {
-    final queries = PlaceTaxonomy.resolve(categoryId, subcategoryIds);
+    final resolvedQueries =
+        queries ?? PlaceTaxonomy.resolve(categoryId, subcategoryIds);
     final candidates = <PlaceCandidate>[];
     PlaceSourceException? sourceFailure;
     var selected = <PlaceSnapshot>[];
-    for (var start = 0; start < queries.length; start += concurrency) {
-      final batch = queries.skip(start).take(concurrency).toList();
+    for (var start = 0; start < resolvedQueries.length; start += concurrency) {
+      final batch = resolvedQueries.skip(start).take(concurrency).toList();
       final results = await Future.wait(
         batch.map(
           (query) async {
@@ -65,15 +67,15 @@ class PlaceSearchService {
       );
       if (selected.length >= deckSize) break;
     }
-    final fallback = queries.length == 1
-        ? queries.single.arabicFallbackQuery
+    final fallback = resolvedQueries.length == 1
+        ? resolvedQueries.single.arabicFallbackQuery
         : null;
     if (selected.length < deckSize && fallback != null) {
       try {
         candidates.addAll(
           await source.search(
             query: fallback,
-            categoryId: queries.single.categoryId,
+            categoryId: resolvedQueries.single.categoryId,
             latitude: latitude,
             longitude: longitude,
             radiusMeters: radiusMeters,

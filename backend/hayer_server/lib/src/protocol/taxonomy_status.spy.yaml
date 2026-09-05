@@ -1,0 +1,5 @@
+enum: TaxonomyStatus
+values:
+  - draft
+  - active
+  - superseded

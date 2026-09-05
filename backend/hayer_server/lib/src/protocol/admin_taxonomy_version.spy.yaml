@@ -1,0 +1,14 @@
+class: AdminTaxonomyVersion
+fields:
+  version: String
+  revision: int
+  status: TaxonomyStatus
+  items: List<AdminTaxonomyItem>
+  validationPassed: bool
+  validationErrors: List<String>
+  validationLocation: AdminMapLocation?
+  validationRadiusMeters: int?
+  createdBy: String
+  createdAt: DateTime
+  validatedAt: DateTime?
+  publishedAt: DateTime?

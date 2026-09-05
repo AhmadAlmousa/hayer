@@ -3,10 +3,16 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../analytics/analytics_query_service.dart';
 import 'admin_gateway_access.dart';
 import '../generated/protocol.dart';
 import '../places/calibration.dart';
 import '../places/google_web_place_source.dart';
+import '../places/place_services.dart';
+import '../places/place_source.dart';
+import '../places/reverse_geocoding_service.dart';
+import '../places/taxonomy.dart';
+import '../places/taxonomy_service.dart';
 import '../storage/catalog_pruner.dart';
 
 class AdminEndpoint extends Endpoint {
@@ -14,6 +20,306 @@ class AdminEndpoint extends Endpoint {
   bool get requireLogin => false;
 
   static const _uuid = Uuid();
+  static final _geocoder = ReverseGeocodingService();
+
+  Future<AdminLiveUsage> liveUsage(
+    Session session, {
+    required String credentials,
+  }) async {
+    _authorize(session, credentials);
+    return AnalyticsQueryService.live(session);
+  }
+
+  Future<AdminAnalyticsOverview> analyticsOverview(
+    Session session, {
+    required String credentials,
+    required AnalyticsFilter filter,
+  }) async {
+    _authorize(session, credentials);
+    return AnalyticsQueryService.overview(
+      session,
+      filter: filter,
+      cacheSummary: await summary(session, credentials: credentials),
+    );
+  }
+
+  Future<AdminUsageAnalytics> usageAnalytics(
+    Session session, {
+    required String credentials,
+    required AnalyticsFilter filter,
+  }) async {
+    _authorize(session, credentials);
+    return AnalyticsQueryService.usage(session, filter: filter);
+  }
+
+  Future<AdminPlaceAnalytics> placeAnalytics(
+    Session session, {
+    required String credentials,
+    required AnalyticsFilter filter,
+    required PlaceRanking ranking,
+    int minimumSamples = 5,
+  }) async {
+    _authorize(session, credentials);
+    return AnalyticsQueryService.places(
+      session,
+      filter: filter,
+      ranking: ranking,
+      minimumSamples: minimumSamples,
+    );
+  }
+
+  Future<List<LocationSuggestion>> suggestAdminLocation(
+    Session session, {
+    required String credentials,
+    required String query,
+    String countryCode = 'SA',
+  }) async {
+    _authorize(session, credentials);
+    final normalized = query.trim();
+    if (normalized.length < 3 || normalized.length > 120) return const [];
+    try {
+      final places = await PlaceServices.forSession(session);
+      return places.search.suggest(
+        input: normalized,
+        countryCode: _country(countryCode),
+      );
+    } on PlaceSourceException catch (error) {
+      throw ApiException(code: error.code, message: error.message);
+    }
+  }
+
+  Future<AdminMapLocation> reverseAdminLocation(
+    Session session, {
+    required String credentials,
+    required double latitude,
+    required double longitude,
+    String countryCode = 'SA',
+  }) async {
+    _authorize(session, credentials);
+    _coordinates(latitude, longitude);
+    try {
+      final value = await _geocoder.reverseDetails(
+        latitude: latitude,
+        longitude: longitude,
+        languageCode: 'en',
+      );
+      return AdminMapLocation(
+        address: value.formattedAddress,
+        latitude: latitude,
+        longitude: longitude,
+        countryCode: value.countryCode ?? _country(countryCode),
+        cityName: value.city,
+      );
+    } on ReverseGeocodingException catch (error) {
+      throw ApiException(code: 'location_unavailable', message: error.message);
+    }
+  }
+
+  Future<AdminTaxonomyVersion> taxonomyDraft(
+    Session session, {
+    required String credentials,
+    required String operatorName,
+  }) async {
+    operatorName = _authorize(session, credentials);
+    return TaxonomyService.editableDraft(
+      session,
+      operatorName: operatorName,
+    );
+  }
+
+  Future<List<AdminTaxonomyVersion>> taxonomyHistory(
+    Session session, {
+    required String credentials,
+  }) async {
+    _authorize(session, credentials);
+    return TaxonomyService.history(session);
+  }
+
+  Future<AdminTaxonomyVersion> saveTaxonomyDraft(
+    Session session, {
+    required String credentials,
+    required String operatorName,
+    required String reason,
+    required String version,
+    required int revision,
+    required List<AdminTaxonomyItem> items,
+  }) async {
+    operatorName = _authorize(session, credentials);
+    _reason(reason);
+    final draft = await TaxonomyService.saveDraft(
+      session,
+      version: version,
+      revision: revision,
+      items: items,
+      operatorName: operatorName,
+    );
+    await _audit(
+      session,
+      operatorName: operatorName,
+      action: 'taxonomy.draft.save',
+      targetType: 'taxonomy',
+      targetId: version,
+      reason: reason,
+      after: {
+        'revision': '${draft.revision}',
+        'items': '${draft.items.length}',
+      },
+    );
+    return draft;
+  }
+
+  Future<TaxonomyValidation> validateTaxonomyDraft(
+    Session session, {
+    required String credentials,
+    required String operatorName,
+    required String reason,
+    required String version,
+    required int revision,
+    required AdminMapLocation location,
+    int radiusMeters = 3000,
+  }) async {
+    operatorName = _authorize(session, credentials);
+    _reason(reason);
+    _coordinates(location.latitude, location.longitude);
+    if (radiusMeters < 500 || radiusMeters > 10000) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'Choose a canary radius between 500 m and 10 km.',
+      );
+    }
+    final draft = await TaxonomyService.draft(session, version: version);
+    if (draft.version != version || draft.revision != revision) {
+      throw ApiException(
+        code: 'conflict',
+        message: 'The taxonomy draft changed. Reload before validating.',
+      );
+    }
+    final errors = PlaceTaxonomy.validate(draft.items);
+    final active = await TaxonomyService.activeItems(session);
+    final activeById = {for (final item in active) item.id: item};
+    var canaries = draft.items
+        .where((item) {
+          if (!item.enabled) return false;
+          final previous = activeById[item.id];
+          return previous == null ||
+              previous.enabled != item.enabled ||
+              previous.searchQueryEn != item.searchQueryEn ||
+              previous.searchQueryAr != item.searchQueryAr;
+        })
+        .toList(growable: false);
+    if (canaries.isEmpty) {
+      canaries = draft.items
+          .where(
+            (item) => item.enabled && item.kind == TaxonomyKind.category,
+          )
+          .toList(growable: false);
+    }
+    if (canaries.length > 60) {
+      errors.add('A single validation can include at most 60 changed queries.');
+      canaries = const [];
+    }
+    final samples = <TaxonomyCanarySample>[];
+    if (errors.isEmpty) {
+      final source = (await PlaceServices.forSession(session)).source;
+      for (var start = 0; start < canaries.length; start += 3) {
+        final batch = canaries.skip(start).take(3);
+        samples.addAll(
+          await Future.wait(
+            batch.map(
+              (item) => _taxonomyCanary(
+                source,
+                item,
+                location,
+                radiusMeters,
+              ),
+            ),
+          ),
+        );
+      }
+      for (final sample in samples) {
+        if (sample.errorCode != null) {
+          errors.add('${sample.itemId}: ${sample.errorCode}');
+        } else if (sample.resultCount == 0) {
+          errors.add('${sample.itemId}: live canary returned no places.');
+        }
+      }
+    }
+    final validatedAt = DateTime.now().toUtc();
+    await TaxonomyService.recordValidation(
+      session,
+      version: version,
+      revision: revision,
+      location: location,
+      radiusMeters: radiusMeters,
+      errors: errors,
+    );
+    await _audit(
+      session,
+      operatorName: operatorName,
+      action: 'taxonomy.draft.validate',
+      targetType: 'taxonomy',
+      targetId: version,
+      reason: reason,
+      after: {
+        'passed': '${errors.isEmpty}',
+        'canaries': '${samples.length}',
+      },
+    );
+    return TaxonomyValidation(
+      passed: errors.isEmpty,
+      errors: errors,
+      samples: samples,
+      validatedAt: validatedAt,
+    );
+  }
+
+  Future<AdminTaxonomyVersion> publishTaxonomy(
+    Session session, {
+    required String credentials,
+    required String operatorName,
+    required String reason,
+    required String version,
+    required int revision,
+  }) async {
+    operatorName = _authorize(session, credentials);
+    _reason(reason);
+    final result = await TaxonomyService.publish(
+      session,
+      version: version,
+      revision: revision,
+    );
+    await _audit(
+      session,
+      operatorName: operatorName,
+      action: 'taxonomy.publish',
+      targetType: 'taxonomy',
+      targetId: version,
+      reason: reason,
+      after: {'revision': '$revision'},
+    );
+    return result;
+  }
+
+  Future<AdminTaxonomyVersion> rollbackTaxonomy(
+    Session session, {
+    required String credentials,
+    required String operatorName,
+    required String reason,
+    required String version,
+  }) async {
+    operatorName = _authorize(session, credentials);
+    _reason(reason);
+    final result = await TaxonomyService.rollback(session, version: version);
+    await _audit(
+      session,
+      operatorName: operatorName,
+      action: 'taxonomy.rollback',
+      targetType: 'taxonomy',
+      targetId: version,
+      reason: reason,
+    );
+    return result;
+  }
 
   Future<CacheDashboardSummary> summary(
     Session session, {
@@ -745,6 +1051,76 @@ class AdminEndpoint extends Endpoint {
       reason: reason,
     );
     return true;
+  }
+
+  Future<TaxonomyCanarySample> _taxonomyCanary(
+    PlaceSource source,
+    AdminTaxonomyItem item,
+    AdminMapLocation location,
+    int radiusMeters,
+  ) async {
+    try {
+      final places = await source
+          .search(
+            query: item.searchQueryEn,
+            categoryId: item.id,
+            latitude: location.latitude,
+            longitude: location.longitude,
+            radiusMeters: radiusMeters,
+            desiredCount: 3,
+            language: 'en',
+            countryCode: _country(location.countryCode),
+          )
+          .timeout(const Duration(seconds: 25));
+      return TaxonomyCanarySample(
+        itemId: item.id,
+        resultCount: places.length,
+        sampleNames: places
+            .take(3)
+            .map((place) => place.name)
+            .toList(growable: false),
+      );
+    } on PlaceSourceException catch (error) {
+      return TaxonomyCanarySample(
+        itemId: item.id,
+        resultCount: 0,
+        sampleNames: const [],
+        errorCode: error.code,
+      );
+    } catch (_) {
+      return TaxonomyCanarySample(
+        itemId: item.id,
+        resultCount: 0,
+        sampleNames: const [],
+        errorCode: 'canary_unavailable',
+      );
+    }
+  }
+
+  String _country(String value) {
+    final normalized = value.trim().toUpperCase();
+    const supported = {'SA', 'AE', 'KW', 'QA', 'BH', 'OM'};
+    if (!supported.contains(normalized)) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'Choose a supported GCC country.',
+      );
+    }
+    return normalized;
+  }
+
+  void _coordinates(double latitude, double longitude) {
+    if (!latitude.isFinite ||
+        !longitude.isFinite ||
+        latitude < -90 ||
+        latitude > 90 ||
+        longitude < -180 ||
+        longitude > 180) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'The location coordinates are invalid.',
+      );
+    }
   }
 
   Future<double> _metric(Session session, String name) async {

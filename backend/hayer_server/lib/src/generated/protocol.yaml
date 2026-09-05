@@ -1,4 +1,16 @@
 admin:
+  - liveUsage:
+  - analyticsOverview:
+  - usageAnalytics:
+  - placeAnalytics:
+  - suggestAdminLocation:
+  - reverseAdminLocation:
+  - taxonomyDraft:
+  - taxonomyHistory:
+  - saveTaxonomyDraft:
+  - validateTaxonomyDraft:
+  - publishTaxonomy:
+  - rollbackTaxonomy:
   - summary:
   - catalog:
   - coverage:
@@ -30,6 +42,8 @@ hayerSession:
 place:
   - suggest:
   - reverseGeocode:
+taxonomy:
+  - current:
 anonymousIdp:
   - login:
 jwtRefresh:

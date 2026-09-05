@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'Hayer Cache Operations'**
+  /// **'Hayer Admin'**
   String get appName;
 
   /// No description provided for @overview.

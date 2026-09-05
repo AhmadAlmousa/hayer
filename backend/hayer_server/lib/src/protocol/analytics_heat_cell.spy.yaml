@@ -1,0 +1,5 @@
+class: AnalyticsHeatCell
+fields:
+  weekday: int
+  hour: int
+  value: double

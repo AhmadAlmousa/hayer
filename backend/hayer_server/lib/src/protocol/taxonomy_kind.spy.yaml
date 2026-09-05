@@ -1,0 +1,5 @@
+enum: TaxonomyKind
+values:
+  - category
+  - cuisine
+  - poiType

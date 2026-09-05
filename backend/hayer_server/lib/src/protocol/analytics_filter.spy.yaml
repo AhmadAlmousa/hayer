@@ -1,0 +1,8 @@
+class: AnalyticsFilter
+fields:
+  from: DateTime
+  to: DateTime
+  granularity: AnalyticsGranularity
+  mode: SessionMode?
+  cityKey: String?
+  categoryId: String?

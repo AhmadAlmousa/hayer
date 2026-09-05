@@ -1,8 +1,18 @@
-# Hayer operations console
+# Hayer admin
 
-Protected Flutter web UI for catalog and coverage inspection, refresh-job
-operations, cache policy and retention pruning, KPI trends, audit history, and
-calibration validation/activation/rollback.
+Protected Flutter web suite for anonymous product analytics, live usage,
+place-vote insights, versioned taxonomy, catalog and coverage inspection,
+refresh jobs, cache policy, audit history, and calibration rollout.
+
+The browser routes are `/overview`, `/usage`, `/places`, `/taxonomy`,
+`/catalog`, `/coverage`, `/jobs`, `/settings`, `/calibration`, and `/audit`
+under the production `/admin/cache/` mount. Historical analytics refresh every
+five minutes; live session and participant counts refresh every 30 seconds.
+
+Taxonomy changes stay in a draft until structural validation and location-
+selected live canaries pass. Publishing and rollback require a reason and are
+audited. Published consumer payloads contain labels and structure only, never
+provider query strings.
 
 ```bash
 flutter run -d chrome

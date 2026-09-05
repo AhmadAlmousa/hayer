@@ -1,0 +1,27 @@
+class: ProductAnalyticsEventRow
+serverOnly: true
+table: hayer_product_analytics_event
+fields:
+  eventId: String
+  occurredAt: DateTime
+  metricName: String
+  modeKey: String
+  countryCode: String
+  cityKey: String
+  cityName: String
+  categoryId: String
+  taxonomyKind: String
+  taxonomyId: String
+  placeId: String
+  placeName: String
+  value: double
+  sampleCount: int
+  processedAt: DateTime?
+indexes:
+  hayer_analytics_event_id:
+    fields: eventId
+    unique: true
+  hayer_analytics_event_pending:
+    fields: processedAt, occurredAt
+  hayer_analytics_event_time:
+    fields: occurredAt

@@ -11,9 +11,12 @@ resolution: workspace
 
 dependencies:
   cupertino_icons: ^1.0.8
+  fl_chart: ^1.2.0
   flutter:
     sdk: flutter
   flutter_localizations:
+    sdk: flutter
+  flutter_web_plugins:
     sdk: flutter
   flutter_riverpod: ^3.0.0
   go_router: ^18.0.0

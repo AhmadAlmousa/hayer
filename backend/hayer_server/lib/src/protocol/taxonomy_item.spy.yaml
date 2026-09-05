@@ -1,0 +1,10 @@
+class: TaxonomyItem
+fields:
+  id: String
+  kind: TaxonomyKind
+  parentCategoryIds: List<String>
+  labelEn: String
+  labelAr: String
+  emoji: String
+  sortOrder: int
+  enabled: bool

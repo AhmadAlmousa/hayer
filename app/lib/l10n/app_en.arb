@@ -112,6 +112,8 @@
   "resumeFailed": "That saved session is no longer available.",
   "allLabel": "All",
   "typesCount": "{count} types",
+  "cuisinesLabel": "Cuisines",
+  "poiTypesLabel": "Place types",
   "@typesCount": {"placeholders": {"count": {"type": "int"}}},
   "showQrCode": "Show QR code",
   "qrLabel": "QR",

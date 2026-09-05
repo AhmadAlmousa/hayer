@@ -1,0 +1,6 @@
+class: AnalyticsPoint
+fields:
+  bucketStartedAt: DateTime
+  seriesKey: String
+  seriesLabel: String
+  value: double

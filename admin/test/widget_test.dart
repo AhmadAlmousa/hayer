@@ -5,7 +5,7 @@ import 'package:hayer_admin/admin_operations.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
-  testWidgets('wide dashboard shows operational metrics and trend charts', (
+  testWidgets('wide dashboard shows product analytics and live usage', (
     tester,
   ) async {
     await _setSurface(tester, const Size(1400, 900));
@@ -13,11 +13,11 @@ void main() {
     await _pumpDashboard(tester, operations);
 
     expect(find.byType(NavigationRail), findsOneWidget);
-    expect(find.text('Operational overview'), findsOneWidget);
-    expect(find.text('123'), findsOneWidget);
-    expect(find.text('24-hour trends'), findsOneWidget);
-    expect(find.text('Cache hit rate'), findsWidgets);
-    expect(find.text('Source success'), findsWidgets);
+    expect(find.text('Overview'), findsWidgets);
+    expect(find.text('42'), findsOneWidget);
+    expect(find.text('Sessions over time'), findsOneWidget);
+    expect(find.text('Most popular cities'), findsOneWidget);
+    expect(find.text('Top cuisines'), findsOneWidget);
   });
 
   testWidgets('narrow dashboard uses a drawer and opens coverage records', (
@@ -98,6 +98,70 @@ Future<void> _pumpDashboard(
 
 class _FakeAdminOperations implements AdminOperations {
   String? cancelledJobId;
+
+  @override
+  Future<AdminLiveUsage> liveUsage() async => AdminLiveUsage(
+    ongoingSessions: 4,
+    soloSessions: 3,
+    multiplayerSessions: 1,
+    enrolledParticipants: 7,
+    activeParticipants: 5,
+    generatedAt: DateTime.utc(2026, 9, 5, 10),
+  );
+
+  @override
+  Future<AdminAnalyticsOverview> analyticsOverview(
+    AnalyticsFilter filter,
+  ) async => AdminAnalyticsOverview(
+    live: await liveUsage(),
+    kpis: [
+      AnalyticsKpi(
+        key: 'sessions',
+        label: 'Sessions',
+        value: 42,
+        previousValue: 35,
+        unit: 'count',
+      ),
+    ],
+    sessionTrend: [
+      AnalyticsPoint(
+        bucketStartedAt: DateTime.utc(2026, 9, 4),
+        seriesKey: 'solo',
+        seriesLabel: 'Solo',
+        value: 18,
+      ),
+      AnalyticsPoint(
+        bucketStartedAt: DateTime.utc(2026, 9, 5),
+        seriesKey: 'multiplayer',
+        seriesLabel: 'Multiplayer',
+        value: 24,
+      ),
+    ],
+    modeBreakdown: [_breakdown('solo', 'Solo', 30, 71.4)],
+    participantModeBreakdown: [
+      _breakdown('solo', 'Solo', 30, 60),
+      _breakdown('multiplayer', 'Multiplayer', 20, 40),
+    ],
+    topCities: [_breakdown('sa-riyadh', 'Riyadh', 25, 59.5)],
+    topCategories: [_breakdown('restaurant', 'Restaurants', 28, 66.7)],
+    topCuisines: [_breakdown('italian', 'Italian', 12, 40)],
+    topTypes: [_breakdown('pizza', 'Pizza', 9, 30)],
+    cacheSummary: await summary(),
+    generatedAt: DateTime.utc(2026, 9, 5, 10),
+  );
+
+  static AnalyticsBreakdown _breakdown(
+    String key,
+    String label,
+    double value,
+    double percentage,
+  ) => AnalyticsBreakdown(
+    key: key,
+    label: label,
+    value: value,
+    percentage: percentage,
+    sampleCount: value.round(),
+  );
 
   @override
   Future<CacheDashboardSummary> summary() async => CacheDashboardSummary(

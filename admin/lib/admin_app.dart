@@ -1,27 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
 import 'package:intl/intl.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 import 'admin_operations.dart';
+import 'features/analytics/analytics_pages.dart';
+import 'features/taxonomy/taxonomy_page.dart';
 import 'l10n/generated/admin_localizations.dart';
 
-class AdminApp extends StatelessWidget {
+class AdminApp extends StatefulWidget {
   const AdminApp({super.key, required this.client, this.operations});
   final Client client;
   final AdminOperations? operations;
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title: 'Hayer Cache Operations',
+  State<AdminApp> createState() => _AdminAppState();
+}
+
+class _AdminAppState extends State<AdminApp> {
+  late final AdminOperations _operations =
+      widget.operations ?? ServerpodAdminOperations(widget.client);
+  late final GoRouter _router = GoRouter(
+    initialLocation: '/overview',
+    routes: [
+      GoRoute(path: '/', redirect: (_, _) => '/overview'),
+      ShellRoute(
+        builder: (context, state, child) => _Dashboard(
+          selectedIndex: _adminRoutes.indexOf(state.uri.path).clamp(0, 9),
+          onSelect: (index) => context.go(_adminRoutes[index]),
+          child: child,
+        ),
+        routes: [
+          GoRoute(
+            path: '/overview',
+            pageBuilder: (_, _) =>
+                _page(AnalyticsOverviewPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/usage',
+            pageBuilder: (_, _) =>
+                _page(UsageAnalyticsPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/places',
+            pageBuilder: (_, _) =>
+                _page(PlaceAnalyticsPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/taxonomy',
+            pageBuilder: (_, _) => _page(TaxonomyPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/catalog',
+            pageBuilder: (_, _) => _page(_CatalogPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/coverage',
+            pageBuilder: (_, _) =>
+                _page(_CoveragePage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/jobs',
+            pageBuilder: (_, _) => _page(_JobsPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (_, _) => _page(_PolicyPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/calibration',
+            pageBuilder: (_, _) =>
+                _page(_CalibrationPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/audit',
+            pageBuilder: (_, _) => _page(_AuditPage(operations: _operations)),
+          ),
+        ],
+      ),
+    ],
+  );
+
+  static NoTransitionPage<void> _page(Widget child) =>
+      NoTransitionPage<void>(child: child);
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp.router(
+    title: 'Hayer Admin',
     debugShowCheckedModeBanner: false,
     theme: _theme(Brightness.light),
     darkTheme: _theme(Brightness.dark),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: _Dashboard(
-      operations: operations ?? ServerpodAdminOperations(client),
-    ),
+    routerConfig: _router,
   );
 
   ThemeData _theme(Brightness brightness) {
@@ -48,22 +126,38 @@ class AdminApp extends StatelessWidget {
   }
 }
 
-class _Dashboard extends StatefulWidget {
-  const _Dashboard({required this.operations});
-  final AdminOperations operations;
+const _adminRoutes = [
+  '/overview',
+  '/usage',
+  '/places',
+  '/taxonomy',
+  '/catalog',
+  '/coverage',
+  '/jobs',
+  '/settings',
+  '/calibration',
+  '/audit',
+];
 
-  @override
-  State<_Dashboard> createState() => _DashboardState();
-}
+class _Dashboard extends StatelessWidget {
+  const _Dashboard({
+    required this.selectedIndex,
+    required this.onSelect,
+    required this.child,
+  });
 
-class _DashboardState extends State<_Dashboard> {
-  int _index = 0;
+  final int selectedIndex;
+  final ValueChanged<int> onSelect;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     final labels = [
-      strings.overview,
+      'Overview',
+      'Usage',
+      'Places',
+      'Taxonomy',
       strings.catalog,
       strings.coverage,
       strings.jobs,
@@ -73,21 +167,15 @@ class _DashboardState extends State<_Dashboard> {
     ];
     final icons = [
       Icons.dashboard_outlined,
+      Icons.insights_outlined,
+      Icons.favorite_outline_rounded,
+      Icons.account_tree_outlined,
       Icons.place_outlined,
       Icons.map_outlined,
       Icons.sync_rounded,
       Icons.tune_rounded,
       Icons.science_outlined,
       Icons.history_rounded,
-    ];
-    final pages = [
-      _OverviewPage(operations: widget.operations),
-      _CatalogPage(operations: widget.operations),
-      _CoveragePage(operations: widget.operations),
-      _JobsPage(operations: widget.operations),
-      _PolicyPage(operations: widget.operations),
-      _CalibrationPage(operations: widget.operations),
-      _AuditPage(operations: widget.operations),
     ];
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -103,10 +191,16 @@ class _DashboardState extends State<_Dashboard> {
             children: [
               if (wide)
                 NavigationRail(
-                  selectedIndex: _index,
-                  onDestinationSelected: (value) =>
-                      setState(() => _index = value),
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: onSelect,
                   labelType: NavigationRailLabelType.all,
+                  leading: const Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Tooltip(
+                      message: 'Insights · Content · Operations · Governance',
+                      child: Icon(Icons.admin_panel_settings_outlined),
+                    ),
+                  ),
                   destinations: [
                     for (var i = 0; i < labels.length; i++)
                       NavigationRailDestination(
@@ -115,20 +209,39 @@ class _DashboardState extends State<_Dashboard> {
                       ),
                   ],
                 ),
-              Expanded(child: pages[_index]),
+              Expanded(child: child),
             ],
           ),
           drawer: wide
               ? null
               : NavigationDrawer(
-                  selectedIndex: _index,
+                  selectedIndex: selectedIndex,
                   onDestinationSelected: (value) {
-                    setState(() => _index = value);
                     Navigator.of(context).pop();
+                    onSelect(value);
                   },
                   children: [
                     const SizedBox(height: 12),
-                    for (var i = 0; i < labels.length; i++)
+                    const _NavigationGroupLabel('Insights'),
+                    for (var i = 0; i < 3; i++)
+                      NavigationDrawerDestination(
+                        icon: Icon(icons[i]),
+                        label: Text(labels[i]),
+                      ),
+                    const _NavigationGroupLabel('Content'),
+                    for (var i = 3; i < 4; i++)
+                      NavigationDrawerDestination(
+                        icon: Icon(icons[i]),
+                        label: Text(labels[i]),
+                      ),
+                    const _NavigationGroupLabel('Operations'),
+                    for (var i = 4; i < 8; i++)
+                      NavigationDrawerDestination(
+                        icon: Icon(icons[i]),
+                        label: Text(labels[i]),
+                      ),
+                    const _NavigationGroupLabel('Governance'),
+                    for (var i = 8; i < labels.length; i++)
                       NavigationDrawerDestination(
                         icon: Icon(icons[i]),
                         label: Text(labels[i]),
@@ -139,6 +252,25 @@ class _DashboardState extends State<_Dashboard> {
       },
     );
   }
+}
+
+class _NavigationGroupLabel extends StatelessWidget {
+  const _NavigationGroupLabel(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(28, 18, 16, 6),
+    child: Text(
+      label.toUpperCase(),
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        color: Theme.of(context).colorScheme.primary,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.1,
+      ),
+    ),
+  );
 }
 
 class _OverviewPage extends StatefulWidget {
