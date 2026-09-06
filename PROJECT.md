@@ -659,7 +659,7 @@ solo and multiplayer flows without developer intervention.
   `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
   Gateway recreation and a live passkey enrollment remain deployment checks.
 - 2026-09-06: replaced the error-prone manual enrollment environment toggle
-  with `backend/deploy/admin-enrollment.sh reenroll`. The command applies one
+  with `scripts/admin-enrollment.sh reenroll`. The command applies one
   process-scoped value while recreating and verifying both Serverpod and the
   gateway, waits for the browser ceremonies, and closes enrollment on Enter or
   process exit. Explicit enable/disable/status actions remain available for

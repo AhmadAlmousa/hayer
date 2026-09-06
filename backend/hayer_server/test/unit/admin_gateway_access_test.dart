@@ -180,7 +180,7 @@ void main() {
           '../deploy/docker-compose.yml',
         ).readAsString();
         final toggle = await File(
-          '../deploy/admin-enrollment.sh',
+          '../../scripts/admin-enrollment.sh',
         ).readAsString();
 
         expect(
@@ -233,7 +233,7 @@ esac
         'HAYER_TEST_STATE_FILE': stateFile.path,
       };
       final process = await Process.start(
-        File('../deploy/admin-enrollment.sh').absolute.path,
+        File('../../scripts/admin-enrollment.sh').absolute.path,
         ['reenroll'],
         environment: environment,
       );

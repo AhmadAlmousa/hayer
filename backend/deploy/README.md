@@ -108,7 +108,7 @@ browser's passkey ceremony from starting.
 From the repository root, run this single command:
 
 ```bash
-backend/deploy/admin-enrollment.sh reenroll
+scripts/admin-enrollment.sh reenroll
 ```
 
 It recreates `runtime-init`, `server`, and `gateway` with one process-scoped

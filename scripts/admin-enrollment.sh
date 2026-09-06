@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-deploy_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+deploy_dir="$repo_root/backend/deploy"
 compose=(docker compose --project-directory "$deploy_dir" -f "$deploy_dir/docker-compose.yml")
 action="${1:-status}"
 

@@ -15,7 +15,7 @@ Set these optional environment variables in the Unraid Compose stack:
   never stores it in browser application storage.
 - `HAYER_ADMIN_ENROLLMENT_ENABLED` is an internal Compose input shared by the
   gateway initializer and Serverpod. Operators should use
-  `backend/deploy/admin-enrollment.sh reenroll` instead of setting it globally.
+  `scripts/admin-enrollment.sh reenroll` instead of setting it globally.
   It defaults to `false`; all other values fail closed.
 - `HAYER_ANDROID_SHA256` enables App Links using the release certificate's
   colon-separated SHA-256 fingerprint. App Links remain disabled when it is
@@ -27,7 +27,7 @@ Nginx Proxy Manager should forward `https://hayer.vpn.almou.sa` to
 `http://192.168.225.20:8433`, preserve Host and client-IP headers, and enable
 WebSockets. This private port is separate from Cloudflare's `8432` listener.
 
-For initial setup or recovery, run `backend/deploy/admin-enrollment.sh reenroll`,
+For initial setup or recovery, run `scripts/admin-enrollment.sh reenroll`,
 then open `https://hayer.vpn.almou.sa/enroll`. Enter the recovery credentials
 in the browser's native Basic Auth prompt and create a passkey. Verify two
 independent passkeys, then return to the command and press Enter to close

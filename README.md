@@ -69,7 +69,7 @@ cd admin && flutter run -d chrome
 The production admin entry point is
 `https://hayer.vpn.almou.sa/`, available only through LAN or Tailscale.
 The public `hayer.almou.sa` host returns 404 for every `/admin` route. First-time
-setup and recovery run `backend/deploy/admin-enrollment.sh reenroll`, then use
+setup and recovery run `scripts/admin-enrollment.sh reenroll`, then use
 `https://hayer.vpn.almou.sa/enroll` with the break-glass
 `HAYER_ADMIN_USER`/`HAYER_ADMIN_PASSWORD` credentials. Routine visits use a
 passkey and never ask Hayer to store that Basic Auth password. Admin JWTs are
@@ -126,7 +126,7 @@ This runner is fully containerized; the host only needs Docker Compose.
    `http://192.168.225.20:8432`. Configure the private Nginx Proxy Manager host
    `hayer.vpn.almou.sa` to `http://192.168.225.20:8433`, with private DNS and
    TLS. The two host ports terminate on separate nginx listeners.
-7. Run `backend/deploy/admin-enrollment.sh reenroll`, register and verify two
+7. Run `scripts/admin-enrollment.sh reenroll`, register and verify two
    private-host passkeys, press Enter to close enrollment, then verify
    HTTPS/WSS, App Links, public-admin rejection, and the backup restore drill.
 
