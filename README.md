@@ -67,10 +67,10 @@ cd admin && flutter run -d chrome
 ```
 
 The production admin entry point is
-`https://hayer.vpn.almou.sa/admin/`, available only through LAN or Tailscale.
+`https://hayer.vpn.almou.sa/`, available only through LAN or Tailscale.
 The public `hayer.almou.sa` host returns 404 for every `/admin` route. First-time
 setup and recovery temporarily enable `HAYER_ADMIN_ENROLLMENT_ENABLED`, then use
-`https://hayer.vpn.almou.sa/admin/enroll` with the break-glass
+`https://hayer.vpn.almou.sa/enroll` with the break-glass
 `HAYER_ADMIN_USER`/`HAYER_ADMIN_PASSWORD` credentials. Routine visits use a
 passkey and never ask Hayer to store that Basic Auth password. Admin JWTs are
 kept in the platform's secure client storage and are revoked on sign-out.
@@ -121,12 +121,13 @@ This runner is fully containerized; the host only needs Docker Compose.
    `runtime-init` container logs. Keep enrollment disabled during routine use.
 6. Configure Cloudflare Tunnel for public `hayer.almou.sa` only, targeting
    `http://192.168.225.20:8432`. Configure the private Nginx Proxy Manager host
-   `hayer.vpn.almou.sa` to the same origin, with private DNS and TLS.
+   `hayer.vpn.almou.sa` to `http://192.168.225.20:8433`, with private DNS and
+   TLS. The two host ports terminate on separate nginx listeners.
 7. Temporarily enable enrollment, register and verify two private-host
    passkeys, disable enrollment again, then verify HTTPS/WSS, App Links,
    public-admin rejection, and the backup restore drill.
 
-The gateway binds only to `192.168.225.20:8432`. Remove every WAN port-forward
-for that port and allow it at the host firewall only from Nginx Proxy Manager
-and the local cloudflared connector. PostgreSQL, Serverpod Insights, and
-backups remain unpublished.
+The gateway binds public port `8432` and private-admin port `8433` only to
+`192.168.225.20`. Remove every WAN port-forward for both ports. Allow `8432`
+only from the local cloudflared connector and `8433` only from Nginx Proxy
+Manager. PostgreSQL, Serverpod Insights, and backups remain unpublished.

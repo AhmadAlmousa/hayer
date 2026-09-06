@@ -7,6 +7,17 @@ import 'package:hayer_admin/features/auth/admin_auth_repository.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
+  test('root admin API derives the protected enrollment endpoint', () {
+    expect(
+      adminEnrollmentUrl('https://hayer.vpn.almou.sa/api/'),
+      'https://hayer.vpn.almou.sa/enroll-api/',
+    );
+    expect(
+      adminEnrollmentUrl('http://localhost:8080/'),
+      'http://localhost:8080/',
+    );
+  });
+
   testWidgets('passkey sign-in unlocks the dashboard', (tester) async {
     await _setSurface(tester, const Size(900, 800));
     final client = Client('http://localhost:8080/');

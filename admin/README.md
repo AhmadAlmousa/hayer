@@ -6,7 +6,7 @@ refresh jobs, cache policy, audit history, and calibration rollout.
 
 The browser routes are `/overview`, `/usage`, `/places`, `/taxonomy`,
 `/catalog`, `/coverage`, `/jobs`, `/settings`, `/calibration`, and `/audit`
-under the production `/admin/` mount. Historical analytics refresh every
+at the private production origin. Historical analytics refresh every
 five minutes; live session and participant counts refresh every 30 seconds.
 
 Taxonomy changes stay in a draft until structural validation and location-
@@ -17,19 +17,19 @@ provider query strings.
 ```bash
 flutter run -d chrome
 flutter test
-flutter build web --base-href /admin/
+flutter build web --wasm --base-href /
 ```
 
-The production entry point is `https://hayer.vpn.almou.sa/admin/`, resolvable
+The production entry point is `https://hayer.vpn.almou.sa/`, resolvable
 and reachable only from LAN or Tailscale. Public `hayer.almou.sa/admin*`
 requests return 404. Every read and mutation RPC requires a passkey-issued JWT
 with `admin` scope and the exact `https://hayer.vpn.almou.sa` origin marker set
 by nginx. Sign-out revokes the server token and clears secure client storage.
 
-For the first passkey, or recovery, open
-set `HAYER_ADMIN_ENROLLMENT_ENABLED=true`, recreate the runtime initializer,
-server, and gateway, then open `https://hayer.vpn.almou.sa/admin/enroll`.
-nginx protects that page and `/admin/enroll-api/` with the break-glass Basic
+For the first passkey, or recovery, set
+`HAYER_ADMIN_ENROLLMENT_ENABLED=true`, recreate the runtime initializer,
+server, and gateway, then open `https://hayer.vpn.almou.sa/enroll`.
+nginx protects that page and `/enroll-api/` with the break-glass Basic
 Auth account. It issues an
 `admin-enrollment`-only token, registers one discoverable passkey with required
 user verification, revokes the enrollment token, and performs a fresh passkey

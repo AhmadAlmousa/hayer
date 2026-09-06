@@ -97,7 +97,7 @@ jobs:
       - name: Build web clients
         run: |
           (cd app && flutter build web --wasm --base-href /app/)
-          (cd admin && flutter build web --wasm --base-href /admin/)
+          (cd admin && flutter build web --wasm --base-href /)
 
       - name: Build Android debug APK
         working-directory: app

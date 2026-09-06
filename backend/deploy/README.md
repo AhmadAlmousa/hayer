@@ -2,9 +2,9 @@
 
 This directory is the Unraid deployment unit. `docker-compose.yml` runs nginx,
 the Serverpod monolith, PostGIS, source/public canaries, and a daily backup
-sidecar. Only nginx port `8432` is published.
-The published socket is bound to the Unraid LAN address
-`192.168.225.20:8432`, not every host interface.
+sidecar. nginx publishes separate public and private-admin ports. Both sockets
+are bound to the Unraid LAN address—`192.168.225.20:8432` for cloudflared and
+`192.168.225.20:8433` for NPM—not every host interface.
 
 No secret files need to be created on Unraid. On a development machine, build
 the signed APK with `../../scripts/build-release-apk.sh`, then copy the
@@ -58,17 +58,18 @@ is required or permitted.
 
 Private DNS resolves `hayer.vpn.almou.sa` to Nginx Proxy Manager at
 `192.168.225.21`. NPM terminates valid TLS and proxies to
-`192.168.225.20:8432`, preserving Host and client-IP headers with WebSocket
+`192.168.225.20:8433`, preserving Host and client-IP headers with WebSocket
 support. This hostname must be reachable only from LAN or via a Tailscale
-subnet route. The private host redirects `/` to `/admin/` and exposes only the
-admin assets/API; public consumer API routes return 404 there.
+subnet route. The private listener serves the admin at `/`, its RPCs at
+`/api/`, and recovery at `/enroll`; consumer routes are unavailable there.
+Legacy private `/admin/*` bookmarks redirect to their root-mounted equivalent.
 
-Restrict the Unraid/Docker host firewall so `8432/tcp` accepts only NPM and the
-local cloudflared connector. Docker-published ports may bypass a simple UFW
-rule, so enforce this in Unraid's Docker firewall/`DOCKER-USER` path and verify
-it from a separate WAN host. Cloudflare Tunnel satisfies origin-isolation and
-upstream DDoS protection only after every WAN forward/direct origin path is
-closed.
+Restrict the Unraid/Docker host firewall so `8432/tcp` accepts only the local
+cloudflared connector and `8433/tcp` accepts only NPM. Docker-published ports
+may bypass a simple UFW rule, so enforce this in Unraid's Docker firewall
+(`DOCKER-USER`) path and verify it from a separate WAN host. Cloudflare Tunnel
+satisfies origin-isolation and upstream DDoS protection only after every WAN
+forward/direct origin path is closed.
 
 At Cloudflare, add these defense-in-depth rules in addition to the origin
 nginx limits:
@@ -82,7 +83,9 @@ nginx limits:
 After deployment, verify the public `/`, `/api/`, `/api/websocket`, join,
 App-Link, and APK routes. Confirm public `/admin`, `/admin/api/`, and
 `/admin/enroll` return 404. From both LAN and Tailscale, verify the private
-admin redirect, passkey login, dashboard RPCs, and exact-origin rejection.
+root, passkey login, dashboard RPCs, and exact-origin rejection. Direct access
+to `8432` with the private Host and to `8433` with the public Host must return
+404.
 
 Serverpod 3.4 may print a database-integrity warning that its target schema is
 missing the custom `location` columns, spatial/search indexes, and cascading
@@ -99,10 +102,10 @@ Basic credentials available for this one-time migration.
 
 Set `HAYER_ADMIN_ENROLLMENT_ENABLED=true` in the Unraid stack, recreate
 `runtime-init`, then recreate `server` and `gateway`. Open
-`https://hayer.vpn.almou.sa/admin/enroll`, satisfy Basic Auth, and register two
+`https://hayer.vpn.almou.sa/enroll`, satisfy Basic Auth, and register two
 independent passkeys. Verify each through a separate fresh browser session.
 Then set the flag to `false`, recreate the same services, and confirm both
-`/admin/enroll` and `/admin/enroll-api/` return 404 while both passkeys still
+`/enroll` and `/enroll-api/` return 404 while both passkeys still
 perform routine login.
 
 `runtime-init` rewrites the gateway's fail-closed enrollment policy on every

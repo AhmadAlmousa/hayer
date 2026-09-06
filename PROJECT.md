@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-06
 
-Status: security/domain upgrade implemented and signed build 5 staged; production verification remains
+Status: split-port private-root admin implemented; production verification remains
 
 Current focus: M7 — invited-beta verification and release tag
 
@@ -64,7 +64,8 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   place insights, versioned taxonomy, cache/catalog controls, maps, guarded
   management, versioned calibration, and audit history.
 - Protect routine admin access with WebAuthn passkeys and server-issued JWTs.
-  Serve admin only at LAN/Tailscale `https://hayer.vpn.almou.sa/admin/`.
+  Serve admin only at LAN/Tailscale `https://hayer.vpn.almou.sa/` through its
+  dedicated Compose gateway port.
   Every admin RPC requires the `admin` scope plus that exact production origin.
   Public `/admin` paths return 404 and enrollment is disabled by default.
   Keep nginx Basic Auth only as an offline-held break-glass path for initial
@@ -105,10 +106,11 @@ business rules live in domain services and use cases. Drift is the local
 source of truth for the active session snapshot and pending swipe outbox.
 
 The host-aware gateway routes public `/api/*`, join/download/release/App-Link/
-media paths to Serverpod and rejects public `/admin*`. The private
-`hayer.vpn.almou.sa` host serves `/admin/*`, passkey/JWT RPCs, and the normally
-disabled Basic-Auth enrollment route while rejecting consumer APIs. Compose
-binds `8432` only to `192.168.225.20`; PostgreSQL and Insights stay internal.
+media paths to Serverpod and rejects public `/admin*`. A separate private
+listener serves `hayer.vpn.almou.sa` admin routes from `/`, passkey/JWT RPCs
+from `/api/`, and the normally disabled Basic-Auth `/enroll` route. Compose
+binds public `8432` and private `8433` only to `192.168.225.20`; PostgreSQL and
+Insights stay internal.
 
 The backend is a JIT Dart process in production mode supervised by a Dart
 source watcher. Code generation, analysis, tests, and migrations are explicit
@@ -340,6 +342,8 @@ results through duplicate requests and disconnects.
 - [x] Move the complete admin surface to the LAN/Tailscale-only hostname,
   bind WebAuthn to its RP, reject public admin paths, and make recovery
   enrollment fail closed unless explicitly enabled.
+- [x] Publish the private admin on a separate Compose port and mount its
+  browser routes at the private origin root, with legacy private redirects.
 - [x] Expand the cache console into grouped, deep-linkable Overview, Usage,
   Places, Taxonomy, Operations, and Governance areas. Add 30-second live KPIs,
   five-minute hourly analytics rollups, daily/weekly interactive trends,
@@ -374,7 +378,7 @@ calibration cannot activate.
   results during partial source outages, stop unnecessary query batches, log
   sanitized source failures, distinguish client transport failures from source
   outages, and gate deployment on live source plus public RPC canaries.
-- [x] Pass fatal-info analysis, 66 backend unit tests, 66 consumer tests, six
+- [x] Pass fatal-info analysis, 66 backend unit tests, 66 consumer tests, seven
   admin widget tests, shell syntax, and production web compilation for both
   Flutter apps. The PostGIS integration suite remains a separate gate.
 - [x] Android debug and release compilation pass under the constrained
@@ -635,6 +639,15 @@ solo and multiplayer flows without developer intervention.
   Docker/nginx are unavailable in this development environment, so applying
   the new session-code migration and post-deployment gateway checks remain
   external gates.
+- 2026-09-06: `scripts/preflight.sh` passed the split-port/root-mount revision:
+  generated code, handwritten formatting, fatal-info analysis, 66 backend,
+  66 consumer, and seven admin tests, script syntax, and diff checks all pass.
+  The admin production Wasm build contains `<base href="/">` and the private
+  root API URL. The required signed `0.1.0+5` APK rebuilt successfully at
+  100,907,926 bytes; its v2 signature verifies and both stable/versioned files
+  retain SHA-256
+  `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
+  nginx/Compose deployment and live `8432`/`8433` isolation remain external.
 
 ## Decision and change log
 
@@ -667,15 +680,15 @@ solo and multiplayer flows without developer intervention.
   identifiers or precise locations, bounded raw retention, and aggregate-only
   live counts. Categories, cuisines, and POI types share one bilingual,
   versioned taxonomy; clients adopt published versions at runtime and retain a
-  bundled fallback. Admin areas use path-based routes beneath the protected
-  `/admin/` mount so views are bookmarkable. The original public admin entry
-  was superseded on 2026-09-06 by the private `hayer.vpn.almou.sa` host;
-  `/admin/cache/` remains a private compatibility redirect.
+  bundled fallback. Admin areas use path-based routes so views are bookmarkable.
+  Their original public `/admin/` mount was superseded on 2026-09-06 by the
+  private `hayer.vpn.almou.sa` root; old private `/admin/*` paths redirect for
+  compatibility.
 - 2026-09-05: Replaced routine admin Basic Auth with discoverable WebAuthn
   passkeys verified by Serverpod. Admin data remains server-protected by JWT
   `admin` scope and exact-origin checks; the public `/admin/` shell contains no
-  data. Basic Auth is retained only on `/admin/enroll` and
-  `/admin/enroll-api/` as break-glass enrollment/recovery. Its token carries
+  data. Basic Auth is retained only on private `/enroll` and `/enroll-api/`
+  as break-glass enrollment/recovery. Its token carries
   enrollment scope only and is revoked after successful registration. This is
   server authentication rather than `local_auth`, which cannot authenticate a
   web administrator or prove identity to the backend.
@@ -687,3 +700,7 @@ solo and multiplayer flows without developer intervention.
   verified Flutter 3.47.2/Dart 3.13.2 and nginx 1.30.4 patch line; retain
   Serverpod/database/package majors. Container privilege/network separation
   remains a deliberately separate hardening change.
+- 2026-09-06: Split the gateway by exposure: cloudflared retains LAN-bound
+  `8432`, while NPM uses LAN-bound `8433`. Mount the admin at the private
+  origin root with `/api/` RPCs and `/enroll` recovery; keep its Serverpod web
+  files internally namespaced and redirect older private `/admin/*` bookmarks.

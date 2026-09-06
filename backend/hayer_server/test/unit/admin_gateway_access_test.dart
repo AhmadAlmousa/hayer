@@ -83,13 +83,24 @@ void main() {
           configuration,
           contains('"https://hayer.vpn.almou.sa" 1;'),
         );
-        expect(configuration, contains(r'~^/admin/enroll-api/ 1;'));
+        expect(configuration, contains(r'~^/enroll-api/ 1;'));
         expect(publicHost, contains('location = /admin {\n    return 404;'));
         expect(publicHost, contains('location ^~ /admin/ {\n    return 404;'));
-        expect(privateHost, contains('return 308 /admin/;'));
-        expect(privateHost, contains('location /admin/api/'));
-        expect(privateHost, contains('location /admin/enroll-api/'));
-        expect(privateHost, contains('location /admin/'));
+        expect(
+          configuration,
+          contains('listen 8081;\n  server_name hayer.vpn.almou.sa;'),
+        );
+        expect(privateHost, contains('location /api/passkeyIdp/'));
+        expect(privateHost, contains('location /api/'));
+        expect(privateHost, contains('location /enroll-api/'));
+        expect(
+          privateHost,
+          contains('proxy_pass http://server:8080/passkeyIdp/;'),
+        );
+        expect(
+          privateHost,
+          contains('proxy_pass http://server:8082/admin/;'),
+        );
         expect(
           privateHost,
           contains(r'location ~ ^/admin/cache(?:/(.*))?$'),
@@ -110,9 +121,8 @@ void main() {
             r'proxy_set_header X-Hayer-Admin-Origin-Allowed $hayer_admin_origin_allowed;',
           ),
         );
-        expect(privateHost, contains('location /admin-api/ {'));
         final enrollmentApi = RegExp(
-          r'location /admin/enroll-api/ \{([^}]*)\}',
+          r'location /enroll-api/ \{([^}]*)\}',
           multiLine: true,
         ).firstMatch(privateHost)!.group(1)!;
         expect(enrollmentApi, contains('auth_basic'));
@@ -144,6 +154,7 @@ void main() {
         expect(configuration, contains(r'map $http_cf_connecting_ip'));
         expect(configuration, contains('set_real_ip_from 192.168.225.21'));
         expect(compose, contains('192.168.225.20:8432:8080'));
+        expect(compose, contains('192.168.225.20:8433:8081'));
         expect(
           compose,
           contains('HAYER_ADMIN_ENROLLMENT_ENABLED:'),

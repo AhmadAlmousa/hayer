@@ -24,7 +24,7 @@ class PasskeyAdminAuthRepository implements AdminAuthRepository {
     required this.client,
     required String serverUrl,
     PasskeyAuthenticator? authenticator,
-  }) : _enrollmentClient = Client(_enrollmentUrl(serverUrl)),
+  }) : _enrollmentClient = Client(adminEnrollmentUrl(serverUrl)),
        _relyingPartyId = _relyingParty(serverUrl),
        _authenticator = authenticator ?? PasskeyAuthenticator();
 
@@ -129,14 +129,6 @@ class PasskeyAdminAuthRepository implements AdminAuthRepository {
     await client.auth.updateSignedInUser(null);
   }
 
-  static String _enrollmentUrl(String serverUrl) {
-    final uri = Uri.parse(serverUrl);
-    final path = uri.path.endsWith('/admin/api/')
-        ? '${uri.path.substring(0, uri.path.length - 'api/'.length)}enroll-api/'
-        : uri.path;
-    return uri.replace(path: path).toString();
-  }
-
   static String _relyingParty(String serverUrl) {
     final host = Uri.parse(serverUrl).host;
     return host == 'localhost' || host == '127.0.0.1' ? 'localhost' : host;
@@ -155,4 +147,11 @@ class PasskeyAdminAuthRepository implements AdminAuthRepository {
     );
     return ByteData.sublistView(base64Url.decode(padded));
   }
+}
+
+String adminEnrollmentUrl(String serverUrl) {
+  final uri = Uri.parse(serverUrl);
+  if (!uri.path.endsWith('/api/')) return uri.toString();
+  final basePath = uri.path.substring(0, uri.path.length - 'api/'.length);
+  return uri.replace(path: '${basePath}enroll-api/').toString();
 }
