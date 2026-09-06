@@ -648,6 +648,16 @@ solo and multiplayer flows without developer intervention.
   retain SHA-256
   `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
   nginx/Compose deployment and live `8432`/`8433` isolation remain external.
+- 2026-09-06: live enrollment logs isolated a gateway redirect: the protected
+  `adminEnrollment` RPC returned 200, then nginx redirected Serverpod's
+  no-trailing-slash `POST /api/passkeyIdp` with 301 and Chrome followed it as a
+  bodyless GET that returned 400. The private gateway now has an exact route
+  that proxies that POST without redirecting, with regression coverage in the
+  gateway access test. The full preflight passed 66 backend, 66 consumer, and
+  seven admin tests. The required signed `0.1.0+5` APK rebuilt at 100.9 MB,
+  verifies with APK Signature Scheme v2, and retains SHA-256
+  `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
+  Gateway recreation and a live passkey enrollment remain deployment checks.
 
 ## Decision and change log
 

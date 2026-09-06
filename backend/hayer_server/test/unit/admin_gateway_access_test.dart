@@ -90,9 +90,19 @@ void main() {
           configuration,
           contains('listen 8081;\n  server_name hayer.vpn.almou.sa;'),
         );
+        expect(privateHost, contains('location = /api/passkeyIdp {'));
         expect(privateHost, contains('location /api/passkeyIdp/'));
         expect(privateHost, contains('location /api/'));
         expect(privateHost, contains('location /enroll-api/'));
+        final passkeyEndpoint = RegExp(
+          r'location = /api/passkeyIdp \{([^}]*)\}',
+          multiLine: true,
+        ).firstMatch(privateHost)!.group(1)!;
+        expect(
+          passkeyEndpoint,
+          contains('proxy_pass http://server:8080/passkeyIdp;'),
+        );
+        expect(passkeyEndpoint, isNot(contains('return 30')));
         expect(
           privateHost,
           contains('proxy_pass http://server:8080/passkeyIdp/;'),

@@ -100,6 +100,11 @@ Existing passkeys for `hayer.almou.sa` cannot authenticate the new
 `hayer.vpn.almou.sa` WebAuthn relying party. Keep the generated/configured
 Basic credentials available for this one-time migration.
 
+The Serverpod client posts passkey RPCs to `/api/passkeyIdp` without a
+trailing slash. Keep the gateway's exact-match route for that path: redirecting
+the POST to `/api/passkeyIdp/` can turn it into a bodyless GET and prevent the
+browser's passkey ceremony from starting.
+
 Set `HAYER_ADMIN_ENROLLMENT_ENABLED=true` in the Unraid stack, recreate
 `runtime-init`, then recreate `server` and `gateway`. Open
 `https://hayer.vpn.almou.sa/enroll`, satisfy Basic Auth, and register two
