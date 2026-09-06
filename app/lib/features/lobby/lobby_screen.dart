@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../core/providers.dart';
 import '../../core/page_title.dart';
+import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../core/widgets/fireworks_celebration.dart';
 import '../../core/widgets/search_area_map.dart';
@@ -122,7 +123,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      bundle.session.code,
+                      formatSessionCode(bundle.session.code),
                       textAlign: TextAlign.center,
                       textDirection: TextDirection.ltr,
                       style: Theme.of(context).textTheme.headlineMedium
@@ -148,7 +149,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                           child: M3EButton.icon(
                             onPressed: () {
                               Clipboard.setData(
-                                ClipboardData(text: bundle.session.code),
+                                ClipboardData(
+                                  text: formatSessionCode(bundle.session.code),
+                                ),
                               );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(strings.codeCopied)),

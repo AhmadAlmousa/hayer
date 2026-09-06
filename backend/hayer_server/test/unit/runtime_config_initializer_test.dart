@@ -39,6 +39,7 @@ void main() {
 
       expect(result.adminUsername, 'operator');
       expect(result.generatedAdminPassword, 'secret-5');
+      expect(result.adminEnrollmentEnabled, isFalse);
       expect(result.assetLinksConfigured, isFalse);
       expect(
         await File(
@@ -59,6 +60,12 @@ void main() {
           '${paths.gatewaySecrets.path}/admin.htpasswd',
         ).readAsString(),
         'operator:bcrypt(secret-5)\n',
+      );
+      expect(
+        await File(
+          '${paths.gatewaySecrets.path}/admin-enrollment-policy.conf',
+        ).readAsString(),
+        'return 404;\n',
       );
       expect(
         jsonDecode(
@@ -85,11 +92,13 @@ void main() {
           environment: const {
             'HAYER_ADMIN_USER': 'ahmad',
             'HAYER_ADMIN_PASSWORD': 'chosen-password',
+            'HAYER_ADMIN_ENROLLMENT_ENABLED': 'true',
             'HAYER_ANDROID_SHA256': fingerprint,
           },
         ).initialize();
 
         expect(result.generatedAdminPassword, isNull);
+        expect(result.adminEnrollmentEnabled, isTrue);
         expect(result.assetLinksConfigured, isTrue);
         expect(
           await File(
@@ -103,15 +112,19 @@ void main() {
           ).readAsString(),
           passwordsBefore,
         );
-        final assetLinks =
-            jsonDecode(
-                  await File(
-                    '${paths.publicConfig.path}/assetlinks.json',
-                  ).readAsString(),
-                )
-                as List<Object?>;
+        final assetLinks = jsonDecode(
+          await File(
+            '${paths.publicConfig.path}/assetlinks.json',
+          ).readAsString(),
+        ) as List<Object?>;
         expect(assetLinks, hasLength(1));
         expect(assetLinks.toString(), contains(fingerprint));
+        expect(
+          await File(
+            '${paths.gatewaySecrets.path}/admin-enrollment-policy.conf',
+          ).readAsString(),
+          contains('temporarily enabled'),
+        );
       },
     );
 

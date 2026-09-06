@@ -6,6 +6,7 @@ import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 import '../admin/admin_gateway_access.dart';
 import '../generated/protocol.dart';
+import 'admin_enrollment_policy.dart';
 import 'passkey_request_verifier.dart';
 
 class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
@@ -22,6 +23,12 @@ class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
     Session session, {
     required PasskeyRegistrationRequest registrationRequest,
   }) async {
+    if (!AdminEnrollmentPolicy.isEnabled) {
+      throw ApiException(
+        code: 'not_found',
+        message: 'Admin passkey enrollment is disabled.',
+      );
+    }
     _requireOrigin(session);
     final authentication = session.authenticated;
     if (authentication == null ||
@@ -94,7 +101,7 @@ class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
 
   bool _originAllowed(Session session, Uri origin) {
     if (session.server.runMode == ServerpodRunMode.production) {
-      return origin == Uri.parse('https://hayer.almou.sa');
+      return origin == Uri.parse('https://hayer.vpn.almou.sa');
     }
     return (origin.scheme == 'http' || origin.scheme == 'https') &&
         (origin.host == 'localhost' || origin.host == '127.0.0.1');
@@ -102,6 +109,6 @@ class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
 
   String _relyingPartyId(Session session) =>
       session.server.runMode == ServerpodRunMode.production
-      ? 'hayer.almou.sa'
+      ? 'hayer.vpn.almou.sa'
       : 'localhost';
 }

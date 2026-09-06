@@ -3,6 +3,8 @@
 This directory is the Unraid deployment unit. `docker-compose.yml` runs nginx,
 the Serverpod monolith, PostGIS, source/public canaries, and a daily backup
 sidecar. Only nginx port `8432` is published.
+The published socket is bound to the Unraid LAN address
+`192.168.225.20:8432`, not every host interface.
 
 No secret files need to be created on Unraid. On a development machine, build
 the signed APK with `../../scripts/build-release-apk.sh`, then copy the
@@ -10,12 +12,13 @@ resulting `releases` directory beside this Compose file on Unraid. The stable
 download artifact must be named `releases/hayer.apk`.
 
 Optional Compose environment variables are `HAYER_ADMIN_USER` (defaults to
-`operator`), `HAYER_ADMIN_PASSWORD`, and the release certificate fingerprint
-`HAYER_ANDROID_SHA256`. The admin username/password are break-glass passkey
-enrollment credentials, not the routine dashboard login. When no admin password
-is supplied, `runtime-init` generates one on first start and prints it once in
-that container's logs. When no fingerprint is supplied, the stack starts
-normally but Android App Links remain disabled.
+`operator`), `HAYER_ADMIN_PASSWORD`, the release certificate fingerprint
+`HAYER_ANDROID_SHA256`, and `HAYER_ADMIN_ENROLLMENT_ENABLED` (defaults to
+`false`). The admin username/password are break-glass passkey enrollment
+credentials, not the routine dashboard login. When no admin password is
+supplied, `runtime-init` generates one on first start and prints it once in that
+container's logs. When no fingerprint is supplied, the stack starts normally
+but Android App Links remain disabled.
 
 Build the local production image once after cloning, or whenever application,
 admin, generated client, or server code changes:
@@ -45,14 +48,41 @@ unauthenticated public bootstrap RPC canary after the gateway is healthy. Set
 `HAYER_PUBLIC_API_URL` only when verifying a hostname other than
 `https://hayer.almou.sa/api/`.
 
-The external proxy must terminate TLS for `hayer.almou.sa`, forward to 8432,
-and retain WebSocket upgrade headers. After deployment, verify `/api/`,
-`/admin/`, `/admin/enroll`, `/admin/api/`, `/admin/enroll-api/`,
-`/.well-known/assetlinks.json`, and the APK checksum/download route. `/admin/`
-is a public login shell; no admin data is public. Dashboard RPCs require a valid
-passkey-issued JWT with `admin` scope and an exact
-`https://hayer.almou.sa` origin marker overwritten by nginx. Basic Auth is
-limited to the enrollment page and enrollment API.
+## Network topology
+
+Cloudflare Tunnel publishes only `hayer.almou.sa` and targets
+`http://192.168.225.20:8432`. Its public hostname serves the consumer, API,
+WebSocket, App Links, and downloads; nginx returns 404 for all `/admin` paths.
+The tunnel is an outbound connector, so no router/NAT port-forward for `8432`
+is required or permitted.
+
+Private DNS resolves `hayer.vpn.almou.sa` to Nginx Proxy Manager at
+`192.168.225.21`. NPM terminates valid TLS and proxies to
+`192.168.225.20:8432`, preserving Host and client-IP headers with WebSocket
+support. This hostname must be reachable only from LAN or via a Tailscale
+subnet route. The private host redirects `/` to `/admin/` and exposes only the
+admin assets/API; public consumer API routes return 404 there.
+
+Restrict the Unraid/Docker host firewall so `8432/tcp` accepts only NPM and the
+local cloudflared connector. Docker-published ports may bypass a simple UFW
+rule, so enforce this in Unraid's Docker firewall/`DOCKER-USER` path and verify
+it from a separate WAN host. Cloudflare Tunnel satisfies origin-isolation and
+upstream DDoS protection only after every WAN forward/direct origin path is
+closed.
+
+At Cloudflare, add these defense-in-depth rules in addition to the origin
+nginx limits:
+
+- block `http.host eq "hayer.almou.sa" and starts_with(http.request.uri.path,
+  "/admin")`;
+- rate-limit POSTs to `/api/anonymousIdp/login` and
+  `/api/hayerSession/join` to 10 requests/minute per source IP with a temporary
+  block response.
+
+After deployment, verify the public `/`, `/api/`, `/api/websocket`, join,
+App-Link, and APK routes. Confirm public `/admin`, `/admin/api/`, and
+`/admin/enroll` return 404. From both LAN and Tailscale, verify the private
+admin redirect, passkey login, dashboard RPCs, and exact-origin rejection.
 
 Serverpod 3.4 may print a database-integrity warning that its target schema is
 missing the custom `location` columns, spatial/search indexes, and cascading
@@ -61,12 +91,24 @@ live database but cannot be represented by Serverpod's generated model; it
 does not mean the migration failed. Do not apply a repair migration merely to
 silence this warning, because it can remove those custom objects.
 
-If Compose generated the initial admin password, read the `runtime-init`
-container logs in Unraid (or run `docker compose logs runtime-init`) and save
-the displayed recovery credentials. Open `/admin/enroll`, satisfy the native
-Basic Auth prompt, and create the first passkey. Subsequent `/admin` visits use
-only the passkey. Retain the Basic credentials offline for recovery and rotate
-them if they are exposed.
+## Passkey enrollment and private-domain migration
+
+Existing passkeys for `hayer.almou.sa` cannot authenticate the new
+`hayer.vpn.almou.sa` WebAuthn relying party. Keep the generated/configured
+Basic credentials available for this one-time migration.
+
+Set `HAYER_ADMIN_ENROLLMENT_ENABLED=true` in the Unraid stack, recreate
+`runtime-init`, then recreate `server` and `gateway`. Open
+`https://hayer.vpn.almou.sa/admin/enroll`, satisfy Basic Auth, and register two
+independent passkeys. Verify each through a separate fresh browser session.
+Then set the flag to `false`, recreate the same services, and confirm both
+`/admin/enroll` and `/admin/enroll-api/` return 404 while both passkeys still
+perform routine login.
+
+`runtime-init` rewrites the gateway's fail-closed enrollment policy on every
+recreation. Serverpod also checks the flag before creating an enrollment user
+or accepting registration, and limits an operator to six starts per hour.
+Retain the Basic credentials offline and rotate them if exposed.
 
 Docker caches the web build separately from backend compilation. Backend-only
 changes therefore reuse the Flutter layer unless the generated client changed.
@@ -82,3 +124,14 @@ HAYER_CONFIRM_RESTORE=restore-hayer \
 
 Run this only against the intended stack; `pg_restore --clean` replaces the
 current database objects.
+
+## Deferred container hardening
+
+Do not combine the next container-hardening step with this network migration.
+In a separate rollback window: introduce non-root runtime UIDs and explicit
+volume ownership; add read-only filesystems, controlled tmpfs mounts,
+`no-new-privileges`, and dropped capabilities; split edge/application/data/
+backup/egress networks; move migrations to a one-shot job; add CPU, memory,
+PID, and log limits; then canary seccomp/AppArmor rules and complete a restore
+drill. The current initializer and persistent-volume permissions assume root,
+so changing them independently avoids an opaque startup failure.

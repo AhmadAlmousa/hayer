@@ -20,20 +20,24 @@ flutter test
 flutter build web --base-href /admin/
 ```
 
-The production entry point is `https://hayer.almou.sa/admin`. The public shell
-shows no dashboard data until a Serverpod JWT with the `admin` scope has been
-obtained through a WebAuthn passkey. Every read and mutation RPC independently
-requires that scope and an exact `https://hayer.almou.sa` origin marker set by
-nginx. Sign-out revokes the server token and clears secure client storage.
+The production entry point is `https://hayer.vpn.almou.sa/admin/`, resolvable
+and reachable only from LAN or Tailscale. Public `hayer.almou.sa/admin*`
+requests return 404. Every read and mutation RPC requires a passkey-issued JWT
+with `admin` scope and the exact `https://hayer.vpn.almou.sa` origin marker set
+by nginx. Sign-out revokes the server token and clears secure client storage.
 
 For the first passkey, or recovery, open
-`https://hayer.almou.sa/admin/enroll`. nginx protects that page and
-`/admin/enroll-api/` with the break-glass Basic Auth account. It issues an
+set `HAYER_ADMIN_ENROLLMENT_ENABLED=true`, recreate the runtime initializer,
+server, and gateway, then open `https://hayer.vpn.almou.sa/admin/enroll`.
+nginx protects that page and `/admin/enroll-api/` with the break-glass Basic
+Auth account. It issues an
 `admin-enrollment`-only token, registers one discoverable passkey with required
 user verification, revokes the enrollment token, and performs a fresh passkey
-login. Hayer never saves the Basic Auth password. `local_auth` is not used:
-local device approval alone cannot authenticate a web administrator to the
-server.
+login. Register and verify two independent recovery passkeys, then set the flag
+back to `false` and recreate the same services. Disabled enrollment returns
+404 at nginx and is independently rejected by Serverpod. Hayer never saves the
+Basic Auth password. `local_auth` is not used: local device approval alone
+cannot authenticate a web administrator to the server.
 
 The web build self-hosts the `passkeys` package's documented browser bridge as
 `web/passkeys_bundle.js` alongside its redistribution license; its verified

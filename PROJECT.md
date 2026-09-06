@@ -1,8 +1,8 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-05
+Last updated: 2026-09-06
 
-Status: Android beta deployed; release and admin production verification remain
+Status: security/domain upgrade implemented and signed build 5 staged; production verification remains
 
 Current focus: M7 — invited-beta verification and release tag
 
@@ -39,8 +39,9 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   50 people. Support at most 12 participants in a multiplayer session.
 - Use Flutter and Dart across the client, admin dashboard, and backend.
 - Use Serverpod 3.4.13 in monolith mode with PostgreSQL/PostGIS and no Redis.
-- Self-host on Unraid through Docker Compose. The existing external reverse
-  proxy forwards `https://hayer.almou.sa` to gateway port `8432`.
+- Self-host on Unraid through Docker Compose. Cloudflare Tunnel publishes
+  `https://hayer.almou.sa` through LAN-bound gateway port `8432`; no WAN port
+  forward may expose the origin.
 - Use anonymous identities, 24-hour sessions, late joins, case-insensitive
   participant names, durable swipe replay, and an immutable ordered deck.
 - Support Saudi Arabia as the certified beta region. UAE, Kuwait, Qatar,
@@ -63,7 +64,9 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   place insights, versioned taxonomy, cache/catalog controls, maps, guarded
   management, versioned calibration, and audit history.
 - Protect routine admin access with WebAuthn passkeys and server-issued JWTs.
-  Every admin RPC requires the `admin` scope plus the exact production origin.
+  Serve admin only at LAN/Tailscale `https://hayer.vpn.almou.sa/admin/`.
+  Every admin RPC requires the `admin` scope plus that exact production origin.
+  Public `/admin` paths return 404 and enrollment is disabled by default.
   Keep nginx Basic Auth only as an offline-held break-glass path for initial
   passkey enrollment and recovery; never store its password in Hayer.
 - Retain anonymous product events for at most 14 days and privacy-preserving
@@ -101,12 +104,11 @@ repository interfaces. Platform/API/database operations stay in services;
 business rules live in domain services and use cases. Drift is the local
 source of truth for the active session snapshot and pending swipe outbox.
 
-The public gateway routes `/api/*` to the Serverpod API, `/admin/api/*` to the
-passkey/JWT API, `/admin/enroll-api/*` to the Basic-Auth-protected enrollment
-API, `/admin/*` to the public login shell and authenticated dashboard assets,
-and join/download/release/App-Link/media
-paths to the Serverpod web service. Only port `8432` is exposed by Compose;
-PostgreSQL and Insights stay internal.
+The host-aware gateway routes public `/api/*`, join/download/release/App-Link/
+media paths to Serverpod and rejects public `/admin*`. The private
+`hayer.vpn.almou.sa` host serves `/admin/*`, passkey/JWT RPCs, and the normally
+disabled Basic-Auth enrollment route while rejecting consumer APIs. Compose
+binds `8432` only to `192.168.225.20`; PostgreSQL and Insights stay internal.
 
 The backend is a JIT Dart process in production mode supervised by a Dart
 source watcher. Code generation, analysis, tests, and migrations are explicit
@@ -213,7 +215,7 @@ session-creation deadline. Cache policy validation enforces
   as a submodule/reference boundary.
 - [x] Scaffold the Flutter consumer, Flutter admin, Serverpod server/client,
   root Dart workspace, and deployment directories.
-- [x] Pin Flutter 3.44.2, Dart 3.12.2, Serverpod 3.4.13, generated code,
+- [x] Pin Flutter 3.47.2, Dart 3.13.2, Serverpod 3.4.13, generated code,
   fatal-info analysis, ignores, secret templates, and CI.
 - [x] Prove RPC and WSS gateway-prefix routing through the deployed Compose
   stack. The public API is healthy and `/api/websocket` returns a successful
@@ -307,8 +309,9 @@ results against the backend.
 
 ### M5 — Multiplayer vertical `[!]`
 
-- [x] Implement ambiguity-free six-character codes, links, QR sharing,
-  camera scanning, App-Link join routing, and collision-bounded allocation.
+- [x] Implement `ABC-124` display/share codes backed by 17,576,000 canonical
+  values, automatic input formatting, historical-code compatibility, links,
+  QR sharing, camera scanning, App-Link routing, and collision-bounded allocation.
 - [x] Build lobby, participant progress, late join, live refresh/polling,
   swipe, completion, partial results, and result convergence flows.
 - [!] Verify instant and after-deck majority/unanimous behavior with multiple
@@ -334,6 +337,9 @@ results through duplicate requests and disconnects.
 - [x] Verify that the deployed dashboard and admin RPC route reject
   unauthenticated requests with HTTP 401.
 - [x] Add an explicit exact-origin/CSRF posture at the protected gateway.
+- [x] Move the complete admin surface to the LAN/Tailscale-only hostname,
+  bind WebAuthn to its RP, reject public admin paths, and make recovery
+  enrollment fail closed unless explicitly enabled.
 - [x] Expand the cache console into grouped, deep-linkable Overview, Usage,
   Places, Taxonomy, Operations, and Governance areas. Add 30-second live KPIs,
   five-minute hourly analytics rollups, daily/weekly interactive trends,
@@ -368,7 +374,7 @@ calibration cannot activate.
   results during partial source outages, stop unnecessary query batches, log
   sanitized source failures, distinguish client transport failures from source
   outages, and gate deployment on live source plus public RPC canaries.
-- [x] Pass fatal-info analysis, 60 backend unit tests, 64 consumer tests, four
+- [x] Pass fatal-info analysis, 66 backend unit tests, 66 consumer tests, six
   admin widget tests, shell syntax, and production web compilation for both
   Flutter apps. The PostGIS integration suite remains a separate gate.
 - [x] Android debug and release compilation pass under the constrained
@@ -377,10 +383,13 @@ calibration cannot activate.
 - [x] Deploy Compose to Unraid and verify public TLS/API health, the WSS
   gateway prefix, App Links metadata, APK/checksum download, Basic Auth
   rejection, live Riyadh extraction, and creation of daily backups.
+- [x] Add public auth/join/API rate limits, per-IP connection caps, trusted
+  proxy address handling, private admin throttles, immutable container-image
+  pins, and LAN-only origin binding.
 - [!] Run the current-HEAD containerized integration/CI gates; verify current
-  migrations, backup restore, signed solo and multiplayer physical-device
-  flows, accessibility, performance, and newest/previous-build compatibility;
-  then tag the invited beta.
+  migrations, Cloudflare/NPM host separation, two private-host passkeys,
+  closed WAN origin, backup restore, signed solo and multiplayer physical-
+  device flows, accessibility, and performance; then tag the invited beta.
 
 Exit: an invited user installs from the Hayer domain and completes the full
 solo and multiplayer flows without developer intervention.
@@ -434,6 +443,10 @@ solo and multiplayer flows without developer intervention.
 - Admin historical analytics refresh every five minutes; live session and
   participant KPIs refresh every 30 seconds. Reporting uses Asia/Riyadh and
   Sunday–Saturday weeks.
+- Public anonymous login and join are each limited to 10 requests/minute/IP;
+  general API traffic is limited to 30 requests/second/IP and public streaming
+  to 50 connections/IP. Enrollment is limited to three gateway requests/minute
+  and six Serverpod starts/hour/operator while explicitly enabled.
 - Admin mutations never rewrite an existing session snapshot.
 - Native Android may load allowlisted source photos directly. Consumer web
   must use the authenticated bounded media proxy.
@@ -605,6 +618,23 @@ solo and multiplayer flows without developer intervention.
 - 2026-09-05: `main` and `origin/main` both point to `d79ac35`. CI and the
   unsigned iOS build are manual-dispatch workflows, and no beta Git tag exists
   locally yet.
+- 2026-09-06: verified public `hayer.almou.sa` resolves through Cloudflare and
+  serves valid TLS/API traffic with Cloudflare edge headers. Verified private
+  `hayer.vpn.almou.sa` resolves to NPM at `192.168.225.21`, terminates HTTPS,
+  and reaches the current admin assets/API/enrollment routes. These checks
+  prove both proxies are connected; the post-change 404/RP/rate/firewall
+  behavior remains a deployment gate.
+- 2026-09-06: upgraded the verified toolchain to Flutter 3.47.2/Dart 3.13.2.
+  `scripts/preflight.sh` passed Serverpod generation, handwritten-source
+  formatting, fatal-info analysis, all 66 backend, 66 consumer, and six admin
+  tests, script syntax, and diff checks. Production Wasm builds passed at
+  `/app/` and `/admin/`. `scripts/build-release-apk.sh` staged signed Android
+  build `0.1.0+5` (100,907,926 bytes); `apksigner` verified its v2 signature
+  and `aapt2` verified package `sa.almou.hayer`, version code 5, target SDK 36.
+  APK SHA-256: `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
+  Docker/nginx are unavailable in this development environment, so applying
+  the new session-code migration and post-deployment gateway checks remain
+  external gates.
 
 ## Decision and change log
 
@@ -638,9 +668,9 @@ solo and multiplayer flows without developer intervention.
   live counts. Categories, cuisines, and POI types share one bilingual,
   versioned taxonomy; clients adopt published versions at runtime and retain a
   bundled fallback. Admin areas use path-based routes beneath the protected
-  `/admin/` mount so views are bookmarkable without weakening the existing
-  gateway controls. The public entry URL is `https://hayer.almou.sa/admin`,
-  with `/admin/cache/` retained only as a compatibility redirect.
+  `/admin/` mount so views are bookmarkable. The original public admin entry
+  was superseded on 2026-09-06 by the private `hayer.vpn.almou.sa` host;
+  `/admin/cache/` remains a private compatibility redirect.
 - 2026-09-05: Replaced routine admin Basic Auth with discoverable WebAuthn
   passkeys verified by Serverpod. Admin data remains server-protected by JWT
   `admin` scope and exact-origin checks; the public `/admin/` shell contains no
@@ -649,3 +679,11 @@ solo and multiplayer flows without developer intervention.
   enrollment scope only and is revoked after successful registration. This is
   server authentication rather than `local_auth`, which cannot authenticate a
   web administrator or prove identity to the backend.
+- 2026-09-06: Adopt `ABC-124` session codes (canonical `ABC124`) with all
+  letters/digits and a forced build-5 update, while accepting historical codes.
+  Move WebAuthn and all admin routes to private `hayer.vpn.almou.sa`, keep
+  enrollment off by default, and replace public reverse-proxy exposure with
+  an outbound Cloudflare Tunnel plus LAN/Tailscale NPM split. Upgrade only the
+  verified Flutter 3.47.2/Dart 3.13.2 and nginx 1.30.4 patch line; retain
+  Serverpod/database/package majors. Container privilege/network separation
+  remains a deliberately separate hardening change.

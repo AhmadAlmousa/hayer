@@ -26,7 +26,7 @@ class LocationWarmup {
         unawaited(_refreshCurrent());
         return _latest;
       }
-      return _refreshCurrent();
+      return await _refreshCurrent();
     } catch (_) {
       return null;
     }

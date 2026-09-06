@@ -1,7 +1,7 @@
 # Hayer
 
 Hayer is an Android-first place decision app: pick a category and location,
-swipe a deterministic deck of nearby places, or share a three-character session
+swipe a deterministic deck of nearby places, or share an `ABC-124` session
 so a group can decide from the same ordered deck. The repository also contains
 the Serverpod/PostGIS backend and a protected Flutter web operations console.
 
@@ -48,7 +48,7 @@ catalog.
 
 ## Local setup
 
-Prerequisites are Flutter 3.44.2, Dart 3.12.2, Serverpod CLI 3.4.13, and a
+Prerequisites are Flutter 3.47.2, Dart 3.13.2, Serverpod CLI 3.4.13, and a
 PostgreSQL 16 database with PostGIS for integration/runtime work.
 
 ```bash
@@ -66,10 +66,12 @@ cd app && flutter run --dart-define=SERVER_URL=http://localhost:8080/
 cd admin && flutter run -d chrome
 ```
 
-The production admin entry point is `https://hayer.almou.sa/admin`. First-time
-setup and recovery use `https://hayer.almou.sa/admin/enroll`: enter the
-break-glass `HAYER_ADMIN_USER`/`HAYER_ADMIN_PASSWORD` credentials in the native
-browser prompt, then create a passkey. Routine visits to `/admin` use the
+The production admin entry point is
+`https://hayer.vpn.almou.sa/admin/`, available only through LAN or Tailscale.
+The public `hayer.almou.sa` host returns 404 for every `/admin` route. First-time
+setup and recovery temporarily enable `HAYER_ADMIN_ENROLLMENT_ENABLED`, then use
+`https://hayer.vpn.almou.sa/admin/enroll` with the break-glass
+`HAYER_ADMIN_USER`/`HAYER_ADMIN_PASSWORD` credentials. Routine visits use a
 passkey and never ask Hayer to store that Basic Auth password. Admin JWTs are
 kept in the platform's secure client storage and are revoked on sign-out.
 
@@ -116,10 +118,15 @@ This runner is fully containerized; the host only needs Docker Compose.
    image build script only after application, generated-client, or server code
    changes—not after Compose, nginx, environment, or APK changes. If no admin
    password was supplied, save the generated recovery password shown in the
-   `runtime-init` container logs, then use `/admin/enroll` to create the first
-   passkey.
-6. Point the external TLS reverse proxy at port `8432`, verify HTTPS/WSS and
-   App Links, and complete the backup restore drill before tagging a beta.
+   `runtime-init` container logs. Keep enrollment disabled during routine use.
+6. Configure Cloudflare Tunnel for public `hayer.almou.sa` only, targeting
+   `http://192.168.225.20:8432`. Configure the private Nginx Proxy Manager host
+   `hayer.vpn.almou.sa` to the same origin, with private DNS and TLS.
+7. Temporarily enable enrollment, register and verify two private-host
+   passkeys, disable enrollment again, then verify HTTPS/WSS, App Links,
+   public-admin rejection, and the backup restore drill.
 
-The Compose stack exposes only the gateway. PostgreSQL, Serverpod Insights,
-and backups remain on the internal application network.
+The gateway binds only to `192.168.225.20:8432`. Remove every WAN port-forward
+for that port and allow it at the host firewall only from Nginx Proxy Manager
+and the local cloudflared connector. PostgreSQL, Serverpod Insights, and
+backups remain unpublished.

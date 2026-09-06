@@ -8,10 +8,10 @@ class BootstrapEndpoint extends Endpoint {
   bool get requireLogin => false;
 
   Future<BootstrapInfo> getInfo(Session session, {required int build}) async {
-    const minimumBuild = 1;
+    const minimumBuild = 5;
     return BootstrapInfo(
       minimumBuild: minimumBuild,
-      latestBuild: 4,
+      latestBuild: 5,
       updateRequired: build < minimumBuild,
       supportedCountries: const ['SA', 'AE', 'KW', 'QA', 'BH', 'OM'],
       certifiedCountries: const ['SA'],

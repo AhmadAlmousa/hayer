@@ -17,6 +17,7 @@ import '../../core/page_title.dart';
 import '../../core/gcc_currency_symbol.dart';
 import '../../core/place_links.dart';
 import '../../core/providers.dart';
+import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../core/widgets/install_app_card.dart';
 import '../../core/widgets/weekly_hours_calendar.dart';
@@ -164,7 +165,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                             runSpacing: 8,
                             children: [
                               Text(
-                                strings.codeLabel(bundle!.session.code),
+                                strings.codeLabel(
+                                  formatSessionCode(bundle!.session.code),
+                                ),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                 ),

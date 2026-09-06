@@ -60,24 +60,38 @@ void main() {
     });
 
     test(
-      'nginx overwrites client headers using its protected route state',
+      'nginx keeps admin routes on the private host only',
       () async {
         final configuration = await File('../deploy/nginx.conf').readAsString();
+        final publicStart = configuration.indexOf(
+          'server_name hayer.almou.sa;',
+        );
+        final privateStart = configuration.indexOf(
+          'server_name hayer.vpn.almou.sa;',
+        );
+        final publicHost = configuration.substring(publicStart, privateStart);
+        final privateHost = configuration.substring(privateStart);
 
+        expect(publicStart, greaterThanOrEqualTo(0));
+        expect(privateStart, greaterThan(publicStart));
         expect(configuration, contains(r'map $uri $hayer_admin_enrollment'));
         expect(
           configuration,
           contains(r'map $http_origin $hayer_admin_origin_allowed'),
         );
-        expect(configuration, contains('"https://hayer.almou.sa" 1;'));
-        expect(configuration, contains(r'~^/admin/enroll-api/ 1;'));
-        expect(configuration, contains('location = /admin {'));
-        expect(configuration, contains('return 308 /admin/;'));
-        expect(configuration, contains('location /admin/api/'));
-        expect(configuration, contains('location /admin/enroll-api/'));
-        expect(configuration, contains('location /admin/'));
         expect(
           configuration,
+          contains('"https://hayer.vpn.almou.sa" 1;'),
+        );
+        expect(configuration, contains(r'~^/admin/enroll-api/ 1;'));
+        expect(publicHost, contains('location = /admin {\n    return 404;'));
+        expect(publicHost, contains('location ^~ /admin/ {\n    return 404;'));
+        expect(privateHost, contains('return 308 /admin/;'));
+        expect(privateHost, contains('location /admin/api/'));
+        expect(privateHost, contains('location /admin/enroll-api/'));
+        expect(privateHost, contains('location /admin/'));
+        expect(
+          privateHost,
           contains(r'location ~ ^/admin/cache(?:/(.*))?$'),
         );
         expect(
@@ -96,22 +110,45 @@ void main() {
             r'proxy_set_header X-Hayer-Admin-Origin-Allowed $hayer_admin_origin_allowed;',
           ),
         );
-        expect(configuration, contains('location /admin-api/ {'));
-        final publicApi = RegExp(
-          r'location /admin/api/ \{([^}]*)\}',
-          multiLine: true,
-        ).firstMatch(configuration)!.group(1)!;
-        expect(publicApi, isNot(contains('auth_basic')));
+        expect(privateHost, contains('location /admin-api/ {'));
         final enrollmentApi = RegExp(
           r'location /admin/enroll-api/ \{([^}]*)\}',
           multiLine: true,
-        ).firstMatch(configuration)!.group(1)!;
+        ).firstMatch(privateHost)!.group(1)!;
         expect(enrollmentApi, contains('auth_basic'));
-        final publicAssets = RegExp(
-          r'location /admin/ \{([^}]*)\}',
-          multiLine: true,
-        ).firstMatch(configuration)!.group(1)!;
-        expect(publicAssets, isNot(contains('auth_basic')));
+        expect(
+          enrollmentApi,
+          contains('admin-enrollment-policy.conf'),
+        );
+        expect(publicHost, contains('X-Hayer-Admin-Origin-Allowed 0'));
+      },
+    );
+
+    test(
+      'nginx applies abuse limits and LAN-only gateway binding',
+      () async {
+        final configuration = await File('../deploy/nginx.conf').readAsString();
+        final compose = await File(
+          '../deploy/docker-compose.yml',
+        ).readAsString();
+
+        expect(configuration, contains('hayer_public_login:10m rate=10r/m'));
+        expect(configuration, contains('hayer_public_join:10m rate=10r/m'));
+        expect(configuration, contains('hayer_public_api:10m rate=30r/s'));
+        expect(configuration, contains('hayer_admin_enroll:10m rate=3r/m'));
+        expect(
+          configuration,
+          contains('limit_conn hayer_public_connections 50'),
+        );
+        expect(configuration, contains('limit_req_status 429'));
+        expect(configuration, contains(r'map $http_cf_connecting_ip'));
+        expect(configuration, contains('set_real_ip_from 192.168.225.21'));
+        expect(compose, contains('192.168.225.20:8432:8080'));
+        expect(
+          compose,
+          contains('HAYER_ADMIN_ENROLLMENT_ENABLED:'),
+        );
+        expect(compose, contains('nginx:1.30.4-alpine'));
       },
     );
   });

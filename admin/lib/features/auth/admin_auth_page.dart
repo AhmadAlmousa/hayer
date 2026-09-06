@@ -35,9 +35,9 @@ class AdminAuthPage extends StatelessWidget {
                         alignment: AlignmentDirectional.centerStart,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primaryContainer,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Padding(

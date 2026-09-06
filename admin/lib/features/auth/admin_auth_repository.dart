@@ -139,9 +139,7 @@ class PasskeyAdminAuthRepository implements AdminAuthRepository {
 
   static String _relyingParty(String serverUrl) {
     final host = Uri.parse(serverUrl).host;
-    return host == 'localhost' || host == '127.0.0.1'
-        ? 'localhost'
-        : 'hayer.almou.sa';
+    return host == 'localhost' || host == '127.0.0.1' ? 'localhost' : host;
   }
 
   static String _encode(ByteData value) => base64Url

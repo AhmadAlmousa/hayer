@@ -38,7 +38,7 @@ void run(List<String> args) async {
       ),
       PasskeyIdpConfig(
         hostname: pod.runMode == ServerpodRunMode.production
-            ? 'hayer.almou.sa'
+            ? 'hayer.vpn.almou.sa'
             : 'localhost',
       ),
     ],

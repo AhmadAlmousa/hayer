@@ -62,8 +62,7 @@ class _AnalyticsOverviewPageState extends State<AnalyticsOverviewPage> {
   @override
   Widget build(BuildContext context) => AdminPageFrame(
     title: 'Overview',
-    subtitle:
-        'Anonymous product signals · Asia/Riyadh · historical data refreshes every 5 minutes',
+    subtitle: 'Anonymous product signals · Asia/Riyadh · historical data refreshes every 5 minutes',
     trailing: IconButton(
       tooltip: 'Refresh analytics',
       onPressed: _reload,
@@ -628,9 +627,9 @@ class AdminPageFrame extends StatelessWidget {
                         Text(
                           subtitle!,
                           style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -689,9 +688,8 @@ class MetricTile extends StatelessWidget {
           const Spacer(),
           Text(
             value,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
           Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
         ],
@@ -719,9 +717,8 @@ class KpiTile extends StatelessWidget {
             const Spacer(),
             Text(
               _formatKpi(value.value, value.unit),
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 3),
             Row(
@@ -773,9 +770,8 @@ class ChartCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
           if (subtitle != null)
             Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),
@@ -960,9 +956,8 @@ class BreakdownCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 14),
           if (values.isEmpty)
@@ -1024,9 +1019,8 @@ class PeakUsageCard extends StatelessWidget {
           children: [
             Text(
               'Peak usage heatmap',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             const Text('Asia/Riyadh; Sunday–Saturday reporting weeks'),
@@ -1106,9 +1100,8 @@ class _PlaceTable extends StatelessWidget {
         children: [
           Text(
             'Place ranking',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 12),
           if (items.isEmpty)
@@ -1243,18 +1236,17 @@ class _SmallFact extends StatelessWidget {
     children: [
       Text(
         value,
-        style: Theme.of(
-          context,
-        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+        style: Theme.of(context).textTheme.titleLarge
+            ?.copyWith(fontWeight: FontWeight.w900),
       ),
       Text(label),
     ],
   );
 }
 
-TextStyle? _sectionStyle(BuildContext context) => Theme.of(
-  context,
-).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900);
+TextStyle? _sectionStyle(BuildContext context) =>
+    Theme.of(context).textTheme.titleLarge
+        ?.copyWith(fontWeight: FontWeight.w900);
 
 String? _blankToNull(String value) =>
     value.trim().isEmpty ? null : value.trim();

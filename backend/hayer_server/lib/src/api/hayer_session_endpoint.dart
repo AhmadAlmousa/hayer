@@ -127,8 +127,7 @@ class HayerSessionEndpoint extends Endpoint {
     if (deck.isEmpty) {
       throw ApiException(
         code: 'no_places',
-        message:
-            'No eligible places were found. Try a larger radius or broader category.',
+        message: 'No eligible places were found. Try a larger radius or broader category.',
       );
     }
     final now = DateTime.now().toUtc();

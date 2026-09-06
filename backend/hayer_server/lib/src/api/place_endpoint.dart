@@ -36,7 +36,7 @@ class PlaceEndpoint extends Endpoint {
     );
     try {
       final places = await PlaceServices.forSession(session);
-      return places.search.suggest(
+      return await places.search.suggest(
         input: input,
         latitude: latitude,
         longitude: longitude,

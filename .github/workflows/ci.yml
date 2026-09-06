@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 35
     services:
       postgis:
-        image: postgis/postgis:16-3.5-alpine
+        image: postgis/postgis:16-3.5-alpine@sha256:47e961a569fd52ff31f0fe205ed91eeab17d9f5fff6722e6d7ea6b588748b293
         env:
           POSTGRES_DB: hayer_test
           POSTGRES_PASSWORD: hayer_test
@@ -32,7 +32,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.44.2'
+          flutter-version: '3.47.2'
           channel: stable
           cache: true
 
@@ -49,13 +49,20 @@ jobs:
           git diff --exit-code -- lib/src/generated ../hayer_client/lib/src/protocol test/integration/test_tools
 
       - name: Check formatting
-        run: >-
-          dart format --output=none --set-exit-if-changed
-          backend/hayer_server/lib backend/hayer_server/bin
-          backend/hayer_server/tool backend/hayer_server/test
-          backend/hayer_server/integration_test
-          backend/hayer_client/lib
-          app/lib app/test admin/lib admin/test
+        run: |
+          mapfile -t dart_sources < <(
+            rg --files \
+              backend/hayer_server/lib backend/hayer_server/bin \
+              backend/hayer_server/tool backend/hayer_server/test \
+              backend/hayer_server/integration_test \
+              backend/hayer_client/lib backend/hayer_client/tool \
+              app/lib app/test admin/lib admin/test \
+              -g '*.dart' \
+              -g '!backend/hayer_server/lib/src/generated/**' \
+              -g '!backend/hayer_server/test/integration/test_tools/**' \
+              -g '!backend/hayer_client/lib/src/protocol/**'
+          )
+          dart format --output=none --set-exit-if-changed "${dart_sources[@]}"
 
       - name: Analyze server
         working-directory: backend/hayer_server
@@ -89,8 +96,8 @@ jobs:
 
       - name: Build web clients
         run: |
-          (cd app && flutter build web --base-href /app/)
-          (cd admin && flutter build web --base-href /admin/)
+          (cd app && flutter build web --wasm --base-href /app/)
+          (cd admin && flutter build web --wasm --base-href /admin/)
 
       - name: Build Android debug APK
         working-directory: app

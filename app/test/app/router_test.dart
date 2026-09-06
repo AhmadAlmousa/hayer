@@ -148,6 +148,39 @@ void main() {
     expect(fields.first.controller?.text, 'Z70');
     expect(tester.state<FormState>(find.byType(Form)).validate(), isTrue);
   });
+
+  testWidgets('join field inserts the current code dash automatically', (
+    tester,
+  ) async {
+    final router = createAppRouter(initialLocation: '/join');
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          displayNameStoreProvider.overrideWithValue(
+            _MemoryDisplayNameStore(null),
+          ),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: hayerLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final fields = find.byType(TextField);
+    await tester.enterText(fields.first, 'abc١٢۴');
+    await tester.enterText(fields.last, 'Ahmad');
+
+    expect(
+      tester.widget<TextField>(fields.first).controller?.text,
+      'ABC-124',
+    );
+    expect(tester.state<FormState>(find.byType(Form)).validate(), isTrue);
+  });
 }
 
 final class _MemoryDisplayNameStore implements DisplayNameStore {

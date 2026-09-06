@@ -76,7 +76,7 @@ class AdminEndpoint extends Endpoint {
     if (normalized.length < 3 || normalized.length > 120) return const [];
     try {
       final places = await PlaceServices.forSession(session);
-      return places.search.suggest(
+      return await places.search.suggest(
         input: normalized,
         countryCode: _country(countryCode),
       );

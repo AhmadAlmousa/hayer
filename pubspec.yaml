@@ -2,7 +2,7 @@ name: hayer_workspace
 publish_to: none
 
 environment:
-  sdk: ^3.12.0
+  sdk: ^3.13.0
 
 workspace:
   - backend/hayer_client

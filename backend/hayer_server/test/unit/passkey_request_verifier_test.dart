@@ -11,7 +11,7 @@ void main() {
       final clientData = _bytes({
         'type': 'webauthn.get',
         'challenge': 'challenge',
-        'origin': 'https://hayer.almou.sa',
+        'origin': 'https://hayer.vpn.almou.sa',
         'crossOrigin': false,
       });
 
@@ -20,7 +20,7 @@ void main() {
           clientData,
           type: 'webauthn.get',
           originAllowed: (origin) =>
-              origin == Uri.parse('https://hayer.almou.sa'),
+              origin == Uri.parse('https://hayer.vpn.almou.sa'),
         ),
         isTrue,
       );
@@ -31,12 +31,15 @@ void main() {
         value,
         type: 'webauthn.create',
         originAllowed: (origin) =>
-            origin == Uri.parse('https://hayer.almou.sa'),
+            origin == Uri.parse('https://hayer.vpn.almou.sa'),
       );
 
       expect(
         verify(
-          _bytes({'type': 'webauthn.get', 'origin': 'https://hayer.almou.sa'}),
+          _bytes({
+            'type': 'webauthn.get',
+            'origin': 'https://hayer.vpn.almou.sa',
+          }),
         ),
         isFalse,
       );
@@ -50,7 +53,7 @@ void main() {
         verify(
           _bytes({
             'type': 'webauthn.create',
-            'origin': 'https://hayer.almou.sa',
+            'origin': 'https://hayer.vpn.almou.sa',
             'crossOrigin': true,
           }),
         ),
@@ -60,7 +63,7 @@ void main() {
     });
 
     test('compares the authenticator relying-party hash', () {
-      final expected = sha256.convert(utf8.encode('hayer.almou.sa')).bytes;
+      final expected = sha256.convert(utf8.encode('hayer.vpn.almou.sa')).bytes;
       final valid = ByteData.sublistView(
         Uint8List.fromList([
           ...expected,
@@ -77,21 +80,21 @@ void main() {
       expect(
         PasskeyRequestVerifier.hasValidRelyingPartyHash(
           valid,
-          relyingPartyId: 'hayer.almou.sa',
+          relyingPartyId: 'hayer.vpn.almou.sa',
         ),
         isTrue,
       );
       expect(
         PasskeyRequestVerifier.hasValidRelyingPartyHash(
           invalid,
-          relyingPartyId: 'hayer.almou.sa',
+          relyingPartyId: 'hayer.vpn.almou.sa',
         ),
         isFalse,
       );
       expect(
         PasskeyRequestVerifier.hasValidRelyingPartyHash(
           ByteData(31),
-          relyingPartyId: 'hayer.almou.sa',
+          relyingPartyId: 'hayer.vpn.almou.sa',
         ),
         isFalse,
       );

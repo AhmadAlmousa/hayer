@@ -11,8 +11,9 @@ import 'calibration.dart';
 import 'google_web_place_source.dart';
 import 'vela_calibration_feed.dart';
 
-typedef VelaCalibrationCanary =
-    Future<List<String>> Function(PlaceCalibration calibration);
+typedef VelaCalibrationCanary = Future<List<String>> Function(
+  PlaceCalibration calibration,
+);
 
 /// Fetches, validates, and automatically activates relevant Vela updates.
 class VelaCalibrationSync {

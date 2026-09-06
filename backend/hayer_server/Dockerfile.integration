@@ -1,4 +1,4 @@
-FROM dart:3.12.2
+FROM dart:3.13.2@sha256:1f86408456fbcdc5f9c33fa267d3680d86e79c255ec338b9a215459224769770
 
 WORKDIR /workspace
 
@@ -8,7 +8,7 @@ RUN printf '%s\n' \
   'name: hayer_integration_workspace' \
   'publish_to: none' \
   'environment:' \
-  '  sdk: ^3.12.0' \
+  '  sdk: ^3.13.0' \
   'workspace:' \
   '  - backend/hayer_client' \
   '  - backend/hayer_server' \

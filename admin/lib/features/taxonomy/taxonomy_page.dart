@@ -75,8 +75,7 @@ class _TaxonomyPageState extends State<TaxonomyPage> {
   @override
   Widget build(BuildContext context) => AdminPageFrame(
     title: 'Taxonomy',
-    subtitle:
-        'Versioned categories, cuisines, and place types · bilingual consumer labels',
+    subtitle: 'Versioned categories, cuisines, and place types · bilingual consumer labels',
     trailing: IconButton(
       tooltip: 'Reload taxonomy',
       onPressed: _busy ? null : _load,
@@ -236,9 +235,8 @@ class _TaxonomyPageState extends State<TaxonomyPage> {
         children: [
           Text(
             'Validation location',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 4),
           const Text(
@@ -355,9 +353,8 @@ class _TaxonomyPageState extends State<TaxonomyPage> {
         children: [
           Text(
             'Published history',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 10),
           if (_history.isEmpty)
@@ -497,9 +494,8 @@ class _TaxonomyPageState extends State<TaxonomyPage> {
     } catch (error) {
       if (mounted) {
         setState(() => _error = error);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$error')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$error')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);

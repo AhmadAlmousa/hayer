@@ -1,31 +1,34 @@
-const sessionCodeLength = 3;
+const sessionCodeLength = 6;
+const shortLegacySessionCodeLength = 3;
 const legacySessionCodeLength = 6;
-const maxSessionCodeLength = legacySessionCodeLength;
 const sessionCodeAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const sessionCodeLetterAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const sessionCodeLetterAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const legacySessionCodeLetterAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 const sessionCodeDigitAlphabet = '0123456789';
 
 final RegExp _sessionCodePattern = RegExp(
-  '[$sessionCodeLetterAlphabet][$sessionCodeDigitAlphabet]{2}|'
-  '[$sessionCodeAlphabet]{$sessionCodeLength}|'
+  '[$sessionCodeLetterAlphabet]{3}[$sessionCodeDigitAlphabet]{3}|'
+  '[$legacySessionCodeLetterAlphabet][$sessionCodeDigitAlphabet]{2}|'
+  '[$sessionCodeAlphabet]{$shortLegacySessionCodeLength}|'
   '[$sessionCodeAlphabet]{$legacySessionCodeLength}',
   caseSensitive: false,
 );
 
 String? extractSessionCode(String value) {
-  final normalized = normalizeSessionCodeInput(value);
-  if (isValidSessionCode(normalized)) return normalized;
-
-  final uri = Uri.tryParse(normalizeSessionCodeCharacters(value.trim()));
-  if (uri == null) return null;
-  final segments = uri.pathSegments.where((part) => part.isNotEmpty).toList();
-  final joinIndex = segments.length == 3 && segments.first == 'app' ? 1 : 0;
-  if (segments.length != joinIndex + 2 ||
-      segments[joinIndex].toLowerCase() != 'join') {
-    return null;
+  final localized = normalizeSessionCodeCharacters(value.trim());
+  final uri = Uri.tryParse(localized);
+  if (uri != null) {
+    final segments = uri.pathSegments.where((part) => part.isNotEmpty).toList();
+    final joinIndex = segments.length == 3 && segments.first == 'app' ? 1 : 0;
+    if (segments.length == joinIndex + 2 &&
+        segments[joinIndex].toLowerCase() == 'join') {
+      final code = normalizeSessionCodeInput(segments.last);
+      return isValidSessionCode(code) ? code : null;
+    }
   }
-  final code = normalizeSessionCodeInput(segments.last);
-  return isValidSessionCode(code) ? code : null;
+
+  final normalized = normalizeSessionCodeInput(localized);
+  return isValidSessionCode(normalized) ? normalized : null;
 }
 
 bool isValidSessionCode(String value) => RegExp(
@@ -34,7 +37,17 @@ bool isValidSessionCode(String value) => RegExp(
 ).hasMatch(normalizeSessionCodeInput(value));
 
 String normalizeSessionCodeInput(String value) =>
-    normalizeSessionCodeCharacters(value).trim().toUpperCase();
+    normalizeSessionCodeCharacters(
+      value,
+    ).toUpperCase().replaceAll(RegExp('[^A-Z0-9]'), '');
+
+String formatSessionCode(String value) {
+  final normalized = normalizeSessionCodeInput(value);
+  if (RegExp(r'^[A-Z]{3}[0-9]{1,3}$').hasMatch(normalized)) {
+    return '${normalized.substring(0, 3)}-${normalized.substring(3)}';
+  }
+  return normalized;
+}
 
 String normalizeSessionCodeCharacters(String value) => value
     .replaceAll('٠', '0')

@@ -33,6 +33,11 @@ Future<void> main(List<String> arguments) async {
         'HAYER_ANDROID_SHA256 is unset; Android App Links remain disabled.',
       );
     }
+    stdout.writeln(
+      result.adminEnrollmentEnabled
+          ? 'WARNING: Admin passkey enrollment is enabled.'
+          : 'Admin passkey enrollment is disabled.',
+    );
   } on Object catch (error, stackTrace) {
     stderr
       ..writeln('Failed to initialize Hayer runtime configuration: $error')

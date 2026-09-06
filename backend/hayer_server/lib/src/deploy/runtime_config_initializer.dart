@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import '../auth/admin_enrollment_policy.dart';
+
 typedef SecretGenerator = String Function();
-typedef HtpasswdEncoder =
-    Future<String> Function(
-      String username,
-      String password,
-    );
+typedef HtpasswdEncoder = Future<String> Function(
+  String username,
+  String password,
+);
 
 class RuntimeConfigPaths {
   const RuntimeConfigPaths({
@@ -25,11 +26,13 @@ class RuntimeConfigResult {
   const RuntimeConfigResult({
     required this.adminUsername,
     required this.generatedAdminPassword,
+    required this.adminEnrollmentEnabled,
     required this.assetLinksConfigured,
   });
 
   final String adminUsername;
   final String? generatedAdminPassword;
+  final bool adminEnrollmentEnabled;
   final bool assetLinksConfigured;
 }
 
@@ -101,6 +104,18 @@ class RuntimeConfigInitializer {
       await _writeText(htpasswdFile, '${encoded.trim()}\n');
     }
 
+    final adminEnrollmentEnabled = AdminEnrollmentPolicy.isEnabledIn(
+      environment,
+    );
+    await _writeText(
+      File(
+        '${paths.gatewaySecrets.path}/admin-enrollment-policy.conf',
+      ),
+      adminEnrollmentEnabled
+          ? '# Admin passkey enrollment is temporarily enabled.\n'
+          : 'return 404;\n',
+    );
+
     final fingerprint = environment['HAYER_ANDROID_SHA256']?.trim() ?? '';
     final assetLinksConfigured = fingerprint.isNotEmpty;
     final assetLinksFile = File('${paths.publicConfig.path}/assetlinks.json');
@@ -123,6 +138,7 @@ class RuntimeConfigInitializer {
     return RuntimeConfigResult(
       adminUsername: adminUsername,
       generatedAdminPassword: generatedAdminPassword,
+      adminEnrollmentEnabled: adminEnrollmentEnabled,
       assetLinksConfigured: assetLinksConfigured,
     );
   }

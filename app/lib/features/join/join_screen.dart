@@ -33,7 +33,9 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   void initState() {
     super.initState();
     _code = TextEditingController(
-      text: extractSessionCode(widget.initialCode ?? '') ?? '',
+      text: formatSessionCode(
+        extractSessionCode(widget.initialCode ?? '') ?? '',
+      ),
     );
     unawaited(_restoreDisplayName());
   }
@@ -95,16 +97,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
                         fontWeight: FontWeight.w900,
                         letterSpacing: 8,
                       ),
-                      inputFormatters: [
-                        _LocalizedSessionCodeFormatter(),
-                        LengthLimitingTextInputFormatter(
-                          maxSessionCodeLength,
-                        ),
-                        FilteringTextInputFormatter.allow(
-                          RegExp('[A-Za-z0-9]'),
-                        ),
-                        _UpperCaseFormatter(),
-                      ],
+                      inputFormatters: const [_SessionCodeFormatter()],
                       validator: (value) => isValidSessionCode(value ?? '')
                           ? null
                           : strings.invalidSessionCode,
@@ -200,24 +193,33 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   }
 }
 
-class _LocalizedSessionCodeFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) => newValue.copyWith(
-    text: normalizeSessionCodeCharacters(newValue.text),
-    selection: newValue.selection,
-  );
-}
+class _SessionCodeFormatter extends TextInputFormatter {
+  const _SessionCodeFormatter();
 
-class _UpperCaseFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
-  ) => newValue.copyWith(
-    text: newValue.text.toUpperCase(),
-    selection: newValue.selection,
-  );
+  ) {
+    final canonical = normalizeSessionCodeInput(newValue.text);
+    final limited = canonical.substring(
+      0,
+      canonical.length.clamp(0, sessionCodeLength),
+    );
+    final formatted = formatSessionCode(limited);
+    final selectionEnd = newValue.selection.end.clamp(0, newValue.text.length);
+    final canonicalBeforeSelection = normalizeSessionCodeInput(
+      newValue.text.substring(0, selectionEnd),
+    );
+    final limitedBeforeSelection = canonicalBeforeSelection.substring(
+      0,
+      canonicalBeforeSelection.length.clamp(0, sessionCodeLength),
+    );
+    final formattedBeforeSelection = formatSessionCode(limitedBeforeSelection);
+    final offset = formattedBeforeSelection.length.clamp(0, formatted.length);
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: offset),
+    );
+  }
 }

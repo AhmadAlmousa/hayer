@@ -13,12 +13,19 @@ cd "$repo_root"
   cd backend/hayer_server
   "$dart_bin" pub global run serverpod_cli:serverpod_cli generate
 )
-"$dart_bin" format --output=none --set-exit-if-changed \
-  backend/hayer_server/lib backend/hayer_server/bin \
-  backend/hayer_server/tool backend/hayer_server/test \
-  backend/hayer_server/integration_test \
-  backend/hayer_client/lib backend/hayer_client/tool \
-  app/lib app/test admin/lib admin/test
+mapfile -t dart_sources < <(
+  rg --files \
+    backend/hayer_server/lib backend/hayer_server/bin \
+    backend/hayer_server/tool backend/hayer_server/test \
+    backend/hayer_server/integration_test \
+    backend/hayer_client/lib backend/hayer_client/tool \
+    app/lib app/test admin/lib admin/test \
+    -g '*.dart' \
+    -g '!backend/hayer_server/lib/src/generated/**' \
+    -g '!backend/hayer_server/test/integration/test_tools/**' \
+    -g '!backend/hayer_client/lib/src/protocol/**'
+)
+"$dart_bin" format --output=none --set-exit-if-changed "${dart_sources[@]}"
 (cd backend/hayer_server && "$dart_bin" analyze --fatal-infos && "$dart_bin" test)
 (cd backend/hayer_client && "$dart_bin" analyze --fatal-infos)
 (cd app && "$flutter_bin" analyze --fatal-infos && "$flutter_bin" test)

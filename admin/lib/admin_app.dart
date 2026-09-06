@@ -409,9 +409,8 @@ class _OverviewPageState extends State<_OverviewPage> {
             const SizedBox(height: 24),
             Text(
               '24-hour trends',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              style: Theme.of(context).textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 12),
             LayoutBuilder(
@@ -650,9 +649,8 @@ class _CatalogPageState extends State<_CatalogPage> {
       await _load();
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$error')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$error')));
       }
     }
   }
@@ -1161,9 +1159,8 @@ class _JobsPageState extends State<_JobsPage> {
       );
       await _load();
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Refresh cancelled')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Refresh cancelled')));
       }
     } catch (error) {
       if (mounted) _showError(context, error);
@@ -1435,9 +1432,8 @@ class _PolicyPageState extends State<_PolicyPage> {
       setState(() => _policy = updated);
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$error')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$error')));
       }
     }
   }
@@ -1542,9 +1538,8 @@ class _CalibrationPageState extends State<_CalibrationPage> {
       setState(() => _validation = value);
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$error')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$error')));
       }
     }
   }
@@ -1567,9 +1562,8 @@ class _CalibrationPageState extends State<_CalibrationPage> {
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$error')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$error')));
       }
     }
   }
@@ -1590,9 +1584,8 @@ class _CalibrationPageState extends State<_CalibrationPage> {
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$error')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$error')));
       }
     }
   }
@@ -1621,9 +1614,8 @@ class _PageShell extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: Theme.of(context).textTheme.headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.w900),
                 ),
               ),
               ?trailing,
@@ -1654,9 +1646,8 @@ class _MetricCard extends StatelessWidget {
           const Spacer(),
           Text(
             value,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
           Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
         ],

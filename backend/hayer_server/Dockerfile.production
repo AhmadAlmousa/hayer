@@ -2,9 +2,9 @@
 
 # Flutter is build-only. Keeping its inputs narrow lets backend and Compose
 # changes reuse the existing web bundle layer.
-FROM debian:bookworm-slim AS flutter-toolchain
-ARG FLUTTER_VERSION=3.44.2
-ARG FLUTTER_SHA256=b0de1d19754688ec6769c9a067db3b0594479d3d767f971bfecfc132904c8d5e
+FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171 AS flutter-toolchain
+ARG FLUTTER_VERSION=3.47.2
+ARG FLUTTER_SHA256=447878859d01ca9bfdb99a85f245af07ed8a15fedcd9d189c4749e8e92d1f185
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     ca-certificates curl git libglu1-mesa unzip xz-utils \
@@ -38,7 +38,7 @@ RUN cd app \
 
 # Dart is also build-only. Production runs standalone native executables and
 # does not contain the SDK, package cache, source tree, or development watcher.
-FROM dart:3.12.2 AS native-build
+FROM dart:3.13.2@sha256:1f86408456fbcdc5f9c33fa267d3680d86e79c255ec338b9a215459224769770 AS native-build
 WORKDIR /workspace
 COPY backend/hayer_client/pubspec.yaml backend/hayer_client/pubspec.yaml
 COPY backend/hayer_server/pubspec.yaml backend/hayer_server/pubspec.yaml
@@ -46,7 +46,7 @@ RUN printf '%s\n' \
   'name: hayer_native_workspace' \
   'publish_to: none' \
   'environment:' \
-  '  sdk: ^3.12.0' \
+  '  sdk: ^3.13.0' \
   'workspace:' \
   '  - backend/hayer_client' \
   '  - backend/hayer_server' \
@@ -64,7 +64,7 @@ RUN mkdir -p /out \
   && dart compile exe backend/hayer_client/tool/public_gateway_canary.dart \
     -o /out/hayer-public-gateway-canary
 
-FROM debian:bookworm-slim AS runtime
+FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171 AS runtime
 ENV runmode=production serverid=default logging=normal role=monolith
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
