@@ -13,9 +13,10 @@ Set these optional environment variables in the Unraid Compose stack:
   nginx account is used only at `/enroll` and `/enroll-api/` to
   enroll or recover a passkey; it is not the routine dashboard login and Hayer
   never stores it in browser application storage.
-- `HAYER_ADMIN_ENROLLMENT_ENABLED` must equal `true` to expose or execute the
-  private passkey enrollment flow. It defaults to `false`; all other values
-  fail closed.
+- `HAYER_ADMIN_ENROLLMENT_ENABLED` is an internal Compose input shared by the
+  gateway initializer and Serverpod. Operators should use
+  `backend/deploy/admin-enrollment.sh reenroll` instead of setting it globally.
+  It defaults to `false`; all other values fail closed.
 - `HAYER_ANDROID_SHA256` enables App Links using the release certificate's
   colon-separated SHA-256 fingerprint. App Links remain disabled when it is
   omitted.
@@ -26,10 +27,9 @@ Nginx Proxy Manager should forward `https://hayer.vpn.almou.sa` to
 `http://192.168.225.20:8433`, preserve Host and client-IP headers, and enable
 WebSockets. This private port is separate from Cloudflare's `8432` listener.
 
-For initial setup or recovery, temporarily enable enrollment, recreate
-`runtime-init`, `server`, and `gateway`, then open
-`https://hayer.vpn.almou.sa/enroll`. Enter the recovery credentials in
-the browser's native Basic Auth prompt and create a passkey. Verify two
-independent passkeys before disabling enrollment and recreating those services
-again. Store the recovery credentials offline. Routine access starts at the
-private origin root and uses only the passkey-backed Serverpod session.
+For initial setup or recovery, run `backend/deploy/admin-enrollment.sh reenroll`,
+then open `https://hayer.vpn.almou.sa/enroll`. Enter the recovery credentials
+in the browser's native Basic Auth prompt and create a passkey. Verify two
+independent passkeys, then return to the command and press Enter to close
+enrollment. Store the recovery credentials offline. Routine access starts at
+the private origin root and uses only the passkey-backed Serverpod session.

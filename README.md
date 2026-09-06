@@ -69,11 +69,14 @@ cd admin && flutter run -d chrome
 The production admin entry point is
 `https://hayer.vpn.almou.sa/`, available only through LAN or Tailscale.
 The public `hayer.almou.sa` host returns 404 for every `/admin` route. First-time
-setup and recovery temporarily enable `HAYER_ADMIN_ENROLLMENT_ENABLED`, then use
+setup and recovery run `backend/deploy/admin-enrollment.sh reenroll`, then use
 `https://hayer.vpn.almou.sa/enroll` with the break-glass
 `HAYER_ADMIN_USER`/`HAYER_ADMIN_PASSWORD` credentials. Routine visits use a
 passkey and never ask Hayer to store that Basic Auth password. Admin JWTs are
-kept in the platform's secure client storage and are revoked on sign-out.
+kept in the platform's secure client storage and are revoked on sign-out. The
+command waits while two passkeys are registered and verified, then closes both
+enrollment layers when Enter is pressed or the command exits. The toggle is
+scoped to that Compose invocation and is not a global setting.
 
 `config/passwords.yaml`, signing keys, built web assets, and release APKs are
 intentionally ignored. Production Compose credentials are generated into
@@ -123,9 +126,9 @@ This runner is fully containerized; the host only needs Docker Compose.
    `http://192.168.225.20:8432`. Configure the private Nginx Proxy Manager host
    `hayer.vpn.almou.sa` to `http://192.168.225.20:8433`, with private DNS and
    TLS. The two host ports terminate on separate nginx listeners.
-7. Temporarily enable enrollment, register and verify two private-host
-   passkeys, disable enrollment again, then verify HTTPS/WSS, App Links,
-   public-admin rejection, and the backup restore drill.
+7. Run `backend/deploy/admin-enrollment.sh reenroll`, register and verify two
+   private-host passkeys, press Enter to close enrollment, then verify
+   HTTPS/WSS, App Links, public-admin rejection, and the backup restore drill.
 
 The gateway binds public port `8432` and private-admin port `8433` only to
 `192.168.225.20`. Remove every WAN port-forward for both ports. Allow `8432`

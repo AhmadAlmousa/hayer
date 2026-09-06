@@ -105,13 +105,23 @@ trailing slash. Keep the gateway's exact-match route for that path: redirecting
 the POST to `/api/passkeyIdp/` can turn it into a bodyless GET and prevent the
 browser's passkey ceremony from starting.
 
-Set `HAYER_ADMIN_ENROLLMENT_ENABLED=true` in the Unraid stack, recreate
-`runtime-init`, then recreate `server` and `gateway`. Open
+From the repository root, run this single command:
+
+```bash
+backend/deploy/admin-enrollment.sh reenroll
+```
+
+It recreates `runtime-init`, `server`, and `gateway` with one process-scoped
+value and verifies that both protection layers are enabled. Open
 `https://hayer.vpn.almou.sa/enroll`, satisfy Basic Auth, and register two
-independent passkeys. Verify each through a separate fresh browser session.
-Then set the flag to `false`, recreate the same services, and confirm both
-`/enroll` and `/enroll-api/` return 404 while both passkeys still
-perform routine login.
+independent passkeys. Verify each through a separate fresh browser session,
+then return to the command and press Enter. It disables and verifies both
+layers; its exit trap also attempts to close enrollment if the command is
+interrupted. Confirm both `/enroll` and `/enroll-api/` return 404 while both
+passkeys still perform routine login. `admin-enrollment.sh status` reports both
+layers without making changes; explicit `enable` and `disable` actions are
+available for troubleshooting. All Compose defaults remain fail-closed; no
+global variable or persistent enrollment setting is required.
 
 `runtime-init` rewrites the gateway's fail-closed enrollment policy on every
 recreation. Serverpod also checks the flag before creating an enrollment user

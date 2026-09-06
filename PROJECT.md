@@ -658,6 +658,20 @@ solo and multiplayer flows without developer intervention.
   verifies with APK Signature Scheme v2, and retains SHA-256
   `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
   Gateway recreation and a live passkey enrollment remain deployment checks.
+- 2026-09-06: replaced the error-prone manual enrollment environment toggle
+  with `backend/deploy/admin-enrollment.sh reenroll`. The command applies one
+  process-scoped value while recreating and verifying both Serverpod and the
+  gateway, waits for the browser ceremonies, and closes enrollment on Enter or
+  process exit. Explicit enable/disable/status actions remain available for
+  troubleshooting, and both Compose defaults remain fail-closed.
+  Full preflight passed 68 backend, 66 consumer, and seven admin tests,
+  including an executed fake-Compose lifecycle test for the synchronized
+  command, plus all static analysis and shell syntax checks. The signed
+  `0.1.0+5` APK rebuilt, verifies
+  with APK Signature Scheme v2, and retains SHA-256
+  `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
+  Running the new command against the production Docker host remains the live
+  deployment check.
 
 ## Decision and change log
 
@@ -714,3 +728,7 @@ solo and multiplayer flows without developer intervention.
   `8432`, while NPM uses LAN-bound `8433`. Mount the admin at the private
   origin root with `/api/` RPCs and `/enroll` recovery; keep its Serverpod web
   files internally namespaced and redirect older private `/admin/*` bookmarks.
+- 2026-09-06: Keep enrollment disabled in committed Compose defaults and use
+  one interactive operator command for the complete re-enrollment window. The
+  toggle is process-scoped, self-verifying, closes on exit, and leaves no global
+  enrollment variable behind.

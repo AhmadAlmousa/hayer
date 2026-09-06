@@ -172,5 +172,85 @@ void main() {
         expect(compose, contains('nginx:1.30.4-alpine'));
       },
     );
+
+    test(
+      'one-command enrollment toggle updates both fail-closed layers',
+      () async {
+        final compose = await File(
+          '../deploy/docker-compose.yml',
+        ).readAsString();
+        final toggle = await File(
+          '../deploy/admin-enrollment.sh',
+        ).readAsString();
+
+        expect(
+          RegExp(
+            r'HAYER_ADMIN_ENROLLMENT_ENABLED: "\$\{HAYER_ADMIN_ENROLLMENT_ENABLED:-false\}"',
+          ).allMatches(compose),
+          hasLength(2),
+        );
+        expect(
+          toggle,
+          contains('HAYER_ADMIN_ENROLLMENT_ENABLED="\$desired_state"'),
+        );
+        expect(toggle, contains('runtime-init server gateway'));
+        expect(toggle, contains('reenroll)'));
+        expect(toggle, contains('trap close_reenrollment EXIT'));
+        expect(toggle, contains('apply_state true'));
+        expect(toggle, contains('apply_state false'));
+      },
+    );
+
+    test('re-enrollment command opens and closes one scoped window', () async {
+      final temporaryDirectory = await Directory.systemTemp.createTemp(
+        'hayer-enrollment-command-',
+      );
+      addTearDown(() => temporaryDirectory.delete(recursive: true));
+      final stateFile = File('${temporaryDirectory.path}/state');
+      final docker = File('${temporaryDirectory.path}/docker');
+      await docker.writeAsString('''#!/bin/sh
+case "\$*" in
+  *" up "*)
+    printf '%s' "\$HAYER_ADMIN_ENROLLMENT_ENABLED" > "\$HAYER_TEST_STATE_FILE"
+    ;;
+  *" exec -T server printenv HAYER_ADMIN_ENROLLMENT_ENABLED")
+    cat "\$HAYER_TEST_STATE_FILE"
+    ;;
+  *" exec -T gateway cat "*)
+    if [ "\$(cat "\$HAYER_TEST_STATE_FILE")" = true ]; then
+      echo '# Admin passkey enrollment is temporarily enabled.'
+    else
+      echo 'return 404;'
+    fi
+    ;;
+esac
+''');
+      final chmod = await Process.run('chmod', ['+x', docker.path]);
+      expect(chmod.exitCode, 0, reason: chmod.stderr as String?);
+      final environment = {
+        ...Platform.environment,
+        'PATH': '${temporaryDirectory.path}:${Platform.environment['PATH']}',
+        'HAYER_TEST_STATE_FILE': stateFile.path,
+      };
+      final process = await Process.start(
+        File('../deploy/admin-enrollment.sh').absolute.path,
+        ['reenroll'],
+        environment: environment,
+      );
+      process.stdin.writeln();
+      await process.stdin.close();
+      final output = await process.stdout
+          .transform(systemEncoding.decoder)
+          .join();
+      final error = await process.stderr
+          .transform(systemEncoding.decoder)
+          .join();
+
+      expect(await process.exitCode, 0, reason: error);
+      expect(output, contains('Server enrollment:  true'));
+      expect(output, contains('Server enrollment:  false'));
+      expect(output, contains('Admin passkey enrollment is closed'));
+      expect(await stateFile.readAsString(), 'false');
+    });
   });
 }

@@ -32,6 +32,6 @@ mapfile -t dart_sources < <(
 (cd admin && "$flutter_bin" analyze --fatal-infos && "$flutter_bin" test)
 bash -n scripts/resolve-toolchain.sh scripts/preflight.sh \
   scripts/build-release-apk.sh scripts/build-server-image.sh \
-  scripts/test-server-integration.sh
+  scripts/test-server-integration.sh backend/deploy/admin-enrollment.sh
 sh -n backend/deploy/backup-loop.sh backend/deploy/restore-backup.sh
 git diff --check
