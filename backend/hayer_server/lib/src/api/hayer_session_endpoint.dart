@@ -921,7 +921,7 @@ class HayerSessionEndpoint extends Endpoint {
     String sessionId, {
     required String userId,
   }) async {
-    final row = await HayerSessionRow.db.findFirstRow(
+    var row = await HayerSessionRow.db.findFirstRow(
       session,
       where: (table) => table.sessionId.equals(sessionId),
     );
@@ -931,12 +931,14 @@ class HayerSessionEndpoint extends Endpoint {
     final participant = await _requireMembership(session, sessionId, userId);
     final now = DateTime.now().toUtc();
     if (row.expiresAt.isBefore(now) && row.status != SessionStatus.expired) {
-      row.status = SessionStatus.expired;
-      row.revision++;
-      await HayerSessionRow.db.updateRow(session, row);
+      row = await _expireSession(session, sessionId, now);
     }
     participant.lastSeenAt = now;
-    await ParticipantRow.db.updateRow(session, participant);
+    await ParticipantRow.db.updateRow(
+      session,
+      participant,
+      columns: (table) => [table.lastSeenAt],
+    );
     final placeRows = await SessionPlaceRow.db.find(
       session,
       where: (table) => table.sessionId.equals(sessionId),
@@ -948,14 +950,47 @@ class HayerSessionEndpoint extends Endpoint {
       orderBy: (table) => table.isHost,
       orderDescending: true,
     );
+    final participantViews = participants
+        .map(SessionMapper.participant)
+        .toList(growable: false);
     return SessionBundle(
       session: SessionMapper.session(row),
       deck: placeRows.map((place) => place.snapshot).toList(growable: false),
-      participants: participants
-          .map(SessionMapper.participant)
-          .toList(growable: false),
+      participants: participantViews,
+      selfParticipant: participantViews.singleWhere(
+        (value) => value.participantId == participant.participantId,
+      ),
     );
   }
+
+  Future<HayerSessionRow> _expireSession(
+    Session session,
+    String sessionId,
+    DateTime now,
+  ) => session.db.transaction((transaction) async {
+    final current = await HayerSessionRow.db.findFirstRow(
+      session,
+      where: (table) => table.sessionId.equals(sessionId),
+      transaction: transaction,
+      lockMode: LockMode.forUpdate,
+    );
+    if (current == null) {
+      throw ApiException(code: 'not_found', message: 'Session not found.');
+    }
+    if (current.expiresAt.isBefore(now) &&
+        current.status != SessionStatus.expired) {
+      current
+        ..status = SessionStatus.expired
+        ..revision = current.revision + 1;
+      return HayerSessionRow.db.updateRow(
+        session,
+        current,
+        columns: (table) => [table.status, table.revision],
+        transaction: transaction,
+      );
+    }
+    return current;
+  });
 
   Future<ParticipantRow> _requireMembership(
     Session session,

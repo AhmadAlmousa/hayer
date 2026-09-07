@@ -77,6 +77,18 @@ class $PendingSwipesTable extends PendingSwipes
         type: DriftSqlType.dateTime,
         requiredDuringInsert: true,
       );
+  static const VerificationMeta _terminalErrorCodeMeta = const VerificationMeta(
+    'terminalErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> terminalErrorCode =
+      GeneratedColumn<String>(
+        'terminal_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     idempotencyKey,
@@ -85,6 +97,7 @@ class $PendingSwipesTable extends PendingSwipes
     liked,
     swipeIndex,
     clientSwipedAt,
+    terminalErrorCode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -152,6 +165,15 @@ class $PendingSwipesTable extends PendingSwipes
     } else if (isInserting) {
       context.missing(_clientSwipedAtMeta);
     }
+    if (data.containsKey('terminal_error_code')) {
+      context.handle(
+        _terminalErrorCodeMeta,
+        terminalErrorCode.isAcceptableOrUnknown(
+          data['terminal_error_code']!,
+          _terminalErrorCodeMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -185,6 +207,10 @@ class $PendingSwipesTable extends PendingSwipes
         DriftSqlType.dateTime,
         data['${effectivePrefix}client_swiped_at'],
       )!,
+      terminalErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}terminal_error_code'],
+      ),
     );
   }
 
@@ -201,6 +227,7 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
   final bool liked;
   final int swipeIndex;
   final DateTime clientSwipedAt;
+  final String? terminalErrorCode;
   const PendingSwipe({
     required this.idempotencyKey,
     required this.sessionId,
@@ -208,6 +235,7 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
     required this.liked,
     required this.swipeIndex,
     required this.clientSwipedAt,
+    this.terminalErrorCode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -218,6 +246,9 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
     map['liked'] = Variable<bool>(liked);
     map['swipe_index'] = Variable<int>(swipeIndex);
     map['client_swiped_at'] = Variable<DateTime>(clientSwipedAt);
+    if (!nullToAbsent || terminalErrorCode != null) {
+      map['terminal_error_code'] = Variable<String>(terminalErrorCode);
+    }
     return map;
   }
 
@@ -229,6 +260,9 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
       liked: Value(liked),
       swipeIndex: Value(swipeIndex),
       clientSwipedAt: Value(clientSwipedAt),
+      terminalErrorCode: terminalErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(terminalErrorCode),
     );
   }
 
@@ -244,6 +278,9 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
       liked: serializer.fromJson<bool>(json['liked']),
       swipeIndex: serializer.fromJson<int>(json['swipeIndex']),
       clientSwipedAt: serializer.fromJson<DateTime>(json['clientSwipedAt']),
+      terminalErrorCode: serializer.fromJson<String?>(
+        json['terminalErrorCode'],
+      ),
     );
   }
   @override
@@ -256,6 +293,7 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
       'liked': serializer.toJson<bool>(liked),
       'swipeIndex': serializer.toJson<int>(swipeIndex),
       'clientSwipedAt': serializer.toJson<DateTime>(clientSwipedAt),
+      'terminalErrorCode': serializer.toJson<String?>(terminalErrorCode),
     };
   }
 
@@ -266,6 +304,7 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
     bool? liked,
     int? swipeIndex,
     DateTime? clientSwipedAt,
+    Value<String?> terminalErrorCode = const Value.absent(),
   }) => PendingSwipe(
     idempotencyKey: idempotencyKey ?? this.idempotencyKey,
     sessionId: sessionId ?? this.sessionId,
@@ -273,6 +312,9 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
     liked: liked ?? this.liked,
     swipeIndex: swipeIndex ?? this.swipeIndex,
     clientSwipedAt: clientSwipedAt ?? this.clientSwipedAt,
+    terminalErrorCode: terminalErrorCode.present
+        ? terminalErrorCode.value
+        : this.terminalErrorCode,
   );
   PendingSwipe copyWithCompanion(PendingSwipesCompanion data) {
     return PendingSwipe(
@@ -288,6 +330,9 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
       clientSwipedAt: data.clientSwipedAt.present
           ? data.clientSwipedAt.value
           : this.clientSwipedAt,
+      terminalErrorCode: data.terminalErrorCode.present
+          ? data.terminalErrorCode.value
+          : this.terminalErrorCode,
     );
   }
 
@@ -299,7 +344,8 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
           ..write('placeId: $placeId, ')
           ..write('liked: $liked, ')
           ..write('swipeIndex: $swipeIndex, ')
-          ..write('clientSwipedAt: $clientSwipedAt')
+          ..write('clientSwipedAt: $clientSwipedAt, ')
+          ..write('terminalErrorCode: $terminalErrorCode')
           ..write(')'))
         .toString();
   }
@@ -312,6 +358,7 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
     liked,
     swipeIndex,
     clientSwipedAt,
+    terminalErrorCode,
   );
   @override
   bool operator ==(Object other) =>
@@ -322,7 +369,8 @@ class PendingSwipe extends DataClass implements Insertable<PendingSwipe> {
           other.placeId == this.placeId &&
           other.liked == this.liked &&
           other.swipeIndex == this.swipeIndex &&
-          other.clientSwipedAt == this.clientSwipedAt);
+          other.clientSwipedAt == this.clientSwipedAt &&
+          other.terminalErrorCode == this.terminalErrorCode);
 }
 
 class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
@@ -332,6 +380,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
   final Value<bool> liked;
   final Value<int> swipeIndex;
   final Value<DateTime> clientSwipedAt;
+  final Value<String?> terminalErrorCode;
   final Value<int> rowid;
   const PendingSwipesCompanion({
     this.idempotencyKey = const Value.absent(),
@@ -340,6 +389,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
     this.liked = const Value.absent(),
     this.swipeIndex = const Value.absent(),
     this.clientSwipedAt = const Value.absent(),
+    this.terminalErrorCode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingSwipesCompanion.insert({
@@ -349,6 +399,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
     required bool liked,
     required int swipeIndex,
     required DateTime clientSwipedAt,
+    this.terminalErrorCode = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : idempotencyKey = Value(idempotencyKey),
        sessionId = Value(sessionId),
@@ -363,6 +414,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
     Expression<bool>? liked,
     Expression<int>? swipeIndex,
     Expression<DateTime>? clientSwipedAt,
+    Expression<String>? terminalErrorCode,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -372,6 +424,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
       if (liked != null) 'liked': liked,
       if (swipeIndex != null) 'swipe_index': swipeIndex,
       if (clientSwipedAt != null) 'client_swiped_at': clientSwipedAt,
+      if (terminalErrorCode != null) 'terminal_error_code': terminalErrorCode,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -383,6 +436,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
     Value<bool>? liked,
     Value<int>? swipeIndex,
     Value<DateTime>? clientSwipedAt,
+    Value<String?>? terminalErrorCode,
     Value<int>? rowid,
   }) {
     return PendingSwipesCompanion(
@@ -392,6 +446,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
       liked: liked ?? this.liked,
       swipeIndex: swipeIndex ?? this.swipeIndex,
       clientSwipedAt: clientSwipedAt ?? this.clientSwipedAt,
+      terminalErrorCode: terminalErrorCode ?? this.terminalErrorCode,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -417,6 +472,9 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
     if (clientSwipedAt.present) {
       map['client_swiped_at'] = Variable<DateTime>(clientSwipedAt.value);
     }
+    if (terminalErrorCode.present) {
+      map['terminal_error_code'] = Variable<String>(terminalErrorCode.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -432,6 +490,7 @@ class PendingSwipesCompanion extends UpdateCompanion<PendingSwipe> {
           ..write('liked: $liked, ')
           ..write('swipeIndex: $swipeIndex, ')
           ..write('clientSwipedAt: $clientSwipedAt, ')
+          ..write('terminalErrorCode: $terminalErrorCode, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -457,6 +516,7 @@ typedef $$PendingSwipesTableCreateCompanionBuilder =
       required bool liked,
       required int swipeIndex,
       required DateTime clientSwipedAt,
+      Value<String?> terminalErrorCode,
       Value<int> rowid,
     });
 typedef $$PendingSwipesTableUpdateCompanionBuilder =
@@ -467,6 +527,7 @@ typedef $$PendingSwipesTableUpdateCompanionBuilder =
       Value<bool> liked,
       Value<int> swipeIndex,
       Value<DateTime> clientSwipedAt,
+      Value<String?> terminalErrorCode,
       Value<int> rowid,
     });
 
@@ -506,6 +567,11 @@ class $$PendingSwipesTableFilterComposer
 
   ColumnFilters<DateTime> get clientSwipedAt => $composableBuilder(
     column: $table.clientSwipedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get terminalErrorCode => $composableBuilder(
+    column: $table.terminalErrorCode,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -548,6 +614,11 @@ class $$PendingSwipesTableOrderingComposer
     column: $table.clientSwipedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get terminalErrorCode => $composableBuilder(
+    column: $table.terminalErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PendingSwipesTableAnnotationComposer
@@ -580,6 +651,11 @@ class $$PendingSwipesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get clientSwipedAt => $composableBuilder(
     column: $table.clientSwipedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get terminalErrorCode => $composableBuilder(
+    column: $table.terminalErrorCode,
     builder: (column) => column,
   );
 }
@@ -621,6 +697,7 @@ class $$PendingSwipesTableTableManager
                 Value<bool> liked = const Value.absent(),
                 Value<int> swipeIndex = const Value.absent(),
                 Value<DateTime> clientSwipedAt = const Value.absent(),
+                Value<String?> terminalErrorCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSwipesCompanion(
                 idempotencyKey: idempotencyKey,
@@ -629,6 +706,7 @@ class $$PendingSwipesTableTableManager
                 liked: liked,
                 swipeIndex: swipeIndex,
                 clientSwipedAt: clientSwipedAt,
+                terminalErrorCode: terminalErrorCode,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -639,6 +717,7 @@ class $$PendingSwipesTableTableManager
                 required bool liked,
                 required int swipeIndex,
                 required DateTime clientSwipedAt,
+                Value<String?> terminalErrorCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSwipesCompanion.insert(
                 idempotencyKey: idempotencyKey,
@@ -647,6 +726,7 @@ class $$PendingSwipesTableTableManager
                 liked: liked,
                 swipeIndex: swipeIndex,
                 clientSwipedAt: clientSwipedAt,
+                terminalErrorCode: terminalErrorCode,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

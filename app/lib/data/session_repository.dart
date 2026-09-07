@@ -1,19 +1,67 @@
+import 'dart:async';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 import 'authentication.dart';
 import 'pending_swipe_store.dart';
 
+typedef SwipeTransport = Future<SessionBundle> Function(SwipeCommand command);
+
+enum SwipeSubmissionState { accepted, queued, rejected }
+
+class SwipeSubmissionResult {
+  const SwipeSubmissionResult._({
+    required this.state,
+    this.bundle,
+    this.errorCode,
+  });
+
+  const SwipeSubmissionResult.accepted(SessionBundle value)
+    : this._(state: SwipeSubmissionState.accepted, bundle: value);
+
+  const SwipeSubmissionResult.queued()
+    : this._(state: SwipeSubmissionState.queued);
+
+  const SwipeSubmissionResult.rejected(String code)
+    : this._(state: SwipeSubmissionState.rejected, errorCode: code);
+
+  final SwipeSubmissionState state;
+  final SessionBundle? bundle;
+  final String? errorCode;
+}
+
+class QueueFlushResult {
+  const QueueFlushResult({
+    required this.accepted,
+    required this.terminalFailures,
+    required this.pending,
+    required this.pendingSessionIds,
+    required this.terminalFailureSessionIds,
+    required this.pendingProgressBySession,
+  });
+
+  final int accepted;
+  final int terminalFailures;
+  final int pending;
+  final Set<String> pendingSessionIds;
+  final Set<String> terminalFailureSessionIds;
+  final Map<String, int> pendingProgressBySession;
+}
+
 class SessionRepository {
-  const SessionRepository({
+  SessionRepository({
     required this.client,
     required this.outbox,
     this.secureStorage = const FlutterSecureStorage(),
+    this.swipeTransport,
   });
 
   final Client client;
   final PendingSwipeStore outbox;
   final FlutterSecureStorage secureStorage;
+  final SwipeTransport? swipeTransport;
+  final _commandMutex = _AsyncMutex();
   static const _uuid = Uuid();
   static const activeSessionKey = 'hayer.active-session-id';
 
@@ -79,12 +127,12 @@ class SessionRepository {
     if (active == sessionId) await forgetActiveSession();
   }
 
-  Future<SessionBundle?> swipe({
+  Future<SwipeSubmissionResult> swipe({
     required String sessionId,
     required String placeId,
     required bool liked,
     required int swipeIndex,
-  }) async {
+  }) => _commandMutex.protect(() async {
     final key = _uuid.v7();
     final swipedAt = DateTime.now().toUtc();
     final command = SwipeCommand(
@@ -95,47 +143,95 @@ class SessionRepository {
       clientSwipedAt: swipedAt,
       idempotencyKey: key,
     );
+    final pending = PendingSwipeRecord(
+      idempotencyKey: key,
+      sessionId: sessionId,
+      placeId: placeId,
+      liked: liked,
+      swipeIndex: swipeIndex,
+      clientSwipedAt: swipedAt,
+    );
+    await outbox.removeTerminalDecision(sessionId, swipeIndex);
+    await outbox.enqueue(pending);
     try {
-      return await withAnonymousAuthentication(
-        client,
-        () => client.hayerSession.swipe(command: command),
-      );
-    } catch (_) {
-      await outbox.enqueue(
-        PendingSwipeRecord(
-          idempotencyKey: key,
-          sessionId: sessionId,
-          placeId: placeId,
-          liked: liked,
-          swipeIndex: swipeIndex,
-          clientSwipedAt: swipedAt,
-        ),
-      );
-      return null;
+      final bundle = await _sendSwipe(command);
+      await outbox.remove(key);
+      return SwipeSubmissionResult.accepted(bundle);
+    } catch (error) {
+      final terminalCode = _terminalSwipeErrorCode(error);
+      if (terminalCode != null) {
+        await outbox.markTerminal(key, terminalCode);
+        return SwipeSubmissionResult.rejected(terminalCode);
+      }
+      return const SwipeSubmissionResult.queued();
     }
-  }
+  });
 
-  Future<void> flushQueue() async {
+  Future<QueueFlushResult> flushQueue() => _commandMutex.protect(() async {
+    var accepted = 0;
+    var terminalFailures = 0;
+    final blockedSessions = <String>{};
     for (final pending in await outbox.queued()) {
+      if (pending.isTerminal) {
+        terminalFailures++;
+        continue;
+      }
+      if (blockedSessions.contains(pending.sessionId)) continue;
       try {
-        await withAnonymousAuthentication(
-          client,
-          () => client.hayerSession.swipe(
-            command: SwipeCommand(
-              sessionId: pending.sessionId,
-              placeId: pending.placeId,
-              liked: pending.liked,
-              swipeIndex: pending.swipeIndex,
-              clientSwipedAt: pending.clientSwipedAt,
-              idempotencyKey: pending.idempotencyKey,
-            ),
+        await _sendSwipe(
+          SwipeCommand(
+            sessionId: pending.sessionId,
+            placeId: pending.placeId,
+            liked: pending.liked,
+            swipeIndex: pending.swipeIndex,
+            clientSwipedAt: pending.clientSwipedAt,
+            idempotencyKey: pending.idempotencyKey,
           ),
         );
         await outbox.remove(pending.idempotencyKey);
-      } catch (_) {
-        break;
+        accepted++;
+      } catch (error) {
+        final terminalCode = _terminalSwipeErrorCode(error);
+        if (terminalCode == null) {
+          blockedSessions.add(pending.sessionId);
+          continue;
+        }
+        await outbox.markTerminal(pending.idempotencyKey, terminalCode);
+        terminalFailures++;
       }
     }
+    final remaining = await outbox.queued();
+    final pendingProgressBySession = <String, int>{};
+    for (final record in remaining.where((record) => !record.isTerminal)) {
+      final progress = record.swipeIndex + 1;
+      final previous = pendingProgressBySession[record.sessionId] ?? 0;
+      if (progress > previous) {
+        pendingProgressBySession[record.sessionId] = progress;
+      }
+    }
+    return QueueFlushResult(
+      accepted: accepted,
+      terminalFailures: terminalFailures,
+      pending: remaining.where((record) => !record.isTerminal).length,
+      pendingSessionIds: {
+        for (final record in remaining)
+          if (!record.isTerminal) record.sessionId,
+      },
+      terminalFailureSessionIds: {
+        for (final record in remaining)
+          if (record.isTerminal) record.sessionId,
+      },
+      pendingProgressBySession: pendingProgressBySession,
+    );
+  });
+
+  Future<SessionBundle> _sendSwipe(SwipeCommand command) {
+    final transport = swipeTransport;
+    if (transport != null) return transport(command);
+    return withAnonymousAuthentication(
+      client,
+      () => client.hayerSession.swipe(command: command),
+    );
   }
 }
 
@@ -144,3 +240,38 @@ bool _isTransientClientFailure(Object error) =>
     (error.statusCode < 0 ||
         error.statusCode == 408 ||
         error.statusCode >= 500);
+
+String? _terminalSwipeErrorCode(Object error) {
+  if (error is ApiException) {
+    return switch (error.code) {
+      'rate_limited' || 'server_error' => null,
+      _ => error.code,
+    };
+  }
+  if (error is ServerpodClientException &&
+      error.statusCode >= 400 &&
+      error.statusCode < 500 &&
+      error.statusCode != 408 &&
+      error.statusCode != 429) {
+    return 'http_${error.statusCode}';
+  }
+  return null;
+}
+
+final class _AsyncMutex {
+  Future<void> _tail = Future<void>.value();
+
+  Future<T> protect<T>(Future<T> Function() action) {
+    final previous = _tail;
+    final complete = Completer<void>();
+    _tail = complete.future;
+    return (() async {
+      await previous;
+      try {
+        return await action();
+      } finally {
+        complete.complete();
+      }
+    })();
+  }
+}

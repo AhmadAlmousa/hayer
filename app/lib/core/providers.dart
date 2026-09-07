@@ -24,7 +24,7 @@ final displayNameStoreProvider = Provider<DisplayNameStore>(
 
 final pendingSwipeStoreProvider = Provider<PendingSwipeStore>((ref) {
   final store = kIsWeb
-      ? const SecurePendingSwipeStore()
+      ? SecurePendingSwipeStore()
       : DriftPendingSwipeStore(AppDatabase());
   ref.onDispose(() => unawaited(store.close()));
   return store;

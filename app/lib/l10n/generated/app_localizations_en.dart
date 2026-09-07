@@ -276,6 +276,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Saved offline. Hayer will sync this swipe when you reconnect.';
 
   @override
+  String get finalSwipePending =>
+      'Your final choice is saved on this device. Reconnect to finish syncing before viewing the result.';
+
+  @override
+  String get retrySync => 'Retry sync';
+
+  @override
+  String get swipeSaveFailed =>
+      'This choice could not be saved on this device. Please try again.';
+
+  @override
+  String get swipeRejected =>
+      'The server could not accept this choice. Refresh the session and try again.';
+
+  @override
   String get updateRequired => 'Update Hayer to continue.';
 
   @override

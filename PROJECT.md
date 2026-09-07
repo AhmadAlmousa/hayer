@@ -2,11 +2,13 @@
 
 Last updated: 2026-09-06
 
-Status: split-port private-root admin implemented; production verification remains
+Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7 — invited-beta verification and release tag
+Current focus: M7-A — core session integrity for audit release 0.2.0+6
 
 Product brief: [`overview.md`](overview.md)
+
+Production-readiness audit and remediation rationale: [`astra-audit.md`](astra-audit.md)
 
 Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 
@@ -37,6 +39,10 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 
 - Release an Android-first, release-signed APK to an invited beta of at most
   50 people. Support at most 12 participants in a multiplayer session.
+- Use `0.2.0+6` for the safety-focused audit release. Deploy compatible server
+  changes first while build 5 remains accepted; set minimum build 6 only after
+  the signed build passes production verification. Begin post-safety product
+  and administration improvements at `0.2.1+7`.
 - Use Flutter and Dart across the client, admin dashboard, and backend.
 - Use Serverpod 3.4.13 in monolith mode with PostgreSQL/PostGIS and no Redis.
 - Self-host on Unraid through Docker Compose. Cloudflare Tunnel publishes
@@ -54,9 +60,11 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   and audited from the admin dashboard.
 - Refresh stale coverage before serving. After both refresh attempts fail,
   use eligible cached places and hide stale dynamic fields.
-- Rank by review count, then rating, then distance, then stable ID. Apply fair
-  selected-category round robin, an exact radius, a maximum price cap, and no
-  rating cutoff. Unknown price remains eligible.
+- The current beta baseline ranks by review count, rating, distance, and stable
+  ID. Treat this as versioned implementation behavior, not a permanent product
+  decision. Preserve exact eligibility and fair selected-category handling;
+  test a balanced ranker only after trustworthy impression/outcome telemetry
+  exists. Unknown price remains eligible.
 - Exclude temporary and permanent closures. Current open state is
   informational. Search English first and Arabic only to fill shortages.
 - Show source attribution on results and in full in the POI details sheet.
@@ -72,8 +80,10 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   passkey enrollment and recovery; never store its password in Hayer.
 - Retain anonymous product events for at most 14 days and privacy-preserving
   hourly aggregates for 12 months. Reports use Asia/Riyadh time and Sunday–
-  Saturday weeks; analytics never store user/session IDs, codes, names,
-  addresses, or precise coordinates.
+  Saturday weeks. Funnel work may use a random decision-journey ID bounded by
+  raw-event retention; analytics never store authenticated user IDs, server
+  session IDs, codes, names, addresses, precise coordinates, or persistent
+  installation identifiers.
 - Resolve session cities through Nominatim with a coarse roughly 1 km,
   30-day cache and an eight-second ceiling. Attribution failure never blocks
   session creation and is reported under a country-specific Unknown bucket.
@@ -87,6 +97,11 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 - Defer the consumer embedded map, app attestation, accounts, identifiable or
   user-level analytics, full galleries/reviews, popular times, iOS, and
   consumer web/PWA until their roadmap milestones.
+- Provider canaries report optional source capability and may gate activation
+  of a new calibration, but cannot prevent the core API, cached sessions, or
+  administration from starting. Treat the current provider cache as
+  source-restricted; durable commercial exports require explicit provenance,
+  retention, and field-use permission.
 
 ## Target architecture
 
@@ -131,7 +146,7 @@ Public generated Serverpod endpoint groups:
 - `sessions.join(code, displayName, idempotencyKey)` is idempotent, enforces
   names case-insensitively, and permits late joins while active.
 - `sessions.getBundle(sessionId)` returns the session, deck, participants,
-  progress, and revision to members only.
+  explicit authenticated participant/progress, and revision to members only.
 - `sessions.recordSwipe(command)` is idempotent by session/user/place.
 - `sessions.getResults(sessionId)` returns aggregate results without named
   individual votes.
@@ -395,8 +410,165 @@ calibration cannot activate.
   closed WAN origin, backup restore, signed solo and multiplayer physical-
   device flows, accessibility, and performance; then tag the invited beta.
 
-Exit: an invited user installs from the Hayer domain and completes the full
-solo and multiplayer flows without developer intervention.
+The checked items above record what was implemented before the production
+audit. They do not override a later audit finding. The checkpoints below are
+the authoritative remaining M7 execution order; keep only the current
+checkpoint active and record commands plus manual evidence as each closes.
+
+#### M7-A — Core session integrity `[~]`
+
+- [x] Set the audit release target to `0.2.0+6`, advertise build 6 as latest,
+  and retain minimum build 5 for the compatibility rollout.
+- [~] Resolve F02/F03/F04 together: make heartbeat/expiry writes concurrency
+  safe, return the authenticated participant explicitly, persist swipe
+  commands before sending, serialize replay, preserve per-session order, and
+  prevent a failed session or terminal command from blocking another.
+- [ ] Prove crash-before-send, response-loss-after-commit, foreground/reconnect
+  replay, identity/session terminal failure, concurrent browser writes, final
+  offline swipe, and read-versus-swipe/expiry races. Do not advance the UI if
+  local durability fails or show final results while the last command remains
+  unacknowledged.
+
+Exit: no read can revert progress; clients resume their own exact position;
+every visible accepted/queued/rejected state has a durable and recoverable
+meaning across Android and web.
+
+#### M7-B — Security and governance boundaries `[ ]`
+
+- [ ] Fix F01 at the real Serverpod endpoint path with a gateway-overwritten,
+  trusted client-IP signal plus server method/user budgets; prove forged
+  forwarding headers and direct-origin access cannot bypass it.
+- [ ] Fix F13/F14/F20/F30: require passkey UP/UV, revoke issued admin/enrollment
+  sessions, make compare-and-swap mutations atomic with audit records, and
+  stop emitting recovery credentials to logs.
+- [ ] Close F29/F35 with an in-product identity/location lifecycle explanation,
+  a provider/source-use inventory, a named reviewer, and documented retention,
+  attribution, outage, and commercial-use decisions.
+
+Exit: onboarding cannot be exhausted through the shared proxy identity;
+privileged ceremonies/revocation reject replay; mutations are atomic/audited;
+privacy and provider assumptions have accountable acceptance evidence.
+
+#### M7-C — Catalog and upstream correctness `[ ]`
+
+- [ ] Fix F05/F06/F07 as one persistence/provenance contract: batch atomic
+  upserts, retain query-specific category evidence, coalesce only equivalent
+  searches, and apply each caller's exact radius/price/category policy before
+  its deck is selected.
+- [ ] Fix F08/F09 with bounded cancellation-aware provider admission, request/
+  byte/time/concurrency ceilings, and one shared geocoder cache/rate budget.
+- [ ] Fix F10/F21 by separating core readiness from optional source canaries
+  and reporting live refresh, stale fallback, partial, failed, and cancelled
+  outcomes truthfully.
+
+Exit: overlapping refreshes do not collide or mislabel POIs; cancelled work
+does not continue unbounded; a provider outage leaves cached/core operations
+available; dashboards distinguish fresh data from fallback.
+
+#### M7-D — Reproducible release and recovery `[ ]`
+
+- [ ] Fix F11/F16/F28: build the native server from the committed lockfile,
+  run required CI on pull requests and protected-branch changes, and verify the
+  repository-controlled browser security policy through both gateways.
+- [ ] Fix F15 before F12: prove checksum-portable, failure-atomic, off-host
+  backup and secret recovery in an isolated restore, then separate migration,
+  runtime, and backup database roles with least privilege.
+- [ ] Fix F31/F32 by narrowing container capabilities/secret mounts, setting
+  measured resource/log ceilings, and adding tested alerts for journey/API,
+  provider, pool, job, analytics-lag, backup-age, and readiness failures.
+
+Exit: a fresh production-like stack is reproducible, least-privileged,
+observable, restorable, and rollback-capable without undocumented host state.
+
+#### M7-E — Client, realtime, accessibility, and analytics integrity `[ ]`
+
+- [ ] Fix F17–F19 with coalesced lightweight progress refresh, dependable
+  stream retry/poll convergence, prompt startup shell, recoverable screen
+  states, and GPS success independent of reverse-geocoder failure.
+- [ ] Fix F22/F23 by using bounded SQL aggregation/query paths and attributing
+  matches to the actual matched place under versioned metric definitions.
+- [ ] Fix F24–F27 as one adaptive presentation pass: support at least 200%
+  text where required, semantics/reduced motion, lazy variable-height results,
+  and localized distance language that does not invent travel-time precision.
+
+Exit: two-device state converges after stream/network failures; setup remains
+recoverable; core journeys work at large text/RTL/reduced motion; analytics
+remain bounded and semantically correct.
+
+#### M7-F — Safety release `0.2.0+6` `[ ]`
+
+- [ ] Deploy additive server/database changes first while builds 5 and 6 are
+  accepted. Verify old-client behavior before publishing the APK.
+- [ ] Run full preflight, containerized PostGIS/gateway integration, isolated
+  restore, signed solo and two-device offline/reconnect flows, current-device
+  accessibility, and release-profile performance checks.
+- [ ] Finalize truthful bilingual `0.2.0` release notes, build and stage the
+  signed APK/checksum, verify it through the production domain, then raise
+  `minimumBuild` to 6 in a separate reversible deployment and create the beta
+  tag.
+
+Exit: invited users can install build 6 and complete the core decision flow;
+build 5 is rejected only after build 6 and rollback evidence are verified.
+
+#### M7-G — Decision intelligence (`0.2.1+7`) `[ ]`
+
+- [ ] Implement G02 with correctly named deck inclusions, measured/deduplicated
+  card impressions, short-lived random journey linkage, explicit-choice and
+  no-match outcomes, schema/version metadata, and no persistent installation
+  identity.
+- [ ] Implement P01/P03/P04: shared place details before voting, an authorized
+  explicit final destination choice, truthful no-match causes, and a short
+  immutable runoff/new-round recovery path that never silently relaxes hard
+  constraints.
+
+Exit: the product and dashboard distinguish inclusion, human impression,
+preference, voting completion, declared choice, no-match, and technical failure.
+
+#### M7-H — Return value and POI feedback `[ ]`
+
+- [ ] Implement P05 as private local-first saved/favorite lists and reusable
+  shortlists; preserve notes locally unless a user explicitly shares them.
+- [ ] Implement P06 as structured, rate-limited POI issue reporting with
+  reversible moderation, source corroboration, ownership, resolution state,
+  and an audit trail. Never convert one anonymous report directly into a
+  closure or catalog fact.
+
+Exit: users can reuse prior candidates, and operators can resolve factual POI
+problems without conflating a dislike with bad source data.
+
+#### M7-I — POI and recommendation foundation `[ ]`
+
+- [ ] Implement G01/G04 incrementally: retain permitted normalized discoveries
+  separately from selected decks; add canonical Hayer identity, source mapping,
+  field-group provenance/freshness, observation outcome, rights policy, and a
+  rights-filtered export projection without turning raw cache payloads into an
+  indefinite warehouse.
+- [ ] Implement G03/P02 only after measured impressions/outcomes exist: preserve
+  hard eligibility, add a versioned quality-confidence/distance/diversity
+  ranker with stable room-level assignment, and compare it against the current
+  baseline using declared-choice, no-match, latency, fairness, and exposure
+  concentration guardrails.
+
+Exit: the catalog can explain identity, source, freshness, permitted use, and
+selection history; recommendation changes are measurable and reversible.
+
+#### M7-J — Actionable administration `[ ]`
+
+- [ ] Add decision health, host/guest funnels, POI quality/freshness, demand
+  versus usable supply, and incident/extractor views with explicit periods,
+  denominators, sample sizes, lag, source type, version overlays, and links to
+  the next operator action.
+- [ ] Add source/rights governance, moderation ownership, measurement-health,
+  alert acknowledgement/resolution, and controlled aggregate export manifests.
+  Suppress unsafe small cohorts; journey IDs never become a retention identity.
+
+Exit: an operator can distinguish product friction, application failure,
+extractor drift, weak usable supply, and POI data defects, then take an audited
+action from the responsible view.
+
+Exit: the safety release is proven in invited use, and the selected product,
+administration, recommendation, and provenance foundations ship with defined
+measurements and rollback paths.
 
 ### M8 — Post-beta roadmap `[ ]`
 
@@ -405,10 +577,15 @@ solo and multiplayer flows without developer intervention.
 - [ ] Complete Arabic/RTL release certification, a signed iOS release, and
   consumer web/PWA releases. Core Arabic/RTL support and an unsigned iOS build
   workflow already exist.
-- [ ] Add the authenticated web photo proxy, then evaluate a consumer map and
-  richer details from measured demand.
+- [ ] Add the authenticated web photo proxy, then evaluate a consumer map,
+  typed visit-fit fields, link/list import, on-demand galleries/popular times,
+  and limited finalist routing only through separate feasibility, rights,
+  identity, cost, and measured-demand gates (P07–P10).
 - [ ] Add Redis/horizontal Serverpod instances only when measurements require
   them.
+- [ ] Perform only the targeted F33 ownership/module extractions justified by
+  stabilized behavior; replace the framework landing page under F34 when the
+  public-web product and metadata strategy is ready.
 
 ## Verification gates
 
@@ -432,9 +609,11 @@ solo and multiplayer flows without developer intervention.
   additive unless bootstrap forces an update-required screen.
 - Logs never contain cookie values, auth tokens, raw precise user coordinates,
   or complete typed queries.
-- Product analytics never contain user/session identifiers, join codes,
-  participant names, typed addresses, or precise coordinates. Processed events
-  expire after 14 days and hourly aggregates after 12 months.
+- Product analytics never contain authenticated user IDs, server session IDs,
+  join codes, participant names, typed addresses, precise coordinates, or a
+  persistent installation identity. A random decision-journey ID may link raw
+  funnel events only within their maximum 14-day retention; hourly aggregates
+  expire after 12 months.
 
 ## Operational defaults
 
@@ -684,6 +863,20 @@ solo and multiplayer flows without developer intervention.
   Android `0.1.0+5` release targeting SDK 36 passed APK Signature Scheme v2
   verification. Both release aliases are 101,565,643 bytes with SHA-256
   `d45a18ecdc1f93b591cd31e26aa9a4948a9bac1e0044b08c5ab5ebf390039f44`.
+- 2026-09-07: began M7-A on audit release `0.2.0+6`. Session reads now update
+  only the presence column, expiration uses a locked column-scoped update, and
+  every bundle identifies the authenticated participant explicitly. Swipe
+  submission now persists before transport, serializes submission/replay,
+  reuses the same idempotency key after uncertain delivery, isolates blocked
+  sessions, records terminal rejection, migrates the Drift outbox to schema 2,
+  and keeps an unacknowledged final swipe on a retryable sync screen. The full
+  preflight passed generated-code/format checks, fatal-info analysis, 68 backend
+  tests, 70 consumer tests, and seven admin tests. The new PostGIS concurrency
+  test is present but remains unexecuted locally because Docker is unavailable;
+  physical foreground/offline replay also remains an M7-A gate. The signed
+  `0.2.0+6` APK is 101,598,575 bytes, targets SDK 36, and verifies with APK
+  Signature Scheme v2. SHA-256:
+  `d31ef2d5f3e1b2f15a25a9c33347ab8d7dacc45b601ebcf8e64e0dc1075df7e6`.
 
 ## Decision and change log
 
@@ -744,3 +937,11 @@ solo and multiplayer flows without developer intervention.
   one interactive operator command for the complete re-enrollment window. The
   toggle is process-scoped, self-verifying, closes on exit, and leaves no global
   enrollment variable behind.
+- 2026-09-07: Adopt the production audit as the M7 remediation baseline. Keep
+  one active milestone with ordered M7-A through M7-J checkpoints. Target
+  safety release `0.2.0+6`, retain build 5 during a server-first compatibility
+  rollout, and raise the minimum only after signed build-6 production proof.
+  Begin high-ROI decision/admin work at `0.2.1+7`. Funnel linkage is limited to
+  a short-lived random journey ID; persistent installation cohorts remain
+  deferred. Provider-derived cache records are not presumed commercially
+  reusable without enforceable provenance and source-use permission.

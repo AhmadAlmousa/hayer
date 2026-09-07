@@ -47,5 +47,15 @@ SessionBundle _bundle() => SessionBundle(
     expiresAt: DateTime(2026, 9, 3, 12),
   ),
   deck: const [],
-  participants: const [],
+  participants: [_participant()],
+  selfParticipant: _participant(),
+);
+
+ParticipantView _participant() => ParticipantView(
+  participantId: 'participant-1',
+  displayName: 'Host',
+  isHost: true,
+  currentIndex: 0,
+  hasCompleted: false,
+  lastSeenAt: DateTime(2026, 9, 2, 12),
 );

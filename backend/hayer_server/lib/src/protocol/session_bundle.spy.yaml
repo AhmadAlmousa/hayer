@@ -3,3 +3,4 @@ fields:
   session: SessionView
   deck: List<PlaceSnapshot>
   participants: List<ParticipantView>
+  selfParticipant: ParticipantView

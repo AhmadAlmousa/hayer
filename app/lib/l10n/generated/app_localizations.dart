@@ -596,6 +596,30 @@ abstract class AppLocalizations {
   /// **'Saved offline. Hayer will sync this swipe when you reconnect.'**
   String get offlineQueued;
 
+  /// No description provided for @finalSwipePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your final choice is saved on this device. Reconnect to finish syncing before viewing the result.'**
+  String get finalSwipePending;
+
+  /// No description provided for @retrySync.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry sync'**
+  String get retrySync;
+
+  /// No description provided for @swipeSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'This choice could not be saved on this device. Please try again.'**
+  String get swipeSaveFailed;
+
+  /// No description provided for @swipeRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The server could not accept this choice. Refresh the session and try again.'**
+  String get swipeRejected;
+
   /// No description provided for @updateRequired.
   ///
   /// In en, this message translates to:

@@ -273,6 +273,21 @@ class AppLocalizationsAr extends AppLocalizations {
       'تم الحفظ دون اتصال، وستتم المزامنة عند عودة الشبكة.';
 
   @override
+  String get finalSwipePending =>
+      'تم حفظ اختيارك الأخير على هذا الجهاز. أعد الاتصال لإكمال المزامنة قبل عرض النتيجة.';
+
+  @override
+  String get retrySync => 'إعادة المزامنة';
+
+  @override
+  String get swipeSaveFailed =>
+      'تعذّر حفظ هذا الاختيار على الجهاز. حاول مرة أخرى.';
+
+  @override
+  String get swipeRejected =>
+      'تعذّر على الخادم قبول هذا الاختيار. حدّث الجلسة وحاول مرة أخرى.';
+
+  @override
   String get updateRequired => 'حدّث تطبيق حيّر للمتابعة.';
 
   @override

@@ -23,12 +23,14 @@ abstract class SessionBundle
     required this.session,
     required this.deck,
     required this.participants,
+    required this.selfParticipant,
   });
 
   factory SessionBundle({
     required _i2.SessionView session,
     required List<_i3.PlaceSnapshot> deck,
     required List<_i4.ParticipantView> participants,
+    required _i4.ParticipantView selfParticipant,
   }) = _SessionBundleImpl;
 
   factory SessionBundle.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -42,6 +44,9 @@ abstract class SessionBundle
       participants: _i5.Protocol().deserialize<List<_i4.ParticipantView>>(
         jsonSerialization['participants'],
       ),
+      selfParticipant: _i5.Protocol().deserialize<_i4.ParticipantView>(
+        jsonSerialization['selfParticipant'],
+      ),
     );
   }
 
@@ -51,6 +56,8 @@ abstract class SessionBundle
 
   List<_i4.ParticipantView> participants;
 
+  _i4.ParticipantView selfParticipant;
+
   /// Returns a shallow copy of this [SessionBundle]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -58,6 +65,7 @@ abstract class SessionBundle
     _i2.SessionView? session,
     List<_i3.PlaceSnapshot>? deck,
     List<_i4.ParticipantView>? participants,
+    _i4.ParticipantView? selfParticipant,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -66,6 +74,7 @@ abstract class SessionBundle
       'session': session.toJson(),
       'deck': deck.toJson(valueToJson: (v) => v.toJson()),
       'participants': participants.toJson(valueToJson: (v) => v.toJson()),
+      'selfParticipant': selfParticipant.toJson(),
     };
   }
 
@@ -78,6 +87,7 @@ abstract class SessionBundle
       'participants': participants.toJson(
         valueToJson: (v) => v.toJsonForProtocol(),
       ),
+      'selfParticipant': selfParticipant.toJsonForProtocol(),
     };
   }
 
@@ -92,10 +102,12 @@ class _SessionBundleImpl extends SessionBundle {
     required _i2.SessionView session,
     required List<_i3.PlaceSnapshot> deck,
     required List<_i4.ParticipantView> participants,
+    required _i4.ParticipantView selfParticipant,
   }) : super._(
          session: session,
          deck: deck,
          participants: participants,
+         selfParticipant: selfParticipant,
        );
 
   /// Returns a shallow copy of this [SessionBundle]
@@ -106,12 +118,14 @@ class _SessionBundleImpl extends SessionBundle {
     _i2.SessionView? session,
     List<_i3.PlaceSnapshot>? deck,
     List<_i4.ParticipantView>? participants,
+    _i4.ParticipantView? selfParticipant,
   }) {
     return SessionBundle(
       session: session ?? this.session.copyWith(),
       deck: deck ?? this.deck.map((e0) => e0.copyWith()).toList(),
       participants:
           participants ?? this.participants.map((e0) => e0.copyWith()).toList(),
+      selfParticipant: selfParticipant ?? this.selfParticipant.copyWith(),
     );
   }
 }

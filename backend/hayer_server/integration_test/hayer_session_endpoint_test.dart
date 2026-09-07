@@ -129,6 +129,9 @@ void main() {
           expect(_placeIds(joined), _placeIds(created));
           expect(joined.deck.first.name, firstPlace.name);
           expect(joined.participants, hasLength(2));
+          expect(created.selfParticipant.isHost, isTrue);
+          expect(joined.selfParticipant.isHost, isFalse);
+          expect(joined.selfParticipant.displayName, 'Guest');
           expect(
             joined.participants.singleWhere((item) => item.isHost).currentIndex,
             1,
@@ -157,6 +160,37 @@ void main() {
           );
         },
       );
+
+      test('concurrent reads never revert committed swipe progress', () async {
+        final created = await endpoints.hayerSession.create(
+          host,
+          request: _request(),
+          idempotencyKey: 'create-read-swipe-race',
+        );
+
+        for (var index = 0; index < created.deck.length; index++) {
+          await Future.wait([
+            endpoints.hayerSession.load(
+              host,
+              sessionId: created.session.sessionId,
+            ),
+            endpoints.hayerSession.swipe(
+              host,
+              command: _swipe(
+                created,
+                index: index,
+                liked: index.isEven,
+                suffix: 'read-race',
+              ),
+            ),
+          ]);
+          final loaded = await endpoints.hayerSession.load(
+            host,
+            sessionId: created.session.sessionId,
+          );
+          expect(loaded.selfParticipant.currentIndex, index + 1);
+        }
+      });
 
       test(
         'duplicate swipes advance once and the latest choice can be revised',
