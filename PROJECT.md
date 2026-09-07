@@ -870,8 +870,10 @@ measurements and rollback paths.
   reuses the same idempotency key after uncertain delivery, isolates blocked
   sessions, records terminal rejection, migrates the Drift outbox to schema 2,
   and keeps an unacknowledged final swipe on a retryable sync screen. The full
-  preflight passed generated-code/format checks, fatal-info analysis, 68 backend
-  tests, 70 consumer tests, and seven admin tests. The new PostGIS concurrency
+  browser secure-storage read/modify/write behavior has regression coverage for
+  concurrent writes and terminal-state recovery. The full preflight passed
+  generated-code/format checks, fatal-info analysis, 68 backend tests, 72
+  consumer tests, and seven admin tests. The new PostGIS concurrency
   test is present but remains unexecuted locally because Docker is unavailable;
   physical foreground/offline replay also remains an M7-A gate. The signed
   `0.2.0+6` APK is 101,598,575 bytes, targets SDK 36, and verifies with APK
