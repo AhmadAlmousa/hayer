@@ -1,0 +1,4 @@
+enum: RouteOriginMode
+values:
+  - sessionAnchor
+  - participantLocation

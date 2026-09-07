@@ -587,4 +587,49 @@ class AppLocalizationsAr extends AppLocalizations {
   String radiusDistance(String distance) {
     return 'نصف القطر $distance';
   }
+
+  @override
+  String get routeOriginTitle => 'من وين نحسب وقت مشوارك؟';
+
+  @override
+  String get routeOriginDescription =>
+      'يتغير الوقت والمسافة الظاهرة لك فقط، وتبقى أماكن المجموعة وتصويتاتها كما هي.';
+
+  @override
+  String get useHostLocation => 'استخدم موقع المضيف';
+
+  @override
+  String get useHostLocationDescription =>
+      'تكون التقديرات من منطقة البحث المشتركة للجميع.';
+
+  @override
+  String get useMyLocation => 'استخدم موقعي الحالي';
+
+  @override
+  String get useMyLocationDescription => 'احسب تقديراتي من مكاني الآن.';
+
+  @override
+  String get routeOriginSetting => 'تقدير مشوارك';
+
+  @override
+  String get routeDistanceUnavailable => 'المسافة غير متاحة';
+
+  @override
+  String get currentLocationUnavailableUsingHost =>
+      'تعذر تحديد موقعك، لذلك سنستخدم موقع المضيف.';
+
+  @override
+  String distanceMetersLabel(String distance) {
+    return '$distance م';
+  }
+
+  @override
+  String distanceKilometersLabel(String distance) {
+    return '$distance كم';
+  }
+
+  @override
+  String approximateRouteEstimate(int minutes, String distance) {
+    return '~$minutes د · $distance';
+  }
 }

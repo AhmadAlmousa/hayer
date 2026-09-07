@@ -24,7 +24,6 @@ void main() {
             'results': [65],
             'about': [1, 100, 1],
           },
-          'directionsEndpoint': 'https://attacker.invalid/directions',
           'tuning': {'browseZoom': 99},
         }),
         bundled: bundled,
@@ -88,12 +87,41 @@ void main() {
       expect(second.calibration.version, isNot(first.calibration.version));
     });
 
+    test('changes the Hayer version when directions calibration changes', () {
+      final first = projector.project(
+        remoteJson: jsonEncode({'version': 18}),
+        bundled: bundled,
+      );
+      final second = projector.project(
+        remoteJson: jsonEncode({
+          'version': 19,
+          'directionsPb': '${bundled.directionsPb}!99b1',
+        }),
+        bundled: bundled,
+      );
+
+      expect(second.digest, isNot(first.digest));
+    });
+
     test('rejects a remote search endpoint outside Hayer allowlists', () {
       expect(
         () => projector.project(
           remoteJson: jsonEncode({
             'version': 19,
             'searchEndpoint': 'https://attacker.invalid/search',
+          }),
+          bundled: bundled,
+        ),
+        throwsFormatException,
+      );
+    });
+
+    test('rejects a remote directions endpoint outside Hayer allowlists', () {
+      expect(
+        () => projector.project(
+          remoteJson: jsonEncode({
+            'version': 19,
+            'directionsEndpoint': 'https://attacker.invalid/directions',
           }),
           bundled: bundled,
         ),

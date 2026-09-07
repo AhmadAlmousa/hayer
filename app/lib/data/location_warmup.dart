@@ -32,7 +32,10 @@ class LocationWarmup {
     }
   }
 
-  Future<Position?> locate({bool requestPermission = false}) async {
+  Future<Position?> locate({
+    bool requestPermission = false,
+    bool refresh = false,
+  }) async {
     try {
       var permission = await Geolocator.checkPermission();
       if (requestPermission && permission == LocationPermission.denied) {
@@ -42,7 +45,9 @@ class LocationWarmup {
           permission == LocationPermission.deniedForever) {
         return null;
       }
-      return _latest ?? await _refreshCurrent();
+      return refresh
+          ? await _refreshCurrent()
+          : _latest ?? await _refreshCurrent();
     } catch (_) {
       return null;
     }

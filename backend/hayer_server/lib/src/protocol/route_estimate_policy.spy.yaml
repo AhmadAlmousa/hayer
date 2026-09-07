@@ -1,0 +1,6 @@
+class: RouteEstimatePolicy
+fields:
+  enabled: bool
+  allowParticipantLocation: bool
+  defaultOrigin: RouteOriginMode
+  cacheMinutes: int

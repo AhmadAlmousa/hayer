@@ -8,4 +8,10 @@ fields:
   perCreationConcurrency: int
   globalRequestsPerMinute: int
   globalBurst: int
+  routeEstimatesEnabled: bool
+  allowParticipantLocation: bool
+  defaultRouteOrigin: RouteOriginMode
+  routeEstimateCacheMinutes: int
+  routeRequestsPerMinute: int
+  routeBurst: int
   updatedAt: DateTime

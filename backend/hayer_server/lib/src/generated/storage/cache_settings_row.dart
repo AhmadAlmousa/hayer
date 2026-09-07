@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../route_origin_mode.dart' as _i2;
 
 abstract class CacheSettingsRow
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -26,9 +27,21 @@ abstract class CacheSettingsRow
     required this.perCreationConcurrency,
     required this.globalRequestsPerMinute,
     required this.globalBurst,
+    bool? routeEstimatesEnabled,
+    bool? allowParticipantLocation,
+    _i2.RouteOriginMode? defaultRouteOrigin,
+    int? routeEstimateCacheMinutes,
+    int? routeRequestsPerMinute,
+    int? routeBurst,
     required this.updatedBy,
     required this.updatedAt,
-  });
+  }) : routeEstimatesEnabled = routeEstimatesEnabled ?? true,
+       allowParticipantLocation = allowParticipantLocation ?? true,
+       defaultRouteOrigin =
+           defaultRouteOrigin ?? _i2.RouteOriginMode.sessionAnchor,
+       routeEstimateCacheMinutes = routeEstimateCacheMinutes ?? 10,
+       routeRequestsPerMinute = routeRequestsPerMinute ?? 30,
+       routeBurst = routeBurst ?? 6;
 
   factory CacheSettingsRow({
     _i1.UuidValue? id,
@@ -41,6 +54,12 @@ abstract class CacheSettingsRow
     required int perCreationConcurrency,
     required int globalRequestsPerMinute,
     required int globalBurst,
+    bool? routeEstimatesEnabled,
+    bool? allowParticipantLocation,
+    _i2.RouteOriginMode? defaultRouteOrigin,
+    int? routeEstimateCacheMinutes,
+    int? routeRequestsPerMinute,
+    int? routeBurst,
     required String updatedBy,
     required DateTime updatedAt,
   }) = _CacheSettingsRowImpl;
@@ -61,6 +80,27 @@ abstract class CacheSettingsRow
       globalRequestsPerMinute:
           jsonSerialization['globalRequestsPerMinute'] as int,
       globalBurst: jsonSerialization['globalBurst'] as int,
+      routeEstimatesEnabled: jsonSerialization['routeEstimatesEnabled'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['routeEstimatesEnabled'],
+            ),
+      allowParticipantLocation:
+          jsonSerialization['allowParticipantLocation'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['allowParticipantLocation'],
+            ),
+      defaultRouteOrigin: jsonSerialization['defaultRouteOrigin'] == null
+          ? null
+          : _i2.RouteOriginMode.fromJson(
+              (jsonSerialization['defaultRouteOrigin'] as String),
+            ),
+      routeEstimateCacheMinutes:
+          jsonSerialization['routeEstimateCacheMinutes'] as int?,
+      routeRequestsPerMinute:
+          jsonSerialization['routeRequestsPerMinute'] as int?,
+      routeBurst: jsonSerialization['routeBurst'] as int?,
       updatedBy: jsonSerialization['updatedBy'] as String,
       updatedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
@@ -93,6 +133,18 @@ abstract class CacheSettingsRow
 
   int globalBurst;
 
+  bool routeEstimatesEnabled;
+
+  bool allowParticipantLocation;
+
+  _i2.RouteOriginMode defaultRouteOrigin;
+
+  int routeEstimateCacheMinutes;
+
+  int routeRequestsPerMinute;
+
+  int routeBurst;
+
   String updatedBy;
 
   DateTime updatedAt;
@@ -114,6 +166,12 @@ abstract class CacheSettingsRow
     int? perCreationConcurrency,
     int? globalRequestsPerMinute,
     int? globalBurst,
+    bool? routeEstimatesEnabled,
+    bool? allowParticipantLocation,
+    _i2.RouteOriginMode? defaultRouteOrigin,
+    int? routeEstimateCacheMinutes,
+    int? routeRequestsPerMinute,
+    int? routeBurst,
     String? updatedBy,
     DateTime? updatedAt,
   });
@@ -131,6 +189,12 @@ abstract class CacheSettingsRow
       'perCreationConcurrency': perCreationConcurrency,
       'globalRequestsPerMinute': globalRequestsPerMinute,
       'globalBurst': globalBurst,
+      'routeEstimatesEnabled': routeEstimatesEnabled,
+      'allowParticipantLocation': allowParticipantLocation,
+      'defaultRouteOrigin': defaultRouteOrigin.toJson(),
+      'routeEstimateCacheMinutes': routeEstimateCacheMinutes,
+      'routeRequestsPerMinute': routeRequestsPerMinute,
+      'routeBurst': routeBurst,
       'updatedBy': updatedBy,
       'updatedAt': updatedAt.toJson(),
     };
@@ -185,6 +249,12 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     required int perCreationConcurrency,
     required int globalRequestsPerMinute,
     required int globalBurst,
+    bool? routeEstimatesEnabled,
+    bool? allowParticipantLocation,
+    _i2.RouteOriginMode? defaultRouteOrigin,
+    int? routeEstimateCacheMinutes,
+    int? routeRequestsPerMinute,
+    int? routeBurst,
     required String updatedBy,
     required DateTime updatedAt,
   }) : super._(
@@ -198,6 +268,12 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
          perCreationConcurrency: perCreationConcurrency,
          globalRequestsPerMinute: globalRequestsPerMinute,
          globalBurst: globalBurst,
+         routeEstimatesEnabled: routeEstimatesEnabled,
+         allowParticipantLocation: allowParticipantLocation,
+         defaultRouteOrigin: defaultRouteOrigin,
+         routeEstimateCacheMinutes: routeEstimateCacheMinutes,
+         routeRequestsPerMinute: routeRequestsPerMinute,
+         routeBurst: routeBurst,
          updatedBy: updatedBy,
          updatedAt: updatedAt,
        );
@@ -217,6 +293,12 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? perCreationConcurrency,
     int? globalRequestsPerMinute,
     int? globalBurst,
+    bool? routeEstimatesEnabled,
+    bool? allowParticipantLocation,
+    _i2.RouteOriginMode? defaultRouteOrigin,
+    int? routeEstimateCacheMinutes,
+    int? routeRequestsPerMinute,
+    int? routeBurst,
     String? updatedBy,
     DateTime? updatedAt,
   }) {
@@ -233,6 +315,16 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
       globalRequestsPerMinute:
           globalRequestsPerMinute ?? this.globalRequestsPerMinute,
       globalBurst: globalBurst ?? this.globalBurst,
+      routeEstimatesEnabled:
+          routeEstimatesEnabled ?? this.routeEstimatesEnabled,
+      allowParticipantLocation:
+          allowParticipantLocation ?? this.allowParticipantLocation,
+      defaultRouteOrigin: defaultRouteOrigin ?? this.defaultRouteOrigin,
+      routeEstimateCacheMinutes:
+          routeEstimateCacheMinutes ?? this.routeEstimateCacheMinutes,
+      routeRequestsPerMinute:
+          routeRequestsPerMinute ?? this.routeRequestsPerMinute,
+      routeBurst: routeBurst ?? this.routeBurst,
       updatedBy: updatedBy ?? this.updatedBy,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -290,6 +382,42 @@ class CacheSettingsRowUpdateTable
     value,
   );
 
+  _i1.ColumnValue<bool, bool> routeEstimatesEnabled(bool value) =>
+      _i1.ColumnValue(
+        table.routeEstimatesEnabled,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> allowParticipantLocation(bool value) =>
+      _i1.ColumnValue(
+        table.allowParticipantLocation,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.RouteOriginMode, _i2.RouteOriginMode> defaultRouteOrigin(
+    _i2.RouteOriginMode value,
+  ) => _i1.ColumnValue(
+    table.defaultRouteOrigin,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> routeEstimateCacheMinutes(int value) =>
+      _i1.ColumnValue(
+        table.routeEstimateCacheMinutes,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> routeRequestsPerMinute(int value) =>
+      _i1.ColumnValue(
+        table.routeRequestsPerMinute,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> routeBurst(int value) => _i1.ColumnValue(
+    table.routeBurst,
+    value,
+  );
+
   _i1.ColumnValue<String, String> updatedBy(String value) => _i1.ColumnValue(
     table.updatedBy,
     value,
@@ -342,6 +470,37 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
       'globalBurst',
       this,
     );
+    routeEstimatesEnabled = _i1.ColumnBool(
+      'routeEstimatesEnabled',
+      this,
+      hasDefault: true,
+    );
+    allowParticipantLocation = _i1.ColumnBool(
+      'allowParticipantLocation',
+      this,
+      hasDefault: true,
+    );
+    defaultRouteOrigin = _i1.ColumnEnum(
+      'defaultRouteOrigin',
+      this,
+      _i1.EnumSerialization.byName,
+      hasDefault: true,
+    );
+    routeEstimateCacheMinutes = _i1.ColumnInt(
+      'routeEstimateCacheMinutes',
+      this,
+      hasDefault: true,
+    );
+    routeRequestsPerMinute = _i1.ColumnInt(
+      'routeRequestsPerMinute',
+      this,
+      hasDefault: true,
+    );
+    routeBurst = _i1.ColumnInt(
+      'routeBurst',
+      this,
+      hasDefault: true,
+    );
     updatedBy = _i1.ColumnString(
       'updatedBy',
       this,
@@ -372,6 +531,18 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnInt globalBurst;
 
+  late final _i1.ColumnBool routeEstimatesEnabled;
+
+  late final _i1.ColumnBool allowParticipantLocation;
+
+  late final _i1.ColumnEnum<_i2.RouteOriginMode> defaultRouteOrigin;
+
+  late final _i1.ColumnInt routeEstimateCacheMinutes;
+
+  late final _i1.ColumnInt routeRequestsPerMinute;
+
+  late final _i1.ColumnInt routeBurst;
+
   late final _i1.ColumnString updatedBy;
 
   late final _i1.ColumnDateTime updatedAt;
@@ -388,6 +559,12 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
     perCreationConcurrency,
     globalRequestsPerMinute,
     globalBurst,
+    routeEstimatesEnabled,
+    allowParticipantLocation,
+    defaultRouteOrigin,
+    routeEstimateCacheMinutes,
+    routeRequestsPerMinute,
+    routeBurst,
     updatedBy,
     updatedAt,
   ];

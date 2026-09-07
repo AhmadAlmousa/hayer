@@ -28,7 +28,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calibration => 'Calibration';
 
   @override
-  String get settings => 'Cache policy';
+  String get settings => 'System policy';
 
   @override
   String get audit => 'Audit log';

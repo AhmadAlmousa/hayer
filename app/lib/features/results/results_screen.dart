@@ -11,7 +11,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/theme.dart';
-import '../../core/place_distance.dart';
 import '../../core/display_formatters.dart';
 import '../../core/page_title.dart';
 import '../../core/gcc_currency_symbol.dart';
@@ -20,6 +19,7 @@ import '../../core/providers.dart';
 import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../core/widgets/install_app_card.dart';
+import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/weekly_hours_calendar.dart';
 import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -42,6 +42,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
   SessionRealtimeListener? _updates;
   bool _loadInProgress = false;
   bool _reloadQueued = false;
+  RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
 
   @override
   void initState() {
@@ -83,10 +84,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
               .results(sessionId: widget.sessionId),
           repository.load(widget.sessionId),
         ]);
+        final nextBundle = values[1] as SessionBundle;
+        final routeOrigin = await _routeOriginFor(nextBundle);
         if (!mounted) return;
         setState(() {
           _results = values[0] as List<SessionResult>;
-          _bundle = values[1] as SessionBundle;
+          _bundle = nextBundle;
+          _routeOrigin = routeOrigin;
           _error = null;
         });
       } while (_reloadQueued);
@@ -278,6 +282,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                         showConsensus:
                             bundle?.session.mode == SessionMode.multiplayer,
                         countryCode: bundle?.session.countryCode,
+                        sessionId: widget.sessionId,
+                        routeOrigin: _routeOrigin,
+                        routeEstimatesEnabled:
+                            bundle?.routeEstimatePolicy?.enabled ?? false,
                       ),
                     if (kIsWeb) const InstallAppCard(),
                   ],
@@ -361,6 +369,21 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
       ),
     );
   }
+
+  Future<RouteOriginMode> _routeOriginFor(SessionBundle bundle) async {
+    final policy = bundle.routeEstimatePolicy;
+    if (policy == null ||
+        !policy.enabled ||
+        bundle.session.mode != SessionMode.multiplayer ||
+        bundle.selfParticipant.isHost ||
+        !policy.allowParticipantLocation) {
+      return RouteOriginMode.sessionAnchor;
+    }
+    return await ref
+            .read(routeEstimateRepositoryProvider)
+            .readOrigin(widget.sessionId) ??
+        RouteOriginMode.sessionAnchor;
+  }
 }
 
 class _AnimatedResultsList extends StatelessWidget {
@@ -368,12 +391,18 @@ class _AnimatedResultsList extends StatelessWidget {
     required this.values,
     required this.showConsensus,
     required this.countryCode,
+    required this.sessionId,
+    required this.routeOrigin,
+    required this.routeEstimatesEnabled,
   });
 
   static const _itemExtent = 162.0;
   final List<SessionResult> values;
   final bool showConsensus;
   final String? countryCode;
+  final String sessionId;
+  final RouteOriginMode routeOrigin;
+  final bool routeEstimatesEnabled;
 
   @override
   Widget build(BuildContext context) => AnimatedContainer(
@@ -398,6 +427,9 @@ class _AnimatedResultsList extends StatelessWidget {
                 rank: index + 1,
                 showConsensus: showConsensus,
                 countryCode: countryCode,
+                sessionId: sessionId,
+                routeOrigin: routeOrigin,
+                routeEstimatesEnabled: routeEstimatesEnabled,
               ),
             ),
           ),
@@ -412,11 +444,17 @@ class _ResultCard extends StatelessWidget {
     required this.rank,
     required this.showConsensus,
     required this.countryCode,
+    required this.sessionId,
+    required this.routeOrigin,
+    required this.routeEstimatesEnabled,
   });
   final SessionResult result;
   final int rank;
   final bool showConsensus;
   final String? countryCode;
+  final String sessionId;
+  final RouteOriginMode routeOrigin;
+  final bool routeEstimatesEnabled;
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
@@ -436,6 +474,9 @@ class _ResultCard extends StatelessWidget {
             builder: (_) => _PlaceDetailsSheet(
               place: place,
               countryCode: countryCode,
+              sessionId: sessionId,
+              routeOrigin: routeOrigin,
+              routeEstimatesEnabled: routeEstimatesEnabled,
             ),
           );
         },
@@ -503,9 +544,17 @@ class _ResultCard extends StatelessWidget {
                           '★ ${place.rating!.toStringAsFixed(1)}',
                         if (place.reviewCount != null)
                           '${formatCount(context, place.reviewCount!)} ${strings.reviews}',
-                        formatDistanceWithTravelTime(place.distanceMeters),
                       ].join('  •  '),
-                      maxLines: 2,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    RouteEstimateText(
+                      sessionId: sessionId,
+                      place: place,
+                      origin: routeOrigin,
+                      enabled: routeEstimatesEnabled,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
@@ -572,10 +621,16 @@ class _PlaceDetailsSheet extends StatelessWidget {
   const _PlaceDetailsSheet({
     required this.place,
     required this.countryCode,
+    required this.sessionId,
+    required this.routeOrigin,
+    required this.routeEstimatesEnabled,
   });
 
   final PlaceSnapshot place;
   final String? countryCode;
+  final String sessionId;
+  final RouteOriginMode routeOrigin;
+  final bool routeEstimatesEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -625,10 +680,6 @@ class _PlaceDetailsSheet extends StatelessWidget {
                         ? '× ${place.priceLevel}'
                         : place.priceText!,
                   ),
-                M3EChip(
-                  leading: const Icon(Icons.near_me_rounded),
-                  label: formatDistanceWithTravelTime(place.distanceMeters),
-                ),
                 if (place.isOpen != null)
                   M3EChip(
                     leading: Icon(
@@ -641,6 +692,20 @@ class _PlaceDetailsSheet extends StatelessWidget {
                     ),
                     label: place.isOpen! ? strings.openNow : strings.closedNow,
                   ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Icon(Icons.near_me_rounded, size: 18),
+                const SizedBox(width: 8),
+                RouteEstimateText(
+                  sessionId: sessionId,
+                  place: place,
+                  origin: routeOrigin,
+                  enabled: routeEstimatesEnabled,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ],
             ),
             if (place.formattedAddress ?? place.address

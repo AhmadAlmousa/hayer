@@ -1,0 +1,6 @@
+class: RouteEstimate
+fields:
+  distanceMeters: int
+  durationSeconds: int
+  trafficAware: bool
+  checkedAt: DateTime

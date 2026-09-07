@@ -1069,6 +1069,43 @@ class Endpoints extends _i1.EndpointDispatch {
                     languageCode: params['languageCode'],
                   ),
         ),
+        'routeEstimate': _i1.MethodConnector(
+          name: 'routeEstimate',
+          params: {
+            'sessionId': _i1.ParameterDescription(
+              name: 'sessionId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'placeId': _i1.ParameterDescription(
+              name: 'placeId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'originLatitude': _i1.ParameterDescription(
+              name: 'originLatitude',
+              type: _i1.getType<double?>(),
+              nullable: true,
+            ),
+            'originLongitude': _i1.ParameterDescription(
+              name: 'originLongitude',
+              type: _i1.getType<double?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['place'] as _i5.PlaceEndpoint).routeEstimate(
+                    session,
+                    sessionId: params['sessionId'],
+                    placeId: params['placeId'],
+                    originLatitude: params['originLatitude'],
+                    originLongitude: params['originLongitude'],
+                  ),
+        ),
       },
     );
     connectors['taxonomy'] = _i1.EndpointConnector(

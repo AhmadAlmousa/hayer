@@ -6,8 +6,13 @@ void main() {
   final calibration = PlaceCalibration(
     version: 'test',
     searchEndpoint: Uri.https('www.google.com', '/search'),
+    directionsEndpoint: Uri.https(
+      'www.google.com',
+      '/maps/preview/directions',
+    ),
     sessionWarmUrl: Uri.https('www.google.com', '/maps'),
     searchPb: '!1s{QUERY}!1d25229.1!2d{LNG}!3d{LAT}!7i20!10b1',
+    directionsPb: '!3d{OLAT}!4d{OLNG}!3d{DLAT}!4d{DLNG}!1e{MODE}',
     paths: const {
       'results': [64],
       'name': [1, 11],

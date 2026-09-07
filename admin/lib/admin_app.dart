@@ -1320,7 +1320,10 @@ class _PolicyPage extends StatefulWidget {
 
 class _PolicyPageState extends State<_PolicyPage> {
   CachePolicy? _policy;
-  final _controllers = List.generate(7, (_) => TextEditingController());
+  final _controllers = List.generate(10, (_) => TextEditingController());
+  bool _routeEstimatesEnabled = true;
+  bool _allowParticipantLocation = true;
+  RouteOriginMode _defaultRouteOrigin = RouteOriginMode.sessionAnchor;
   Object? _error;
 
   @override
@@ -1348,11 +1351,20 @@ class _PolicyPageState extends State<_PolicyPage> {
         value.perCreationConcurrency,
         value.globalRequestsPerMinute,
         value.globalBurst,
+        value.routeEstimateCacheMinutes,
+        value.routeRequestsPerMinute,
+        value.routeBurst,
       ];
       for (var index = 0; index < values.length; index++) {
         _controllers[index].text = '${values[index]}';
       }
-      setState(() => _policy = value);
+      setState(() {
+        _policy = value;
+        _routeEstimatesEnabled = value.routeEstimatesEnabled;
+        _allowParticipantLocation = value.allowParticipantLocation;
+        _defaultRouteOrigin = value.defaultRouteOrigin;
+        _error = null;
+      });
     } catch (error) {
       setState(() => _error = error);
     }
@@ -1360,7 +1372,7 @@ class _PolicyPageState extends State<_PolicyPage> {
 
   @override
   Widget build(BuildContext context) {
-    const labels = [
+    const cacheLabels = [
       'Fresh hours',
       'Stale fallback days',
       'Retention days',
@@ -1370,7 +1382,7 @@ class _PolicyPageState extends State<_PolicyPage> {
       'Global burst',
     ];
     return _PageShell(
-      title: 'Cache policy',
+      title: 'System policy',
       child: _policy == null
           ? (_error == null
                 ? const Center(child: CircularProgressIndicator())
@@ -1378,17 +1390,113 @@ class _PolicyPageState extends State<_PolicyPage> {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Text(
+                  'Catalog and extraction',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 12),
                 Wrap(
                   spacing: 14,
                   runSpacing: 14,
                   children: [
-                    for (var index = 0; index < labels.length; index++)
+                    for (var index = 0; index < cacheLabels.length; index++)
                       SizedBox(
                         width: 260,
                         child: TextField(
                           controller: _controllers[index],
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: labels[index]),
+                          decoration: InputDecoration(
+                            labelText: cacheLabels[index],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 28),
+                const Divider(),
+                const SizedBox(height: 20),
+                Text(
+                  'Route estimates',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Controls Google traffic estimates shown to participants. '
+                  'The shared deck and votes always remain anchored to the host search area.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 12),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Show route estimates'),
+                  subtitle: const Text(
+                    'Fall back to straight-line distance when unavailable.',
+                  ),
+                  value: _routeEstimatesEnabled,
+                  onChanged: (value) =>
+                      setState(() => _routeEstimatesEnabled = value),
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Allow a guest’s current location'),
+                  subtitle: const Text(
+                    'Guests may calculate their own labels instead of using the host location.',
+                  ),
+                  value: _allowParticipantLocation,
+                  onChanged: !_routeEstimatesEnabled
+                      ? null
+                      : (value) => setState(() {
+                          _allowParticipantLocation = value;
+                          if (!value) {
+                            _defaultRouteOrigin = RouteOriginMode.sessionAnchor;
+                          }
+                        }),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: 340,
+                  child: DropdownButtonFormField<RouteOriginMode>(
+                    initialValue: _defaultRouteOrigin,
+                    decoration: const InputDecoration(
+                      labelText: 'Guest default',
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: RouteOriginMode.sessionAnchor,
+                        child: Text('Host search location'),
+                      ),
+                      DropdownMenuItem(
+                        value: RouteOriginMode.participantLocation,
+                        child: Text('Guest current location'),
+                      ),
+                    ],
+                    onChanged:
+                        !_routeEstimatesEnabled || !_allowParticipantLocation
+                        ? null
+                        : (value) {
+                            if (value != null) {
+                              setState(() => _defaultRouteOrigin = value);
+                            }
+                          },
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 14,
+                  runSpacing: 14,
+                  children: [
+                    for (final entry in const [
+                      (7, 'Estimate cache minutes'),
+                      (8, 'Route requests/minute'),
+                      (9, 'Route burst'),
+                    ])
+                      SizedBox(
+                        width: 260,
+                        child: TextField(
+                          controller: _controllers[entry.$1],
+                          enabled: _routeEstimatesEnabled,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(labelText: entry.$2),
                         ),
                       ),
                   ],
@@ -1408,7 +1516,7 @@ class _PolicyPageState extends State<_PolicyPage> {
   }
 
   Future<void> _save() async {
-    final reason = await _reasonDialog(context, 'Save cache policy');
+    final reason = await _reasonDialog(context, 'Save system policy');
     if (reason == null) return;
     try {
       final values = _controllers
@@ -1426,6 +1534,14 @@ class _PolicyPageState extends State<_PolicyPage> {
           perCreationConcurrency: values[4],
           globalRequestsPerMinute: values[5],
           globalBurst: values[6],
+          routeEstimatesEnabled: _routeEstimatesEnabled,
+          allowParticipantLocation: _allowParticipantLocation,
+          defaultRouteOrigin: _allowParticipantLocation
+              ? _defaultRouteOrigin
+              : RouteOriginMode.sessionAnchor,
+          routeEstimateCacheMinutes: values[7],
+          routeRequestsPerMinute: values[8],
+          routeBurst: values[9],
           updatedAt: now,
         ),
       );

@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
-  /// **'Cache policy'**
+  /// **'System policy'**
   String get settings;
 
   /// No description provided for @audit.

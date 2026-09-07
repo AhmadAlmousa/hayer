@@ -60,6 +60,29 @@ class GoogleWebSession {
     return response;
   }
 
+  Future<http.Response> directions({
+    required String pb,
+    String language = 'en',
+    String region = 'sa',
+  }) async {
+    await warm(language: language, region: region);
+    final endpoint = calibration.directionsEndpoint.replace(
+      queryParameters: {
+        ...calibration.directionsEndpoint.queryParameters,
+        'authuser': '0',
+        'hl': language,
+        'gl': region,
+        'pb': pb,
+      },
+    );
+    _ensureAllowed(endpoint);
+    final response = await _client
+        .get(endpoint, headers: _headers(language, region))
+        .timeout(const Duration(seconds: 15));
+    _captureCookies(response.headers['set-cookie']);
+    return response;
+  }
+
   Future<void> _warm({required String language, required String region}) async {
     final uri = calibration.sessionWarmUrl.replace(
       queryParameters: {

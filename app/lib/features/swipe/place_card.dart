@@ -6,13 +6,23 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/theme.dart';
 import '../../core/gcc_currency_symbol.dart';
-import '../../core/place_distance.dart';
 import '../../core/place_links.dart';
+import '../../core/widgets/route_estimate_text.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class PlaceCard extends StatelessWidget {
-  const PlaceCard({super.key, required this.place, this.countryCode});
+  const PlaceCard({
+    super.key,
+    required this.place,
+    required this.sessionId,
+    required this.routeOrigin,
+    required this.routeEstimatesEnabled,
+    this.countryCode,
+  });
   final PlaceSnapshot place;
+  final String sessionId;
+  final RouteOriginMode routeOrigin;
+  final bool routeEstimatesEnabled;
   final String? countryCode;
 
   @override
@@ -62,9 +72,15 @@ class PlaceCard extends StatelessWidget {
                           ? HayerTheme.success
                           : HayerTheme.coral,
                     ),
-                  _Badge(
-                    text: formatDistanceWithTravelTime(place.distanceMeters),
+                  _Badge.child(
                     color: Colors.black54,
+                    child: RouteEstimateText(
+                      sessionId: sessionId,
+                      place: place,
+                      origin: routeOrigin,
+                      enabled: routeEstimatesEnabled,
+                      style: _Badge.textStyle,
+                    ),
                   ),
                 ],
               ),
@@ -201,8 +217,15 @@ class PlaceCard extends StatelessWidget {
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge({required this.text, required this.color});
-  final String text;
+  _Badge({required String text, required this.color})
+    : child = Text(text, style: textStyle);
+  const _Badge.child({required this.child, required this.color});
+  static const textStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: FontWeight.w800,
+  );
+  final Widget child;
   final Color color;
   @override
   Widget build(BuildContext context) => Container(
@@ -211,13 +234,6 @@ class _Badge extends StatelessWidget {
       color: color,
       borderRadius: BorderRadius.circular(99),
     ),
-    child: Text(
-      text,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 12,
-        fontWeight: FontWeight.w800,
-      ),
-    ),
+    child: child,
   );
 }

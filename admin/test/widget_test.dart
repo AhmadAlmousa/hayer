@@ -140,6 +140,23 @@ void main() {
     expect(find.text('Reason: Retention cleanup'), findsOneWidget);
     expect(find.text("After: {removedCount: 3}"), findsOneWidget);
   });
+
+  testWidgets('system policy exposes participant route controls', (
+    tester,
+  ) async {
+    await _setSurface(tester, const Size(1400, 900));
+    final operations = _FakeAdminOperations();
+    await _pumpDashboard(tester, operations);
+
+    await tester.tap(find.text('System policy'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('System policy'), findsWidgets);
+    expect(find.text('Route estimates'), findsOneWidget);
+    expect(find.text('Show route estimates'), findsOneWidget);
+    expect(find.text('Allow a guest’s current location'), findsOneWidget);
+    expect(find.text('Host search location'), findsOneWidget);
+  });
 }
 
 Future<void> _setSurface(WidgetTester tester, Size size) async {
@@ -328,6 +345,31 @@ class _FakeAdminOperations implements AdminOperations {
     retentionDays: 365,
     cutoff: DateTime.utc(2025, 9, 5),
   );
+
+  @override
+  Future<CachePolicy> policy() async => CachePolicy(
+    version: 1,
+    freshHours: 72,
+    staleFallbackDays: 30,
+    retentionDays: 365,
+    extractorAttempts: 2,
+    perCreationConcurrency: 3,
+    globalRequestsPerMinute: 30,
+    globalBurst: 6,
+    routeEstimatesEnabled: true,
+    allowParticipantLocation: true,
+    defaultRouteOrigin: RouteOriginMode.sessionAnchor,
+    routeEstimateCacheMinutes: 10,
+    routeRequestsPerMinute: 30,
+    routeBurst: 6,
+    updatedAt: DateTime.utc(2026, 9, 7),
+  );
+
+  @override
+  Future<CachePolicy> updatePolicy({
+    required String reason,
+    required CachePolicy policy,
+  }) async => policy;
 
   @override
   Future<RefreshJobPage> refreshJobs({

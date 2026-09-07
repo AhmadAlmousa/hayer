@@ -17,6 +17,7 @@ import '../../core/widgets/search_area_map.dart';
 import '../../core/widgets/session_qr_code.dart';
 import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'route_origin_choice_sheet.dart';
 
 class LobbyScreen extends ConsumerStatefulWidget {
   const LobbyScreen({super.key, required this.sessionId, this.initialBundle});
@@ -32,6 +33,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   Object? _error;
   SessionRealtimeListener? _updates;
   bool _celebrating = false;
+  bool _routeChoiceOpen = false;
+  RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
 
   @override
   void initState() {
@@ -63,6 +66,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           _bundle = value;
           _error = null;
         });
+        unawaited(_syncRouteOrigin(value));
         if (becameInstantMatch) await _celebrateMatch();
       }
     } catch (error) {
@@ -198,6 +202,29 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
+                    if (_mayChooseRouteOrigin(bundle)) ...[
+                      const SizedBox(height: 12),
+                      Card(
+                        child: ListTile(
+                          leading: Icon(
+                            _routeOrigin == RouteOriginMode.participantLocation
+                                ? Icons.my_location_rounded
+                                : Icons.group_outlined,
+                          ),
+                          title: Text(strings.routeOriginSetting),
+                          subtitle: Text(
+                            _routeOrigin == RouteOriginMode.participantLocation
+                                ? strings.useMyLocation
+                                : strings.useHostLocation,
+                          ),
+                          trailing: const Icon(Icons.edit_outlined),
+                          onTap: () => _chooseRouteOrigin(
+                            bundle,
+                            requiredChoice: false,
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 20),
                     Card(
                       child: Padding(
@@ -312,6 +339,69 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
 
   String _distance(int meters) =>
       meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';
+
+  bool _mayChooseRouteOrigin(SessionBundle bundle) {
+    final policy = bundle.routeEstimatePolicy;
+    return bundle.session.mode == SessionMode.multiplayer &&
+        !bundle.selfParticipant.isHost &&
+        policy != null &&
+        policy.enabled &&
+        policy.allowParticipantLocation;
+  }
+
+  Future<void> _syncRouteOrigin(SessionBundle bundle) async {
+    if (!_mayChooseRouteOrigin(bundle)) {
+      if (mounted && _routeOrigin != RouteOriginMode.sessionAnchor) {
+        setState(() => _routeOrigin = RouteOriginMode.sessionAnchor);
+      }
+      return;
+    }
+    final repository = ref.read(routeEstimateRepositoryProvider);
+    final saved = await repository.readOrigin(widget.sessionId);
+    if (!mounted) return;
+    if (saved != null) {
+      if (_routeOrigin != saved) setState(() => _routeOrigin = saved);
+      return;
+    }
+    await _chooseRouteOrigin(bundle, requiredChoice: true);
+  }
+
+  Future<void> _chooseRouteOrigin(
+    SessionBundle bundle, {
+    required bool requiredChoice,
+  }) async {
+    if (_routeChoiceOpen || !mounted) return;
+    _routeChoiceOpen = true;
+    try {
+      final policy = bundle.routeEstimatePolicy!;
+      final selected = await showRouteOriginChoice(
+        context,
+        initialOrigin: requiredChoice ? policy.defaultOrigin : _routeOrigin,
+        requiredChoice: requiredChoice,
+      );
+      if (selected == null || !mounted) return;
+      var resolved = selected;
+      final repository = ref.read(routeEstimateRepositoryProvider);
+      if (!await repository.prepareOrigin(selected)) {
+        resolved = RouteOriginMode.sessionAnchor;
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(
+                  context,
+                )!.currentLocationUnavailableUsingHost,
+              ),
+            ),
+          );
+        }
+      }
+      await repository.saveOrigin(widget.sessionId, resolved);
+      if (mounted) setState(() => _routeOrigin = resolved);
+    } finally {
+      _routeChoiceOpen = false;
+    }
+  }
 
   Future<void> _showQrCode(String code) {
     FocusManager.instance.primaryFocus?.unfocus();

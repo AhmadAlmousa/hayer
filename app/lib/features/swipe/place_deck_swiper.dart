@@ -12,20 +12,26 @@ import 'place_card.dart';
 class PlaceDeckSwiper extends StatefulWidget {
   const PlaceDeckSwiper({
     super.key,
+    required this.sessionId,
     required this.places,
     required this.initialIndex,
     required this.controller,
     required this.disabled,
     required this.onDecision,
+    required this.routeOrigin,
+    required this.routeEstimatesEnabled,
     this.countryCode,
     this.onHaptic,
   });
 
+  final String sessionId;
   final List<PlaceSnapshot> places;
   final int initialIndex;
   final CardSwiperController controller;
   final bool disabled;
   final bool Function(int index, bool liked) onDecision;
+  final RouteOriginMode routeOrigin;
+  final bool routeEstimatesEnabled;
   final String? countryCode;
   final Future<void> Function(bool liked)? onHaptic;
 
@@ -88,7 +94,10 @@ class _PlaceDeckSwiperState extends State<PlaceDeckSwiper> {
           PlaceCard(
             key: ValueKey('place-card-${widget.places[index].placeId}'),
             place: widget.places[index],
+            sessionId: widget.sessionId,
             countryCode: widget.countryCode,
+            routeOrigin: widget.routeOrigin,
+            routeEstimatesEnabled: widget.routeEstimatesEnabled,
           ),
           if (horizontalOffset != 0)
             _DecisionStamp(

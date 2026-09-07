@@ -595,4 +595,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String radiusDistance(String distance) {
     return '$distance radius';
   }
+
+  @override
+  String get routeOriginTitle => 'Where should your travel estimate start?';
+
+  @override
+  String get routeOriginDescription =>
+      'This changes only the distance and time shown to you. The group’s places and votes stay the same.';
+
+  @override
+  String get useHostLocation => 'Use the host’s location';
+
+  @override
+  String get useHostLocationDescription =>
+      'Keep everyone’s estimates based on the shared search area.';
+
+  @override
+  String get useMyLocation => 'Use my current location';
+
+  @override
+  String get useMyLocationDescription =>
+      'Calculate my estimates from where I am now.';
+
+  @override
+  String get routeOriginSetting => 'Your travel estimate';
+
+  @override
+  String get routeDistanceUnavailable => 'Distance unavailable';
+
+  @override
+  String get currentLocationUnavailableUsingHost =>
+      'Your location is unavailable, so the host’s location will be used.';
+
+  @override
+  String distanceMetersLabel(String distance) {
+    return '$distance m';
+  }
+
+  @override
+  String distanceKilometersLabel(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String approximateRouteEstimate(int minutes, String distance) {
+    return '~$minutes min · $distance';
+  }
 }

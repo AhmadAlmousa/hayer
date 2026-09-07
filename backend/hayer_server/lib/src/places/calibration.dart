@@ -61,8 +61,10 @@ class PlaceCalibration {
   const PlaceCalibration({
     required this.version,
     required this.searchEndpoint,
+    required this.directionsEndpoint,
     required this.sessionWarmUrl,
     required this.searchPb,
+    required this.directionsPb,
     required this.paths,
     required this.allowedRequestHosts,
     required this.allowedImageHosts,
@@ -71,8 +73,10 @@ class PlaceCalibration {
 
   final String version;
   final Uri searchEndpoint;
+  final Uri directionsEndpoint;
   final Uri sessionWarmUrl;
   final String searchPb;
+  final String directionsPb;
   final Map<String, List<int>> paths;
   final Set<String> allowedRequestHosts;
   final Set<String> allowedImageHosts;
@@ -94,8 +98,12 @@ class PlaceCalibration {
     final calibration = PlaceCalibration(
       version: _requiredString(json, 'version'),
       searchEndpoint: Uri.parse(_requiredString(json, 'searchEndpoint')),
+      directionsEndpoint: Uri.parse(
+        _requiredString(json, 'directionsEndpoint'),
+      ),
       sessionWarmUrl: Uri.parse(_requiredString(json, 'sessionWarmUrl')),
       searchPb: _requiredString(json, 'searchPb'),
+      directionsPb: _requiredString(json, 'directionsPb'),
       paths: paths,
       allowedRequestHosts: _stringSet(json, 'allowedRequestHosts'),
       allowedImageHosts: _stringSet(json, 'allowedImageHosts'),
@@ -117,10 +125,14 @@ class PlaceCalibration {
     if (!searchEndpoint.hasScheme || searchEndpoint.scheme != 'https') {
       throw const FormatException('Search endpoint must use HTTPS.');
     }
+    if (!directionsEndpoint.hasScheme || directionsEndpoint.scheme != 'https') {
+      throw const FormatException('Directions endpoint must use HTTPS.');
+    }
     if (!sessionWarmUrl.hasScheme || sessionWarmUrl.scheme != 'https') {
       throw const FormatException('Warm endpoint must use HTTPS.');
     }
     if (!allowedRequestHosts.contains(searchEndpoint.host) ||
+        !allowedRequestHosts.contains(directionsEndpoint.host) ||
         !allowedRequestHosts.contains(sessionWarmUrl.host)) {
       throw const FormatException('Request endpoint host is not allowlisted.');
     }
@@ -129,6 +141,18 @@ class PlaceCalibration {
         !searchPb.contains('{LNG}')) {
       throw const FormatException(
         'Search template placeholders are incomplete.',
+      );
+    }
+    const directionPlaceholders = {
+      '{OLAT}',
+      '{OLNG}',
+      '{DLAT}',
+      '{DLNG}',
+      '{MODE}',
+    };
+    if (!directionPlaceholders.every(directionsPb.contains)) {
+      throw const FormatException(
+        'Directions template placeholders are incomplete.',
       );
     }
     const requiredPaths = [

@@ -42,6 +42,7 @@ hayerSession:
 place:
   - suggest:
   - reverseGeocode:
+  - routeEstimate:
 taxonomy:
   - current:
 adminAuth:

@@ -34,6 +34,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   bool _ready = false;
   bool _transitioningToResults = false;
   bool _waitingForFinalSync = false;
+  RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
   SessionRealtimeListener? _updates;
   final _swiperController = CardSwiperController();
 
@@ -64,6 +65,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     final repository = ref.read(sessionRepositoryProvider);
     final flush = await repository.flushQueue();
     final value = _bundle ?? await repository.load(widget.sessionId);
+    final routeOrigin = await _routeOriginFor(value);
     if (!mounted) return;
     final serverIndex = value.selfParticipant.currentIndex.clamp(
       0,
@@ -77,6 +79,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
       _waitingForFinalSync =
           _index >= value.deck.length &&
           flush.pendingSessionIds.contains(widget.sessionId);
+      _routeOrigin = routeOrigin;
       _ready = true;
     });
     _connect();
@@ -233,11 +236,15 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: PlaceDeckSwiper(
+                  sessionId: widget.sessionId,
                   places: bundle.deck,
                   initialIndex: _index.clamp(0, bundle.deck.length - 1),
                   controller: _swiperController,
                   disabled: _submitting,
                   countryCode: bundle.session.countryCode,
+                  routeOrigin: _routeOrigin,
+                  routeEstimatesEnabled:
+                      bundle.routeEstimatePolicy?.enabled ?? false,
                   onDecision: _onDecision,
                 ),
               ),
@@ -409,6 +416,21 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   bool _isInstantMatch(SessionBundle bundle) =>
       bundle.session.matchingTiming == MatchingTiming.instant &&
       bundle.session.matchedPlaceId != null;
+
+  Future<RouteOriginMode> _routeOriginFor(SessionBundle bundle) async {
+    final policy = bundle.routeEstimatePolicy;
+    if (policy == null ||
+        !policy.enabled ||
+        bundle.session.mode != SessionMode.multiplayer ||
+        bundle.selfParticipant.isHost ||
+        !policy.allowParticipantLocation) {
+      return RouteOriginMode.sessionAnchor;
+    }
+    return await ref
+            .read(routeEstimateRepositoryProvider)
+            .readOrigin(widget.sessionId) ??
+        RouteOriginMode.sessionAnchor;
+  }
 
   Future<void> _showResults({required bool celebrate}) async {
     if (_transitioningToResults || !mounted) return;

@@ -201,5 +201,20 @@
   "dragMapHint": "Drag center or edge · {distance}",
   "@dragMapHint": {"placeholders": {"distance": {"type": "String"}}},
   "radiusDistance": "{distance} radius",
-  "@radiusDistance": {"placeholders": {"distance": {"type": "String"}}}
+  "@radiusDistance": {"placeholders": {"distance": {"type": "String"}}},
+  "routeOriginTitle": "Where should your travel estimate start?",
+  "routeOriginDescription": "This changes only the distance and time shown to you. The group’s places and votes stay the same.",
+  "useHostLocation": "Use the host’s location",
+  "useHostLocationDescription": "Keep everyone’s estimates based on the shared search area.",
+  "useMyLocation": "Use my current location",
+  "useMyLocationDescription": "Calculate my estimates from where I am now.",
+  "routeOriginSetting": "Your travel estimate",
+  "routeDistanceUnavailable": "Distance unavailable",
+  "currentLocationUnavailableUsingHost": "Your location is unavailable, so the host’s location will be used.",
+  "distanceMetersLabel": "{distance} m",
+  "@distanceMetersLabel": {"placeholders": {"distance": {"type": "String"}}},
+  "distanceKilometersLabel": "{distance} km",
+  "@distanceKilometersLabel": {"placeholders": {"distance": {"type": "String"}}},
+  "approximateRouteEstimate": "~{minutes} min · {distance}",
+  "@approximateRouteEstimate": {"placeholders": {"minutes": {"type": "int"}, "distance": {"type": "String"}}}
 }

@@ -25,10 +25,13 @@ void main() {
             width: 400,
             height: 700,
             child: PlaceDeckSwiper(
+              sessionId: 'session-1',
               places: [_place('first'), _place('second')],
               initialIndex: 0,
               controller: controller,
               disabled: false,
+              routeOrigin: RouteOriginMode.sessionAnchor,
+              routeEstimatesEnabled: false,
               onHaptic: (liked) async => haptics.add(liked),
               onDecision: (index, liked) {
                 decisions.add((index, liked));
@@ -72,10 +75,13 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: PlaceDeckSwiper(
+            sessionId: 'session-1',
             places: [_place('first')],
             initialIndex: 0,
             controller: controller,
             disabled: false,
+            routeOrigin: RouteOriginMode.sessionAnchor,
+            routeEstimatesEnabled: false,
             onHaptic: (liked) async => haptics.add(liked),
             onDecision: (index, liked) {
               decisions.add((index, liked));
@@ -119,10 +125,13 @@ void main() {
             width: 400,
             height: 700,
             child: PlaceDeckSwiper(
+              sessionId: 'session-1',
               places: [_place('first'), _place('second')],
               initialIndex: 0,
               controller: controller,
               disabled: false,
+              routeOrigin: RouteOriginMode.sessionAnchor,
+              routeEstimatesEnabled: false,
               onHaptic: (_) async {},
               onDecision: (index, liked) {
                 decisions.add((index, liked));

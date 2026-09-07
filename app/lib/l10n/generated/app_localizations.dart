@@ -1141,6 +1141,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{distance} radius'**
   String radiusDistance(String distance);
+
+  /// No description provided for @routeOriginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where should your travel estimate start?'**
+  String get routeOriginTitle;
+
+  /// No description provided for @routeOriginDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This changes only the distance and time shown to you. The group’s places and votes stay the same.'**
+  String get routeOriginDescription;
+
+  /// No description provided for @useHostLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the host’s location'**
+  String get useHostLocation;
+
+  /// No description provided for @useHostLocationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep everyone’s estimates based on the shared search area.'**
+  String get useHostLocationDescription;
+
+  /// No description provided for @useMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my current location'**
+  String get useMyLocation;
+
+  /// No description provided for @useMyLocationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculate my estimates from where I am now.'**
+  String get useMyLocationDescription;
+
+  /// No description provided for @routeOriginSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Your travel estimate'**
+  String get routeOriginSetting;
+
+  /// No description provided for @routeDistanceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance unavailable'**
+  String get routeDistanceUnavailable;
+
+  /// No description provided for @currentLocationUnavailableUsingHost.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location is unavailable, so the host’s location will be used.'**
+  String get currentLocationUnavailableUsingHost;
+
+  /// No description provided for @distanceMetersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} m'**
+  String distanceMetersLabel(String distance);
+
+  /// No description provided for @distanceKilometersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km'**
+  String distanceKilometersLabel(String distance);
+
+  /// No description provided for @approximateRouteEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'~{minutes} min · {distance}'**
+  String approximateRouteEstimate(int minutes, String distance);
 }
 
 class _AppLocalizationsDelegate

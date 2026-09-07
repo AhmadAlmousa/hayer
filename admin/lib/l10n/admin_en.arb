@@ -6,7 +6,7 @@
   "coverage": "Coverage",
   "jobs": "Refresh jobs",
   "calibration": "Calibration",
-  "settings": "Cache policy",
+  "settings": "System policy",
   "audit": "Audit log",
   "fresh": "Fresh",
   "stale": "Stale",

@@ -28,7 +28,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get calibration => 'معايرة المصدر';
 
   @override
-  String get settings => 'سياسة التخزين';
+  String get settings => 'سياسة النظام';
 
   @override
   String get audit => 'سجل العمليات';

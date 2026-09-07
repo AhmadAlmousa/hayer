@@ -201,5 +201,20 @@
   "dragMapHint": "اسحب المركز أو الحافة · {distance}",
   "@dragMapHint": {"placeholders": {"distance": {"type": "String"}}},
   "radiusDistance": "نصف القطر {distance}",
-  "@radiusDistance": {"placeholders": {"distance": {"type": "String"}}}
+  "@radiusDistance": {"placeholders": {"distance": {"type": "String"}}},
+  "routeOriginTitle": "من وين نحسب وقت مشوارك؟",
+  "routeOriginDescription": "يتغير الوقت والمسافة الظاهرة لك فقط، وتبقى أماكن المجموعة وتصويتاتها كما هي.",
+  "useHostLocation": "استخدم موقع المضيف",
+  "useHostLocationDescription": "تكون التقديرات من منطقة البحث المشتركة للجميع.",
+  "useMyLocation": "استخدم موقعي الحالي",
+  "useMyLocationDescription": "احسب تقديراتي من مكاني الآن.",
+  "routeOriginSetting": "تقدير مشوارك",
+  "currentLocationUnavailableUsingHost": "تعذر تحديد موقعك، لذلك سنستخدم موقع المضيف.",
+  "routeDistanceUnavailable": "المسافة غير متاحة",
+  "distanceMetersLabel": "{distance} م",
+  "@distanceMetersLabel": {"placeholders": {"distance": {"type": "String"}}},
+  "distanceKilometersLabel": "{distance} كم",
+  "@distanceKilometersLabel": {"placeholders": {"distance": {"type": "String"}}},
+  "approximateRouteEstimate": "~{minutes} د · {distance}",
+  "@approximateRouteEstimate": {"placeholders": {"minutes": {"type": "int"}, "distance": {"type": "String"}}}
 }

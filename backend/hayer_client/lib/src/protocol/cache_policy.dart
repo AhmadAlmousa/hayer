@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'route_origin_mode.dart' as _i2;
 
 abstract class CachePolicy implements _i1.SerializableModel {
   CachePolicy._({
@@ -23,6 +24,12 @@ abstract class CachePolicy implements _i1.SerializableModel {
     required this.perCreationConcurrency,
     required this.globalRequestsPerMinute,
     required this.globalBurst,
+    required this.routeEstimatesEnabled,
+    required this.allowParticipantLocation,
+    required this.defaultRouteOrigin,
+    required this.routeEstimateCacheMinutes,
+    required this.routeRequestsPerMinute,
+    required this.routeBurst,
     required this.updatedAt,
   });
 
@@ -35,6 +42,12 @@ abstract class CachePolicy implements _i1.SerializableModel {
     required int perCreationConcurrency,
     required int globalRequestsPerMinute,
     required int globalBurst,
+    required bool routeEstimatesEnabled,
+    required bool allowParticipantLocation,
+    required _i2.RouteOriginMode defaultRouteOrigin,
+    required int routeEstimateCacheMinutes,
+    required int routeRequestsPerMinute,
+    required int routeBurst,
     required DateTime updatedAt,
   }) = _CachePolicyImpl;
 
@@ -50,6 +63,20 @@ abstract class CachePolicy implements _i1.SerializableModel {
       globalRequestsPerMinute:
           jsonSerialization['globalRequestsPerMinute'] as int,
       globalBurst: jsonSerialization['globalBurst'] as int,
+      routeEstimatesEnabled: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['routeEstimatesEnabled'],
+      ),
+      allowParticipantLocation: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['allowParticipantLocation'],
+      ),
+      defaultRouteOrigin: _i2.RouteOriginMode.fromJson(
+        (jsonSerialization['defaultRouteOrigin'] as String),
+      ),
+      routeEstimateCacheMinutes:
+          jsonSerialization['routeEstimateCacheMinutes'] as int,
+      routeRequestsPerMinute:
+          jsonSerialization['routeRequestsPerMinute'] as int,
+      routeBurst: jsonSerialization['routeBurst'] as int,
       updatedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
       ),
@@ -72,6 +99,18 @@ abstract class CachePolicy implements _i1.SerializableModel {
 
   int globalBurst;
 
+  bool routeEstimatesEnabled;
+
+  bool allowParticipantLocation;
+
+  _i2.RouteOriginMode defaultRouteOrigin;
+
+  int routeEstimateCacheMinutes;
+
+  int routeRequestsPerMinute;
+
+  int routeBurst;
+
   DateTime updatedAt;
 
   /// Returns a shallow copy of this [CachePolicy]
@@ -86,6 +125,12 @@ abstract class CachePolicy implements _i1.SerializableModel {
     int? perCreationConcurrency,
     int? globalRequestsPerMinute,
     int? globalBurst,
+    bool? routeEstimatesEnabled,
+    bool? allowParticipantLocation,
+    _i2.RouteOriginMode? defaultRouteOrigin,
+    int? routeEstimateCacheMinutes,
+    int? routeRequestsPerMinute,
+    int? routeBurst,
     DateTime? updatedAt,
   });
   @override
@@ -100,6 +145,12 @@ abstract class CachePolicy implements _i1.SerializableModel {
       'perCreationConcurrency': perCreationConcurrency,
       'globalRequestsPerMinute': globalRequestsPerMinute,
       'globalBurst': globalBurst,
+      'routeEstimatesEnabled': routeEstimatesEnabled,
+      'allowParticipantLocation': allowParticipantLocation,
+      'defaultRouteOrigin': defaultRouteOrigin.toJson(),
+      'routeEstimateCacheMinutes': routeEstimateCacheMinutes,
+      'routeRequestsPerMinute': routeRequestsPerMinute,
+      'routeBurst': routeBurst,
       'updatedAt': updatedAt.toJson(),
     };
   }
@@ -120,6 +171,12 @@ class _CachePolicyImpl extends CachePolicy {
     required int perCreationConcurrency,
     required int globalRequestsPerMinute,
     required int globalBurst,
+    required bool routeEstimatesEnabled,
+    required bool allowParticipantLocation,
+    required _i2.RouteOriginMode defaultRouteOrigin,
+    required int routeEstimateCacheMinutes,
+    required int routeRequestsPerMinute,
+    required int routeBurst,
     required DateTime updatedAt,
   }) : super._(
          version: version,
@@ -130,6 +187,12 @@ class _CachePolicyImpl extends CachePolicy {
          perCreationConcurrency: perCreationConcurrency,
          globalRequestsPerMinute: globalRequestsPerMinute,
          globalBurst: globalBurst,
+         routeEstimatesEnabled: routeEstimatesEnabled,
+         allowParticipantLocation: allowParticipantLocation,
+         defaultRouteOrigin: defaultRouteOrigin,
+         routeEstimateCacheMinutes: routeEstimateCacheMinutes,
+         routeRequestsPerMinute: routeRequestsPerMinute,
+         routeBurst: routeBurst,
          updatedAt: updatedAt,
        );
 
@@ -146,6 +209,12 @@ class _CachePolicyImpl extends CachePolicy {
     int? perCreationConcurrency,
     int? globalRequestsPerMinute,
     int? globalBurst,
+    bool? routeEstimatesEnabled,
+    bool? allowParticipantLocation,
+    _i2.RouteOriginMode? defaultRouteOrigin,
+    int? routeEstimateCacheMinutes,
+    int? routeRequestsPerMinute,
+    int? routeBurst,
     DateTime? updatedAt,
   }) {
     return CachePolicy(
@@ -159,6 +228,16 @@ class _CachePolicyImpl extends CachePolicy {
       globalRequestsPerMinute:
           globalRequestsPerMinute ?? this.globalRequestsPerMinute,
       globalBurst: globalBurst ?? this.globalBurst,
+      routeEstimatesEnabled:
+          routeEstimatesEnabled ?? this.routeEstimatesEnabled,
+      allowParticipantLocation:
+          allowParticipantLocation ?? this.allowParticipantLocation,
+      defaultRouteOrigin: defaultRouteOrigin ?? this.defaultRouteOrigin,
+      routeEstimateCacheMinutes:
+          routeEstimateCacheMinutes ?? this.routeEstimateCacheMinutes,
+      routeRequestsPerMinute:
+          routeRequestsPerMinute ?? this.routeRequestsPerMinute,
+      routeBurst: routeBurst ?? this.routeBurst,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }

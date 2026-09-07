@@ -9,6 +9,7 @@ import '../data/display_name_store.dart';
 import '../data/location_warmup.dart';
 import '../data/pending_swipe_store.dart';
 import '../data/session_repository.dart';
+import '../data/route_estimate_repository.dart';
 
 final clientProvider = Provider<Client>(
   (ref) => throw StateError('The Serverpod client was not initialized.'),
@@ -34,5 +35,12 @@ final sessionRepositoryProvider = Provider<SessionRepository>(
   (ref) => SessionRepository(
     client: ref.watch(clientProvider),
     outbox: ref.watch(pendingSwipeStoreProvider),
+  ),
+);
+
+final routeEstimateRepositoryProvider = Provider<RouteEstimateRepository>(
+  (ref) => RouteEstimateRepository(
+    client: ref.watch(clientProvider),
+    location: ref.watch(locationWarmupProvider),
   ),
 );

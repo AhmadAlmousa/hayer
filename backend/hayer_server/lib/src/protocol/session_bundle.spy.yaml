@@ -4,3 +4,4 @@ fields:
   deck: List<PlaceSnapshot>
   participants: List<ParticipantView>
   selfParticipant: ParticipantView
+  routeEstimatePolicy: RouteEstimatePolicy?

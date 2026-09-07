@@ -609,6 +609,12 @@ class AdminEndpoint extends Endpoint {
       perCreationConcurrency: policy.perCreationConcurrency,
       globalRequestsPerMinute: policy.globalRequestsPerMinute,
       globalBurst: policy.globalBurst,
+      routeEstimatesEnabled: policy.routeEstimatesEnabled,
+      allowParticipantLocation: policy.allowParticipantLocation,
+      defaultRouteOrigin: policy.defaultRouteOrigin,
+      routeEstimateCacheMinutes: policy.routeEstimateCacheMinutes,
+      routeRequestsPerMinute: policy.routeRequestsPerMinute,
+      routeBurst: policy.routeBurst,
       updatedBy: _operator(operatorName),
       updatedAt: now,
     );
@@ -1144,6 +1150,12 @@ WHERE "metricName" = @name
     perCreationConcurrency: 3,
     globalRequestsPerMinute: 30,
     globalBurst: 6,
+    routeEstimatesEnabled: true,
+    allowParticipantLocation: true,
+    defaultRouteOrigin: RouteOriginMode.sessionAnchor,
+    routeEstimateCacheMinutes: 10,
+    routeRequestsPerMinute: 30,
+    routeBurst: 6,
     updatedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
   );
 
@@ -1156,6 +1168,12 @@ WHERE "metricName" = @name
     perCreationConcurrency: row.perCreationConcurrency,
     globalRequestsPerMinute: row.globalRequestsPerMinute,
     globalBurst: row.globalBurst,
+    routeEstimatesEnabled: row.routeEstimatesEnabled,
+    allowParticipantLocation: row.allowParticipantLocation,
+    defaultRouteOrigin: row.defaultRouteOrigin,
+    routeEstimateCacheMinutes: row.routeEstimateCacheMinutes,
+    routeRequestsPerMinute: row.routeRequestsPerMinute,
+    routeBurst: row.routeBurst,
     updatedAt: row.updatedAt,
   );
 
@@ -1175,7 +1193,15 @@ WHERE "metricName" = @name
         policy.globalRequestsPerMinute < 1 ||
         policy.globalRequestsPerMinute > 300 ||
         policy.globalBurst < 1 ||
-        policy.globalBurst > 30) {
+        policy.globalBurst > 30 ||
+        policy.routeEstimateCacheMinutes < 1 ||
+        policy.routeEstimateCacheMinutes > 120 ||
+        policy.routeRequestsPerMinute < 1 ||
+        policy.routeRequestsPerMinute > 300 ||
+        policy.routeBurst < 1 ||
+        policy.routeBurst > 30 ||
+        (!policy.allowParticipantLocation &&
+            policy.defaultRouteOrigin == RouteOriginMode.participantLocation)) {
       throw ApiException(
         code: 'bad_request',
         message: 'One or more policy values are outside safe bounds.',

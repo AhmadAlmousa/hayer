@@ -1,6 +1,6 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-06
+Last updated: 2026-09-08
 
 Status: audit remediation active; invited-beta release remains blocked
 
@@ -141,6 +141,11 @@ Public generated Serverpod endpoint groups:
 - `places.suggestLocations(request)` starts at three characters, is called
   after a 350 ms debounce, and returns at most eight suggestions with
   coordinates.
+- `place.routeEstimate(sessionId, placeId, originLatitude?, originLongitude?)`
+  returns an approximate driving duration and distance for a session-deck
+  place to members only. The origin defaults to the host search location;
+  opted-in multiplayer guests may use their device location when admin policy
+  permits it. The app falls back to straight-line distance from that origin.
 - `sessions.create(request, idempotencyKey)` obtains POIs and transactionally
   persists the session, host, and complete ordered snapshot.
 - `sessions.join(code, displayName, idempotencyKey)` is idempotent, enforces
@@ -200,8 +205,9 @@ hourly operational/product aggregates. Session tables are `hayer_sessions`,
   versioned calibration document. Reject consent redirects, bot-degraded or
   oversized responses, invalid hosts, and parser drift.
 - Check Vela's signed calibration feed at startup and hourly. Project only the
-  search endpoint/template and positional paths Hayer consumes, ignore
-  irrelevant upstream changes, and auto-activate only after the Riyadh canary.
+  search/directions endpoints, templates, and positional paths Hayer consumes,
+  ignore irrelevant upstream changes, and auto-activate only after the Riyadh
+  canary.
 - Require stable identity, name, latitude, and longitude. Deduplicate by
   feature ID, provider place ID, then normalized name and rounded coordinates.
 - On successful extraction, batch-upsert normalized records and coverage.
@@ -879,6 +885,28 @@ measurements and rollback paths.
   `0.2.0+6` APK is 101,598,575 bytes, targets SDK 36, and verifies with APK
   Signature Scheme v2. SHA-256:
   `d31ef2d5f3e1b2f15a25a9c33347ab8d7dacc45b601ebcf8e64e0dc1075df7e6`.
+- 2026-09-08: replaced invented straight-line travel times with a simple
+  Google Directions traffic estimate. Hayer requests the alternatives once,
+  selects the shortest traffic-aware duration (or normal duration when traffic
+  is absent), caches it briefly, rate-limits source traffic, and silently falls
+  back to localized straight-line distance. Multiplayer guests are prompted to
+  keep the host search location or use their current location for only their
+  own labels; the choice is device-local and precise guest coordinates are not
+  stored in the session or analytics. The expanded admin System policy controls
+  enablement, guest-location availability/default, cache duration, and request
+  rate/burst. Migration `20260907165202325-route-estimates` adds bounded policy
+  fields while preserving the custom PostGIS clean-database definition. A live
+  fixed-coordinate Riyadh canary returned HTTP 200 and parsed a traffic-aware
+  13,287 m / 1,009 s route. `scripts/preflight.sh` passed generated code,
+  formatting, fatal-info analysis, 75 backend tests, 73 consumer tests, and
+  eight admin tests; the connected Dart/Flutter MCP analyzer also reported no
+  errors. Regression checks cover personal-distance fallback and clearing the
+  previous card's route while its replacement loads. The signed `0.2.0+6` APK
+  is 102,286,703 bytes, targets SDK 36, and verifies with APK Signature Scheme
+  v2. Both release aliases have SHA-256
+  `5e755b2ca02e946dfe7addb76c31fd3e94f7d406dac531d3f7f5d5e17f4b6ae3`.
+  Applying the migration and exercising the choice on two physical devices
+  remain deployment/manual gates.
 
 ## Decision and change log
 
@@ -947,3 +975,11 @@ measurements and rollback paths.
   a short-lived random journey ID; persistent installation cohorts remain
   deferred. Provider-derived cache records are not presumed commercially
   reusable without enforceable provenance and source-use permission.
+- 2026-09-07: Keep route estimates intentionally lightweight: scrape one
+  Google driving-directions response per origin/place pair, prefer the fastest
+  returned traffic duration, prefix the user-facing value with `~`, and use
+  straight-line distance as the non-blocking fallback. A guest may opt into
+  using their current location for personal labels, but this never changes the
+  host-anchored deck, votes, result ordering, session data, or analytics. Keep
+  the feature and its operational limits adjustable in the protected admin
+  System policy.

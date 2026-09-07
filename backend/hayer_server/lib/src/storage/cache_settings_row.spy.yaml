@@ -12,6 +12,12 @@ fields:
   perCreationConcurrency: int
   globalRequestsPerMinute: int
   globalBurst: int
+  routeEstimatesEnabled: bool, default=true
+  allowParticipantLocation: bool, default=true
+  defaultRouteOrigin: RouteOriginMode, default=sessionAnchor
+  routeEstimateCacheMinutes: int, default=10
+  routeRequestsPerMinute: int, default=30
+  routeBurst: int, default=6
   updatedBy: String
   updatedAt: DateTime
 indexes:

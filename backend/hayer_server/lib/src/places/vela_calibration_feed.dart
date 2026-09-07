@@ -56,11 +56,19 @@ class VelaCalibrationProjector {
         decoded['searchEndpoint'],
         bundled.searchEndpoint.toString(),
       ),
+      'directionsEndpoint': _string(
+        decoded['directionsEndpoint'],
+        bundled.directionsEndpoint.toString(),
+      ),
       'sessionWarmUrl': _string(
         decoded['sessionWarmUrl'],
         bundled.sessionWarmUrl.toString(),
       ),
       'searchPb': _string(decoded['searchPb'], bundled.searchPb),
+      'directionsPb': _string(
+        decoded['directionsPb'],
+        bundled.directionsPb,
+      ),
       'pageSize': bundled.pageSize,
       'allowedRequestHosts': bundled.allowedRequestHosts.toList()..sort(),
       'allowedImageHosts': bundled.allowedImageHosts.toList()..sort(),

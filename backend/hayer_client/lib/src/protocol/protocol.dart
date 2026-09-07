@@ -50,30 +50,33 @@ import 'place_ranking.dart' as _i36;
 import 'place_snapshot.dart' as _i37;
 import 'refresh_job_page.dart' as _i38;
 import 'refresh_job_view.dart' as _i39;
-import 'session_bundle.dart' as _i40;
-import 'session_event.dart' as _i41;
-import 'session_event_type.dart' as _i42;
-import 'session_mode.dart' as _i43;
-import 'session_result.dart' as _i44;
-import 'session_status.dart' as _i45;
-import 'session_view.dart' as _i46;
-import 'swipe_command.dart' as _i47;
-import 'taxonomy_canary_sample.dart' as _i48;
-import 'taxonomy_item.dart' as _i49;
-import 'taxonomy_kind.dart' as _i50;
-import 'taxonomy_snapshot.dart' as _i51;
-import 'taxonomy_status.dart' as _i52;
-import 'taxonomy_validation.dart' as _i53;
-import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i54;
-import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i55;
-import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i56;
-import 'package:hayer_client/src/protocol/metric_point.dart' as _i57;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i58;
+import 'route_estimate.dart' as _i40;
+import 'route_estimate_policy.dart' as _i41;
+import 'route_origin_mode.dart' as _i42;
+import 'session_bundle.dart' as _i43;
+import 'session_event.dart' as _i44;
+import 'session_event_type.dart' as _i45;
+import 'session_mode.dart' as _i46;
+import 'session_result.dart' as _i47;
+import 'session_status.dart' as _i48;
+import 'session_view.dart' as _i49;
+import 'swipe_command.dart' as _i50;
+import 'taxonomy_canary_sample.dart' as _i51;
+import 'taxonomy_item.dart' as _i52;
+import 'taxonomy_kind.dart' as _i53;
+import 'taxonomy_snapshot.dart' as _i54;
+import 'taxonomy_status.dart' as _i55;
+import 'taxonomy_validation.dart' as _i56;
+import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i57;
+import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i58;
+import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i59;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i60;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i61;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i59;
-import 'dart:typed_data' as _i60;
+    as _i62;
+import 'dart:typed_data' as _i63;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i61;
+    as _i64;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -112,6 +115,9 @@ export 'place_ranking.dart';
 export 'place_snapshot.dart';
 export 'refresh_job_page.dart';
 export 'refresh_job_view.dart';
+export 'route_estimate.dart';
+export 'route_estimate_policy.dart';
+export 'route_origin_mode.dart';
 export 'session_bundle.dart';
 export 'session_event.dart';
 export 'session_event_type.dart';
@@ -276,47 +282,56 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i39.RefreshJobView) {
       return _i39.RefreshJobView.fromJson(data) as T;
     }
-    if (t == _i40.SessionBundle) {
-      return _i40.SessionBundle.fromJson(data) as T;
+    if (t == _i40.RouteEstimate) {
+      return _i40.RouteEstimate.fromJson(data) as T;
     }
-    if (t == _i41.SessionEvent) {
-      return _i41.SessionEvent.fromJson(data) as T;
+    if (t == _i41.RouteEstimatePolicy) {
+      return _i41.RouteEstimatePolicy.fromJson(data) as T;
     }
-    if (t == _i42.SessionEventType) {
-      return _i42.SessionEventType.fromJson(data) as T;
+    if (t == _i42.RouteOriginMode) {
+      return _i42.RouteOriginMode.fromJson(data) as T;
     }
-    if (t == _i43.SessionMode) {
-      return _i43.SessionMode.fromJson(data) as T;
+    if (t == _i43.SessionBundle) {
+      return _i43.SessionBundle.fromJson(data) as T;
     }
-    if (t == _i44.SessionResult) {
-      return _i44.SessionResult.fromJson(data) as T;
+    if (t == _i44.SessionEvent) {
+      return _i44.SessionEvent.fromJson(data) as T;
     }
-    if (t == _i45.SessionStatus) {
-      return _i45.SessionStatus.fromJson(data) as T;
+    if (t == _i45.SessionEventType) {
+      return _i45.SessionEventType.fromJson(data) as T;
     }
-    if (t == _i46.SessionView) {
-      return _i46.SessionView.fromJson(data) as T;
+    if (t == _i46.SessionMode) {
+      return _i46.SessionMode.fromJson(data) as T;
     }
-    if (t == _i47.SwipeCommand) {
-      return _i47.SwipeCommand.fromJson(data) as T;
+    if (t == _i47.SessionResult) {
+      return _i47.SessionResult.fromJson(data) as T;
     }
-    if (t == _i48.TaxonomyCanarySample) {
-      return _i48.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _i48.SessionStatus) {
+      return _i48.SessionStatus.fromJson(data) as T;
     }
-    if (t == _i49.TaxonomyItem) {
-      return _i49.TaxonomyItem.fromJson(data) as T;
+    if (t == _i49.SessionView) {
+      return _i49.SessionView.fromJson(data) as T;
     }
-    if (t == _i50.TaxonomyKind) {
-      return _i50.TaxonomyKind.fromJson(data) as T;
+    if (t == _i50.SwipeCommand) {
+      return _i50.SwipeCommand.fromJson(data) as T;
     }
-    if (t == _i51.TaxonomySnapshot) {
-      return _i51.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i51.TaxonomyCanarySample) {
+      return _i51.TaxonomyCanarySample.fromJson(data) as T;
     }
-    if (t == _i52.TaxonomyStatus) {
-      return _i52.TaxonomyStatus.fromJson(data) as T;
+    if (t == _i52.TaxonomyItem) {
+      return _i52.TaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i53.TaxonomyValidation) {
-      return _i53.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i53.TaxonomyKind) {
+      return _i53.TaxonomyKind.fromJson(data) as T;
+    }
+    if (t == _i54.TaxonomySnapshot) {
+      return _i54.TaxonomySnapshot.fromJson(data) as T;
+    }
+    if (t == _i55.TaxonomyStatus) {
+      return _i55.TaxonomyStatus.fromJson(data) as T;
+    }
+    if (t == _i56.TaxonomyValidation) {
+      return _i56.TaxonomyValidation.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AdminAnalyticsOverview?>()) {
       return (data != null ? _i2.AdminAnalyticsOverview.fromJson(data) : null)
@@ -443,48 +458,58 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i39.RefreshJobView?>()) {
       return (data != null ? _i39.RefreshJobView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i40.SessionBundle?>()) {
-      return (data != null ? _i40.SessionBundle.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i40.RouteEstimate?>()) {
+      return (data != null ? _i40.RouteEstimate.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i41.SessionEvent?>()) {
-      return (data != null ? _i41.SessionEvent.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i42.SessionEventType?>()) {
-      return (data != null ? _i42.SessionEventType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i43.SessionMode?>()) {
-      return (data != null ? _i43.SessionMode.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i44.SessionResult?>()) {
-      return (data != null ? _i44.SessionResult.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i45.SessionStatus?>()) {
-      return (data != null ? _i45.SessionStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i46.SessionView?>()) {
-      return (data != null ? _i46.SessionView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i47.SwipeCommand?>()) {
-      return (data != null ? _i47.SwipeCommand.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i48.TaxonomyCanarySample?>()) {
-      return (data != null ? _i48.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _i1.getType<_i41.RouteEstimatePolicy?>()) {
+      return (data != null ? _i41.RouteEstimatePolicy.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i49.TaxonomyItem?>()) {
-      return (data != null ? _i49.TaxonomyItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i42.RouteOriginMode?>()) {
+      return (data != null ? _i42.RouteOriginMode.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i50.TaxonomyKind?>()) {
-      return (data != null ? _i50.TaxonomyKind.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i43.SessionBundle?>()) {
+      return (data != null ? _i43.SessionBundle.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i51.TaxonomySnapshot?>()) {
-      return (data != null ? _i51.TaxonomySnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i44.SessionEvent?>()) {
+      return (data != null ? _i44.SessionEvent.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i52.TaxonomyStatus?>()) {
-      return (data != null ? _i52.TaxonomyStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i45.SessionEventType?>()) {
+      return (data != null ? _i45.SessionEventType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i53.TaxonomyValidation?>()) {
-      return (data != null ? _i53.TaxonomyValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i46.SessionMode?>()) {
+      return (data != null ? _i46.SessionMode.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i47.SessionResult?>()) {
+      return (data != null ? _i47.SessionResult.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i48.SessionStatus?>()) {
+      return (data != null ? _i48.SessionStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i49.SessionView?>()) {
+      return (data != null ? _i49.SessionView.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i50.SwipeCommand?>()) {
+      return (data != null ? _i50.SwipeCommand.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i51.TaxonomyCanarySample?>()) {
+      return (data != null ? _i51.TaxonomyCanarySample.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i52.TaxonomyItem?>()) {
+      return (data != null ? _i52.TaxonomyItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i53.TaxonomyKind?>()) {
+      return (data != null ? _i53.TaxonomyKind.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i54.TaxonomySnapshot?>()) {
+      return (data != null ? _i54.TaxonomySnapshot.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i55.TaxonomyStatus?>()) {
+      return (data != null ? _i55.TaxonomyStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i56.TaxonomyValidation?>()) {
+      return (data != null ? _i56.TaxonomyValidation.fromJson(data) : null)
           as T;
     }
     if (t == List<_i15.AnalyticsKpi>) {
@@ -577,60 +602,60 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i49.TaxonomyItem>) {
+    if (t == List<_i52.TaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i49.TaxonomyItem>(e))
+              .map((e) => deserialize<_i52.TaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i48.TaxonomyCanarySample>) {
+    if (t == List<_i51.TaxonomyCanarySample>) {
       return (data as List)
-              .map((e) => deserialize<_i48.TaxonomyCanarySample>(e))
+              .map((e) => deserialize<_i51.TaxonomyCanarySample>(e))
               .toList()
           as T;
     }
-    if (t == List<_i54.LocationSuggestion>) {
+    if (t == List<_i57.LocationSuggestion>) {
       return (data as List)
-              .map((e) => deserialize<_i54.LocationSuggestion>(e))
+              .map((e) => deserialize<_i57.LocationSuggestion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i55.AdminTaxonomyVersion>) {
+    if (t == List<_i58.AdminTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i55.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_i58.AdminTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i56.AdminTaxonomyItem>) {
+    if (t == List<_i59.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i56.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i59.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i57.MetricPoint>) {
+    if (t == List<_i60.MetricPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i57.MetricPoint>(e))
+              .map((e) => deserialize<_i60.MetricPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i58.SessionResult>) {
+    if (t == List<_i61.SessionResult>) {
       return (data as List)
-              .map((e) => deserialize<_i58.SessionResult>(e))
+              .map((e) => deserialize<_i61.SessionResult>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<({_i59.AuthSuccess auth, String operator})>()) {
+    if (t == _i1.getType<({_i62.AuthSuccess auth, String operator})>()) {
       return (
-            auth: deserialize<_i59.AuthSuccess>(
+            auth: deserialize<_i62.AuthSuccess>(
               ((data as Map)['n'] as Map)['auth'],
             ),
             operator: deserialize<String>(data['n']['operator']),
           )
           as T;
     }
-    if (t == _i1.getType<({_i60.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i63.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i60.ByteData>(
+            challenge: deserialize<_i63.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -638,10 +663,10 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     try {
-      return _i61.Protocol().deserialize<T>(data, t);
+      return _i64.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i59.Protocol().deserialize<T>(data, t);
+      return _i62.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -686,20 +711,23 @@ class Protocol extends _i1.SerializationManager {
       _i37.PlaceSnapshot => 'PlaceSnapshot',
       _i38.RefreshJobPage => 'RefreshJobPage',
       _i39.RefreshJobView => 'RefreshJobView',
-      _i40.SessionBundle => 'SessionBundle',
-      _i41.SessionEvent => 'SessionEvent',
-      _i42.SessionEventType => 'SessionEventType',
-      _i43.SessionMode => 'SessionMode',
-      _i44.SessionResult => 'SessionResult',
-      _i45.SessionStatus => 'SessionStatus',
-      _i46.SessionView => 'SessionView',
-      _i47.SwipeCommand => 'SwipeCommand',
-      _i48.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i49.TaxonomyItem => 'TaxonomyItem',
-      _i50.TaxonomyKind => 'TaxonomyKind',
-      _i51.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i52.TaxonomyStatus => 'TaxonomyStatus',
-      _i53.TaxonomyValidation => 'TaxonomyValidation',
+      _i40.RouteEstimate => 'RouteEstimate',
+      _i41.RouteEstimatePolicy => 'RouteEstimatePolicy',
+      _i42.RouteOriginMode => 'RouteOriginMode',
+      _i43.SessionBundle => 'SessionBundle',
+      _i44.SessionEvent => 'SessionEvent',
+      _i45.SessionEventType => 'SessionEventType',
+      _i46.SessionMode => 'SessionMode',
+      _i47.SessionResult => 'SessionResult',
+      _i48.SessionStatus => 'SessionStatus',
+      _i49.SessionView => 'SessionView',
+      _i50.SwipeCommand => 'SwipeCommand',
+      _i51.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _i52.TaxonomyItem => 'TaxonomyItem',
+      _i53.TaxonomyKind => 'TaxonomyKind',
+      _i54.TaxonomySnapshot => 'TaxonomySnapshot',
+      _i55.TaxonomyStatus => 'TaxonomyStatus',
+      _i56.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -790,40 +818,46 @@ class Protocol extends _i1.SerializationManager {
         return 'RefreshJobPage';
       case _i39.RefreshJobView():
         return 'RefreshJobView';
-      case _i40.SessionBundle():
+      case _i40.RouteEstimate():
+        return 'RouteEstimate';
+      case _i41.RouteEstimatePolicy():
+        return 'RouteEstimatePolicy';
+      case _i42.RouteOriginMode():
+        return 'RouteOriginMode';
+      case _i43.SessionBundle():
         return 'SessionBundle';
-      case _i41.SessionEvent():
+      case _i44.SessionEvent():
         return 'SessionEvent';
-      case _i42.SessionEventType():
+      case _i45.SessionEventType():
         return 'SessionEventType';
-      case _i43.SessionMode():
+      case _i46.SessionMode():
         return 'SessionMode';
-      case _i44.SessionResult():
+      case _i47.SessionResult():
         return 'SessionResult';
-      case _i45.SessionStatus():
+      case _i48.SessionStatus():
         return 'SessionStatus';
-      case _i46.SessionView():
+      case _i49.SessionView():
         return 'SessionView';
-      case _i47.SwipeCommand():
+      case _i50.SwipeCommand():
         return 'SwipeCommand';
-      case _i48.TaxonomyCanarySample():
+      case _i51.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i49.TaxonomyItem():
+      case _i52.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i50.TaxonomyKind():
+      case _i53.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i51.TaxonomySnapshot():
+      case _i54.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i52.TaxonomyStatus():
+      case _i55.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i53.TaxonomyValidation():
+      case _i56.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
-    className = _i61.Protocol().getClassNameForObject(data);
+    className = _i64.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i59.Protocol().getClassNameForObject(data);
+    className = _i62.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -950,55 +984,64 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'RefreshJobView') {
       return deserialize<_i39.RefreshJobView>(data['data']);
     }
+    if (dataClassName == 'RouteEstimate') {
+      return deserialize<_i40.RouteEstimate>(data['data']);
+    }
+    if (dataClassName == 'RouteEstimatePolicy') {
+      return deserialize<_i41.RouteEstimatePolicy>(data['data']);
+    }
+    if (dataClassName == 'RouteOriginMode') {
+      return deserialize<_i42.RouteOriginMode>(data['data']);
+    }
     if (dataClassName == 'SessionBundle') {
-      return deserialize<_i40.SessionBundle>(data['data']);
+      return deserialize<_i43.SessionBundle>(data['data']);
     }
     if (dataClassName == 'SessionEvent') {
-      return deserialize<_i41.SessionEvent>(data['data']);
+      return deserialize<_i44.SessionEvent>(data['data']);
     }
     if (dataClassName == 'SessionEventType') {
-      return deserialize<_i42.SessionEventType>(data['data']);
+      return deserialize<_i45.SessionEventType>(data['data']);
     }
     if (dataClassName == 'SessionMode') {
-      return deserialize<_i43.SessionMode>(data['data']);
+      return deserialize<_i46.SessionMode>(data['data']);
     }
     if (dataClassName == 'SessionResult') {
-      return deserialize<_i44.SessionResult>(data['data']);
+      return deserialize<_i47.SessionResult>(data['data']);
     }
     if (dataClassName == 'SessionStatus') {
-      return deserialize<_i45.SessionStatus>(data['data']);
+      return deserialize<_i48.SessionStatus>(data['data']);
     }
     if (dataClassName == 'SessionView') {
-      return deserialize<_i46.SessionView>(data['data']);
+      return deserialize<_i49.SessionView>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i47.SwipeCommand>(data['data']);
+      return deserialize<_i50.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i48.TaxonomyCanarySample>(data['data']);
+      return deserialize<_i51.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i49.TaxonomyItem>(data['data']);
+      return deserialize<_i52.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i50.TaxonomyKind>(data['data']);
+      return deserialize<_i53.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i51.TaxonomySnapshot>(data['data']);
+      return deserialize<_i54.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i52.TaxonomyStatus>(data['data']);
+      return deserialize<_i55.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i53.TaxonomyValidation>(data['data']);
+      return deserialize<_i56.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i61.Protocol().deserializeByClassName(data);
+      return _i64.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i59.Protocol().deserializeByClassName(data);
+      return _i62.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -1012,7 +1055,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i59.AuthSuccess auth, String operator})) {
+    if (record is ({_i62.AuthSuccess auth, String operator})) {
       return {
         "n": {
           "auth": record.auth.toJson(),
@@ -1020,7 +1063,7 @@ class Protocol extends _i1.SerializationManager {
         },
       };
     }
-    if (record is ({_i60.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i63.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -1029,10 +1072,10 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i61.Protocol().mapRecordToJson(record);
+      return _i64.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i59.Protocol().mapRecordToJson(record);
+      return _i62.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

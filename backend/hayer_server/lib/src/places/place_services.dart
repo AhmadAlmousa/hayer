@@ -5,12 +5,15 @@ import 'package:serverpod/serverpod.dart';
 import '../generated/protocol.dart';
 import 'calibration.dart';
 import 'google_web_place_source.dart';
+import 'google_route_estimate_source.dart';
+import 'google_web_session.dart';
 import 'place_search_service.dart';
 
 class PlaceServices {
-  PlaceServices._(this.source, this.search, this.calibration);
+  PlaceServices._(this.source, this.routes, this.search, this.calibration);
 
   final GoogleWebPlaceSource source;
+  final GoogleRouteEstimateSource routes;
   final PlaceSearchService search;
   final PlaceCalibration calibration;
 
@@ -52,9 +55,17 @@ class PlaceServices {
   }
 
   static PlaceServices _fromCalibration(PlaceCalibration calibration) {
-    final source = GoogleWebPlaceSource(calibration: calibration);
+    final webSession = GoogleWebSession(calibration: calibration);
+    final source = GoogleWebPlaceSource(
+      calibration: calibration,
+      webSession: webSession,
+    );
     return PlaceServices._(
       source,
+      GoogleRouteEstimateSource(
+        calibration: calibration,
+        webSession: webSession,
+      ),
       PlaceSearchService(source: source, concurrency: 3),
       calibration,
     );

@@ -12,6 +12,7 @@ import '../places/place_services.dart';
 import '../places/place_availability.dart';
 import '../places/place_source.dart';
 import '../places/taxonomy_service.dart';
+import '../places/route_estimate_policy_service.dart';
 import '../sessions/consensus.dart';
 import '../sessions/session_code.dart';
 import '../sessions/session_mapper.dart';
@@ -953,6 +954,7 @@ class HayerSessionEndpoint extends Endpoint {
     final participantViews = participants
         .map(SessionMapper.participant)
         .toList(growable: false);
+    final routeEstimatePolicy = await RouteEstimatePolicyService.load(session);
     return SessionBundle(
       session: SessionMapper.session(row),
       deck: placeRows.map((place) => place.snapshot).toList(growable: false),
@@ -960,6 +962,7 @@ class HayerSessionEndpoint extends Endpoint {
       selfParticipant: participantViews.singleWhere(
         (value) => value.participantId == participant.participantId,
       ),
+      routeEstimatePolicy: routeEstimatePolicy,
     );
   }
 
