@@ -21,6 +21,15 @@ references/Vela/        Pinned GPL reference submodule; not linked or copied
 scripts/                Developer preflight and release APK helpers
 ```
 
+## Branding
+
+The canonical consumer logo is `app/assets/branding/hayer_icon.png`.
+`flutter_launcher_icons` 0.14.4 generates the Android launcher resources and
+iOS AppIcon catalog from that source; Android also receives a white-backed
+adaptive icon, while iOS output is flattened onto white to satisfy App Store
+alpha requirements. Regenerate all configured platform icons from `app/` with
+`dart run flutter_launcher_icons`.
+
 ## POI acquisition
 
 Hayer uses one place source: logged-out Google Maps web search through an

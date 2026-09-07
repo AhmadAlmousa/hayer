@@ -672,6 +672,18 @@ solo and multiplayer flows without developer intervention.
   `b1331f5005603c9d0fd9bad1e726033df37c1fc99d49f7750c4f9f9a89c65395`.
   Running the new command against the production Docker host remains the live
   deployment check.
+- 2026-09-07: adopted the generated question-pin/card logo as the consumer
+  branding source and regenerated launcher assets with
+  `flutter_launcher_icons` 0.14.4. Android now has legacy-density icons plus a
+  white-backed adaptive foreground, and the complete iPhone/iPad AppIcon set
+  is RGB with alpha removed on white. Existing configured web, Windows, and
+  macOS icons were refreshed from the same canonical artwork. The generator's
+  unintended rewrite of two unrelated iOS asset-symbol build settings was
+  reverted before verification. The repository preflight passed (68 backend,
+  66 consumer-app, and 7 admin tests, with clean analysis), and the signed
+  Android `0.1.0+5` release targeting SDK 36 passed APK Signature Scheme v2
+  verification. Both release aliases are 101,565,643 bytes with SHA-256
+  `d45a18ecdc1f93b591cd31e26aa9a4948a9bac1e0044b08c5ab5ebf390039f44`.
 
 ## Decision and change log
 
