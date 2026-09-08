@@ -447,9 +447,26 @@ meaning across Android and web.
 
 #### M7-B — Security and governance boundaries `[ ]`
 
-- [ ] Fix F01 at the real Serverpod endpoint path with a gateway-overwritten,
+- [~] Fix F01 at the real Serverpod endpoint path with a gateway-overwritten,
   trusted client-IP signal plus server method/user budgets; prove forged
   forwarding headers and direct-origin access cannot bypass it.
+  - [x] Move the strict signup limit onto `/api/anonymousIdp`, the path
+    Serverpod actually posts to, and delete the dead `/api/hayerSession/join`
+    rule and zone rather than leave edge config that never fires.
+  - [x] Overwrite `X-Hayer-Client-Ip` in both server blocks and budget
+    anonymous signups against it, replacing the framework's proxy-blind
+    TCP-peer quota at the configured 30/hour ceiling. A request without the
+    vouched header is budgeted against its own socket, so a bypass cannot
+    spend a legitimate client's budget.
+  - [ ] Add the method-aware join budget. Deferred: its only call site is
+    `hayer_session_endpoint.dart`, which is being changed for M7-G. Join keeps
+    its per-user limit meanwhile.
+  - [ ] Prove 31 distinct clients, forged `CF-Connecting-IP`, and direct-origin
+    access through the real gateway. Not yet run: no container runtime on the
+    development host.
+  - [ ] Decide whether CF trust is pinned to the connector source address.
+    It currently rests on the public port plus the documented host firewall,
+    because Docker NAT masks the connector address.
 - [ ] Fix F13/F14/F20/F30: require passkey UP/UV, revoke issued admin/enrollment
   sessions, make compare-and-swap mutations atomic with audit records, and
   stop emitting recovery credentials to logs.
@@ -689,6 +706,30 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-08: closed the signup half of audit F01 (M7-B) in commit `2a4a20d`,
+  taken because it was the only P0 whose files did not overlap the in-flight
+  M7-G work. Both causes were confirmed against the pinned dependencies rather
+  than assumed: `serverpod_client` 3.4.13 `serverpod_client_shared.dart:559`
+  builds the RPC URL from host plus endpoint and carries the method in the
+  body, so the exact-match `/api/anonymousIdp/login` rule never matched real
+  traffic; `serverpod_auth_idp_server` 3.4.13 `session_extension.dart:8`
+  resolves `remoteIpAddress` from the raw TCP peer, which behind the gateway is
+  always the proxy, making the 30-accounts/hour quota one shared bucket for
+  every client. Changed `backend/deploy/nginx.conf`, `server.dart`, new
+  `lib/src/security/public_gateway_access.dart`, and `rate_limiter.dart`; the
+  limiter gained an optional transaction because the IdP hook runs inside
+  `runInTransactionOrSavepoint` and a second transaction there deadlocks
+  against the caller's own `for update` locks. The ceiling stayed at 30/hour:
+  the defect was the key, not the number, and lowering it would invalidate the
+  31-distinct-clients proof and squeeze carrier-NAT users. Verification:
+  93/93 `hayer_server` unit tests and `dart analyze --fatal-infos` passed, and
+  `scripts/build-release-apk.sh` produced a signed `hayer-0.2.1-7.apk`.
+  `nginx -t` could not run (no container runtime), so a unit test asserts the
+  brace-bearing map regexes stay quoted, which otherwise fails nginx at startup.
+  `anonymous_idp.dart:62` rethrows any hook failure as
+  `AnonymousAccountBlockedException(denied)`, so the client sees `denied`
+  rather than `rate_limited`/`retryAfterSeconds`; the refusal is correct and
+  only the wording is coarse, and that messaging lives in files held by M7-G.
 - 2026-09-08: prioritized the consumer-facing M7-E implementation from audit
   F18/F19/F24–F27. Reused the existing Material themes, taxonomy, routes, and
   session contracts. The responsive-layout skill guided content-based heights,
