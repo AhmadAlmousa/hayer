@@ -245,8 +245,50 @@ abstract class AppLocalizations {
   /// No description provided for @currentLocation.
   ///
   /// In en, this message translates to:
-  /// **'Current location'**
+  /// **'Selected location'**
   String get currentLocation;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get backToHome;
+
+  /// No description provided for @searchingLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for locations'**
+  String get searchingLocations;
+
+  /// No description provided for @noLocationResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No locations found. Try a different area or use your current location.'**
+  String get noLocationResults;
+
+  /// No description provided for @locationSearchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Location search is unavailable. Try again or use your current location.'**
+  String get locationSearchFailed;
+
+  /// No description provided for @refreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates paused. Showing the last saved session information.'**
+  String get refreshFailed;
+
+  /// No description provided for @startingHayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting Hayer ready…'**
+  String get startingHayer;
 
   /// No description provided for @locationPermissionRequired.
   ///

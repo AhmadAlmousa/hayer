@@ -4,7 +4,8 @@ Last updated: 2026-09-08
 
 Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7-A — core session integrity for audit release 0.2.0+6
+Current focus: M7-E — consumer UI/UX remediation for audit release 0.2.0+6;
+M7-A session-integrity acceptance remains an open release prerequisite
 
 Product brief: [`overview.md`](overview.md)
 
@@ -421,7 +422,7 @@ audit. They do not override a later audit finding. The checkpoints below are
 the authoritative remaining M7 execution order; keep only the current
 checkpoint active and record commands plus manual evidence as each closes.
 
-#### M7-A — Core session integrity `[~]`
+#### M7-A — Core session integrity `[ ]`
 
 - [x] Set the audit release target to `0.2.0+6`, advertise build 6 as latest,
   and retain minimum build 5 for the compatibility rollout.
@@ -486,7 +487,31 @@ available; dashboards distinguish fresh data from fallback.
 Exit: a fresh production-like stack is reproducible, least-privileged,
 observable, restorable, and rollback-capable without undocumented host state.
 
-#### M7-E — Client, realtime, accessibility, and analytics integrity `[ ]`
+#### M7-E — Client, realtime, accessibility, and analytics integrity `[~]`
+
+The 2026-09-08 UI/UX implementation pass was prioritized at the owner's
+request. This does not waive the earlier safety checkpoints or authorize a
+production rollout.
+
+- [x] Implement the F18 startup shell and initial-load retry/home states for
+  lobby, swipe, and results; retain saved lobby/results content on refresh
+  failure, announce errors, and guard setup/join callbacks after disposal.
+  Startup operations are bounded and retain the existing bootstrap-outage
+  resume policy and successful update-required check.
+- [x] Implement F19's independent GPS selection/address enrichment and one
+  authenticated location repository. Show loading, no-results, and retry
+  states; invalidate late search/address responses after newer user input.
+- [x] Implement the F24–F27 presentation changes: honor system text scaling,
+  adaptive home/setup/lobby/result controls, scrollable large-text swipe
+  content, lazy variable-height results with bounded thumbnail decoding,
+  focusable setup steps, reduced-motion celebration/swipe/step transitions,
+  labeled directions, and shared localized fractional-distance formatting.
+- [x] Pass automated consumer checks: all 93 tests and fatal-info analysis;
+  cover English/Arabic 200% text, 320 px portrait and short landscape results,
+  setup/join with keyboard coverage, lobby/details, initialization retry,
+  stale-data retention, GPS/address failure, and late address responses.
+- [ ] Complete physical-device TalkBack/focus/contrast, largest native text,
+  denied/approximate-location, background/reconnect, and performance checks.
 
 - [ ] Fix F17–F19 with coalesced lightweight progress refresh, dependable
   stream retry/poll convergence, prompt startup shell, recoverable screen
@@ -645,6 +670,34 @@ measurements and rollback paths.
   authenticator.
 
 ## Evidence log
+
+- 2026-09-08: prioritized the consumer-facing M7-E implementation from audit
+  F18/F19/F24–F27. Reused the existing Material themes, taxonomy, routes, and
+  session contracts. The responsive-layout skill guided content-based heights,
+  wrapping/scrolling, and lazy results; widget-test and static-analysis skills
+  guided verification. No new package dependencies or backend changes.
+- 2026-09-08: pinned Flutter 3.47.2/Dart 3.13.2 verification passed:
+  `build/toolchains/flutter-3.47.2/bin/dart analyze app --fatal-infos` and
+  `cd app && ../build/toolchains/flutter-3.47.2/bin/flutter test --no-pub`
+  (93 tests). `git diff --check` passed. Map platform rendering is substituted
+  in widget tests; those tests verify application state/layout, not native map
+  rendering or live geolocation/provider availability. Existing stream/outbox,
+  routing, and theme tests remain green. Full device certification and F17's
+  realtime convergence contract remain open.
+- 2026-09-08: `graft` is unavailable on this environment's PATH. Used checked-in
+  graph cards to locate source spans; graph regeneration remains pending in an
+  environment with the CLI installed.
+- 2026-09-08: the final startup retry-state regression test and fatal-info
+  analysis passed after the full 93-test run. The required
+  `FLUTTER_BIN=$PWD/build/toolchains/flutter-3.47.2/bin/flutter bash scripts/build-release-apk.sh`
+  succeeded for the final sources and staged the 103.1 MB signed
+  `backend/deploy/releases/hayer-0.2.0-6.apk` plus the `hayer.apk` alias. Both
+  SHA-256 manifests verify; artifact SHA-256 is
+  `d9990a4605bc8bab06e989b68a7a88c90d455093318c7a0114ab22ca4aaf8862`.
+  Android `apksigner verify --verbose` passes with APK Signature Scheme v2.
+  Build warnings about existing Kotlin plugin migration and missing Cupertino
+  icon fonts remain follow-up work. No production deployment, minimum-build
+  change, or beta tag was performed.
 
 - 2026-08-31: Git is initialized on `main`, tracking `origin/main` at
   `git@github.com:AhmadAlmousa/hayer.git`; Vela is clean at

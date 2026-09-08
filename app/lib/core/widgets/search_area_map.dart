@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../display_formatters.dart';
 
 const _mapStyle = 'https://tiles.openfreemap.org/styles/liberty';
 const _earthRadiusMeters = 6371000.0;
@@ -79,7 +80,9 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
     return Semantics(
       label: widget.editable
           ? strings.mapEditHint
-          : strings.mapSelectedHint(_distance(widget.radiusMeters)),
+          : strings.mapSelectedHint(
+              formatDistance(context, widget.radiusMeters),
+            ),
       child: SizedBox(
         height: widget.height,
         child: ClipRRect(
@@ -125,6 +128,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
               ),
               PositionedDirectional(
                 start: 10,
+                end: 10,
                 bottom: 10,
                 child: IgnorePointer(
                   child: DecoratedBox(
@@ -151,18 +155,24 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
                             color: colors.primary,
                           ),
                           const SizedBox(width: 6),
-                          Text(
-                            widget.editable
-                                ? strings.dragMapHint(
-                                    _distance(
-                                      _previewRadius ?? widget.radiusMeters,
+                          Flexible(
+                            child: Text(
+                              widget.editable
+                                  ? strings.dragMapHint(
+                                      formatDistance(
+                                        context,
+                                        _previewRadius ?? widget.radiusMeters,
+                                      ),
+                                    )
+                                  : strings.radiusDistance(
+                                      formatDistance(
+                                        context,
+                                        widget.radiusMeters,
+                                      ),
                                     ),
-                                  )
-                                : strings.radiusDistance(
-                                    _distance(widget.radiusMeters),
-                                  ),
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(fontWeight: FontWeight.w900),
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(fontWeight: FontWeight.w900),
+                            ),
                           ),
                         ],
                       ),
@@ -448,6 +458,3 @@ LatLngBounds searchRadiusBounds(
 
 double _zoomForRadius(int meters) =>
     (14.2 - math.log(meters / 500) / math.ln2).clamp(8.5, 14.2);
-
-String _distance(int meters) =>
-    meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';

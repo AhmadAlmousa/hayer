@@ -4,6 +4,18 @@
 
 Audit date: 7 September 2026. Repository baseline: commit 2429d51 and the existing working tree. Scope: consumer Flutter application, Flutter administration application, generated API contract, Serverpod backend, PostgreSQL/PostGIS schema and migrations, extraction/calibration pipeline, deployment, operational scripts, and tests.
 
+Remediation update, 8 September 2026: the consumer implementation now addresses
+the principal F18/F19/F24–F27 UX defects: immediate startup shell, retryable screen
+loads and stale-data notices, GPS selection independent of address enrichment,
+explicit location-search states with late-response guards, unrestricted system
+text scaling, adaptive controls and swipe content, lazy variable-height results,
+keyboard-accessible setup steps, reduced-motion transitions, labeled directions,
+and localized fractional distances. All 93 consumer tests and fatal-info analysis
+pass. The findings below retain their audit-baseline wording; this is not a new
+production-readiness verdict. Physical-device accessibility, live location,
+performance, realtime convergence, and the other release gates remain open.
+See [`PROJECT.md`](PROJECT.md) for current acceptance status and build evidence.
+
 **Verdict: suitable foundation for a controlled beta, but not ready for a large public rollout as-is.** The principal blockers are lost-update and offline-recovery defects in the main voting journey, a proxy/authentication rate-limit mismatch, and insufficiently reproducible and recoverable deployment. These are targeted engineering problems; neither a frontend rewrite nor a backend/database replacement is warranted.
 
 | Area | Rating | Assessment |

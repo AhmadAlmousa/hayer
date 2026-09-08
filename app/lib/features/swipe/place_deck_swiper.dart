@@ -70,7 +70,9 @@ class _PlaceDeckSwiperState extends State<PlaceDeckSwiper> {
       right: true,
     ),
     numberOfCardsDisplayed: widget.places.length.clamp(1, 3),
-    duration: const Duration(milliseconds: 280),
+    duration: MediaQuery.disableAnimationsOf(context)
+        ? const Duration(milliseconds: 1)
+        : const Duration(milliseconds: 280),
     threshold: 65,
     maxAngle: 18,
     scale: .94,

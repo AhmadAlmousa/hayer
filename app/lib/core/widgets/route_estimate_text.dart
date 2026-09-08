@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:intl/intl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../display_formatters.dart';
 import '../providers.dart';
 
 class RouteEstimateText extends ConsumerStatefulWidget {
@@ -79,7 +79,7 @@ class _RouteEstimateTextState extends ConsumerState<RouteEstimateText> {
         return _text(
           AppLocalizations.of(context)!.approximateRouteEstimate(
             minutes,
-            _distance(context, estimate.distanceMeters),
+            formatDistance(context, estimate.distanceMeters),
           ),
         );
       },
@@ -97,7 +97,7 @@ class _RouteEstimateTextState extends ConsumerState<RouteEstimateText> {
               );
     return meters == null
         ? AppLocalizations.of(context)!.routeDistanceUnavailable
-        : _distance(context, meters);
+        : formatDistance(context, meters);
   }
 
   Widget _text(String value) => Text(
@@ -106,17 +106,4 @@ class _RouteEstimateTextState extends ConsumerState<RouteEstimateText> {
     maxLines: widget.maxLines,
     overflow: widget.overflow,
   );
-
-  String _distance(BuildContext context, int meters) {
-    final strings = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    if (meters < 1000) {
-      return strings.distanceMetersLabel(
-        NumberFormat.decimalPattern(locale).format(meters),
-      );
-    }
-    return strings.distanceKilometersLabel(
-      NumberFormat('0.#', locale).format(meters / 1000),
-    );
-  }
 }

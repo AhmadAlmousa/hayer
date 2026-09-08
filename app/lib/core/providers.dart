@@ -7,6 +7,7 @@ import 'package:hayer_client/hayer_client.dart';
 import '../data/local/app_database.dart';
 import '../data/display_name_store.dart';
 import '../data/location_warmup.dart';
+import '../data/location_repository.dart';
 import '../data/pending_swipe_store.dart';
 import '../data/session_repository.dart';
 import '../data/route_estimate_repository.dart';
@@ -17,6 +18,10 @@ final clientProvider = Provider<Client>(
 
 final locationWarmupProvider = Provider<LocationWarmup>(
   (ref) => LocationWarmup(),
+);
+
+final locationRepositoryProvider = Provider<LocationRepository>(
+  (ref) => LocationRepository(client: ref.watch(clientProvider)),
 );
 
 final displayNameStoreProvider = Provider<DisplayNameStore>(

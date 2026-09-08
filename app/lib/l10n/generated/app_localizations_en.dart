@@ -82,7 +82,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locatingYou => 'Finding your address…';
 
   @override
-  String get currentLocation => 'Current location';
+  String get currentLocation => 'Selected location';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get backToHome => 'Back to home';
+
+  @override
+  String get searchingLocations => 'Searching for locations';
+
+  @override
+  String get noLocationResults =>
+      'No locations found. Try a different area or use your current location.';
+
+  @override
+  String get locationSearchFailed =>
+      'Location search is unavailable. Try again or use your current location.';
+
+  @override
+  String get refreshFailed =>
+      'Updates paused. Showing the last saved session information.';
+
+  @override
+  String get startingHayer => 'Getting Hayer ready…';
 
   @override
   String get locationPermissionRequired =>

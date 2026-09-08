@@ -10,9 +10,11 @@ import 'package:intl/intl.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../app/theme.dart';
+import '../../core/display_formatters.dart';
 import '../../core/page_title.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/content_shell.dart';
+import '../../core/widgets/adaptive_actions.dart';
 import '../../core/widgets/search_area_map.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'setup_data.dart';
@@ -51,6 +53,11 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   final _displayName = TextEditingController();
   final _locationSearch = TextEditingController();
   List<LocationSuggestion> _suggestions = const [];
+  bool _searching = false;
+  bool _searchFailed = false;
+  bool _searchComplete = false;
+  int _searchRevision = 0;
+  int _locationRevision = 0;
   Timer? _debounce;
   Timer? _mapDebounce;
   List<SetupCategory> _categories = setupCategories;
@@ -117,55 +124,48 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                     horizontal: 20,
                     vertical: 4,
                   ),
-                  child: Text(
-                    _error!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                  child: Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      _error!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ),
                 ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                child: Row(
+                child: AdaptiveActions(
                   children: [
                     if (_step > 0)
-                      Expanded(
-                        child: M3EButton.outlined(
-                          onPressed: _loading
-                              ? null
-                              : () => _goToStep(_step - 1),
-                          size: M3EButtonSize.md,
-                          child: Text(strings.backLabel),
-                        ),
+                      OutlinedButton(
+                        onPressed: _loading ? null : () => _goToStep(_step - 1),
+                        child: Text(strings.backLabel),
                       ),
-                    if (_step > 0) const SizedBox(width: 12),
-                    Expanded(
-                      flex: 2,
-                      child: M3EButton.filled(
-                        onPressed: _canContinue && !_loading ? _advance : null,
-                        size: M3EButtonSize.md,
-                        child: _loading
-                            ? const SizedBox.square(
-                                dimension: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : _step == 2 && _mode == SessionMode.solo
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(strings.startSwiping),
-                                  const SizedBox(width: 8),
-                                  const Icon(Icons.arrow_forward_rounded),
-                                ],
-                              )
-                            : Text(
-                                _step == 2
-                                    ? strings.createSession
-                                    : strings.continueLabel,
+                    FilledButton(
+                      onPressed: _canContinue && !_loading ? _advance : null,
+                      child: _loading
+                          ? const SizedBox.square(
+                              dimension: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
                               ),
-                      ),
+                            )
+                          : _step == 2 && _mode == SessionMode.solo
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(child: Text(strings.startSwiping)),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.arrow_forward_rounded),
+                              ],
+                            )
+                          : Text(
+                              _step == 2
+                                  ? strings.createSession
+                                  : strings.continueLabel,
+                            ),
                     ),
                   ],
                 ),
@@ -201,12 +201,12 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                 children: [
                   Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: M3EChip(
-                      type: M3EChipType.filter,
-                      label:
-                          '${strings.allLabel} ${category.label(languageCode)}',
+                    child: FilterChip(
+                      label: Text(
+                        '${strings.allLabel} ${category.label(languageCode)}',
+                      ),
                       selected: _subcategories.isEmpty,
-                      onPressed: () => setState(_subcategories.clear),
+                      onSelected: (_) => setState(_subcategories.clear),
                     ),
                   ),
                   if (category.cuisines.isNotEmpty)
@@ -250,11 +250,10 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
           runSpacing: 8,
           children: [
             for (final item in values.entries)
-              M3EChip(
-                type: M3EChipType.filter,
-                label: item.value.label(languageCode),
+              FilterChip(
+                label: Text(item.value.label(languageCode)),
                 selected: _subcategories.contains(item.key),
-                onPressed: () => setState(() {
+                onSelected: (_) => setState(() {
                   if (!_subcategories.contains(item.key) &&
                       _subcategories.length < 5) {
                     _subcategories.add(item.key);
@@ -301,6 +300,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         TextField(
           controller: _locationSearch,
           onChanged: _searchLocations,
+          onSubmitted: _searchLocations,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
             hintText: strings.searchLocation,
@@ -317,6 +317,38 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             ),
           ),
         ),
+        if (_searching)
+          Semantics(
+            liveRegion: true,
+            label: strings.searchingLocations,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: LinearProgressIndicator(),
+            ),
+          ),
+        if (_searchFailed)
+          Semantics(
+            liveRegion: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(strings.locationSearchFailed),
+                TextButton.icon(
+                  onPressed: () => _searchLocations(_locationSearch.text),
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(strings.tryAgain),
+                ),
+              ],
+            ),
+          ),
+        if (_searchComplete && _suggestions.isEmpty)
+          Semantics(
+            liveRegion: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(strings.noLocationResults),
+            ),
+          ),
         if (_suggestions.isNotEmpty)
           Card(
             child: Column(
@@ -363,7 +395,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '${strings.radius}: ${_formatDistance(_radiusMeters)}',
+                '${strings.radius}: ${formatDistance(context, _radiusMeters)}',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -473,27 +505,21 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Heading(strings.setupModeTitle),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        AdaptiveActions(
           children: [
-            Expanded(
-              child: _ModeCard(
-                label: strings.solo,
-                description: strings.soloDescription,
-                icon: Icons.person_rounded,
-                selected: _mode == SessionMode.solo,
-                onTap: () => setState(() => _mode = SessionMode.solo),
-              ),
+            _ModeCard(
+              label: strings.solo,
+              description: strings.soloDescription,
+              icon: Icons.person_rounded,
+              selected: _mode == SessionMode.solo,
+              onTap: () => setState(() => _mode = SessionMode.solo),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _ModeCard(
-                label: strings.multiplayer,
-                description: strings.multiplayerDescription,
-                icon: Icons.groups_rounded,
-                selected: _mode == SessionMode.multiplayer,
-                onTap: () => setState(() => _mode = SessionMode.multiplayer),
-              ),
+            _ModeCard(
+              label: strings.multiplayer,
+              description: strings.multiplayerDescription,
+              icon: Icons.groups_rounded,
+              selected: _mode == SessionMode.multiplayer,
+              onTap: () => setState(() => _mode = SessionMode.multiplayer),
             ),
           ],
         ),
@@ -610,7 +636,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       final route = _mode == SessionMode.solo ? 'swipe' : 'lobby';
       context.go('/$route/${bundle.session.sessionId}', extra: bundle);
     } catch (error) {
-      setState(() => _error = _friendlyError(error));
+      if (mounted) setState(() => _error = _friendlyError(error));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -618,71 +644,117 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
 
   void _searchLocations(String value) {
     _debounce?.cancel();
-    if (value.trim().length < 3) {
-      setState(() => _suggestions = const []);
-      return;
-    }
+    final revision = ++_searchRevision;
+    ++_locationRevision;
+    final query = value.trim();
+    setState(() {
+      _suggestions = const [];
+      _searching = query.length >= 3;
+      _searchFailed = false;
+      _searchComplete = false;
+    });
+    if (!_searching) return;
     _debounce = Timer(const Duration(milliseconds: 350), () async {
       try {
-        final client = ref.read(clientProvider);
-        final values = await client.place.suggest(
-          query: value,
-          latitude: _latitude,
-          longitude: _longitude,
-          countryCode: 'SA',
-        );
-        if (mounted && _locationSearch.text == value) {
-          setState(() => _suggestions = values);
+        final values = await ref
+            .read(locationRepositoryProvider)
+            .suggest(
+              query: query,
+              latitude: _latitude,
+              longitude: _longitude,
+            );
+        if (mounted && revision == _searchRevision) {
+          setState(() {
+            _suggestions = values;
+            _searching = false;
+            _searchComplete = true;
+          });
         }
-      } catch (_) {}
+      } catch (_) {
+        if (mounted && revision == _searchRevision) {
+          setState(() {
+            _searching = false;
+            _searchFailed = true;
+          });
+        }
+      }
     });
   }
 
+  void _cancelSuggestions() {
+    _debounce?.cancel();
+    ++_searchRevision;
+    _suggestions = const [];
+    _searching = false;
+    _searchFailed = false;
+    _searchComplete = false;
+  }
+
   void _selectSuggestion(LocationSuggestion suggestion) {
+    ++_locationRevision;
+    _mapDebounce?.cancel();
     setState(() {
+      _cancelSuggestions();
       _latitude = suggestion.latitude;
       _longitude = suggestion.longitude;
       _address = suggestion.fullText;
       _locationSearch.text = suggestion.fullText;
-      _suggestions = const [];
+      _error = null;
     });
   }
 
   void _moveSearchCenter(double latitude, double longitude) {
     _mapDebounce?.cancel();
+    final revision = _selectCoordinates(latitude, longitude);
+    _mapDebounce = Timer(const Duration(milliseconds: 450), () {
+      unawaited(_enrichLocation(latitude, longitude, revision));
+    });
+  }
+
+  int _selectCoordinates(double latitude, double longitude) {
+    final revision = ++_locationRevision;
     setState(() {
+      _cancelSuggestions();
       _latitude = latitude;
       _longitude = longitude;
       _address = null;
-      _suggestions = const [];
+      _error = null;
       _locationSearch.text =
           '${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}';
     });
-    _mapDebounce = Timer(const Duration(milliseconds: 450), () async {
-      try {
-        final address = await ref
-            .read(clientProvider)
-            .place
-            .reverseGeocode(
-              latitude: latitude,
-              longitude: longitude,
-              languageCode: Localizations.localeOf(context).languageCode,
-            );
-        if (!mounted || _latitude != latitude || _longitude != longitude) {
-          return;
-        }
-        setState(() {
-          _address = address;
-          _locationSearch.text = address;
-        });
-      } catch (_) {}
-    });
+    return revision;
+  }
+
+  Future<void> _enrichLocation(
+    double latitude,
+    double longitude,
+    int revision,
+  ) async {
+    if (!mounted || revision != _locationRevision) return;
+    try {
+      final address = await ref
+          .read(locationRepositoryProvider)
+          .reverseGeocode(
+            latitude: latitude,
+            longitude: longitude,
+            languageCode: Localizations.localeOf(context).languageCode,
+          );
+      if (!mounted || revision != _locationRevision || address.trim().isEmpty) {
+        return;
+      }
+      setState(() {
+        _address = address;
+        _locationSearch.text = address;
+      });
+    } catch (_) {
+      // The coordinates remain usable when optional address enrichment fails.
+    }
   }
 
   Future<void> _useLocation() async {
     final strings = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).languageCode;
-    final client = ref.read(clientProvider);
+    final revision = ++_locationRevision;
+    _mapDebounce?.cancel();
     setState(() {
       _locating = true;
       _error = null;
@@ -691,24 +763,18 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       final position = await ref
           .read(locationWarmupProvider)
           .locate(requestPermission: true);
+      if (!mounted || revision != _locationRevision) return;
       if (position == null) {
-        if (!mounted) return;
         setState(() => _error = strings.locationPermissionRequired);
         return;
       }
-      final address = await client.place.reverseGeocode(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        languageCode: locale,
+      final selected = _selectCoordinates(
+        position.latitude,
+        position.longitude,
       );
-      if (!mounted) return;
-      setState(() {
-        _latitude = position.latitude;
-        _longitude = position.longitude;
-        _address = address;
-        _locationSearch.text = address;
-        _suggestions = const [];
-      });
+      unawaited(
+        _enrichLocation(position.latitude, position.longitude, selected),
+      );
     } catch (error) {
       if (mounted) setState(() => _error = _friendlyError(error));
     } finally {
@@ -717,27 +783,16 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   }
 
   Future<void> _adoptWarmedLocation() async {
+    final revision = _locationRevision;
     final position = await ref.read(locationWarmupProvider).ready;
-    if (!mounted || position == null || _latitude != null) return;
-    setState(() {
-      _latitude = position.latitude;
-      _longitude = position.longitude;
-    });
-    try {
-      final address = await ref
-          .read(clientProvider)
-          .place
-          .reverseGeocode(
-            latitude: position.latitude,
-            longitude: position.longitude,
-            languageCode: Localizations.localeOf(context).languageCode,
-          );
-      if (!mounted || _latitude != position.latitude) return;
-      setState(() {
-        _address = address;
-        _locationSearch.text = address;
-      });
-    } catch (_) {}
+    if (!mounted ||
+        position == null ||
+        _latitude != null ||
+        revision != _locationRevision) {
+      return;
+    }
+    final selected = _selectCoordinates(position.latitude, position.longitude);
+    await _enrichLocation(position.latitude, position.longitude, selected);
   }
 
   Future<void> _pickVisitTime() async {
@@ -836,13 +891,17 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   void _goToStep(int value) {
     if (value == _step || value < 0 || value > 2) return;
     setState(() => _step = value);
-    unawaited(
-      _pageController.animateToPage(
-        value,
-        duration: const Duration(milliseconds: 340),
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pageController.jumpToPage(value);
+    } else {
+      unawaited(
+        _pageController.animateToPage(
+          value,
+          duration: const Duration(milliseconds: 340),
+          curve: Curves.easeOutCubic,
+        ),
+      );
+    }
     if (value == 1 && _latitude == null && !_locating) {
       unawaited(_useLocation());
     }
@@ -856,9 +915,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
 
   String _friendlyError(Object error) =>
       setupErrorMessage(error, AppLocalizations.of(context)!);
-
-  String _formatDistance(int meters) =>
-      meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';
 }
 
 class _CompactOptionSlider extends StatelessWidget {
@@ -891,14 +947,16 @@ class _CompactOptionSlider extends StatelessWidget {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 160),
-              child: Text(
-                label,
-                key: ValueKey(label),
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w900,
+            Flexible(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 160),
+                child: Text(
+                  label,
+                  key: ValueKey(label),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
             ),

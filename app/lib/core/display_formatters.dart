@@ -1,6 +1,20 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/generated/app_localizations.dart';
+
+String formatDistance(BuildContext context, int meters) {
+  final strings = AppLocalizations.of(context)!;
+  final locale = Localizations.localeOf(context).toLanguageTag();
+  return meters < 1000
+      ? strings.distanceMetersLabel(
+          NumberFormat.decimalPattern(locale).format(meters),
+        )
+      : strings.distanceKilometersLabel(
+          NumberFormat('0.#', locale).format(meters / 1000),
+        );
+}
+
 String formatCount(BuildContext context, num value) =>
     NumberFormat.decimalPattern(
       Localizations.localeOf(context).toLanguageTag(),

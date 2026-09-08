@@ -129,16 +129,18 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
                     if (_error != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: Text(
-                          _error!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
+                        child: Semantics(
+                          liveRegion: true,
+                          child: Text(
+                            _error!,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                           ),
                         ),
                       ),
-                    M3EButton.filled(
+                    FilledButton(
                       onPressed: _loading ? null : _join,
-                      size: M3EButtonSize.md,
                       child: _loading
                           ? const SizedBox.square(
                               dimension: 22,
@@ -172,6 +174,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
       if (!mounted) return;
       context.go('/lobby/${bundle.session.sessionId}', extra: bundle);
     } catch (error) {
+      if (!mounted) return;
       setState(
         () => _error = error is ApiException
             ? error.message

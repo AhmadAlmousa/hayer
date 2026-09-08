@@ -9,6 +9,7 @@ import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../app/theme.dart';
 import '../../core/providers.dart';
+import '../../core/widgets/session_recovery.dart';
 import '../../core/page_title.dart';
 import '../../core/widgets/fireworks_celebration.dart';
 import '../../data/session_repository.dart';
@@ -32,6 +33,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   int _index = 0;
   bool _submitting = false;
   bool _ready = false;
+  Object? _initializationError;
   bool _transitioningToResults = false;
   bool _waitingForFinalSync = false;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
@@ -62,29 +64,34 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   }
 
   Future<void> _initialize() async {
-    final repository = ref.read(sessionRepositoryProvider);
-    final flush = await repository.flushQueue();
-    final value = _bundle ?? await repository.load(widget.sessionId);
-    final routeOrigin = await _routeOriginFor(value);
-    if (!mounted) return;
-    final serverIndex = value.selfParticipant.currentIndex.clamp(
-      0,
-      value.deck.length,
-    );
-    final localIndex = (flush.pendingProgressBySession[widget.sessionId] ?? 0)
-        .clamp(0, value.deck.length);
-    setState(() {
-      _bundle = value;
-      _index = serverIndex > localIndex ? serverIndex : localIndex;
-      _waitingForFinalSync =
-          _index >= value.deck.length &&
-          flush.pendingSessionIds.contains(widget.sessionId);
-      _routeOrigin = routeOrigin;
-      _ready = true;
-    });
-    _connect();
-    if (value.session.status == SessionStatus.completed) {
-      unawaited(_showResults(celebrate: _isInstantMatch(value)));
+    try {
+      final repository = ref.read(sessionRepositoryProvider);
+      final flush = await repository.flushQueue();
+      final value = _bundle ?? await repository.load(widget.sessionId);
+      final routeOrigin = await _routeOriginFor(value);
+      if (!mounted) return;
+      final serverIndex = value.selfParticipant.currentIndex.clamp(
+        0,
+        value.deck.length,
+      );
+      final localIndex = (flush.pendingProgressBySession[widget.sessionId] ?? 0)
+          .clamp(0, value.deck.length);
+      setState(() {
+        _bundle = value;
+        _index = serverIndex > localIndex ? serverIndex : localIndex;
+        _waitingForFinalSync =
+            _index >= value.deck.length &&
+            flush.pendingSessionIds.contains(widget.sessionId);
+        _routeOrigin = routeOrigin;
+        _ready = true;
+        _initializationError = null;
+      });
+      _connect();
+      if (value.session.status == SessionStatus.completed) {
+        unawaited(_showResults(celebrate: _isInstantMatch(value)));
+      }
+    } catch (error) {
+      if (mounted) setState(() => _initializationError = error);
     }
   }
 
@@ -131,7 +138,16 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     setBrowserPageTitle('${strings.startSwiping} — ${strings.appName}');
     final bundle = _bundle;
     if (bundle == null || !_ready) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        body: SafeArea(
+          child: _initializationError == null
+              ? const Center(child: CircularProgressIndicator())
+              : SessionRecovery(
+                  error: _initializationError!,
+                  onRetry: _initialize,
+                ),
+        ),
+      );
     }
     if (_index >= bundle.deck.length && _waitingForFinalSync) {
       return Scaffold(
@@ -212,6 +228,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                     ),
                   ),
                   M3EIconButton(
+                    tooltip: strings.lobby,
                     onPressed: bundle.session.mode == SessionMode.multiplayer
                         ? () => context.push(
                             '/lobby/${widget.sessionId}',

@@ -9,9 +9,12 @@ import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/providers.dart';
+import '../../core/display_formatters.dart';
 import '../../core/page_title.dart';
 import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
+import '../../core/widgets/adaptive_actions.dart';
+import '../../core/widgets/session_recovery.dart';
 import '../../core/widgets/fireworks_celebration.dart';
 import '../../core/widgets/search_area_map.dart';
 import '../../core/widgets/session_qr_code.dart';
@@ -33,6 +36,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   Object? _error;
   SessionRealtimeListener? _updates;
   bool _celebrating = false;
+  bool _loading = false;
   bool _routeChoiceOpen = false;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
 
@@ -51,6 +55,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   }
 
   Future<void> _load() async {
+    if (_loading) return;
+    _loading = true;
     try {
       final value = await ref
           .read(sessionRepositoryProvider)
@@ -71,6 +77,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
       }
     } catch (error) {
       if (mounted) setState(() => _error = error);
+    } finally {
+      _loading = false;
     }
   }
 
@@ -99,17 +107,16 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     return Scaffold(
       appBar: M3EAppBar.top(
         leading: M3EIconButton(
+          tooltip: strings.backToHome,
           onPressed: () => context.go('/'),
           icon: const Icon(Icons.home_outlined),
         ),
         title: Text(strings.lobby),
       ),
       body: bundle == null
-          ? Center(
-              child: _error == null
-                  ? const CircularProgressIndicator()
-                  : Text(strings.couldNotLoadSession),
-            )
+          ? _error == null
+                ? const Center(child: CircularProgressIndicator())
+                : SessionRecovery(error: _error!, onRetry: _load)
           : SafeArea(
               child: ContentShell(
                 child: ListView(
@@ -117,6 +124,12 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
                   children: [
+                    if (_error != null)
+                      SessionRecovery(
+                        error: _error!,
+                        onRetry: _load,
+                        hasSavedContent: true,
+                      ),
                     Text(
                       strings.sessionCode,
                       textAlign: TextAlign.center,
@@ -137,53 +150,39 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                           ),
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    AdaptiveActions(
                       children: [
-                        Expanded(
-                          child: M3EButton.icon(
-                            onPressed: () => _showQrCode(bundle.session.code),
-                            icon: const Icon(Icons.qr_code_2_rounded),
-                            label: Text(strings.qrLabel),
-                            style: M3EButtonStyle.outlined,
-                            size: M3EButtonSize.sm,
-                          ),
+                        OutlinedButton.icon(
+                          onPressed: () => _showQrCode(bundle.session.code),
+                          icon: const Icon(Icons.qr_code_2_rounded),
+                          label: Text(strings.qrLabel),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: M3EButton.icon(
-                            onPressed: () {
-                              Clipboard.setData(
-                                ClipboardData(
-                                  text: formatSessionCode(bundle.session.code),
-                                ),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(strings.codeCopied)),
-                              );
-                            },
-                            icon: const Icon(Icons.copy_rounded),
-                            label: Text(strings.copyLabel),
-                            style: M3EButtonStyle.outlined,
-                            size: M3EButtonSize.sm,
-                          ),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            Clipboard.setData(
+                              ClipboardData(
+                                text: formatSessionCode(bundle.session.code),
+                              ),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(strings.codeCopied)),
+                            );
+                          },
+                          icon: const Icon(Icons.copy_rounded),
+                          label: Text(strings.copyLabel),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: M3EButton.icon(
-                            onPressed: () => SharePlus.instance.share(
-                              ShareParams(
-                                text: strings.joinMySession(
-                                  sessionJoinUri(
-                                    bundle.session.code,
-                                  ).toString(),
-                                ),
+                        FilledButton.icon(
+                          onPressed: () => SharePlus.instance.share(
+                            ShareParams(
+                              text: strings.joinMySession(
+                                sessionJoinUri(
+                                  bundle.session.code,
+                                ).toString(),
                               ),
                             ),
-                            icon: const Icon(Icons.share_rounded),
-                            label: Text(strings.shareLabel),
-                            style: M3EButtonStyle.outlined,
-                            size: M3EButtonSize.sm,
                           ),
+                          icon: const Icon(Icons.share_rounded),
+                          label: Text(strings.shareLabel),
                         ),
                       ],
                     ),
@@ -280,16 +279,19 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                                   .toUpperCase(),
                             ),
                           ),
-                          title: Row(
+                          title: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 8,
                             children: [
-                              Flexible(child: Text(participant.displayName)),
-                              if (participant.isHost) ...[
-                                const SizedBox(width: 8),
-                                M3EChip(label: strings.host),
-                              ],
+                              Text(participant.displayName),
+                              if (participant.isHost)
+                                Text(
+                                  strings.host,
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
                             ],
                           ),
-                          trailing: Text(
+                          subtitle: Text(
                             participant.hasCompleted
                                 ? strings.done
                                 : strings.participantProgress(
@@ -308,27 +310,20 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           : SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
+                child: AdaptiveActions(
                   children: [
-                    Expanded(
-                      child: M3EButton.outlined(
-                        onPressed: () =>
-                            context.push('/results/${widget.sessionId}'),
-                        size: M3EButtonSize.md,
-                        child: Text(strings.viewResults),
-                      ),
+                    OutlinedButton(
+                      onPressed: () =>
+                          context.push('/results/${widget.sessionId}'),
+                      child: Text(strings.viewResults),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: M3EButton.icon(
-                        onPressed: () => context.push(
-                          '/swipe/${widget.sessionId}',
-                          extra: bundle,
-                        ),
-                        icon: const Icon(Icons.arrow_forward_rounded),
-                        label: Text(strings.startSwiping),
-                        size: M3EButtonSize.md,
+                    FilledButton.icon(
+                      onPressed: () => context.push(
+                        '/swipe/${widget.sessionId}',
+                        extra: bundle,
                       ),
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: Text(strings.startSwiping),
                     ),
                   ],
                 ),
@@ -337,8 +332,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     );
   }
 
-  String _distance(int meters) =>
-      meters < 1000 ? '$meters m' : '${meters ~/ 1000} km';
+  String _distance(int meters) => formatDistance(context, meters);
 
   bool _mayChooseRouteOrigin(SessionBundle bundle) {
     final policy = bundle.routeEstimatePolicy;
@@ -439,7 +433,9 @@ class _Info extends StatelessWidget {
     children: [
       Icon(icon, size: 19, color: Theme.of(context).colorScheme.primary),
       const SizedBox(width: 7),
-      Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
+      Flexible(
+        child: Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
+      ),
     ],
   );
 }

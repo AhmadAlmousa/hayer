@@ -7,16 +7,19 @@ import '../../l10n/generated/app_localizations.dart';
 Future<void> showMatchFireworks(
   BuildContext context, {
   Duration duration = const Duration(milliseconds: 1700),
-}) => showGeneralDialog<void>(
-  context: context,
-  barrierDismissible: false,
-  barrierColor: Colors.black.withValues(alpha: .3),
-  transitionDuration: const Duration(milliseconds: 220),
-  transitionBuilder: (context, animation, secondaryAnimation, child) =>
-      FadeTransition(opacity: animation, child: child),
-  pageBuilder: (context, animation, secondaryAnimation) =>
-      _MatchFireworksDialog(duration: duration),
-);
+}) {
+  if (MediaQuery.disableAnimationsOf(context)) return Future<void>.value();
+  return showGeneralDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    barrierColor: Colors.black.withValues(alpha: .3),
+    transitionDuration: const Duration(milliseconds: 220),
+    transitionBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(opacity: animation, child: child),
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        _MatchFireworksDialog(duration: duration),
+  );
+}
 
 class _MatchFireworksDialog extends StatefulWidget {
   const _MatchFireworksDialog({required this.duration});

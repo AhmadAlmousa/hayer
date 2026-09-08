@@ -82,7 +82,31 @@ class AppLocalizationsAr extends AppLocalizations {
   String get locatingYou => 'نحدد عنوانك…';
 
   @override
-  String get currentLocation => 'موقعي الحالي';
+  String get currentLocation => 'الموقع المحدد';
+
+  @override
+  String get tryAgain => 'حاول مرة أخرى';
+
+  @override
+  String get backToHome => 'العودة للرئيسية';
+
+  @override
+  String get searchingLocations => 'جارٍ البحث عن المواقع';
+
+  @override
+  String get noLocationResults =>
+      'لم نجد مواقع. جرّب منطقة أخرى أو استخدم موقعك الحالي.';
+
+  @override
+  String get locationSearchFailed =>
+      'البحث عن المواقع غير متاح. حاول مرة أخرى أو استخدم موقعك الحالي.';
+
+  @override
+  String get refreshFailed =>
+      'توقفت التحديثات مؤقتًا. نعرض آخر معلومات محفوظة للجلسة.';
+
+  @override
+  String get startingHayer => 'جارٍ تجهيز حاير…';
 
   @override
   String get locationPermissionRequired =>

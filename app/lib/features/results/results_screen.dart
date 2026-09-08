@@ -18,6 +18,8 @@ import '../../core/place_links.dart';
 import '../../core/providers.dart';
 import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
+import '../../core/widgets/session_recovery.dart';
+import '../../core/widgets/adaptive_actions.dart';
 import '../../core/widgets/install_app_card.dart';
 import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/weekly_hours_calendar.dart';
@@ -141,144 +143,33 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
         ),
       ),
       body: _results == null
-          ? Center(
-              child: _error == null
-                  ? const CircularProgressIndicator()
-                  : Text(strings.couldNotLoadResults),
-            )
+          ? _error == null
+                ? const Center(child: CircularProgressIndicator())
+                : SessionRecovery(error: _error!, onRetry: _load)
           : SafeArea(
               child: ContentShell(
-                child: ListView(
+                child: ListView.builder(
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
-                  children: [
-                    if (bundle?.session.freshnessWarning != null)
-                      Card(
-                        child: ListTile(
-                          leading: const Icon(Icons.info_outline),
-                          title: Text(strings.cachedPlacesWarning),
-                        ),
-                      ),
-                    if (bundle?.session.mode == SessionMode.multiplayer)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Wrap(
-                            spacing: 20,
-                            runSpacing: 8,
-                            children: [
-                              Text(
-                                strings.codeLabel(
-                                  formatSessionCode(bundle!.session.code),
-                                ),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              Text(
-                                strings.participantsCount(
-                                  bundle.participants.length,
-                                ),
-                              ),
-                              Text(strings.matchesCount(values.length)),
-                              Text(
-                                strings.completedCount(
-                                  bundle.participants
-                                      .where((item) => item.hasCompleted)
-                                      .length,
-                                  bundle.participants.length,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    if (bundle?.session.mode == SessionMode.multiplayer &&
-                        bundle!.participants.any(
-                          (participant) => !participant.hasCompleted,
-                        ))
-                      Card.filled(
-                        child: ListTile(
-                          leading: const Icon(Icons.sync_rounded),
-                          title: Text(strings.waitingForGroup),
-                          subtitle: Text(
-                            strings.groupProgress(
-                              bundle.participants
-                                  .where(
-                                    (participant) => participant.hasCompleted,
-                                  )
-                                  .length,
-                              bundle.participants.length,
-                            ),
-                          ),
-                        ),
-                      ),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          Text(
-                            strings.sortBy,
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          M3EChip(
-                            type: M3EChipType.filter,
-                            leading: const Icon(Icons.star_rounded, size: 18),
-                            label: strings.rating,
-                            selected: _sort == _Sort.rating,
-                            onPressed: () =>
-                                setState(() => _sort = _Sort.rating),
-                          ),
-                          M3EChip(
-                            type: M3EChipType.filter,
-                            leading: const Icon(
-                              Icons.reviews_rounded,
-                              size: 18,
-                            ),
-                            label: strings.reviews,
-                            selected: _sort == _Sort.reviews,
-                            onPressed: () =>
-                                setState(() => _sort = _Sort.reviews),
-                          ),
-                          M3EChip(
-                            type: M3EChipType.filter,
-                            leading: const Icon(
-                              Icons.near_me_rounded,
-                              size: 18,
-                            ),
-                            label: strings.distance,
-                            selected: _sort == _Sort.distance,
-                            onPressed: () =>
-                                setState(() => _sort = _Sort.distance),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (values.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 70),
-                        child: Column(
-                          children: [
-                            const Icon(Icons.heart_broken_outlined, size: 64),
-                            const SizedBox(height: 14),
-                            Text(
-                              bundle?.session.mode == SessionMode.multiplayer
-                                  ? strings.noGroupMatch
-                                  : strings.noLikes,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      _AnimatedResultsList(
-                        values: values,
+                  itemCount: values.length + 2,
+                  findChildIndexCallback: (key) {
+                    final index = values.indexWhere(
+                      (value) => ValueKey(value.place.placeId) == key,
+                    );
+                    return index < 0 ? null : index + 1;
+                  },
+                  itemBuilder: (context, index) {
+                    if (index == values.length + 1) {
+                      return kIsWeb
+                          ? const InstallAppCard()
+                          : const SizedBox.shrink();
+                    }
+                    if (index > 0) {
+                      return _ResultCard(
+                        key: ValueKey(values[index - 1].place.placeId),
+                        result: values[index - 1],
+                        rank: index,
                         showConsensus:
                             bundle?.session.mode == SessionMode.multiplayer,
                         countryCode: bundle?.session.countryCode,
@@ -286,9 +177,148 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                         routeOrigin: _routeOrigin,
                         routeEstimatesEnabled:
                             bundle?.routeEstimatePolicy?.enabled ?? false,
-                      ),
-                    if (kIsWeb) const InstallAppCard(),
-                  ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (_error != null)
+                          SessionRecovery(
+                            error: _error!,
+                            onRetry: _load,
+                            hasSavedContent: true,
+                          ),
+                        if (bundle?.session.freshnessWarning != null)
+                          Card(
+                            child: ListTile(
+                              leading: const Icon(Icons.info_outline),
+                              title: Text(strings.cachedPlacesWarning),
+                            ),
+                          ),
+                        if (bundle?.session.mode == SessionMode.multiplayer)
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Wrap(
+                                spacing: 20,
+                                runSpacing: 8,
+                                children: [
+                                  Text(
+                                    strings.codeLabel(
+                                      formatSessionCode(bundle!.session.code),
+                                    ),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                  Text(
+                                    strings.participantsCount(
+                                      bundle.participants.length,
+                                    ),
+                                  ),
+                                  Text(strings.matchesCount(values.length)),
+                                  Text(
+                                    strings.completedCount(
+                                      bundle.participants
+                                          .where((item) => item.hasCompleted)
+                                          .length,
+                                      bundle.participants.length,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        if (bundle?.session.mode == SessionMode.multiplayer &&
+                            bundle!.participants.any(
+                              (participant) => !participant.hasCompleted,
+                            ))
+                          Card.filled(
+                            child: ListTile(
+                              leading: const Icon(Icons.sync_rounded),
+                              title: Text(strings.waitingForGroup),
+                              subtitle: Text(
+                                strings.groupProgress(
+                                  bundle.participants
+                                      .where(
+                                        (participant) =>
+                                            participant.hasCompleted,
+                                      )
+                                      .length,
+                                  bundle.participants.length,
+                                ),
+                              ),
+                            ),
+                          ),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              Text(
+                                strings.sortBy,
+                                style: Theme.of(context).textTheme.labelLarge
+                                    ?.copyWith(fontWeight: FontWeight.w800),
+                              ),
+                              FilterChip(
+                                avatar: const Icon(
+                                  Icons.star_rounded,
+                                  size: 18,
+                                ),
+                                label: Text(strings.rating),
+                                selected: _sort == _Sort.rating,
+                                onSelected: (_) =>
+                                    setState(() => _sort = _Sort.rating),
+                              ),
+                              FilterChip(
+                                avatar: const Icon(
+                                  Icons.reviews_rounded,
+                                  size: 18,
+                                ),
+                                label: Text(strings.reviews),
+                                selected: _sort == _Sort.reviews,
+                                onSelected: (_) =>
+                                    setState(() => _sort = _Sort.reviews),
+                              ),
+                              FilterChip(
+                                avatar: const Icon(
+                                  Icons.near_me_rounded,
+                                  size: 18,
+                                ),
+                                label: Text(strings.distance),
+                                selected: _sort == _Sort.distance,
+                                onSelected: (_) =>
+                                    setState(() => _sort = _Sort.distance),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (values.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 70),
+                            child: Column(
+                              children: [
+                                const Icon(
+                                  Icons.heart_broken_outlined,
+                                  size: 64,
+                                ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  bundle?.session.mode ==
+                                          SessionMode.multiplayer
+                                      ? strings.noGroupMatch
+                                      : strings.noLikes,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -297,34 +327,24 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
           : SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
+                child: AdaptiveActions(
                   children: [
-                    Expanded(
-                      child: M3EButton.icon(
-                        onPressed: () => context.go('/setup'),
-                        icon: const Icon(Icons.search_rounded),
-                        label: Text(
-                          strings.newSearch,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        style: M3EButtonStyle.outlined,
-                        size: M3EButtonSize.md,
+                    OutlinedButton.icon(
+                      onPressed: () => context.go('/setup'),
+                      icon: const Icon(Icons.search_rounded),
+                      label: Text(
+                        strings.newSearch,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: M3EButton.icon(
-                        onPressed: values.isEmpty
-                            ? null
-                            : () => _shareResults(values),
-                        icon: const Icon(Icons.share_rounded),
-                        label: Text(
-                          bundle?.session.mode == SessionMode.multiplayer
-                              ? strings.shareResults
-                              : strings.sharePicks,
-                        ),
-                        size: M3EButtonSize.md,
+                    FilledButton.icon(
+                      onPressed: values.isEmpty
+                          ? null
+                          : () => _shareResults(values),
+                      icon: const Icon(Icons.share_rounded),
+                      label: Text(
+                        bundle?.session.mode == SessionMode.multiplayer
+                            ? strings.shareResults
+                            : strings.sharePicks,
                       ),
                     ),
                   ],
@@ -386,60 +406,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
   }
 }
 
-class _AnimatedResultsList extends StatelessWidget {
-  const _AnimatedResultsList({
-    required this.values,
-    required this.showConsensus,
-    required this.countryCode,
-    required this.sessionId,
-    required this.routeOrigin,
-    required this.routeEstimatesEnabled,
-  });
-
-  static const _itemExtent = 162.0;
-  final List<SessionResult> values;
-  final bool showConsensus;
-  final String? countryCode;
-  final String sessionId;
-  final RouteOriginMode routeOrigin;
-  final bool routeEstimatesEnabled;
-
-  @override
-  Widget build(BuildContext context) => AnimatedContainer(
-    duration: const Duration(milliseconds: 360),
-    curve: Curves.easeOutCubic,
-    height: values.length * _itemExtent,
-    child: Stack(
-      children: [
-        for (var index = 0; index < values.length; index++)
-          AnimatedPositionedDirectional(
-            key: ValueKey(values[index].place.placeId),
-            duration: const Duration(milliseconds: 420),
-            curve: Curves.easeInOutCubicEmphasized,
-            top: index * _itemExtent,
-            start: 0,
-            end: 0,
-            height: _itemExtent,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _ResultCard(
-                result: values[index],
-                rank: index + 1,
-                showConsensus: showConsensus,
-                countryCode: countryCode,
-                sessionId: sessionId,
-                routeOrigin: routeOrigin,
-                routeEstimatesEnabled: routeEstimatesEnabled,
-              ),
-            ),
-          ),
-      ],
-    ),
-  );
-}
-
 class _ResultCard extends StatelessWidget {
   const _ResultCard({
+    super.key,
     required this.result,
     required this.rank,
     required this.showConsensus,
@@ -482,9 +451,11 @@ class _ResultCard extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Stack(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(14),
@@ -498,7 +469,16 @@ class _ResultCard extends StatelessWidget {
                           : CachedNetworkImage(
                               imageUrl: place.photoUrls.first,
                               fit: BoxFit.cover,
-                              fadeInDuration: const Duration(milliseconds: 220),
+                              memCacheWidth:
+                                  (84 * MediaQuery.devicePixelRatioOf(context))
+                                      .ceil(),
+                              memCacheHeight:
+                                  (84 * MediaQuery.devicePixelRatioOf(context))
+                                      .ceil(),
+                              fadeInDuration:
+                                  MediaQuery.disableAnimationsOf(context)
+                                  ? Duration.zero
+                                  : const Duration(milliseconds: 220),
                               placeholder: (_, _) => const ColoredBox(
                                 color: Color(0x14000000),
                               ),
@@ -509,105 +489,93 @@ class _ResultCard extends StatelessWidget {
                             ),
                     ),
                   ),
-                  Positioned(
-                    left: 4,
-                    top: 4,
-                    child: CircleAvatar(
-                      radius: 13,
-                      child: Text(
-                        '$rank',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${formatCount(context, rank)}.',
+                          style: Theme.of(context).textTheme.labelMedium,
                         ),
-                      ),
+                        const SizedBox(height: 4),
+                        Text(
+                          place.name,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w900),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+              const SizedBox(height: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    [
+                      if (place.rating != null)
+                        '★ ${place.rating!.toStringAsFixed(1)}',
+                      if (place.reviewCount != null)
+                        '${formatCount(context, place.reviewCount!)} ${strings.reviews}',
+                    ].join('  •  '),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  RouteEstimateText(
+                    sessionId: sessionId,
+                    place: place,
+                    origin: routeOrigin,
+                    enabled: routeEstimatesEnabled,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  if (place.statusText != null || place.isOpen != null) ...[
+                    const SizedBox(height: 4),
                     Text(
-                      place.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      place.statusText ??
+                          (place.isOpen! ? strings.openNow : strings.closedNow),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: place.isOpen == false
+                            ? HayerTheme.coral
+                            : HayerTheme.success,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    Text(
-                      [
-                        if (place.rating != null)
-                          '★ ${place.rating!.toStringAsFixed(1)}',
-                        if (place.reviewCount != null)
-                          '${formatCount(context, place.reviewCount!)} ${strings.reviews}',
-                      ].join('  •  '),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    RouteEstimateText(
-                      sessionId: sessionId,
-                      place: place,
-                      origin: routeOrigin,
-                      enabled: routeEstimatesEnabled,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    if (place.statusText != null || place.isOpen != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        place.statusText ??
-                            (place.isOpen!
-                                ? strings.openNow
-                                : strings.closedNow),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: place.isOpen == false
-                              ? HayerTheme.coral
-                              : HayerTheme.success,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                    if (showConsensus && result.voterCount > 0) ...[
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: ratio,
-                        minHeight: 7,
-                        borderRadius: BorderRadius.circular(99),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.favorite_rounded, size: 14),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              strings.likedPercent(
-                                (ratio * 100).round(),
-                                result.likeCount,
-                                result.voterCount,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.labelSmall,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ],
-                ),
+                  if (showConsensus && result.voterCount > 0) ...[
+                    const SizedBox(height: 8),
+                    LinearProgressIndicator(
+                      value: ratio,
+                      minHeight: 7,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.favorite_rounded, size: 14),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            strings.likedPercent(
+                              (ratio * 100).round(),
+                              result.likeCount,
+                              result.voterCount,
+                            ),
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
-              M3EIconButton(
-                onPressed: () => launchPlaceNavigation(context, place),
-                icon: const Icon(Icons.directions_outlined),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton.icon(
+                  onPressed: () => launchPlaceNavigation(context, place),
+                  icon: const Icon(Icons.directions_outlined),
+                  label: Text(strings.directions),
+                ),
               ),
             ],
           ),
@@ -663,26 +631,28 @@ class _PlaceDetailsSheet extends StatelessWidget {
               runSpacing: 8,
               children: [
                 if (place.rating != null)
-                  M3EChip(label: '★ ${place.rating!.toStringAsFixed(1)}'),
+                  Chip(label: Text('★ ${place.rating!.toStringAsFixed(1)}')),
                 if (place.reviewCount != null)
-                  M3EChip(
-                    label:
-                        '${formatCount(context, place.reviewCount!)} ${strings.reviews}',
+                  Chip(
+                    label: Text(
+                      '${formatCount(context, place.reviewCount!)} ${strings.reviews}',
+                    ),
                   ),
                 if (place.priceText != null)
-                  M3EChip(
-                    leading: gccCurrencyIconForCountryCode(countryCode) == null
+                  Chip(
+                    avatar: gccCurrencyIconForCountryCode(countryCode) == null
                         ? null
                         : Icon(gccCurrencyIconForCountryCode(countryCode)),
-                    label:
-                        gccCurrencyIconForCountryCode(countryCode) != null &&
-                            place.priceLevel != null
-                        ? '× ${place.priceLevel}'
-                        : place.priceText!,
+                    label: Text(
+                      gccCurrencyIconForCountryCode(countryCode) != null &&
+                              place.priceLevel != null
+                          ? '× ${place.priceLevel}'
+                          : place.priceText!,
+                    ),
                   ),
                 if (place.isOpen != null)
-                  M3EChip(
-                    leading: Icon(
+                  Chip(
+                    avatar: Icon(
                       place.isOpen!
                           ? Icons.check_circle_outline_rounded
                           : Icons.cancel_outlined,
@@ -690,7 +660,9 @@ class _PlaceDetailsSheet extends StatelessWidget {
                           ? HayerTheme.success
                           : HayerTheme.coral,
                     ),
-                    label: place.isOpen! ? strings.openNow : strings.closedNow,
+                    label: Text(
+                      place.isOpen! ? strings.openNow : strings.closedNow,
+                    ),
                   ),
               ],
             ),
@@ -699,12 +671,14 @@ class _PlaceDetailsSheet extends StatelessWidget {
               children: [
                 const Icon(Icons.near_me_rounded, size: 18),
                 const SizedBox(width: 8),
-                RouteEstimateText(
-                  sessionId: sessionId,
-                  place: place,
-                  origin: routeOrigin,
-                  enabled: routeEstimatesEnabled,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                Expanded(
+                  child: RouteEstimateText(
+                    sessionId: sessionId,
+                    place: place,
+                    origin: routeOrigin,
+                    enabled: routeEstimatesEnabled,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
               ],
             ),

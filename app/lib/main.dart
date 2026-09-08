@@ -7,18 +7,23 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'app/app.dart';
+import 'app/startup_app.dart';
 import 'core/providers.dart';
 import 'data/authentication.dart';
 import 'data/resilient_auth_storage.dart';
 import 'core/widgets/friendly_error_view.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // Shared /join/{code} links are clean browser paths. This also lets the
   // deployed /app/ shell read those paths when nginx serves it in place.
   usePathUrlStrategy();
   ErrorWidget.builder = (details) => FriendlyErrorView(details: details);
-  final url = await getServerUrl();
+  runApp(StartupApp(initialize: _initialize));
+}
+
+Future<Widget> _initialize() async {
+  final url = await getServerUrl().timeout(const Duration(seconds: 8));
   final client = Client(url)
     ..connectivityMonitor = FlutterConnectivityMonitor()
     ..authSessionManager = FlutterAuthSessionManager(
@@ -26,24 +31,35 @@ Future<void> main() async {
     );
   var updateRequired = false;
   try {
-    final package = await PackageInfo.fromPlatform();
+    final package = await PackageInfo.fromPlatform().timeout(
+      const Duration(seconds: 5),
+    );
     final build = int.tryParse(package.buildNumber) ?? 1;
-    updateRequired = (await client.bootstrap.getInfo(
-      build: build,
-    )).updateRequired;
-  } catch (_) {
-    // A temporary bootstrap outage should not erase the locally resumable app.
-  }
-  await client.auth.initialize();
-  try {
-    await ensureAnonymousAuthentication(client);
-  } catch (_) {
-    // Keep locally resumable state available; authenticated actions retry.
-  }
-  runApp(
-    ProviderScope(
+    try {
+      updateRequired =
+          (await client.bootstrap
+                  .getInfo(
+                    build: build,
+                  )
+                  .timeout(const Duration(seconds: 8)))
+              .updateRequired;
+    } catch (_) {
+      // Preserve the existing offline-resume policy; authenticated actions retry.
+    }
+    await client.auth.initialize().timeout(const Duration(seconds: 8));
+    try {
+      await ensureAnonymousAuthentication(
+        client,
+      ).timeout(const Duration(seconds: 8));
+    } catch (_) {
+      // Keep locally resumable state available; authenticated actions retry.
+    }
+    return ProviderScope(
       overrides: [clientProvider.overrideWithValue(client)],
       child: HayerApp(updateRequired: updateRequired),
-    ),
-  );
+    );
+  } catch (_) {
+    client.close();
+    rethrow;
+  }
 }

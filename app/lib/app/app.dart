@@ -65,11 +65,6 @@ class HayerApp extends ConsumerWidget {
         platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
     return (context, child) {
       Widget result = child ?? const SizedBox.shrink();
-      result = MediaQuery.withClampedTextScaling(
-        minScaleFactor: 1,
-        maxScaleFactor: 1.4,
-        child: result,
-      );
       result = ScrollConfiguration(
         behavior: const _HayerScrollBehavior(),
         child: result,
