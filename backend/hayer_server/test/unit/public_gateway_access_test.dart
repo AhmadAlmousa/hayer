@@ -45,7 +45,9 @@ void main() {
         isNull,
       );
       expect(
-        PublicGatewayAccess.resolveClientIp(const ['203.0.113.7, 198.51.100.9']),
+        PublicGatewayAccess.resolveClientIp(const [
+          '203.0.113.7, 198.51.100.9',
+        ]),
         isNull,
       );
     });
@@ -78,7 +80,9 @@ void main() {
       // client-supplied value would reach the server and mint its own budget.
       expect(
         publicHost,
-        contains(r'proxy_set_header X-Hayer-Client-Ip $hayer_public_client_ip;'),
+        contains(
+          r'proxy_set_header X-Hayer-Client-Ip $hayer_public_client_ip;',
+        ),
       );
       expect(
         privateHost,
@@ -96,28 +100,32 @@ void main() {
       }
     });
 
-    test('nginx rate-limits the endpoint path Serverpod actually calls',
-        () async {
-      final configuration = await File('../deploy/nginx.conf').readAsString();
-      final publicStart = configuration.indexOf('server_name hayer.almou.sa;');
-      final publicHost = configuration.substring(
-        publicStart,
-        configuration.indexOf('server_name hayer.vpn.almou.sa;'),
-      );
+    test(
+      'nginx rate-limits the endpoint path Serverpod actually calls',
+      () async {
+        final configuration = await File('../deploy/nginx.conf').readAsString();
+        final publicStart = configuration.indexOf(
+          'server_name hayer.almou.sa;',
+        );
+        final publicHost = configuration.substring(
+          publicStart,
+          configuration.indexOf('server_name hayer.vpn.almou.sa;'),
+        );
 
-      expect(publicHost, contains('location ^~ /api/anonymousIdp {'));
-      final signup = RegExp(
-        r'location \^~ /api/anonymousIdp \{([^}]*)\}',
-        multiLine: true,
-      ).firstMatch(publicHost)!.group(1)!;
-      expect(signup, contains('limit_req zone=hayer_public_login'));
-      expect(signup, contains('proxy_pass http://server:8080/anonymousIdp;'));
+        expect(publicHost, contains('location ^~ /api/anonymousIdp {'));
+        final signup = RegExp(
+          r'location \^~ /api/anonymousIdp \{([^}]*)\}',
+          multiLine: true,
+        ).firstMatch(publicHost)!.group(1)!;
+        expect(signup, contains('limit_req zone=hayer_public_login'));
+        expect(signup, contains('proxy_pass http://server:8080/anonymousIdp;'));
 
-      // A method-path rule never matches, so its presence would mean signups
-      // had silently fallen back to the generic /api/ budget.
-      expect(publicHost, isNot(contains('/api/anonymousIdp/login')));
-      expect(publicHost, isNot(contains('/api/hayerSession/join')));
-      expect(configuration, isNot(contains('hayer_public_join')));
-    });
+        // A method-path rule never matches, so its presence would mean signups
+        // had silently fallen back to the generic /api/ budget.
+        expect(publicHost, isNot(contains('/api/anonymousIdp/login')));
+        expect(publicHost, isNot(contains('/api/hayerSession/join')));
+        expect(configuration, isNot(contains('hayer_public_join')));
+      },
+    );
   });
 }
