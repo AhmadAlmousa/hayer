@@ -21,6 +21,7 @@ abstract class PlaceInsight
     required this.likes,
     required this.dislikes,
     required this.deckAppearances,
+    required this.cardImpressions,
     required this.approvalRate,
   });
 
@@ -30,6 +31,7 @@ abstract class PlaceInsight
     required int likes,
     required int dislikes,
     required int deckAppearances,
+    required int cardImpressions,
     required double approvalRate,
   }) = _PlaceInsightImpl;
 
@@ -40,6 +42,7 @@ abstract class PlaceInsight
       likes: jsonSerialization['likes'] as int,
       dislikes: jsonSerialization['dislikes'] as int,
       deckAppearances: jsonSerialization['deckAppearances'] as int,
+      cardImpressions: jsonSerialization['cardImpressions'] as int,
       approvalRate: (jsonSerialization['approvalRate'] as num).toDouble(),
     );
   }
@@ -54,6 +57,8 @@ abstract class PlaceInsight
 
   int deckAppearances;
 
+  int cardImpressions;
+
   double approvalRate;
 
   /// Returns a shallow copy of this [PlaceInsight]
@@ -65,6 +70,7 @@ abstract class PlaceInsight
     int? likes,
     int? dislikes,
     int? deckAppearances,
+    int? cardImpressions,
     double? approvalRate,
   });
   @override
@@ -76,6 +82,7 @@ abstract class PlaceInsight
       'likes': likes,
       'dislikes': dislikes,
       'deckAppearances': deckAppearances,
+      'cardImpressions': cardImpressions,
       'approvalRate': approvalRate,
     };
   }
@@ -89,6 +96,7 @@ abstract class PlaceInsight
       'likes': likes,
       'dislikes': dislikes,
       'deckAppearances': deckAppearances,
+      'cardImpressions': cardImpressions,
       'approvalRate': approvalRate,
     };
   }
@@ -106,6 +114,7 @@ class _PlaceInsightImpl extends PlaceInsight {
     required int likes,
     required int dislikes,
     required int deckAppearances,
+    required int cardImpressions,
     required double approvalRate,
   }) : super._(
          placeId: placeId,
@@ -113,6 +122,7 @@ class _PlaceInsightImpl extends PlaceInsight {
          likes: likes,
          dislikes: dislikes,
          deckAppearances: deckAppearances,
+         cardImpressions: cardImpressions,
          approvalRate: approvalRate,
        );
 
@@ -126,6 +136,7 @@ class _PlaceInsightImpl extends PlaceInsight {
     int? likes,
     int? dislikes,
     int? deckAppearances,
+    int? cardImpressions,
     double? approvalRate,
   }) {
     return PlaceInsight(
@@ -134,6 +145,7 @@ class _PlaceInsightImpl extends PlaceInsight {
       likes: likes ?? this.likes,
       dislikes: dislikes ?? this.dislikes,
       deckAppearances: deckAppearances ?? this.deckAppearances,
+      cardImpressions: cardImpressions ?? this.cardImpressions,
       approvalRate: approvalRate ?? this.approvalRate,
     );
   }

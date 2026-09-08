@@ -19,7 +19,11 @@ import 'place_deck_swiper.dart';
 import 'session_close_button.dart';
 
 class SwipeScreen extends ConsumerStatefulWidget {
-  const SwipeScreen({super.key, required this.sessionId, this.initialBundle});
+  const SwipeScreen({
+    super.key,
+    required this.sessionId,
+    this.initialBundle,
+  });
   final String sessionId;
   final SessionBundle? initialBundle;
 
@@ -38,6 +42,8 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   bool _waitingForFinalSync = false;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
   SessionRealtimeListener? _updates;
+  Timer? _impressionTimer;
+  bool _foreground = true;
   final _swiperController = CardSwiperController();
 
   @override
@@ -51,6 +57,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _impressionTimer?.cancel();
     unawaited(_updates?.dispose());
     unawaited(_swiperController.dispose());
     super.dispose();
@@ -58,15 +65,21 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed) {
       unawaited(_recoverPending());
+      _scheduleCardImpression();
+    } else {
+      _impressionTimer?.cancel();
     }
   }
 
   Future<void> _initialize() async {
     try {
       final repository = ref.read(sessionRepositoryProvider);
-      final flush = await repository.flushQueue();
+      final flush = await repository.flushQueue(
+        language: Localizations.localeOf(context).languageCode,
+      );
       final value = _bundle ?? await repository.load(widget.sessionId);
       final routeOrigin = await _routeOriginFor(value);
       if (!mounted) return;
@@ -86,6 +99,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
         _ready = true;
         _initializationError = null;
       });
+      _scheduleCardImpression();
       _connect();
       if (value.session.status == SessionStatus.completed) {
         unawaited(_showResults(celebrate: _isInstantMatch(value)));
@@ -108,7 +122,9 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   Future<void> _handleSessionEvent(SessionEvent event) async {
     if (_transitioningToResults) return;
     final repository = ref.read(sessionRepositoryProvider);
-    final flush = await repository.flushQueue();
+    final flush = await repository.flushQueue(
+      language: Localizations.localeOf(context).languageCode,
+    );
     final value = await repository.load(widget.sessionId);
     if (!mounted || _transitioningToResults) return;
     final wasCompleted = _bundle?.session.status == SessionStatus.completed;
@@ -123,6 +139,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
       _index = serverIndex > localIndex ? serverIndex : localIndex;
       _waitingForFinalSync = flush.pendingSessionIds.contains(widget.sessionId);
     });
+    _scheduleCardImpression();
     if (value.session.status == SessionStatus.completed) {
       await _showResults(
         celebrate:
@@ -263,6 +280,8 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                   routeEstimatesEnabled:
                       bundle.routeEstimatePolicy?.enabled ?? false,
                   onDecision: _onDecision,
+                  onDetailsOpened: _recordDetailsOpened,
+                  onDetailsClosed: (_) => _scheduleCardImpression(),
                 ),
               ),
             ),
@@ -322,6 +341,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     final previousIndex = _index - 1;
     setState(() => _index = previousIndex);
     _swiperController.moveTo(previousIndex);
+    _scheduleCardImpression();
   }
 
   Future<void> _recordSwipe(int index, bool liked) async {
@@ -330,6 +350,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
       _submitting = true;
       _index = index + 1;
     });
+    _scheduleCardImpression();
     SwipeSubmissionResult result;
     try {
       result = await ref
@@ -339,6 +360,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
             placeId: place.placeId,
             liked: liked,
             swipeIndex: index,
+            language: Localizations.localeOf(context).languageCode,
           );
     } catch (_) {
       if (!mounted) return;
@@ -347,6 +369,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
         _submitting = false;
       });
       _swiperController.moveTo(index);
+      _scheduleCardImpression();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.swipeSaveFailed)),
       );
@@ -365,6 +388,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     });
     if (result.state == SwipeSubmissionState.rejected) {
       _swiperController.moveTo(index);
+      _scheduleCardImpression();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -395,7 +419,9 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     setState(() => _submitting = true);
     try {
       final repository = ref.read(sessionRepositoryProvider);
-      final flush = await repository.flushQueue();
+      final flush = await repository.flushQueue(
+        language: Localizations.localeOf(context).languageCode,
+      );
       final value = await repository.load(widget.sessionId);
       if (!mounted) return;
       final pending = flush.pendingSessionIds.contains(widget.sessionId);
@@ -410,6 +436,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
         );
         _waitingForFinalSync = pending;
       });
+      _scheduleCardImpression();
       if (rejected) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.swipeRejected)),
@@ -428,6 +455,56 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
+  }
+
+  void _recordDetailsOpened(int index) {
+    _impressionTimer?.cancel();
+    final bundle = _bundle;
+    if (bundle == null || index < 0 || index >= bundle.deck.length) return;
+    unawaited(
+      ref
+          .read(sessionRepositoryProvider)
+          .recordPlaceDetailsOpened(
+            sessionId: widget.sessionId,
+            placeId: bundle.deck[index].placeId,
+            deckPosition: index,
+            language: Localizations.localeOf(context).languageCode,
+          ),
+    );
+  }
+
+  void _scheduleCardImpression() {
+    _impressionTimer?.cancel();
+    final bundle = _bundle;
+    final index = _index;
+    if (!_foreground ||
+        !_ready ||
+        bundle == null ||
+        index < 0 ||
+        index >= bundle.deck.length ||
+        _transitioningToResults) {
+      return;
+    }
+    final placeId = bundle.deck[index].placeId;
+    _impressionTimer = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted ||
+          !_foreground ||
+          _index != index ||
+          _transitioningToResults) {
+        return;
+      }
+      unawaited(
+        ref
+            .read(sessionRepositoryProvider)
+            .recordCardImpression(
+              sessionId: widget.sessionId,
+              placeId: placeId,
+              deckPosition: index,
+              visibleMilliseconds: 500,
+              language: Localizations.localeOf(context).languageCode,
+            ),
+      );
+    });
   }
 
   bool _isInstantMatch(SessionBundle bundle) =>
@@ -452,6 +529,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   Future<void> _showResults({required bool celebrate}) async {
     if (_transitioningToResults || !mounted) return;
     _transitioningToResults = true;
+    _impressionTimer?.cancel();
     if (celebrate) await showMatchFireworks(context);
     if (mounted) context.go('/results/${widget.sessionId}');
   }

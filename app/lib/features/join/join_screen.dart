@@ -28,6 +28,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   final _nameFocus = FocusNode();
   bool _loading = false;
   String? _error;
+  bool _journeyStarted = false;
 
   @override
   void initState() {
@@ -38,6 +39,21 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
       ),
     );
     unawaited(_restoreDisplayName());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_journeyStarted) return;
+    _journeyStarted = true;
+    unawaited(
+      ref
+          .read(sessionRepositoryProvider)
+          .beginJourney(
+            entryPoint: 'join',
+            language: Localizations.localeOf(context).languageCode,
+          ),
+    );
   }
 
   @override
@@ -168,7 +184,11 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     try {
       final bundle = await ref
           .read(sessionRepositoryProvider)
-          .join(extractSessionCode(_code.text)!, _name.text.trim());
+          .join(
+            extractSessionCode(_code.text)!,
+            _name.text.trim(),
+            language: Localizations.localeOf(context).languageCode,
+          );
       if (!mounted) return;
       await ref.read(displayNameStoreProvider).write(_name.text.trim());
       if (!mounted) return;

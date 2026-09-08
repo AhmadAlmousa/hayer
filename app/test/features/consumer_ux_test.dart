@@ -458,14 +458,44 @@ class _Repository extends Fake implements SessionRepository {
   }
 
   @override
-  Future<QueueFlushResult> flushQueue() async => const QueueFlushResult(
-    accepted: 0,
-    pending: 0,
-    terminalFailures: 0,
-    pendingSessionIds: {},
-    terminalFailureSessionIds: {},
-    pendingProgressBySession: {},
-  );
+  Future<QueueFlushResult> flushQueue({String language = 'en'}) async =>
+      const QueueFlushResult(
+        accepted: 0,
+        pending: 0,
+        terminalFailures: 0,
+        pendingSessionIds: {},
+        terminalFailureSessionIds: {},
+        pendingProgressBySession: {},
+      );
+
+  @override
+  Future<void> recordResultsViewed({
+    required String sessionId,
+    required String language,
+  }) async {}
+
+  @override
+  Future<void> recordCardImpression({
+    required String sessionId,
+    required String placeId,
+    required int deckPosition,
+    required int visibleMilliseconds,
+    required String language,
+  }) async {}
+
+  @override
+  Future<void> recordPlaceDetailsOpened({
+    required String sessionId,
+    required String placeId,
+    required int deckPosition,
+    required String language,
+  }) async {}
+
+  @override
+  Future<void> beginJourney({
+    required String entryPoint,
+    required String language,
+  }) async {}
 }
 
 class _Locations extends Fake implements LocationRepository {

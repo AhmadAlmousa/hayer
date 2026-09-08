@@ -272,10 +272,25 @@ class _Repository extends Fake implements SessionRepository {
     required String sessionId,
     required String placeId,
     required int expectedRevision,
+    String language = 'en',
   }) {
     calls.add((placeId, expectedRevision));
     return pending.future;
   }
+
+  @override
+  Future<void> recordResultsViewed({
+    required String sessionId,
+    required String language,
+  }) async {}
+
+  @override
+  Future<void> recordPlaceDetailsOpened({
+    required String sessionId,
+    required String placeId,
+    required int deckPosition,
+    required String language,
+  }) async {}
 
   void accept(String id, {bool lostResponse = false}) {
     bundle = bundle.copyWith(

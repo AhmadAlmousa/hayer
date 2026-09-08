@@ -215,8 +215,11 @@ abstract final class AnalyticsQueryService {
           value.likes += row.total;
         case AnalyticsMetric.swipeDislike:
           value.dislikes += row.total;
-        case AnalyticsMetric.deckExposure:
+        case AnalyticsMetric.legacyDeckExposure:
+        case AnalyticsMetric.deckIncluded:
           value.exposures += row.total;
+        case AnalyticsMetric.cardImpression:
+          value.impressions += row.total;
       }
     }
     final safeMinimum = minimumSamples.clamp(1, 10000);
@@ -477,6 +480,7 @@ class _PlaceAggregate {
   double likes = 0;
   double dislikes = 0;
   double exposures = 0;
+  double impressions = 0;
 
   int get votes => max(0, (likes + dislikes).round());
 
@@ -486,6 +490,7 @@ class _PlaceAggregate {
     likes: max(0, likes.round()),
     dislikes: max(0, dislikes.round()),
     deckAppearances: max(0, exposures.round()),
+    cardImpressions: max(0, impressions.round()),
     approvalRate: votes == 0 ? 0 : max(0, likes) / votes * 100,
   );
 }

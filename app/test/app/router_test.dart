@@ -6,8 +6,17 @@ import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/data/display_name_store.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 import 'package:hayer_app/l10n/localization_delegates.dart';
+import 'package:hayer_client/hayer_client.dart';
 
 void main() {
+  late Client client;
+
+  setUp(() {
+    client = Client('http://localhost:8080/');
+  });
+
+  tearDown(() => client.close());
+
   testWidgets('a browser join path opens the named-session form', (
     tester,
   ) async {
@@ -16,6 +25,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [clientProvider.overrideWithValue(client)],
         child: MaterialApp.router(
           routerConfig: router,
           localizationsDelegates: hayerLocalizationsDelegates,
@@ -46,6 +56,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [clientProvider.overrideWithValue(client)],
         child: MaterialApp.router(
           routerConfig: router,
           localizationsDelegates: hayerLocalizationsDelegates,
@@ -70,6 +81,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [clientProvider.overrideWithValue(client)],
         child: MaterialApp.router(
           routerConfig: router,
           localizationsDelegates: hayerLocalizationsDelegates,
@@ -96,6 +108,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          clientProvider.overrideWithValue(client),
           displayNameStoreProvider.overrideWithValue(
             _MemoryDisplayNameStore('Ahmad'),
           ),
@@ -124,6 +137,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          clientProvider.overrideWithValue(client),
           displayNameStoreProvider.overrideWithValue(
             _MemoryDisplayNameStore(null),
           ),
@@ -158,6 +172,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          clientProvider.overrideWithValue(client),
           displayNameStoreProvider.overrideWithValue(
             _MemoryDisplayNameStore(null),
           ),

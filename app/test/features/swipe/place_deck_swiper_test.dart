@@ -17,6 +17,8 @@ void main() {
       addTearDown(controller.dispose);
       final decisions = <(int, bool)>[];
       final haptics = <bool>[];
+      final detailsOpened = <int>[];
+      final detailsClosed = <int>[];
       await tester.pumpWidget(
         MaterialApp(
           theme: HayerTheme.light(),
@@ -36,6 +38,8 @@ void main() {
               routeOrigin: RouteOriginMode.sessionAnchor,
               routeEstimatesEnabled: false,
               onHaptic: (liked) async => haptics.add(liked),
+              onDetailsOpened: detailsOpened.add,
+              onDetailsClosed: detailsClosed.add,
               onDecision: (index, liked) {
                 decisions.add((index, liked));
                 return true;
@@ -55,9 +59,12 @@ void main() {
       expect(find.text('Full address'), findsOneWidget);
       expect(decisions, isEmpty);
       expect(haptics, isEmpty);
+      expect(detailsOpened, [0]);
+      expect(detailsClosed, isEmpty);
       Navigator.of(tester.element(find.byType(PlaceDetailsSheet))).pop();
       await tester.pumpAndSettle();
       expect(find.byType(PlaceDetailsSheet), findsNothing);
+      expect(detailsClosed, [0]);
       await tester.drag(
         find.byKey(const ValueKey('place-card-first')),
         const Offset(350, 0),

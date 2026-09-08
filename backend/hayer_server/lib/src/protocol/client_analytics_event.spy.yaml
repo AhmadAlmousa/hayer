@@ -1,0 +1,11 @@
+class: ClientAnalyticsEvent
+fields:
+  eventId: String
+  eventName: String
+  occurredAt: DateTime
+  context: ClientAnalyticsContext
+  sessionId: String?
+  placeId: String?
+  deckPosition: int?
+  visibleMilliseconds: int?
+  outcomeCode: String?

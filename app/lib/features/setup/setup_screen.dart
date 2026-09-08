@@ -61,6 +61,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   Timer? _debounce;
   Timer? _mapDebounce;
   List<SetupCategory> _categories = setupCategories;
+  bool _journeyStarted = false;
 
   @override
   void initState() {
@@ -68,6 +69,21 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
     unawaited(_adoptWarmedLocation());
     unawaited(_restoreDisplayName());
     unawaited(_loadTaxonomy());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_journeyStarted) return;
+    _journeyStarted = true;
+    unawaited(
+      ref
+          .read(sessionRepositoryProvider)
+          .beginJourney(
+            entryPoint: 'setup',
+            language: Localizations.localeOf(context).languageCode,
+          ),
+    );
   }
 
   @override
@@ -625,6 +641,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                   ? MatchingTiming.instant
                   : MatchingTiming.afterDeck,
             ),
+            language: Localizations.localeOf(context).languageCode,
           );
       if (!mounted) return;
       if (_mode == SessionMode.multiplayer) {

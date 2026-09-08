@@ -16,6 +16,10 @@ final clientProvider = Provider<Client>(
   (ref) => throw StateError('The Serverpod client was not initialized.'),
 );
 
+final clientAnalyticsMetadataProvider = Provider<ClientAnalyticsMetadata>(
+  (ref) => const ClientAnalyticsMetadata(appBuild: 0, platform: 'unknown'),
+);
+
 final locationWarmupProvider = Provider<LocationWarmup>(
   (ref) => LocationWarmup(),
 );
@@ -40,6 +44,7 @@ final sessionRepositoryProvider = Provider<SessionRepository>(
   (ref) => SessionRepository(
     client: ref.watch(clientProvider),
     outbox: ref.watch(pendingSwipeStoreProvider),
+    analyticsMetadata: ref.watch(clientAnalyticsMetadataProvider),
   ),
 );
 

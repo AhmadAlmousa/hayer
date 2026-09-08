@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'client_analytics_context.dart' as _i2;
+import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
 
 abstract class SwipeCommand implements _i1.SerializableModel {
   SwipeCommand._({
@@ -21,6 +23,7 @@ abstract class SwipeCommand implements _i1.SerializableModel {
     required this.swipeIndex,
     required this.clientSwipedAt,
     required this.idempotencyKey,
+    this.analyticsContext,
   });
 
   factory SwipeCommand({
@@ -30,6 +33,7 @@ abstract class SwipeCommand implements _i1.SerializableModel {
     required int swipeIndex,
     required DateTime clientSwipedAt,
     required String idempotencyKey,
+    _i2.ClientAnalyticsContext? analyticsContext,
   }) = _SwipeCommandImpl;
 
   factory SwipeCommand.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -42,6 +46,11 @@ abstract class SwipeCommand implements _i1.SerializableModel {
         jsonSerialization['clientSwipedAt'],
       ),
       idempotencyKey: jsonSerialization['idempotencyKey'] as String,
+      analyticsContext: jsonSerialization['analyticsContext'] == null
+          ? null
+          : _i3.Protocol().deserialize<_i2.ClientAnalyticsContext>(
+              jsonSerialization['analyticsContext'],
+            ),
     );
   }
 
@@ -57,6 +66,8 @@ abstract class SwipeCommand implements _i1.SerializableModel {
 
   String idempotencyKey;
 
+  _i2.ClientAnalyticsContext? analyticsContext;
+
   /// Returns a shallow copy of this [SwipeCommand]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -67,6 +78,7 @@ abstract class SwipeCommand implements _i1.SerializableModel {
     int? swipeIndex,
     DateTime? clientSwipedAt,
     String? idempotencyKey,
+    _i2.ClientAnalyticsContext? analyticsContext,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,6 +90,8 @@ abstract class SwipeCommand implements _i1.SerializableModel {
       'swipeIndex': swipeIndex,
       'clientSwipedAt': clientSwipedAt.toJson(),
       'idempotencyKey': idempotencyKey,
+      if (analyticsContext != null)
+        'analyticsContext': analyticsContext?.toJson(),
     };
   }
 
@@ -87,6 +101,8 @@ abstract class SwipeCommand implements _i1.SerializableModel {
   }
 }
 
+class _Undefined {}
+
 class _SwipeCommandImpl extends SwipeCommand {
   _SwipeCommandImpl({
     required String sessionId,
@@ -95,6 +111,7 @@ class _SwipeCommandImpl extends SwipeCommand {
     required int swipeIndex,
     required DateTime clientSwipedAt,
     required String idempotencyKey,
+    _i2.ClientAnalyticsContext? analyticsContext,
   }) : super._(
          sessionId: sessionId,
          placeId: placeId,
@@ -102,6 +119,7 @@ class _SwipeCommandImpl extends SwipeCommand {
          swipeIndex: swipeIndex,
          clientSwipedAt: clientSwipedAt,
          idempotencyKey: idempotencyKey,
+         analyticsContext: analyticsContext,
        );
 
   /// Returns a shallow copy of this [SwipeCommand]
@@ -115,6 +133,7 @@ class _SwipeCommandImpl extends SwipeCommand {
     int? swipeIndex,
     DateTime? clientSwipedAt,
     String? idempotencyKey,
+    Object? analyticsContext = _Undefined,
   }) {
     return SwipeCommand(
       sessionId: sessionId ?? this.sessionId,
@@ -123,6 +142,9 @@ class _SwipeCommandImpl extends SwipeCommand {
       swipeIndex: swipeIndex ?? this.swipeIndex,
       clientSwipedAt: clientSwipedAt ?? this.clientSwipedAt,
       idempotencyKey: idempotencyKey ?? this.idempotencyKey,
+      analyticsContext: analyticsContext is _i2.ClientAnalyticsContext?
+          ? analyticsContext
+          : this.analyticsContext?.copyWith(),
     );
   }
 }

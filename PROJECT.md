@@ -4,8 +4,27 @@ Last updated: 2026-09-08
 
 Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7-G — owner-prioritized place details and multiplayer choices;
-M7-A/M7-E/M7-F safety acceptance remains an open release prerequisite
+Current focus: M7-G — trustworthy decision-journey instrumentation and
+multiplayer-choice verification; M7-A/M7-E/M7-F safety acceptance remains an
+open release prerequisite
+
+Live handoff (2026-09-08): Codex is implementing the remaining G02 analytics
+contract. The current working tree adds additive raw-event metadata and
+migration `20260908110049218-decision-analytics`, in-memory per-journey client
+context, 500 ms foreground card impressions with server-side room/member/card
+deduplication, detail/result events, sync-failure/recovery events, explicit
+choice/change facts, and separate session match/no-match plus actual-place
+match attribution. Pinned full preflight now passes generation/formatting,
+fatal-info analysis for server/generated client/app/admin, all 96 server tests,
+105 app tests, 8 admin tests, shell syntax, and diff checks. Docker is
+unavailable, so real-PostGIS and two-device proofs remain open. The signed
+103,286,395-byte build-7 APK and alias were rebuilt; both manifests verify at
+SHA-256 `43c27ddfdf54aeb051b8f8844170e91f39ab7822e2f1e91eb176b6d510548dbe`,
+and APK Signature Scheme v2 verifies. Next action: commit only the G02 slice.
+Claude's committed F01 signup work is separate; its method-aware join limiter
+intentionally remains deferred while this slice owns
+`hayer_session_endpoint.dart`. Existing unrelated working-tree changes are
+being preserved.
 
 Product brief: [`overview.md`](overview.md)
 
@@ -565,7 +584,7 @@ build 5 is rejected only after build 6 and rollback evidence are verified.
 
 #### M7-G — Decision intelligence (`0.2.1+7`) `[~]`
 
-- [ ] Implement G02 with correctly named deck inclusions, measured/deduplicated
+- [x] Implement G02 with correctly named deck inclusions, measured/deduplicated
   card impressions, short-lived random journey linkage, explicit-choice and
   no-match outcomes, schema/version metadata, and no persistent installation
   identity.
@@ -692,10 +711,13 @@ measurements and rollback paths.
 - Admin historical analytics refresh every five minutes; live session and
   participant KPIs refresh every 30 seconds. Reporting uses Asia/Riyadh and
   Sunday–Saturday weeks.
-- Public anonymous login and join are each limited to 10 requests/minute/IP;
-  general API traffic is limited to 30 requests/second/IP and public streaming
-  to 50 connections/IP. Enrollment is limited to three gateway requests/minute
-  and six Serverpod starts/hour/operator while explicitly enabled.
+- Public anonymous signup is limited to 10 requests/minute/IP at the gateway
+  and 30 accounts/hour/resolved-client in Serverpod; join remains limited to
+  30 requests/minute/authenticated anonymous user until its deferred
+  method-aware edge budget is implemented. General API traffic is limited to
+  30 requests/second/IP and public streaming to 50 connections/IP. Enrollment
+  is limited to three gateway requests/minute and six Serverpod
+  starts/hour/operator while explicitly enabled.
 - Admin mutations never rewrite an existing session snapshot.
 - Native Android may load allowlisted source photos directly. Consumer web
   must use the authenticated bounded media proxy.
@@ -706,6 +728,31 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-08: implemented audit G02 across the consumer, Serverpod, and admin
+  dashboard. The event contract now separates deck inclusion from a measured
+  500 ms foreground card impression, details/results views, destination choice
+  confirmation/change, no-match completion, queue failure/recovery, room
+  completion, and actual matched-place facts. Each client journey uses a random
+  in-memory UUID with schema, build, platform, and language metadata; it is not
+  written to secure/local storage and no installation identity was added.
+  Client events are allowlisted, authenticated, membership/card validated,
+  range bounded, rate limited, and best effort; the server owns authoritative
+  swipe/choice/outcome facts and deduplicates impressions per member/card.
+  Migration `20260908110049218-decision-analytics` is additive and preserves
+  the custom PostGIS fresh-database definition. The admin place table now
+  distinguishes deck inclusions from card impressions. Unit/widget-test skills
+  guided repository, timer/detail, choice, migration, semantic-attribution,
+  idempotency, and privacy regressions.
+- 2026-09-08: pinned full preflight passed Serverpod generation, formatting,
+  fatal-info analysis of server/generated client/app/admin, 96 server tests,
+  105 app tests, 8 admin tests, shell syntax, and `git diff --check`. The signed
+  `backend/deploy/releases/hayer-0.2.1-7.apk` and `hayer.apk` alias are
+  103,286,395 bytes; both SHA-256 manifests verify at
+  `43c27ddfdf54aeb051b8f8844170e91f39ab7822e2f1e91eb176b6d510548dbe`,
+  and `apksigner verify --verbose` confirms APK Signature Scheme v2. Docker is
+  unavailable, so the compiled real-PostGIS analytics/choice regressions and
+  two-device reconnect acceptance remain open. No deployment, publish,
+  minimum-build change, push, or tag was performed.
 - 2026-09-08: closed the signup half of audit F01 (M7-B) in commit `2a4a20d`,
   taken because it was the only P0 whose files did not overlap the in-flight
   M7-G work. Both causes were confirmed against the pinned dependencies rather

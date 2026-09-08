@@ -1121,7 +1121,8 @@ class _PlaceTable extends StatelessWidget {
                   DataColumn(label: Text('Likes'), numeric: true),
                   DataColumn(label: Text('Dislikes'), numeric: true),
                   DataColumn(label: Text('Approval'), numeric: true),
-                  DataColumn(label: Text('Deck views'), numeric: true),
+                  DataColumn(label: Text('Deck inclusions'), numeric: true),
+                  DataColumn(label: Text('Card impressions'), numeric: true),
                 ],
                 rows: [
                   for (var i = 0; i < items.length; i++)
@@ -1143,6 +1144,7 @@ class _PlaceTable extends StatelessWidget {
                           Text('${items[i].approvalRate.toStringAsFixed(1)}%'),
                         ),
                         DataCell(Text('${items[i].deckAppearances}')),
+                        DataCell(Text('${items[i].cardImpressions}')),
                       ],
                     ),
                 ],

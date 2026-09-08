@@ -5,4 +5,5 @@ fields:
   likes: int
   dislikes: int
   deckAppearances: int
+  cardImpressions: int
   approvalRate: double

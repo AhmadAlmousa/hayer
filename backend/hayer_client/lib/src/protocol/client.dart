@@ -37,17 +37,20 @@ import 'package:hayer_client/src/protocol/calibration_validation.dart' as _i23;
 import 'package:hayer_client/src/protocol/bootstrap_info.dart' as _i24;
 import 'package:hayer_client/src/protocol/session_bundle.dart' as _i25;
 import 'package:hayer_client/src/protocol/create_session_request.dart' as _i26;
-import 'package:hayer_client/src/protocol/swipe_command.dart' as _i27;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i28;
-import 'package:hayer_client/src/protocol/session_event.dart' as _i29;
-import 'package:hayer_client/src/protocol/route_estimate.dart' as _i30;
-import 'package:hayer_client/src/protocol/taxonomy_snapshot.dart' as _i31;
+import 'package:hayer_client/src/protocol/client_analytics_context.dart'
+    as _i27;
+import 'package:hayer_client/src/protocol/swipe_command.dart' as _i28;
+import 'package:hayer_client/src/protocol/client_analytics_event.dart' as _i29;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i30;
+import 'package:hayer_client/src/protocol/session_event.dart' as _i31;
+import 'package:hayer_client/src/protocol/route_estimate.dart' as _i32;
+import 'package:hayer_client/src/protocol/taxonomy_snapshot.dart' as _i33;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i32;
+    as _i34;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i33;
-import 'dart:typed_data' as _i34;
-import 'protocol.dart' as _i35;
+    as _i35;
+import 'dart:typed_data' as _i36;
+import 'protocol.dart' as _i37;
 
 /// {@category Endpoint}
 class EndpointAdmin extends _i1.EndpointRef {
@@ -434,12 +437,14 @@ class EndpointHayerSession extends _i1.EndpointRef {
   _i2.Future<_i25.SessionBundle> join({
     required String code,
     required String displayName,
+    _i27.ClientAnalyticsContext? analyticsContext,
   }) => caller.callServerEndpoint<_i25.SessionBundle>(
     'hayerSession',
     'join',
     {
       'code': code,
       'displayName': displayName,
+      'analyticsContext': analyticsContext,
     },
   );
 
@@ -458,7 +463,7 @@ class EndpointHayerSession extends _i1.EndpointRef {
         {'sessionId': sessionId},
       );
 
-  _i2.Future<_i25.SessionBundle> swipe({required _i27.SwipeCommand command}) =>
+  _i2.Future<_i25.SessionBundle> swipe({required _i28.SwipeCommand command}) =>
       caller.callServerEndpoint<_i25.SessionBundle>(
         'hayerSession',
         'swipe',
@@ -469,6 +474,7 @@ class EndpointHayerSession extends _i1.EndpointRef {
     required String sessionId,
     required String placeId,
     required int expectedRevision,
+    _i27.ClientAnalyticsContext? analyticsContext,
   }) => caller.callServerEndpoint<_i25.SessionBundle>(
     'hayerSession',
     'chooseDestination',
@@ -476,20 +482,32 @@ class EndpointHayerSession extends _i1.EndpointRef {
       'sessionId': sessionId,
       'placeId': placeId,
       'expectedRevision': expectedRevision,
+      'analyticsContext': analyticsContext,
     },
   );
 
-  _i2.Future<List<_i28.SessionResult>> results({required String sessionId}) =>
-      caller.callServerEndpoint<List<_i28.SessionResult>>(
+  /// Records a bounded, allowlisted UI event. These events are best effort;
+  /// authoritative votes and destination choices are recorded in their own
+  /// database transactions instead.
+  _i2.Future<void> recordClientAnalytics({
+    required _i29.ClientAnalyticsEvent event,
+  }) => caller.callServerEndpoint<void>(
+    'hayerSession',
+    'recordClientAnalytics',
+    {'event': event},
+  );
+
+  _i2.Future<List<_i30.SessionResult>> results({required String sessionId}) =>
+      caller.callServerEndpoint<List<_i30.SessionResult>>(
         'hayerSession',
         'results',
         {'sessionId': sessionId},
       );
 
-  _i2.Stream<_i29.SessionEvent> watch({required String sessionId}) =>
+  _i2.Stream<_i31.SessionEvent> watch({required String sessionId}) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i29.SessionEvent>,
-        _i29.SessionEvent
+        _i2.Stream<_i31.SessionEvent>,
+        _i31.SessionEvent
       >(
         'hayerSession',
         'watch',
@@ -535,12 +553,12 @@ class EndpointPlace extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i30.RouteEstimate> routeEstimate({
+  _i2.Future<_i32.RouteEstimate> routeEstimate({
     required String sessionId,
     required String placeId,
     double? originLatitude,
     double? originLongitude,
-  }) => caller.callServerEndpoint<_i30.RouteEstimate>(
+  }) => caller.callServerEndpoint<_i32.RouteEstimate>(
     'place',
     'routeEstimate',
     {
@@ -559,8 +577,8 @@ class EndpointTaxonomy extends _i1.EndpointRef {
   @override
   String get name => 'taxonomy';
 
-  _i2.Future<_i31.TaxonomySnapshot> current() =>
-      caller.callServerEndpoint<_i31.TaxonomySnapshot>(
+  _i2.Future<_i33.TaxonomySnapshot> current() =>
+      caller.callServerEndpoint<_i33.TaxonomySnapshot>(
         'taxonomy',
         'current',
         {},
@@ -594,8 +612,8 @@ class EndpointAdminEnrollment extends _i1.EndpointRef {
   @override
   String get name => 'adminEnrollment';
 
-  _i2.Future<({_i32.AuthSuccess auth, String operator})> begin() =>
-      caller.callServerEndpoint<({_i32.AuthSuccess auth, String operator})>(
+  _i2.Future<({_i34.AuthSuccess auth, String operator})> begin() =>
+      caller.callServerEndpoint<({_i34.AuthSuccess auth, String operator})>(
         'adminEnrollment',
         'begin',
         {},
@@ -603,7 +621,7 @@ class EndpointAdminEnrollment extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointAnonymousIdp extends _i33.EndpointAnonymousIdpBase {
+class EndpointAnonymousIdp extends _i35.EndpointAnonymousIdpBase {
   EndpointAnonymousIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -614,8 +632,8 @@ class EndpointAnonymousIdp extends _i33.EndpointAnonymousIdpBase {
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
   @override
-  _i2.Future<_i32.AuthSuccess> login({String? token}) =>
-      caller.callServerEndpoint<_i32.AuthSuccess>(
+  _i2.Future<_i34.AuthSuccess> login({String? token}) =>
+      caller.callServerEndpoint<_i34.AuthSuccess>(
         'anonymousIdp',
         'login',
         {'token': token},
@@ -625,7 +643,7 @@ class EndpointAnonymousIdp extends _i33.EndpointAnonymousIdpBase {
 /// By extending [RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i32.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i34.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -650,9 +668,9 @@ class EndpointJwtRefresh extends _i32.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i32.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i34.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i32.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i34.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -661,15 +679,15 @@ class EndpointJwtRefresh extends _i32.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
-class EndpointPasskeyIdp extends _i33.EndpointPasskeyIdpBase {
+class EndpointPasskeyIdp extends _i35.EndpointPasskeyIdpBase {
   EndpointPasskeyIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'passkeyIdp';
 
   @override
-  _i2.Future<({_i34.ByteData challenge, _i1.UuidValue id})> createChallenge() =>
-      caller.callServerEndpoint<({_i34.ByteData challenge, _i1.UuidValue id})>(
+  _i2.Future<({_i36.ByteData challenge, _i1.UuidValue id})> createChallenge() =>
+      caller.callServerEndpoint<({_i36.ByteData challenge, _i1.UuidValue id})>(
         'passkeyIdp',
         'createChallenge',
         {},
@@ -677,7 +695,7 @@ class EndpointPasskeyIdp extends _i33.EndpointPasskeyIdpBase {
 
   @override
   _i2.Future<void> register({
-    required _i33.PasskeyRegistrationRequest registrationRequest,
+    required _i35.PasskeyRegistrationRequest registrationRequest,
   }) => caller.callServerEndpoint<void>(
     'passkeyIdp',
     'register',
@@ -685,9 +703,9 @@ class EndpointPasskeyIdp extends _i33.EndpointPasskeyIdpBase {
   );
 
   @override
-  _i2.Future<_i32.AuthSuccess> login({
-    required _i33.PasskeyLoginRequest loginRequest,
-  }) => caller.callServerEndpoint<_i32.AuthSuccess>(
+  _i2.Future<_i34.AuthSuccess> login({
+    required _i35.PasskeyLoginRequest loginRequest,
+  }) => caller.callServerEndpoint<_i34.AuthSuccess>(
     'passkeyIdp',
     'login',
     {'loginRequest': loginRequest},
@@ -703,13 +721,13 @@ class EndpointPasskeyIdp extends _i33.EndpointPasskeyIdpBase {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i33.Caller(client);
-    serverpod_auth_core = _i32.Caller(client);
+    serverpod_auth_idp = _i35.Caller(client);
+    serverpod_auth_core = _i34.Caller(client);
   }
 
-  late final _i33.Caller serverpod_auth_idp;
+  late final _i35.Caller serverpod_auth_idp;
 
-  late final _i32.Caller serverpod_auth_core;
+  late final _i34.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -732,7 +750,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i35.Protocol(),
+         _i37.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

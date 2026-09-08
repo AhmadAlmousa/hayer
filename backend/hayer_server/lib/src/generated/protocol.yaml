@@ -38,6 +38,7 @@ hayerSession:
   - abandon:
   - swipe:
   - chooseDestination:
+  - recordClientAnalytics:
   - results:
   - watch:
 place:

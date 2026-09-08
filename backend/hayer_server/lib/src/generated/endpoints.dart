@@ -29,12 +29,15 @@ import 'package:hayer_server/src/generated/admin_map_location.dart' as _i15;
 import 'package:hayer_server/src/generated/job_status.dart' as _i16;
 import 'package:hayer_server/src/generated/cache_policy.dart' as _i17;
 import 'package:hayer_server/src/generated/create_session_request.dart' as _i18;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i19;
-import 'package:hayer_server/src/generated/protocol.dart' as _i20;
+import 'package:hayer_server/src/generated/client_analytics_context.dart'
+    as _i19;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i20;
+import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i21;
+import 'package:hayer_server/src/generated/protocol.dart' as _i22;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i21;
+    as _i23;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i22;
+    as _i24;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -886,6 +889,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String>(),
               nullable: false,
             ),
+            'analyticsContext': _i1.ParameterDescription(
+              name: 'analyticsContext',
+              type: _i1.getType<_i19.ClientAnalyticsContext?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -896,6 +904,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     code: params['code'],
                     displayName: params['displayName'],
+                    analyticsContext: params['analyticsContext'],
                   ),
         ),
         'load': _i1.MethodConnector(
@@ -941,7 +950,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'command': _i1.ParameterDescription(
               name: 'command',
-              type: _i1.getType<_i19.SwipeCommand>(),
+              type: _i1.getType<_i20.SwipeCommand>(),
               nullable: false,
             ),
           },
@@ -973,6 +982,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
+            'analyticsContext': _i1.ParameterDescription(
+              name: 'analyticsContext',
+              type: _i1.getType<_i19.ClientAnalyticsContext?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -984,6 +998,26 @@ class Endpoints extends _i1.EndpointDispatch {
                     sessionId: params['sessionId'],
                     placeId: params['placeId'],
                     expectedRevision: params['expectedRevision'],
+                    analyticsContext: params['analyticsContext'],
+                  ),
+        ),
+        'recordClientAnalytics': _i1.MethodConnector(
+          name: 'recordClientAnalytics',
+          params: {
+            'event': _i1.ParameterDescription(
+              name: 'event',
+              type: _i1.getType<_i21.ClientAnalyticsEvent>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+                  .recordClientAnalytics(
+                    session,
+                    event: params['event'],
                   ),
         ),
         'results': _i1.MethodConnector(
@@ -1196,7 +1230,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   (endpoints['adminEnrollment'] as _i8.AdminEnrollmentEndpoint)
                       .begin(session)
                       .then(
-                        (record) => _i20.Protocol().mapRecordToJson(record),
+                        (record) => _i22.Protocol().mapRecordToJson(record),
                       ),
         ),
       },
@@ -1264,14 +1298,14 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint)
                   .createChallenge(session)
-                  .then((record) => _i20.Protocol().mapRecordToJson(record)),
+                  .then((record) => _i22.Protocol().mapRecordToJson(record)),
         ),
         'register': _i1.MethodConnector(
           name: 'register',
           params: {
             'registrationRequest': _i1.ParameterDescription(
               name: 'registrationRequest',
-              type: _i1.getType<_i21.PasskeyRegistrationRequest>(),
+              type: _i1.getType<_i23.PasskeyRegistrationRequest>(),
               nullable: false,
             ),
           },
@@ -1290,7 +1324,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'loginRequest': _i1.ParameterDescription(
               name: 'loginRequest',
-              type: _i1.getType<_i21.PasskeyLoginRequest>(),
+              type: _i1.getType<_i23.PasskeyLoginRequest>(),
               nullable: false,
             ),
           },
@@ -1316,9 +1350,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i21.Endpoints()
+    modules['serverpod_auth_idp'] = _i23.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i22.Endpoints()
+    modules['serverpod_auth_core'] = _i24.Endpoints()
       ..initializeEndpoints(server);
   }
 }

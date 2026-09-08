@@ -1,0 +1,7 @@
+class: ClientAnalyticsContext
+fields:
+  journeyId: String
+  schemaVersion: int
+  appBuild: int
+  platform: String
+  language: String

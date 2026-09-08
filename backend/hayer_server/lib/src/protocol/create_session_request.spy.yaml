@@ -13,3 +13,4 @@ fields:
   displayName: String?
   consensusRule: ConsensusRule
   matchingTiming: MatchingTiming
+  analyticsContext: ClientAnalyticsContext?

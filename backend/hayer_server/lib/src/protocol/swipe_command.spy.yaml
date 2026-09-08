@@ -6,3 +6,4 @@ fields:
   swipeIndex: int
   clientSwipedAt: DateTime
   idempotencyKey: String
+  analyticsContext: ClientAnalyticsContext?

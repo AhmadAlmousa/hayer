@@ -31,6 +31,16 @@ abstract class ProductAnalyticsEventRow
     required this.placeName,
     required this.value,
     required this.sampleCount,
+    this.receivedAt,
+    this.eventSchemaVersion,
+    this.origin,
+    this.journeyId,
+    this.appBuild,
+    this.platform,
+    this.language,
+    this.outcomeCode,
+    this.deckPosition,
+    this.visibleMilliseconds,
     this.processedAt,
   });
 
@@ -50,6 +60,16 @@ abstract class ProductAnalyticsEventRow
     required String placeName,
     required double value,
     required int sampleCount,
+    DateTime? receivedAt,
+    int? eventSchemaVersion,
+    String? origin,
+    String? journeyId,
+    int? appBuild,
+    String? platform,
+    String? language,
+    String? outcomeCode,
+    int? deckPosition,
+    int? visibleMilliseconds,
     DateTime? processedAt,
   }) = _ProductAnalyticsEventRowImpl;
 
@@ -74,6 +94,18 @@ abstract class ProductAnalyticsEventRow
       placeName: jsonSerialization['placeName'] as String,
       value: (jsonSerialization['value'] as num).toDouble(),
       sampleCount: jsonSerialization['sampleCount'] as int,
+      receivedAt: jsonSerialization['receivedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['receivedAt']),
+      eventSchemaVersion: jsonSerialization['eventSchemaVersion'] as int?,
+      origin: jsonSerialization['origin'] as String?,
+      journeyId: jsonSerialization['journeyId'] as String?,
+      appBuild: jsonSerialization['appBuild'] as int?,
+      platform: jsonSerialization['platform'] as String?,
+      language: jsonSerialization['language'] as String?,
+      outcomeCode: jsonSerialization['outcomeCode'] as String?,
+      deckPosition: jsonSerialization['deckPosition'] as int?,
+      visibleMilliseconds: jsonSerialization['visibleMilliseconds'] as int?,
       processedAt: jsonSerialization['processedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
@@ -117,6 +149,26 @@ abstract class ProductAnalyticsEventRow
 
   int sampleCount;
 
+  DateTime? receivedAt;
+
+  int? eventSchemaVersion;
+
+  String? origin;
+
+  String? journeyId;
+
+  int? appBuild;
+
+  String? platform;
+
+  String? language;
+
+  String? outcomeCode;
+
+  int? deckPosition;
+
+  int? visibleMilliseconds;
+
   DateTime? processedAt;
 
   @override
@@ -141,6 +193,16 @@ abstract class ProductAnalyticsEventRow
     String? placeName,
     double? value,
     int? sampleCount,
+    DateTime? receivedAt,
+    int? eventSchemaVersion,
+    String? origin,
+    String? journeyId,
+    int? appBuild,
+    String? platform,
+    String? language,
+    String? outcomeCode,
+    int? deckPosition,
+    int? visibleMilliseconds,
     DateTime? processedAt,
   });
   @override
@@ -162,6 +224,17 @@ abstract class ProductAnalyticsEventRow
       'placeName': placeName,
       'value': value,
       'sampleCount': sampleCount,
+      if (receivedAt != null) 'receivedAt': receivedAt?.toJson(),
+      if (eventSchemaVersion != null) 'eventSchemaVersion': eventSchemaVersion,
+      if (origin != null) 'origin': origin,
+      if (journeyId != null) 'journeyId': journeyId,
+      if (appBuild != null) 'appBuild': appBuild,
+      if (platform != null) 'platform': platform,
+      if (language != null) 'language': language,
+      if (outcomeCode != null) 'outcomeCode': outcomeCode,
+      if (deckPosition != null) 'deckPosition': deckPosition,
+      if (visibleMilliseconds != null)
+        'visibleMilliseconds': visibleMilliseconds,
       if (processedAt != null) 'processedAt': processedAt?.toJson(),
     };
   }
@@ -220,6 +293,16 @@ class _ProductAnalyticsEventRowImpl extends ProductAnalyticsEventRow {
     required String placeName,
     required double value,
     required int sampleCount,
+    DateTime? receivedAt,
+    int? eventSchemaVersion,
+    String? origin,
+    String? journeyId,
+    int? appBuild,
+    String? platform,
+    String? language,
+    String? outcomeCode,
+    int? deckPosition,
+    int? visibleMilliseconds,
     DateTime? processedAt,
   }) : super._(
          id: id,
@@ -237,6 +320,16 @@ class _ProductAnalyticsEventRowImpl extends ProductAnalyticsEventRow {
          placeName: placeName,
          value: value,
          sampleCount: sampleCount,
+         receivedAt: receivedAt,
+         eventSchemaVersion: eventSchemaVersion,
+         origin: origin,
+         journeyId: journeyId,
+         appBuild: appBuild,
+         platform: platform,
+         language: language,
+         outcomeCode: outcomeCode,
+         deckPosition: deckPosition,
+         visibleMilliseconds: visibleMilliseconds,
          processedAt: processedAt,
        );
 
@@ -260,6 +353,16 @@ class _ProductAnalyticsEventRowImpl extends ProductAnalyticsEventRow {
     String? placeName,
     double? value,
     int? sampleCount,
+    Object? receivedAt = _Undefined,
+    Object? eventSchemaVersion = _Undefined,
+    Object? origin = _Undefined,
+    Object? journeyId = _Undefined,
+    Object? appBuild = _Undefined,
+    Object? platform = _Undefined,
+    Object? language = _Undefined,
+    Object? outcomeCode = _Undefined,
+    Object? deckPosition = _Undefined,
+    Object? visibleMilliseconds = _Undefined,
     Object? processedAt = _Undefined,
   }) {
     return ProductAnalyticsEventRow(
@@ -278,6 +381,20 @@ class _ProductAnalyticsEventRowImpl extends ProductAnalyticsEventRow {
       placeName: placeName ?? this.placeName,
       value: value ?? this.value,
       sampleCount: sampleCount ?? this.sampleCount,
+      receivedAt: receivedAt is DateTime? ? receivedAt : this.receivedAt,
+      eventSchemaVersion: eventSchemaVersion is int?
+          ? eventSchemaVersion
+          : this.eventSchemaVersion,
+      origin: origin is String? ? origin : this.origin,
+      journeyId: journeyId is String? ? journeyId : this.journeyId,
+      appBuild: appBuild is int? ? appBuild : this.appBuild,
+      platform: platform is String? ? platform : this.platform,
+      language: language is String? ? language : this.language,
+      outcomeCode: outcomeCode is String? ? outcomeCode : this.outcomeCode,
+      deckPosition: deckPosition is int? ? deckPosition : this.deckPosition,
+      visibleMilliseconds: visibleMilliseconds is int?
+          ? visibleMilliseconds
+          : this.visibleMilliseconds,
       processedAt: processedAt is DateTime? ? processedAt : this.processedAt,
     );
   }
@@ -358,6 +475,57 @@ class ProductAnalyticsEventRowUpdateTable
     value,
   );
 
+  _i1.ColumnValue<DateTime, DateTime> receivedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.receivedAt,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> eventSchemaVersion(int? value) => _i1.ColumnValue(
+    table.eventSchemaVersion,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> origin(String? value) => _i1.ColumnValue(
+    table.origin,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> journeyId(String? value) => _i1.ColumnValue(
+    table.journeyId,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> appBuild(int? value) => _i1.ColumnValue(
+    table.appBuild,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> platform(String? value) => _i1.ColumnValue(
+    table.platform,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> language(String? value) => _i1.ColumnValue(
+    table.language,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> outcomeCode(String? value) => _i1.ColumnValue(
+    table.outcomeCode,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> deckPosition(int? value) => _i1.ColumnValue(
+    table.deckPosition,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> visibleMilliseconds(int? value) => _i1.ColumnValue(
+    table.visibleMilliseconds,
+    value,
+  );
+
   _i1.ColumnValue<DateTime, DateTime> processedAt(DateTime? value) =>
       _i1.ColumnValue(
         table.processedAt,
@@ -425,6 +593,46 @@ class ProductAnalyticsEventRowTable extends _i1.Table<int?> {
       'sampleCount',
       this,
     );
+    receivedAt = _i1.ColumnDateTime(
+      'receivedAt',
+      this,
+    );
+    eventSchemaVersion = _i1.ColumnInt(
+      'eventSchemaVersion',
+      this,
+    );
+    origin = _i1.ColumnString(
+      'origin',
+      this,
+    );
+    journeyId = _i1.ColumnString(
+      'journeyId',
+      this,
+    );
+    appBuild = _i1.ColumnInt(
+      'appBuild',
+      this,
+    );
+    platform = _i1.ColumnString(
+      'platform',
+      this,
+    );
+    language = _i1.ColumnString(
+      'language',
+      this,
+    );
+    outcomeCode = _i1.ColumnString(
+      'outcomeCode',
+      this,
+    );
+    deckPosition = _i1.ColumnInt(
+      'deckPosition',
+      this,
+    );
+    visibleMilliseconds = _i1.ColumnInt(
+      'visibleMilliseconds',
+      this,
+    );
     processedAt = _i1.ColumnDateTime(
       'processedAt',
       this,
@@ -461,6 +669,26 @@ class ProductAnalyticsEventRowTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt sampleCount;
 
+  late final _i1.ColumnDateTime receivedAt;
+
+  late final _i1.ColumnInt eventSchemaVersion;
+
+  late final _i1.ColumnString origin;
+
+  late final _i1.ColumnString journeyId;
+
+  late final _i1.ColumnInt appBuild;
+
+  late final _i1.ColumnString platform;
+
+  late final _i1.ColumnString language;
+
+  late final _i1.ColumnString outcomeCode;
+
+  late final _i1.ColumnInt deckPosition;
+
+  late final _i1.ColumnInt visibleMilliseconds;
+
   late final _i1.ColumnDateTime processedAt;
 
   @override
@@ -480,6 +708,16 @@ class ProductAnalyticsEventRowTable extends _i1.Table<int?> {
     placeName,
     value,
     sampleCount,
+    receivedAt,
+    eventSchemaVersion,
+    origin,
+    journeyId,
+    appBuild,
+    platform,
+    language,
+    outcomeCode,
+    deckPosition,
+    visibleMilliseconds,
     processedAt,
   ];
 }

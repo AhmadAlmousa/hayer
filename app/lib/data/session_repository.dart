@@ -7,6 +7,19 @@ import 'authentication.dart';
 import 'pending_swipe_store.dart';
 
 typedef SwipeTransport = Future<SessionBundle> Function(SwipeCommand command);
+typedef ClientAnalyticsTransport = Future<void> Function(
+  ClientAnalyticsEvent event,
+);
+
+class ClientAnalyticsMetadata {
+  const ClientAnalyticsMetadata({
+    required this.appBuild,
+    required this.platform,
+  });
+
+  final int appBuild;
+  final String platform;
+}
 
 enum SwipeSubmissionState { accepted, queued, rejected }
 
@@ -55,43 +68,66 @@ class SessionRepository {
     required this.outbox,
     this.secureStorage = const FlutterSecureStorage(),
     this.swipeTransport,
+    this.analyticsMetadata = const ClientAnalyticsMetadata(
+      appBuild: 0,
+      platform: 'unknown',
+    ),
+    this.analyticsTransport,
   });
 
   final Client client;
   final PendingSwipeStore outbox;
   final FlutterSecureStorage secureStorage;
   final SwipeTransport? swipeTransport;
+  final ClientAnalyticsMetadata analyticsMetadata;
+  final ClientAnalyticsTransport? analyticsTransport;
   final _commandMutex = _AsyncMutex();
+  final _journeysBySession = <String, String>{};
+  final _startedSessionJourneys = <String>{};
+  String? _pendingJourneyId;
   static const _uuid = Uuid();
   static const activeSessionKey = 'hayer.active-session-id';
 
-  Future<SessionBundle> create(CreateSessionRequest request) async {
+  Future<SessionBundle> create(
+    CreateSessionRequest request, {
+    String language = 'en',
+  }) async {
     final idempotencyKey = _uuid.v7();
+    final context = _newSessionContext(language);
+    final requestWithAnalytics = request.copyWith(analyticsContext: context);
     final bundle = await retryOnceAfterTransientFailure(
       action: () => withAnonymousAuthentication(
         client,
         () => client.hayerSession.create(
-          request: request,
+          request: requestWithAnalytics,
           idempotencyKey: idempotencyKey,
         ),
       ),
       isTransient: _isTransientClientFailure,
     );
+    _rememberJourney(bundle.session.sessionId, context.journeyId);
     await remember(bundle.session.sessionId);
     return bundle;
   }
 
-  Future<SessionBundle> join(String code, String displayName) async {
+  Future<SessionBundle> join(
+    String code,
+    String displayName, {
+    String language = 'en',
+  }) async {
+    final context = _newSessionContext(language);
     final bundle = await retryOnceAfterTransientFailure(
       action: () => withAnonymousAuthentication(
         client,
         () => client.hayerSession.join(
           code: code,
           displayName: displayName,
+          analyticsContext: context,
         ),
       ),
       isTransient: _isTransientClientFailure,
     );
+    _rememberJourney(bundle.session.sessionId, context.journeyId);
     await remember(bundle.session.sessionId);
     return bundle;
   }
@@ -110,13 +146,69 @@ class SessionRepository {
     required String sessionId,
     required String placeId,
     required int expectedRevision,
+    String language = 'en',
   }) => withAnonymousAuthentication(
     client,
     () => client.hayerSession.chooseDestination(
       sessionId: sessionId,
       placeId: placeId,
       expectedRevision: expectedRevision,
+      analyticsContext: _contextForSession(sessionId, language),
     ),
+  );
+
+  Future<void> beginJourney({
+    required String entryPoint,
+    required String language,
+  }) async {
+    final journeyId = _uuid.v7();
+    _pendingJourneyId = journeyId;
+    await _recordBestEffort(
+      ClientAnalyticsEvent(
+        eventId: _uuid.v7(),
+        eventName: 'journey_started',
+        occurredAt: DateTime.now().toUtc(),
+        context: _context(journeyId, language),
+        outcomeCode: entryPoint,
+      ),
+    );
+  }
+
+  Future<void> recordCardImpression({
+    required String sessionId,
+    required String placeId,
+    required int deckPosition,
+    required int visibleMilliseconds,
+    required String language,
+  }) => _recordSessionEvent(
+    sessionId: sessionId,
+    eventName: 'card_impression',
+    language: language,
+    placeId: placeId,
+    deckPosition: deckPosition,
+    visibleMilliseconds: visibleMilliseconds,
+  );
+
+  Future<void> recordPlaceDetailsOpened({
+    required String sessionId,
+    required String placeId,
+    required int deckPosition,
+    required String language,
+  }) => _recordSessionEvent(
+    sessionId: sessionId,
+    eventName: 'place_details_opened',
+    language: language,
+    placeId: placeId,
+    deckPosition: deckPosition,
+  );
+
+  Future<void> recordResultsViewed({
+    required String sessionId,
+    required String language,
+  }) => _recordSessionEvent(
+    sessionId: sessionId,
+    eventName: 'results_viewed',
+    language: language,
   );
 
   Future<void> remember(String sessionId) async {
@@ -145,6 +237,7 @@ class SessionRepository {
     required String placeId,
     required bool liked,
     required int swipeIndex,
+    String language = 'en',
   }) => _commandMutex.protect(() async {
     final key = _uuid.v7();
     final swipedAt = DateTime.now().toUtc();
@@ -155,6 +248,7 @@ class SessionRepository {
       swipeIndex: swipeIndex,
       clientSwipedAt: swipedAt,
       idempotencyKey: key,
+      analyticsContext: _contextForSession(sessionId, language),
     );
     final pending = PendingSwipeRecord(
       idempotencyKey: key,
@@ -174,69 +268,108 @@ class SessionRepository {
       final terminalCode = _terminalSwipeErrorCode(error);
       if (terminalCode != null) {
         await outbox.markTerminal(key, terminalCode);
+        unawaited(
+          _recordSessionEvent(
+            sessionId: sessionId,
+            eventName: 'sync_terminal_failure',
+            language: language,
+            outcomeCode: terminalCode,
+          ),
+        );
         return SwipeSubmissionResult.rejected(terminalCode);
       }
+      unawaited(
+        _recordSessionEvent(
+          sessionId: sessionId,
+          eventName: 'outbox_queued',
+          language: language,
+        ),
+      );
       return const SwipeSubmissionResult.queued();
     }
   });
 
-  Future<QueueFlushResult> flushQueue() => _commandMutex.protect(() async {
-    var accepted = 0;
-    var terminalFailures = 0;
-    final blockedSessions = <String>{};
-    for (final pending in await outbox.queued()) {
-      if (pending.isTerminal) {
-        terminalFailures++;
-        continue;
-      }
-      if (blockedSessions.contains(pending.sessionId)) continue;
-      try {
-        await _sendSwipe(
-          SwipeCommand(
-            sessionId: pending.sessionId,
-            placeId: pending.placeId,
-            liked: pending.liked,
-            swipeIndex: pending.swipeIndex,
-            clientSwipedAt: pending.clientSwipedAt,
-            idempotencyKey: pending.idempotencyKey,
-          ),
-        );
-        await outbox.remove(pending.idempotencyKey);
-        accepted++;
-      } catch (error) {
-        final terminalCode = _terminalSwipeErrorCode(error);
-        if (terminalCode == null) {
-          blockedSessions.add(pending.sessionId);
-          continue;
+  Future<QueueFlushResult> flushQueue({String language = 'en'}) =>
+      _commandMutex.protect(() async {
+        var accepted = 0;
+        var terminalFailures = 0;
+        final blockedSessions = <String>{};
+        final recoveredSessions = <String>{};
+        final newlyTerminalSessions = <String, String>{};
+        for (final pending in await outbox.queued()) {
+          if (pending.isTerminal) {
+            terminalFailures++;
+            continue;
+          }
+          if (blockedSessions.contains(pending.sessionId)) continue;
+          try {
+            await _sendSwipe(
+              SwipeCommand(
+                sessionId: pending.sessionId,
+                placeId: pending.placeId,
+                liked: pending.liked,
+                swipeIndex: pending.swipeIndex,
+                clientSwipedAt: pending.clientSwipedAt,
+                idempotencyKey: pending.idempotencyKey,
+              ),
+            );
+            await outbox.remove(pending.idempotencyKey);
+            accepted++;
+            recoveredSessions.add(pending.sessionId);
+          } catch (error) {
+            final terminalCode = _terminalSwipeErrorCode(error);
+            if (terminalCode == null) {
+              blockedSessions.add(pending.sessionId);
+              continue;
+            }
+            await outbox.markTerminal(pending.idempotencyKey, terminalCode);
+            terminalFailures++;
+            newlyTerminalSessions[pending.sessionId] = terminalCode;
+          }
         }
-        await outbox.markTerminal(pending.idempotencyKey, terminalCode);
-        terminalFailures++;
-      }
-    }
-    final remaining = await outbox.queued();
-    final pendingProgressBySession = <String, int>{};
-    for (final record in remaining.where((record) => !record.isTerminal)) {
-      final progress = record.swipeIndex + 1;
-      final previous = pendingProgressBySession[record.sessionId] ?? 0;
-      if (progress > previous) {
-        pendingProgressBySession[record.sessionId] = progress;
-      }
-    }
-    return QueueFlushResult(
-      accepted: accepted,
-      terminalFailures: terminalFailures,
-      pending: remaining.where((record) => !record.isTerminal).length,
-      pendingSessionIds: {
-        for (final record in remaining)
-          if (!record.isTerminal) record.sessionId,
-      },
-      terminalFailureSessionIds: {
-        for (final record in remaining)
-          if (record.isTerminal) record.sessionId,
-      },
-      pendingProgressBySession: pendingProgressBySession,
-    );
-  });
+        final remaining = await outbox.queued();
+        final pendingProgressBySession = <String, int>{};
+        for (final record in remaining.where((record) => !record.isTerminal)) {
+          final progress = record.swipeIndex + 1;
+          final previous = pendingProgressBySession[record.sessionId] ?? 0;
+          if (progress > previous) {
+            pendingProgressBySession[record.sessionId] = progress;
+          }
+        }
+        for (final sessionId in recoveredSessions) {
+          unawaited(
+            _recordSessionEvent(
+              sessionId: sessionId,
+              eventName: 'sync_recovered',
+              language: language,
+            ),
+          );
+        }
+        for (final entry in newlyTerminalSessions.entries) {
+          unawaited(
+            _recordSessionEvent(
+              sessionId: entry.key,
+              eventName: 'sync_terminal_failure',
+              language: language,
+              outcomeCode: entry.value,
+            ),
+          );
+        }
+        return QueueFlushResult(
+          accepted: accepted,
+          terminalFailures: terminalFailures,
+          pending: remaining.where((record) => !record.isTerminal).length,
+          pendingSessionIds: {
+            for (final record in remaining)
+              if (!record.isTerminal) record.sessionId,
+          },
+          terminalFailureSessionIds: {
+            for (final record in remaining)
+              if (record.isTerminal) record.sessionId,
+          },
+          pendingProgressBySession: pendingProgressBySession,
+        );
+      });
 
   Future<SessionBundle> _sendSwipe(SwipeCommand command) {
     final transport = swipeTransport;
@@ -245,6 +378,86 @@ class SessionRepository {
       client,
       () => client.hayerSession.swipe(command: command),
     );
+  }
+
+  ClientAnalyticsContext _newSessionContext(String language) {
+    final journeyId = _pendingJourneyId ?? _uuid.v7();
+    return _context(journeyId, language);
+  }
+
+  ClientAnalyticsContext _contextForSession(
+    String sessionId,
+    String language,
+  ) {
+    final journeyId = _journeysBySession.putIfAbsent(sessionId, _uuid.v7);
+    if (_startedSessionJourneys.add(sessionId)) {
+      unawaited(
+        _recordBestEffort(
+          ClientAnalyticsEvent(
+            eventId: _uuid.v7(),
+            eventName: 'journey_started',
+            occurredAt: DateTime.now().toUtc(),
+            context: _context(journeyId, language),
+            sessionId: sessionId,
+            outcomeCode: 'resume',
+          ),
+        ),
+      );
+    }
+    return _context(journeyId, language);
+  }
+
+  ClientAnalyticsContext _context(String journeyId, String language) =>
+      ClientAnalyticsContext(
+        journeyId: journeyId,
+        schemaVersion: 1,
+        appBuild: analyticsMetadata.appBuild,
+        platform: analyticsMetadata.platform,
+        language: language,
+      );
+
+  void _rememberJourney(String sessionId, String journeyId) {
+    _journeysBySession[sessionId] = journeyId;
+    _startedSessionJourneys.add(sessionId);
+    if (_pendingJourneyId == journeyId) _pendingJourneyId = null;
+  }
+
+  Future<void> _recordSessionEvent({
+    required String sessionId,
+    required String eventName,
+    required String language,
+    String? placeId,
+    int? deckPosition,
+    int? visibleMilliseconds,
+    String? outcomeCode,
+  }) => _recordBestEffort(
+    ClientAnalyticsEvent(
+      eventId: _uuid.v7(),
+      eventName: eventName,
+      occurredAt: DateTime.now().toUtc(),
+      context: _contextForSession(sessionId, language),
+      sessionId: sessionId,
+      placeId: placeId,
+      deckPosition: deckPosition,
+      visibleMilliseconds: visibleMilliseconds,
+      outcomeCode: outcomeCode,
+    ),
+  );
+
+  Future<void> _recordBestEffort(ClientAnalyticsEvent event) async {
+    try {
+      final transport = analyticsTransport;
+      if (transport != null) {
+        await transport(event);
+        return;
+      }
+      await withAnonymousAuthentication(
+        client,
+        () => client.hayerSession.recordClientAnalytics(event: event),
+      ).timeout(const Duration(seconds: 8));
+    } catch (_) {
+      // Product telemetry never blocks or changes a user action.
+    }
   }
 }
 

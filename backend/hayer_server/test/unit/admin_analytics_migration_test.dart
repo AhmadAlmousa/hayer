@@ -23,4 +23,17 @@ void main() {
       expect(definition, contains('CREATE EXTENSION IF NOT EXISTS postgis;'));
     },
   );
+
+  test('decision analytics migration adds bounded journey metadata', () async {
+    const decisionMigration = '20260908110049218-decision-analytics';
+    final migration = await File(
+      'migrations/$decisionMigration/migration.sql',
+    ).readAsString();
+
+    expect(migration, contains('ADD COLUMN "receivedAt"'));
+    expect(migration, contains('ADD COLUMN "eventSchemaVersion"'));
+    expect(migration, contains('ADD COLUMN "journeyId"'));
+    expect(migration, contains('hayer_analytics_event_journey'));
+    expect(migration, isNot(contains('installationId')));
+  });
 }

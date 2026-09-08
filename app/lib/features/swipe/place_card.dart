@@ -20,12 +20,16 @@ class PlaceCard extends StatelessWidget {
     required this.routeOrigin,
     required this.routeEstimatesEnabled,
     this.countryCode,
+    this.onDetailsOpened,
+    this.onDetailsClosed,
   });
   final PlaceSnapshot place;
   final String sessionId;
   final RouteOriginMode routeOrigin;
   final bool routeEstimatesEnabled;
   final String? countryCode;
+  final VoidCallback? onDetailsOpened;
+  final VoidCallback? onDetailsClosed;
 
   @override
   Widget build(BuildContext context) {
@@ -296,14 +300,18 @@ class PlaceCard extends StatelessWidget {
     );
   }
 
-  void _showDetails(BuildContext context) => showPlaceDetails(
-    context,
-    place: place,
-    sessionId: sessionId,
-    countryCode: countryCode,
-    routeOrigin: routeOrigin,
-    routeEstimatesEnabled: routeEstimatesEnabled,
-  );
+  Future<void> _showDetails(BuildContext context) async {
+    onDetailsOpened?.call();
+    await showPlaceDetails(
+      context,
+      place: place,
+      sessionId: sessionId,
+      countryCode: countryCode,
+      routeOrigin: routeOrigin,
+      routeEstimatesEnabled: routeEstimatesEnabled,
+    );
+    onDetailsClosed?.call();
+  }
 
   Widget _fallback(ColorScheme colors) => Container(
     color: colors.primaryContainer,

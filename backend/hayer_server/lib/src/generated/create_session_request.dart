@@ -15,7 +15,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'session_mode.dart' as _i2;
 import 'consensus_rule.dart' as _i3;
 import 'matching_timing.dart' as _i4;
-import 'package:hayer_server/src/generated/protocol.dart' as _i5;
+import 'client_analytics_context.dart' as _i5;
+import 'package:hayer_server/src/generated/protocol.dart' as _i6;
 
 abstract class CreateSessionRequest
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -33,6 +34,7 @@ abstract class CreateSessionRequest
     this.displayName,
     required this.consensusRule,
     required this.matchingTiming,
+    this.analyticsContext,
   });
 
   factory CreateSessionRequest({
@@ -49,6 +51,7 @@ abstract class CreateSessionRequest
     String? displayName,
     required _i3.ConsensusRule consensusRule,
     required _i4.MatchingTiming matchingTiming,
+    _i5.ClientAnalyticsContext? analyticsContext,
   }) = _CreateSessionRequestImpl;
 
   factory CreateSessionRequest.fromJson(
@@ -57,7 +60,7 @@ abstract class CreateSessionRequest
     return CreateSessionRequest(
       mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
       categoryId: jsonSerialization['categoryId'] as String,
-      subcategoryIds: _i5.Protocol().deserialize<List<String>>(
+      subcategoryIds: _i6.Protocol().deserialize<List<String>>(
         jsonSerialization['subcategoryIds'],
       ),
       priceLevel: jsonSerialization['priceLevel'] as int?,
@@ -76,6 +79,11 @@ abstract class CreateSessionRequest
       matchingTiming: _i4.MatchingTiming.fromJson(
         (jsonSerialization['matchingTiming'] as String),
       ),
+      analyticsContext: jsonSerialization['analyticsContext'] == null
+          ? null
+          : _i6.Protocol().deserialize<_i5.ClientAnalyticsContext>(
+              jsonSerialization['analyticsContext'],
+            ),
     );
   }
 
@@ -105,6 +113,8 @@ abstract class CreateSessionRequest
 
   _i4.MatchingTiming matchingTiming;
 
+  _i5.ClientAnalyticsContext? analyticsContext;
+
   /// Returns a shallow copy of this [CreateSessionRequest]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -122,6 +132,7 @@ abstract class CreateSessionRequest
     String? displayName,
     _i3.ConsensusRule? consensusRule,
     _i4.MatchingTiming? matchingTiming,
+    _i5.ClientAnalyticsContext? analyticsContext,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,6 +151,8 @@ abstract class CreateSessionRequest
       if (displayName != null) 'displayName': displayName,
       'consensusRule': consensusRule.toJson(),
       'matchingTiming': matchingTiming.toJson(),
+      if (analyticsContext != null)
+        'analyticsContext': analyticsContext?.toJson(),
     };
   }
 
@@ -160,6 +173,8 @@ abstract class CreateSessionRequest
       if (displayName != null) 'displayName': displayName,
       'consensusRule': consensusRule.toJson(),
       'matchingTiming': matchingTiming.toJson(),
+      if (analyticsContext != null)
+        'analyticsContext': analyticsContext?.toJsonForProtocol(),
     };
   }
 
@@ -186,6 +201,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     String? displayName,
     required _i3.ConsensusRule consensusRule,
     required _i4.MatchingTiming matchingTiming,
+    _i5.ClientAnalyticsContext? analyticsContext,
   }) : super._(
          mode: mode,
          categoryId: categoryId,
@@ -200,6 +216,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
          displayName: displayName,
          consensusRule: consensusRule,
          matchingTiming: matchingTiming,
+         analyticsContext: analyticsContext,
        );
 
   /// Returns a shallow copy of this [CreateSessionRequest]
@@ -220,6 +237,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     Object? displayName = _Undefined,
     _i3.ConsensusRule? consensusRule,
     _i4.MatchingTiming? matchingTiming,
+    Object? analyticsContext = _Undefined,
   }) {
     return CreateSessionRequest(
       mode: mode ?? this.mode,
@@ -238,6 +256,9 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
       displayName: displayName is String? ? displayName : this.displayName,
       consensusRule: consensusRule ?? this.consensusRule,
       matchingTiming: matchingTiming ?? this.matchingTiming,
+      analyticsContext: analyticsContext is _i5.ClientAnalyticsContext?
+          ? analyticsContext
+          : this.analyticsContext?.copyWith(),
     );
   }
 }

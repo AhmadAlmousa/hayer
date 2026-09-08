@@ -22,6 +22,8 @@ class PlaceDeckSwiper extends StatefulWidget {
     required this.routeEstimatesEnabled,
     this.countryCode,
     this.onHaptic,
+    this.onDetailsOpened,
+    this.onDetailsClosed,
   });
 
   final String sessionId;
@@ -34,6 +36,8 @@ class PlaceDeckSwiper extends StatefulWidget {
   final bool routeEstimatesEnabled;
   final String? countryCode;
   final Future<void> Function(bool liked)? onHaptic;
+  final void Function(int index)? onDetailsOpened;
+  final void Function(int index)? onDetailsClosed;
 
   @override
   State<PlaceDeckSwiper> createState() => _PlaceDeckSwiperState();
@@ -100,6 +104,8 @@ class _PlaceDeckSwiperState extends State<PlaceDeckSwiper> {
             countryCode: widget.countryCode,
             routeOrigin: widget.routeOrigin,
             routeEstimatesEnabled: widget.routeEstimatesEnabled,
+            onDetailsOpened: () => widget.onDetailsOpened?.call(index),
+            onDetailsClosed: () => widget.onDetailsClosed?.call(index),
           ),
           if (horizontalOffset != 0)
             _DecisionStamp(

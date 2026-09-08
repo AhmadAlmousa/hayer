@@ -16,6 +16,16 @@ fields:
   placeName: String
   value: double
   sampleCount: int
+  receivedAt: DateTime?
+  eventSchemaVersion: int?
+  origin: String?
+  journeyId: String?
+  appBuild: int?
+  platform: String?
+  language: String?
+  outcomeCode: String?
+  deckPosition: int?
+  visibleMilliseconds: int?
   processedAt: DateTime?
 indexes:
   hayer_analytics_event_id:
@@ -25,3 +35,5 @@ indexes:
     fields: processedAt, occurredAt
   hayer_analytics_event_time:
     fields: occurredAt
+  hayer_analytics_event_journey:
+    fields: journeyId, occurredAt

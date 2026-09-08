@@ -161,6 +161,72 @@ void main() {
       expect(store.records.single.terminalErrorCode, 'session_expired');
     },
   );
+
+  test(
+    'session events share a short-lived journey and client metadata',
+    () async {
+      final events = <ClientAnalyticsEvent>[];
+      final client = Client('http://localhost:8080/');
+      addTearDown(client.close);
+      final repository = SessionRepository(
+        client: client,
+        outbox: const _EmptyPendingSwipeStore(),
+        analyticsMetadata: const ClientAnalyticsMetadata(
+          appBuild: 7,
+          platform: 'android',
+        ),
+        analyticsTransport: (event) async => events.add(event),
+      );
+
+      await repository.recordCardImpression(
+        sessionId: 'session-1',
+        placeId: 'place-1',
+        deckPosition: 0,
+        visibleMilliseconds: 500,
+        language: 'ar',
+      );
+      await repository.recordPlaceDetailsOpened(
+        sessionId: 'session-1',
+        placeId: 'place-1',
+        deckPosition: 0,
+        language: 'ar',
+      );
+
+      expect(events.map((event) => event.eventName), [
+        'journey_started',
+        'card_impression',
+        'place_details_opened',
+      ]);
+      expect(
+        events.map((event) => event.context.journeyId).toSet(),
+        hasLength(1),
+      );
+      expect(events.last.context.appBuild, 7);
+      expect(events.last.context.platform, 'android');
+      expect(events.last.context.language, 'ar');
+    },
+  );
+
+  test(
+    'analytics transport failure never blocks a user-facing action',
+    () async {
+      final client = Client('http://localhost:8080/');
+      addTearDown(client.close);
+      final repository = SessionRepository(
+        client: client,
+        outbox: const _EmptyPendingSwipeStore(),
+        analyticsTransport: (_) async => throw StateError('offline'),
+      );
+
+      await expectLater(
+        repository.recordResultsViewed(
+          sessionId: 'session-1',
+          language: 'en',
+        ),
+        completes,
+      );
+    },
+  );
 }
 
 PendingSwipeRecord _pending(String key, String sessionId, int index) =>

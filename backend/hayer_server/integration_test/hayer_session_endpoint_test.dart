@@ -247,6 +247,164 @@ void main() {
         },
       );
 
+      test(
+        'analytics deduplicates impressions and records explicit choice changes',
+        () async {
+          final context = _analyticsContext();
+          final room = await readyChoiceRoom('choice-analytics');
+          final place = room.deck.first;
+          final impression = _clientEvent(
+            context: context,
+            eventName: 'card_impression',
+            sessionId: room.session.sessionId,
+            placeId: place.placeId,
+            deckPosition: 0,
+            visibleMilliseconds: 500,
+          );
+          await endpoints.hayerSession.recordClientAnalytics(
+            host,
+            event: impression,
+          );
+          await endpoints.hayerSession.recordClientAnalytics(
+            host,
+            event: impression.copyWith(eventId: _uuidFor(2)),
+          );
+          await expectLater(
+            endpoints.hayerSession.recordClientAnalytics(
+              outsider,
+              event: impression.copyWith(eventId: _uuidFor(3)),
+            ),
+            throwsA(_apiError('forbidden')),
+          );
+          await expectLater(
+            endpoints.hayerSession.recordClientAnalytics(
+              host,
+              event: impression.copyWith(
+                eventId: _uuidFor(4),
+                visibleMilliseconds: 499,
+              ),
+            ),
+            throwsA(_apiError('bad_request')),
+          );
+
+          await endpoints.hayerSession.chooseDestination(
+            host,
+            sessionId: room.session.sessionId,
+            placeId: place.placeId,
+            expectedRevision: 0,
+            analyticsContext: context,
+          );
+          await endpoints.hayerSession.chooseDestination(
+            host,
+            sessionId: room.session.sessionId,
+            placeId: place.placeId,
+            expectedRevision: 0,
+            analyticsContext: context,
+          );
+          await endpoints.hayerSession.chooseDestination(
+            host,
+            sessionId: room.session.sessionId,
+            placeId: room.deck[1].placeId,
+            expectedRevision: 1,
+            analyticsContext: context,
+          );
+
+          final events = await _analyticsEvents(sessionBuilder);
+          expect(
+            events.where((event) => event.metricName == 'deck_included'),
+            hasLength(room.deck.length),
+          );
+          expect(
+            events.where((event) => event.metricName == 'deck_exposure'),
+            isEmpty,
+          );
+          expect(
+            events.where((event) => event.metricName == 'card_impression'),
+            hasLength(1),
+          );
+          expect(
+            events.where((event) => event.metricName == 'choice_confirmed'),
+            hasLength(1),
+          );
+          expect(
+            events.where((event) => event.metricName == 'choice_changed'),
+            hasLength(1),
+          );
+          final measured = events.singleWhere(
+            (event) => event.metricName == 'card_impression',
+          );
+          expect(measured.journeyId, context.journeyId);
+          expect(measured.origin, 'client');
+          expect(measured.eventSchemaVersion, 1);
+          expect(measured.deckPosition, 0);
+          expect(measured.visibleMilliseconds, 500);
+        },
+      );
+
+      test(
+        'decision analytics separate no-match and actual matched places',
+        () async {
+          final noMatch = await endpoints.hayerSession.create(
+            host,
+            request: _request(
+              mode: SessionMode.solo,
+              analyticsContext: _analyticsContext(5),
+            ),
+            idempotencyKey: 'analytics-no-match',
+          );
+          for (var index = 0; index < noMatch.deck.length; index++) {
+            await endpoints.hayerSession.swipe(
+              host,
+              command: _swipe(
+                noMatch,
+                index: index,
+                liked: false,
+                suffix: 'no-match',
+                analyticsContext: _analyticsContext(5),
+              ),
+            );
+          }
+
+          final matched = await endpoints.hayerSession.create(
+            guest,
+            request: _request(
+              mode: SessionMode.solo,
+              analyticsContext: _analyticsContext(6),
+            ),
+            idempotencyKey: 'analytics-actual-match',
+          );
+          for (var index = 0; index < matched.deck.length; index++) {
+            await endpoints.hayerSession.swipe(
+              guest,
+              command: _swipe(
+                matched,
+                index: index,
+                liked: index == 0,
+                suffix: 'actual-match',
+                analyticsContext: _analyticsContext(6),
+              ),
+            );
+          }
+
+          final events = await _analyticsEvents(sessionBuilder);
+          expect(
+            events.where((event) => event.metricName == 'no_match_completed'),
+            hasLength(1),
+          );
+          final sessionMatches = events.where(
+            (event) => event.metricName == 'match_completed',
+          );
+          expect(sessionMatches, hasLength(1));
+          expect(sessionMatches.single.placeId, isEmpty);
+          final placeMatches = events.where(
+            (event) => event.metricName == 'place_matched',
+          );
+          expect(placeMatches, hasLength(1));
+          expect(placeMatches.single.placeId, matched.deck.first.placeId);
+          expect(placeMatches.single.placeId, isNot(matched.deck.last.placeId));
+        },
+      );
+
       test('concurrent create retries persist one immutable session', () async {
         final request = _request();
         final bundles = await Future.wait([
@@ -687,6 +845,7 @@ CreateSessionRequest _request({
   int radiusMeters = 500,
   ConsensusRule consensusRule = ConsensusRule.majority,
   MatchingTiming matchingTiming = MatchingTiming.afterDeck,
+  ClientAnalyticsContext? analyticsContext,
 }) => CreateSessionRequest(
   mode: mode,
   categoryId: 'restaurant',
@@ -699,6 +858,7 @@ CreateSessionRequest _request({
   displayName: 'Host',
   consensusRule: consensusRule,
   matchingTiming: matchingTiming,
+  analyticsContext: analyticsContext,
 );
 
 SwipeCommand _swipe(
@@ -706,6 +866,7 @@ SwipeCommand _swipe(
   required int index,
   required bool liked,
   required String suffix,
+  ClientAnalyticsContext? analyticsContext,
 }) => SwipeCommand(
   sessionId: bundle.session.sessionId,
   placeId: bundle.deck[index].placeId,
@@ -713,7 +874,38 @@ SwipeCommand _swipe(
   swipeIndex: index,
   clientSwipedAt: DateTime.utc(2026, 9, 2, 12, 0, index),
   idempotencyKey: '${bundle.session.sessionId}-$suffix-$index',
+  analyticsContext: analyticsContext,
 );
+
+ClientAnalyticsContext _analyticsContext([int suffix = 1]) =>
+    ClientAnalyticsContext(
+      journeyId: _uuidFor(suffix),
+      schemaVersion: 1,
+      appBuild: 7,
+      platform: 'android',
+      language: 'en',
+    );
+
+ClientAnalyticsEvent _clientEvent({
+  required ClientAnalyticsContext context,
+  required String eventName,
+  required String sessionId,
+  String? placeId,
+  int? deckPosition,
+  int? visibleMilliseconds,
+}) => ClientAnalyticsEvent(
+  eventId: _uuidFor(1),
+  eventName: eventName,
+  occurredAt: DateTime.now().toUtc(),
+  context: context,
+  sessionId: sessionId,
+  placeId: placeId,
+  deckPosition: deckPosition,
+  visibleMilliseconds: visibleMilliseconds,
+);
+
+String _uuidFor(int suffix) =>
+    '01991ed0-38ab-7d18-9f25-${suffix.toString().padLeft(12, '0')}';
 
 Matcher _apiError(String code) => isA<ApiException>().having(
   (error) => error.code,
@@ -844,6 +1036,8 @@ Future<void> _resetHayerTables(TestSessionBuilder sessionBuilder) async {
   try {
     await session.db.unsafeExecute('''
 TRUNCATE TABLE
+  "hayer_product_analytics_hour",
+  "hayer_product_analytics_event",
   "hayer_swipe",
   "hayer_session_place",
   "hayer_participant",
@@ -856,6 +1050,20 @@ TRUNCATE TABLE
   "hayer_poi_catalog"
 CASCADE
 ''');
+  } finally {
+    await session.close();
+  }
+}
+
+Future<List<ProductAnalyticsEventRow>> _analyticsEvents(
+  TestSessionBuilder sessionBuilder,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    return await ProductAnalyticsEventRow.db.find(
+      session,
+      orderBy: (table) => table.occurredAt,
+    );
   } finally {
     await session.close();
   }

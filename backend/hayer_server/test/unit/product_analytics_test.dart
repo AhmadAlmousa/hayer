@@ -27,4 +27,35 @@ void main() {
       DateTime.utc(2026, 9, 5, 10),
     );
   });
+
+  test('client events retain bounded journey and schema metadata', () {
+    final context = ClientAnalyticsContext(
+      journeyId: '01991ed0-38ab-7d18-9f25-c1f73842a876',
+      schemaVersion: 1,
+      appBuild: 7,
+      platform: 'android',
+      language: 'ar',
+    );
+
+    final row = ProductAnalyticsRecorder.clientEvent(
+      eventId: '01991ed0-38ab-7d18-9f25-c1f73842a877',
+      occurredAt: DateTime.utc(2026, 9, 8, 10),
+      metricName: AnalyticsMetric.cardImpression,
+      context: context,
+      placeId: 'place-1',
+      deckPosition: 0,
+      visibleMilliseconds: 500,
+    ).toRow();
+
+    expect(row.metricName, 'card_impression');
+    expect(row.origin, AnalyticsOrigin.client);
+    expect(row.eventSchemaVersion, 1);
+    expect(row.journeyId, context.journeyId);
+    expect(row.appBuild, 7);
+    expect(row.platform, 'android');
+    expect(row.language, 'ar');
+    expect(row.deckPosition, 0);
+    expect(row.visibleMilliseconds, 500);
+    expect(row.receivedAt, isNotNull);
+  });
 }

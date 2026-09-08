@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hayer_client/hayer_client.dart';
@@ -11,6 +12,7 @@ import 'app/startup_app.dart';
 import 'core/providers.dart';
 import 'data/authentication.dart';
 import 'data/resilient_auth_storage.dart';
+import 'data/session_repository.dart';
 import 'core/widgets/friendly_error_view.dart';
 
 void main() {
@@ -55,11 +57,31 @@ Future<Widget> _initialize() async {
       // Keep locally resumable state available; authenticated actions retry.
     }
     return ProviderScope(
-      overrides: [clientProvider.overrideWithValue(client)],
+      overrides: [
+        clientProvider.overrideWithValue(client),
+        clientAnalyticsMetadataProvider.overrideWithValue(
+          ClientAnalyticsMetadata(
+            appBuild: build,
+            platform: _analyticsPlatform,
+          ),
+        ),
+      ],
       child: HayerApp(updateRequired: updateRequired),
     );
   } catch (_) {
     client.close();
     rethrow;
   }
+}
+
+String get _analyticsPlatform {
+  if (kIsWeb) return 'web';
+  return switch (defaultTargetPlatform) {
+    TargetPlatform.android => 'android',
+    TargetPlatform.iOS => 'ios',
+    TargetPlatform.macOS => 'macos',
+    TargetPlatform.windows => 'windows',
+    TargetPlatform.linux => 'linux',
+    TargetPlatform.fuchsia => 'unknown',
+  };
 }

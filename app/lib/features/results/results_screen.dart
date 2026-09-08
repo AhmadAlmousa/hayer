@@ -47,6 +47,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   String? _savingPlaceId;
   Object? _choiceError;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
+  bool _resultsViewRecorded = false;
 
   @override
   void initState() {
@@ -108,6 +109,15 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           _routeOrigin = routeOrigin;
           _error = null;
         });
+        if (!_resultsViewRecorded) {
+          _resultsViewRecorded = true;
+          unawaited(
+            repository.recordResultsViewed(
+              sessionId: widget.sessionId,
+              language: Localizations.localeOf(context).languageCode,
+            ),
+          );
+        }
       } while (_reloadQueued);
     } catch (error) {
       if (mounted) setState(() => _error = error);
@@ -157,6 +167,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             sessionId: widget.sessionId,
             placeId: placeId,
             expectedRevision: choices.myRevision,
+            language: Localizations.localeOf(context).languageCode,
           );
       if (!mounted) return;
       if (next.session.revision >= (_bundle?.session.revision ?? -1)) {
@@ -307,6 +318,22 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                                     values[index - 1].place.placeId
                             ? () => _choose(values[index - 1].place.placeId)
                             : null,
+                        onDetailsOpened: () => unawaited(
+                          ref
+                              .read(sessionRepositoryProvider)
+                              .recordPlaceDetailsOpened(
+                                sessionId: widget.sessionId,
+                                placeId: values[index - 1].place.placeId,
+                                deckPosition: bundle!.deck.indexWhere(
+                                  (place) =>
+                                      place.placeId ==
+                                      values[index - 1].place.placeId,
+                                ),
+                                language: Localizations.localeOf(
+                                  context,
+                                ).languageCode,
+                              ),
+                        ),
                       );
                     }
                     return Column(
@@ -566,6 +593,7 @@ class _ResultCard extends StatelessWidget {
     required this.choices,
     required this.saving,
     required this.onChoose,
+    required this.onDetailsOpened,
   });
   final SessionResult result;
   final int rank;
@@ -577,6 +605,7 @@ class _ResultCard extends StatelessWidget {
   final DestinationChoiceState? choices;
   final bool saving;
   final VoidCallback? onChoose;
+  final VoidCallback onDetailsOpened;
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
@@ -587,14 +616,17 @@ class _ResultCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => showPlaceDetails(
-          context,
-          place: place,
-          countryCode: countryCode,
-          sessionId: sessionId,
-          routeOrigin: routeOrigin,
-          routeEstimatesEnabled: routeEstimatesEnabled,
-        ),
+        onTap: () {
+          onDetailsOpened();
+          showPlaceDetails(
+            context,
+            place: place,
+            countryCode: countryCode,
+            sessionId: sessionId,
+            routeOrigin: routeOrigin,
+            routeEstimatesEnabled: routeEstimatesEnabled,
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
