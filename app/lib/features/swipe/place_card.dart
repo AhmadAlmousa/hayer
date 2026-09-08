@@ -9,6 +9,7 @@ import '../../core/gcc_currency_symbol.dart';
 import '../../core/display_formatters.dart';
 import '../../core/place_links.dart';
 import '../../core/widgets/route_estimate_text.dart';
+import '../../core/widgets/place_details_sheet.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class PlaceCard extends StatelessWidget {
@@ -85,6 +86,11 @@ class PlaceCard extends StatelessWidget {
                     ),
                   if (_highlight(place) case final highlight?) Text(highlight),
                   const SizedBox(height: 12),
+                  FilledButton.tonalIcon(
+                    onPressed: () => _showDetails(context),
+                    icon: const Icon(Icons.info_outline_rounded),
+                    label: Text(strings.placeDetails),
+                  ),
                   OutlinedButton.icon(
                     onPressed: () => launchPlaceNavigation(context, place),
                     icon: const Icon(Icons.directions_outlined),
@@ -267,6 +273,11 @@ class PlaceCard extends StatelessWidget {
                         ),
                       ],
                       const SizedBox(height: 8),
+                      FilledButton.tonalIcon(
+                        onPressed: () => _showDetails(context),
+                        icon: const Icon(Icons.info_outline_rounded),
+                        label: Text(strings.placeDetails),
+                      ),
                       Text(
                         strings.sourceAttribution,
                         style: const TextStyle(
@@ -284,6 +295,15 @@ class PlaceCard extends StatelessWidget {
       },
     );
   }
+
+  void _showDetails(BuildContext context) => showPlaceDetails(
+    context,
+    place: place,
+    sessionId: sessionId,
+    countryCode: countryCode,
+    routeOrigin: routeOrigin,
+    routeEstimatesEnabled: routeEstimatesEnabled,
+  );
 
   Widget _fallback(ColorScheme colors) => Container(
     color: colors.primaryContainer,

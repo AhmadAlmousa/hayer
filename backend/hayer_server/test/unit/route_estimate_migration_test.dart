@@ -16,7 +16,7 @@ void main() {
       'migrations/$migrationId/definition.sql',
     ).readAsString();
 
-    expect(registered.last, migrationId);
+    expect(registered, contains(migrationId));
     for (final field in const [
       'routeEstimatesEnabled',
       'allowParticipantLocation',

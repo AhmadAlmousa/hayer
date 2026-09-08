@@ -14,6 +14,7 @@ import '../places/place_source.dart';
 import '../places/taxonomy_service.dart';
 import '../places/route_estimate_policy_service.dart';
 import '../sessions/consensus.dart';
+import '../sessions/destination_choices.dart';
 import '../sessions/session_code.dart';
 import '../sessions/session_mapper.dart';
 import '../security/rate_limiter.dart';
@@ -845,6 +846,127 @@ class HayerSessionEndpoint extends Endpoint {
     return _loadById(session, command.sessionId, userId: userId);
   }
 
+  Future<SessionBundle> chooseDestination(
+    Session session, {
+    required String sessionId,
+    required String placeId,
+    required int expectedRevision,
+  }) async {
+    final userId = _userId(session);
+    await RateLimiter.check(
+      session,
+      operation: 'destination-choice',
+      subject: userId,
+      limit: 60,
+      window: const Duration(minutes: 1),
+    );
+    int? revision;
+    await session.db.transaction((transaction) async {
+      final room = await HayerSessionRow.db.findFirstRow(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      if (room == null) {
+        throw ApiException(code: 'not_found', message: 'Session not found.');
+      }
+      final self = await _requireMembership(
+        session,
+        sessionId,
+        userId,
+        transaction: transaction,
+      );
+      final now = DateTime.now().toUtc();
+      if (!now.isBefore(room.expiresAt) ||
+          room.status == SessionStatus.expired) {
+        throw ApiException(
+          code: 'session_expired',
+          message: 'This session has expired.',
+        );
+      }
+      if (room.mode != SessionMode.multiplayer) {
+        throw ApiException(
+          code: 'bad_request',
+          message: 'Destination voting is for multiplayer sessions.',
+        );
+      }
+      final participants = await ParticipantRow.db.find(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        transaction: transaction,
+      );
+      final places = await SessionPlaceRow.db.find(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        transaction: transaction,
+      );
+      final swipes = await SwipeRow.db.find(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        transaction: transaction,
+      );
+      final state = DestinationChoices.summarize(
+        room: room,
+        participants: participants,
+        swipes: swipes,
+        deckPlaceIds: places.map((place) => place.placeId).toList(),
+        userId: userId,
+        now: now,
+      );
+      if (!state.canChoose) {
+        throw ApiException(
+          code: 'choice_not_ready',
+          message: 'Wait for the group to finish swiping.',
+        );
+      }
+      if (!state.eligiblePlaceIds.contains(placeId)) {
+        throw ApiException(
+          code: 'bad_request',
+          message: 'Choose a place from the group matches.',
+        );
+      }
+      // A retry of the same choice is a no-op. An older, different choice must
+      // never overwrite a newer choice from this participant.
+      if (self.destinationPlaceId == placeId) return;
+      if (self.destinationChoiceRevision != expectedRevision) {
+        throw ApiException(
+          code: 'choice_conflict',
+          message: 'Your choice changed. Refresh before choosing again.',
+        );
+      }
+      self
+        ..destinationPlaceId = placeId
+        ..destinationChoiceRevision += 1;
+      await ParticipantRow.db.updateRow(
+        session,
+        self,
+        columns: (table) => [
+          table.destinationPlaceId,
+          table.destinationChoiceRevision,
+        ],
+        transaction: transaction,
+      );
+      room.revision += 1;
+      await HayerSessionRow.db.updateRow(
+        session,
+        room,
+        columns: (table) => [table.revision],
+        transaction: transaction,
+      );
+      revision = room.revision;
+    });
+    if (revision != null) {
+      await _notify(
+        session,
+        sessionId,
+        SessionEventType.resultsChanged,
+        revision!,
+      );
+    }
+    return _loadById(session, sessionId, userId: userId);
+  }
+
   Future<List<SessionResult>> results(
     Session session, {
     required String sessionId,
@@ -922,88 +1044,100 @@ class HayerSessionEndpoint extends Endpoint {
     String sessionId, {
     required String userId,
   }) async {
-    var row = await HayerSessionRow.db.findFirstRow(
-      session,
-      where: (table) => table.sessionId.equals(sessionId),
-    );
-    if (row == null) {
-      throw ApiException(code: 'not_found', message: 'Session not found.');
-    }
-    final participant = await _requireMembership(session, sessionId, userId);
-    final now = DateTime.now().toUtc();
-    if (row.expiresAt.isBefore(now) && row.status != SessionStatus.expired) {
-      row = await _expireSession(session, sessionId, now);
-    }
-    participant.lastSeenAt = now;
-    await ParticipantRow.db.updateRow(
-      session,
-      participant,
-      columns: (table) => [table.lastSeenAt],
-    );
-    final placeRows = await SessionPlaceRow.db.find(
-      session,
-      where: (table) => table.sessionId.equals(sessionId),
-      orderBy: (table) => table.deckOrder,
-    );
-    final participants = await ParticipantRow.db.find(
-      session,
-      where: (table) => table.sessionId.equals(sessionId),
-      orderBy: (table) => table.isHost,
-      orderDescending: true,
-    );
-    final participantViews = participants
-        .map(SessionMapper.participant)
-        .toList(growable: false);
     final routeEstimatePolicy = await RouteEstimatePolicyService.load(session);
-    return SessionBundle(
-      session: SessionMapper.session(row),
-      deck: placeRows.map((place) => place.snapshot).toList(growable: false),
-      participants: participantViews,
-      selfParticipant: participantViews.singleWhere(
-        (value) => value.participantId == participant.participantId,
-      ),
-      routeEstimatePolicy: routeEstimatePolicy,
-    );
-  }
-
-  Future<HayerSessionRow> _expireSession(
-    Session session,
-    String sessionId,
-    DateTime now,
-  ) => session.db.transaction((transaction) async {
-    final current = await HayerSessionRow.db.findFirstRow(
-      session,
-      where: (table) => table.sessionId.equals(sessionId),
-      transaction: transaction,
-      lockMode: LockMode.forUpdate,
-    );
-    if (current == null) {
-      throw ApiException(code: 'not_found', message: 'Session not found.');
-    }
-    if (current.expiresAt.isBefore(now) &&
-        current.status != SessionStatus.expired) {
-      current
-        ..status = SessionStatus.expired
-        ..revision = current.revision + 1;
-      return HayerSessionRow.db.updateRow(
+    // Membership, progress, matches and choice counts share one revision.
+    // All mutations lock the room first; no network work occurs under this lock.
+    return session.db.transaction((transaction) async {
+      final row = await HayerSessionRow.db.findFirstRow(
         session,
-        current,
-        columns: (table) => [table.status, table.revision],
+        where: (table) => table.sessionId.equals(sessionId),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      if (row == null) {
+        throw ApiException(code: 'not_found', message: 'Session not found.');
+      }
+      final participant = await _requireMembership(
+        session,
+        sessionId,
+        userId,
         transaction: transaction,
       );
-    }
-    return current;
-  });
+      final now = DateTime.now().toUtc();
+      if (!now.isBefore(row.expiresAt) && row.status != SessionStatus.expired) {
+        row
+          ..status = SessionStatus.expired
+          ..revision += 1;
+        await HayerSessionRow.db.updateRow(
+          session,
+          row,
+          columns: (table) => [table.status, table.revision],
+          transaction: transaction,
+        );
+      }
+      participant.lastSeenAt = now;
+      await ParticipantRow.db.updateRow(
+        session,
+        participant,
+        columns: (table) => [table.lastSeenAt],
+        transaction: transaction,
+      );
+      final placeRows = await SessionPlaceRow.db.find(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        orderBy: (table) => table.deckOrder,
+        transaction: transaction,
+      );
+      final participants = await ParticipantRow.db.find(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        orderBy: (table) => table.isHost,
+        orderDescending: true,
+        transaction: transaction,
+      );
+      final participantViews = participants
+          .map(SessionMapper.participant)
+          .toList(growable: false);
+      DestinationChoiceState? choices;
+      if (row.mode == SessionMode.multiplayer) {
+        final swipes = await SwipeRow.db.find(
+          session,
+          where: (table) => table.sessionId.equals(sessionId),
+          transaction: transaction,
+        );
+        choices = DestinationChoices.summarize(
+          room: row,
+          participants: participants,
+          swipes: swipes,
+          deckPlaceIds: placeRows.map((place) => place.placeId).toList(),
+          userId: userId,
+          now: now,
+        );
+      }
+      return SessionBundle(
+        session: SessionMapper.session(row),
+        deck: placeRows.map((place) => place.snapshot).toList(growable: false),
+        participants: participantViews,
+        selfParticipant: participantViews.singleWhere(
+          (value) => value.participantId == participant.participantId,
+        ),
+        routeEstimatePolicy: routeEstimatePolicy,
+        destinationChoices: choices,
+      );
+    });
+  }
 
   Future<ParticipantRow> _requireMembership(
     Session session,
     String sessionId,
-    String userId,
-  ) async {
+    String userId, {
+    Transaction? transaction,
+  }) async {
     final row = await ParticipantRow.db.findFirstRow(
       session,
       where: (table) =>
           table.sessionId.equals(sessionId) & table.userId.equals(userId),
+      transaction: transaction,
     );
     if (row == null) {
       throw ApiException(

@@ -1,0 +1,13 @@
+class: DestinationChoiceState
+fields:
+  eligiblePlaceIds: List<String>
+  counts: Map<String, int>
+  myPlaceId: String?
+  myRevision: int
+  winnerPlaceId: String?
+  tiedPlaceIds: List<String>
+  chosenCount: int
+  participantCount: int
+  canChoose: bool
+  isComplete: bool
+  hostBrokeTie: bool

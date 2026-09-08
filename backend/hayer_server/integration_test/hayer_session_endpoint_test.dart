@@ -30,6 +30,223 @@ void main() {
 
       tearDown(() => _resetHayerTables(sessionBuilder));
 
+      Future<SessionBundle> readyChoiceRoom(String key) async {
+        final room = await endpoints.hayerSession.create(
+          host,
+          request: _request(),
+          idempotencyKey: key,
+        );
+        await endpoints.hayerSession.join(
+          guest,
+          code: room.session.code,
+          displayName: 'Guest',
+        );
+        for (final member in [host, guest]) {
+          for (var i = 0; i < room.deck.length; i++) {
+            await endpoints.hayerSession.swipe(
+              member,
+              command: _swipe(
+                room,
+                index: i,
+                liked: i < 3,
+                suffix: member == host ? 'host' : 'guest',
+              ),
+            );
+          }
+        }
+        return endpoints.hayerSession.load(
+          host,
+          sessionId: room.session.sessionId,
+        );
+      }
+
+      test(
+        'destination choices are one per member, retry safe and editable',
+        () async {
+          final room = await readyChoiceRoom('choice-editable');
+          final id = room.session.sessionId;
+          final a = room.deck[0].placeId;
+          final b = room.deck[1].placeId;
+          expect(room.destinationChoices!.canChoose, isTrue);
+          expect(room.destinationChoices!.winnerPlaceId, isNull);
+          final responses = await Future.wait([
+            endpoints.hayerSession.chooseDestination(
+              host,
+              sessionId: id,
+              placeId: a,
+              expectedRevision: 0,
+            ),
+            endpoints.hayerSession.chooseDestination(
+              host,
+              sessionId: id,
+              placeId: a,
+              expectedRevision: 0,
+            ),
+          ]);
+          for (final response in responses) {
+            expect(response.destinationChoices!.myRevision, 1);
+            expect(response.destinationChoices!.counts[a], 1);
+          }
+          await Future.wait([
+            endpoints.hayerSession.chooseDestination(
+              host,
+              sessionId: id,
+              placeId: b,
+              expectedRevision: 1,
+            ),
+            ...List.generate(
+              5,
+              (_) => endpoints.hayerSession.load(host, sessionId: id),
+            ),
+          ]);
+          await expectLater(
+            endpoints.hayerSession.chooseDestination(
+              host,
+              sessionId: id,
+              placeId: a,
+              expectedRevision: 0,
+            ),
+            throwsA(_apiError('choice_conflict')),
+          );
+          final reloaded = await endpoints.hayerSession.load(
+            host,
+            sessionId: id,
+          );
+          expect(reloaded.destinationChoices!.counts[a], 0);
+          expect(reloaded.destinationChoices!.counts[b], 1);
+          expect(reloaded.destinationChoices!.myRevision, 2);
+          expect(reloaded.selfParticipant.hasCompleted, isTrue);
+        },
+      );
+
+      test(
+        'simultaneous group choices use the host ballot only to break ties',
+        () async {
+          final room = await readyChoiceRoom('choice-concurrent');
+          final id = room.session.sessionId;
+          final a = room.deck[0].placeId;
+          final b = room.deck[1].placeId;
+          await Future.wait([
+            endpoints.hayerSession.chooseDestination(
+              host,
+              sessionId: id,
+              placeId: a,
+              expectedRevision: 0,
+            ),
+            endpoints.hayerSession.chooseDestination(
+              guest,
+              sessionId: id,
+              placeId: b,
+              expectedRevision: 0,
+            ),
+          ]);
+          final tied = await endpoints.hayerSession.load(guest, sessionId: id);
+          expect(tied.destinationChoices!.winnerPlaceId, a);
+          expect(tied.destinationChoices!.myPlaceId, b);
+          expect(tied.destinationChoices!.hostBrokeTie, isTrue);
+          expect(tied.destinationChoices!.isComplete, isTrue);
+          expect(
+            jsonEncode(
+              tied.participants.map((person) => person.toJson()).toList(),
+            ),
+            isNot(contains('destinationPlaceId')),
+          );
+          final changed = await endpoints.hayerSession.chooseDestination(
+            host,
+            sessionId: id,
+            placeId: b,
+            expectedRevision: 1,
+          );
+          expect(changed.destinationChoices!.winnerPlaceId, b);
+          expect(changed.destinationChoices!.counts[b], 2);
+          expect(changed.destinationChoices!.hostBrokeTie, isFalse);
+        },
+      );
+
+      test(
+        'choice mutation enforces membership, matched candidates and expiry',
+        () async {
+          final room = await readyChoiceRoom('choice-validation');
+          final id = room.session.sessionId;
+          final a = room.deck.first.placeId;
+          await expectLater(
+            endpoints.hayerSession.chooseDestination(
+              outsider,
+              sessionId: id,
+              placeId: a,
+              expectedRevision: 0,
+            ),
+            throwsA(_apiError('forbidden')),
+          );
+          for (final invalid in ['foreign-place', room.deck.last.placeId]) {
+            await expectLater(
+              endpoints.hayerSession.chooseDestination(
+                host,
+                sessionId: id,
+                placeId: invalid,
+                expectedRevision: 0,
+              ),
+              throwsA(_apiError('bad_request')),
+            );
+          }
+          final db = sessionBuilder.build();
+          try {
+            await HayerSessionRow.db.updateWhere(
+              db,
+              where: (table) => table.sessionId.equals(id),
+              columnValues: (table) => [
+                table.expiresAt(
+                  DateTime.now().toUtc().subtract(const Duration(seconds: 1)),
+                ),
+              ],
+            );
+          } finally {
+            await db.close();
+          }
+          await expectLater(
+            endpoints.hayerSession.chooseDestination(
+              host,
+              sessionId: id,
+              placeId: a,
+              expectedRevision: 0,
+            ),
+            throwsA(_apiError('session_expired')),
+          );
+        },
+      );
+
+      test(
+        'late participants pause choice voting while retaining earlier choices',
+        () async {
+          final room = await readyChoiceRoom('choice-late-join');
+          final id = room.session.sessionId;
+          final a = room.deck.first.placeId;
+          await endpoints.hayerSession.chooseDestination(
+            host,
+            sessionId: id,
+            placeId: a,
+            expectedRevision: 0,
+          );
+          final late = await endpoints.hayerSession.join(
+            outsider,
+            code: room.session.code,
+            displayName: 'Late',
+          );
+          expect(late.destinationChoices!.canChoose, isFalse);
+          expect(late.destinationChoices!.counts[a], 1);
+          expect(late.destinationChoices!.winnerPlaceId, isNull);
+          await expectLater(
+            endpoints.hayerSession.chooseDestination(
+              guest,
+              sessionId: id,
+              placeId: a,
+              expectedRevision: 0,
+            ),
+            throwsA(_apiError('choice_not_ready')),
+          );
+        },
+      );
+
       test('concurrent create retries persist one immutable session', () async {
         final request = _request();
         final bundles = await Future.wait([

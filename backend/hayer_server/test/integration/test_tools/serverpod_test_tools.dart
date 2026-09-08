@@ -1494,6 +1494,43 @@ class _HayerSessionEndpoint {
     });
   }
 
+  _i3.Future<_i26.SessionBundle> chooseDestination(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String sessionId,
+    required String placeId,
+    required int expectedRevision,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'hayerSession',
+            method: 'chooseDestination',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'hayerSession',
+          methodName: 'chooseDestination',
+          parameters: _i1.testObjectToJson({
+            'sessionId': sessionId,
+            'placeId': placeId,
+            'expectedRevision': expectedRevision,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i26.SessionBundle>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<List<_i29.SessionResult>> results(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,

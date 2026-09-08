@@ -3,10 +3,71 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_app/app/theme.dart';
 import 'package:hayer_app/features/swipe/place_deck_swiper.dart';
+import 'package:hayer_app/core/widgets/place_details_sheet.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
+import 'package:hayer_app/l10n/localization_delegates.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
+  for (final locale in ['en', 'ar']) {
+    testWidgets('details return to the same card without voting ($locale)', (
+      tester,
+    ) async {
+      final controller = CardSwiperController();
+      addTearDown(controller.dispose);
+      final decisions = <(int, bool)>[];
+      final haptics = <bool>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: HayerTheme.light(),
+          locale: Locale(locale),
+          localizationsDelegates: hayerLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: PlaceDeckSwiper(
+              sessionId: 'session-1',
+              places: [
+                _place('first').copyWith(formattedAddress: 'Full address'),
+                _place('second'),
+              ],
+              initialIndex: 0,
+              controller: controller,
+              disabled: false,
+              routeOrigin: RouteOriginMode.sessionAnchor,
+              routeEstimatesEnabled: false,
+              onHaptic: (liked) async => haptics.add(liked),
+              onDecision: (index, liked) {
+                decisions.add((index, liked));
+                return true;
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final details = find.descendant(
+        of: find.byKey(const ValueKey('place-card-first')),
+        matching: find.text(locale == 'en' ? 'Details' : 'التفاصيل'),
+      );
+      await tester.tap(details);
+      await tester.pumpAndSettle();
+      expect(find.byType(PlaceDetailsSheet), findsOneWidget);
+      expect(find.text('Full address'), findsOneWidget);
+      expect(decisions, isEmpty);
+      expect(haptics, isEmpty);
+      Navigator.of(tester.element(find.byType(PlaceDetailsSheet))).pop();
+      await tester.pumpAndSettle();
+      expect(find.byType(PlaceDetailsSheet), findsNothing);
+      await tester.drag(
+        find.byKey(const ValueKey('place-card-first')),
+        const Offset(350, 0),
+      );
+      await tester.pumpAndSettle();
+      expect(decisions, [(0, true)]);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('maps right and left gestures to like and pass decisions', (
     tester,
   ) async {

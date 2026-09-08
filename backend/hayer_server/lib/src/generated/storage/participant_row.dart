@@ -26,7 +26,9 @@ abstract class ParticipantRow
     required this.currentIndex,
     required this.hasCompleted,
     required this.lastSeenAt,
-  });
+    this.destinationPlaceId,
+    int? destinationChoiceRevision,
+  }) : destinationChoiceRevision = destinationChoiceRevision ?? 0;
 
   factory ParticipantRow({
     _i1.UuidValue? id,
@@ -39,6 +41,8 @@ abstract class ParticipantRow
     required int currentIndex,
     required bool hasCompleted,
     required DateTime lastSeenAt,
+    String? destinationPlaceId,
+    int? destinationChoiceRevision,
   }) = _ParticipantRowImpl;
 
   factory ParticipantRow.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -59,6 +63,9 @@ abstract class ParticipantRow
       lastSeenAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastSeenAt'],
       ),
+      destinationPlaceId: jsonSerialization['destinationPlaceId'] as String?,
+      destinationChoiceRevision:
+          jsonSerialization['destinationChoiceRevision'] as int?,
     );
   }
 
@@ -87,6 +94,10 @@ abstract class ParticipantRow
 
   DateTime lastSeenAt;
 
+  String? destinationPlaceId;
+
+  int destinationChoiceRevision;
+
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
@@ -104,6 +115,8 @@ abstract class ParticipantRow
     int? currentIndex,
     bool? hasCompleted,
     DateTime? lastSeenAt,
+    String? destinationPlaceId,
+    int? destinationChoiceRevision,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -119,6 +132,8 @@ abstract class ParticipantRow
       'currentIndex': currentIndex,
       'hasCompleted': hasCompleted,
       'lastSeenAt': lastSeenAt.toJson(),
+      if (destinationPlaceId != null) 'destinationPlaceId': destinationPlaceId,
+      'destinationChoiceRevision': destinationChoiceRevision,
     };
   }
 
@@ -171,6 +186,8 @@ class _ParticipantRowImpl extends ParticipantRow {
     required int currentIndex,
     required bool hasCompleted,
     required DateTime lastSeenAt,
+    String? destinationPlaceId,
+    int? destinationChoiceRevision,
   }) : super._(
          id: id,
          participantId: participantId,
@@ -182,6 +199,8 @@ class _ParticipantRowImpl extends ParticipantRow {
          currentIndex: currentIndex,
          hasCompleted: hasCompleted,
          lastSeenAt: lastSeenAt,
+         destinationPlaceId: destinationPlaceId,
+         destinationChoiceRevision: destinationChoiceRevision,
        );
 
   /// Returns a shallow copy of this [ParticipantRow]
@@ -199,6 +218,8 @@ class _ParticipantRowImpl extends ParticipantRow {
     int? currentIndex,
     bool? hasCompleted,
     DateTime? lastSeenAt,
+    Object? destinationPlaceId = _Undefined,
+    int? destinationChoiceRevision,
   }) {
     return ParticipantRow(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -211,6 +232,11 @@ class _ParticipantRowImpl extends ParticipantRow {
       currentIndex: currentIndex ?? this.currentIndex,
       hasCompleted: hasCompleted ?? this.hasCompleted,
       lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+      destinationPlaceId: destinationPlaceId is String?
+          ? destinationPlaceId
+          : this.destinationPlaceId,
+      destinationChoiceRevision:
+          destinationChoiceRevision ?? this.destinationChoiceRevision,
     );
   }
 }
@@ -265,6 +291,18 @@ class ParticipantRowUpdateTable extends _i1.UpdateTable<ParticipantRowTable> {
         table.lastSeenAt,
         value,
       );
+
+  _i1.ColumnValue<String, String> destinationPlaceId(String? value) =>
+      _i1.ColumnValue(
+        table.destinationPlaceId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> destinationChoiceRevision(int value) =>
+      _i1.ColumnValue(
+        table.destinationChoiceRevision,
+        value,
+      );
 }
 
 class ParticipantRowTable extends _i1.Table<_i1.UuidValue?> {
@@ -307,6 +345,15 @@ class ParticipantRowTable extends _i1.Table<_i1.UuidValue?> {
       'lastSeenAt',
       this,
     );
+    destinationPlaceId = _i1.ColumnString(
+      'destinationPlaceId',
+      this,
+    );
+    destinationChoiceRevision = _i1.ColumnInt(
+      'destinationChoiceRevision',
+      this,
+      hasDefault: true,
+    );
   }
 
   late final ParticipantRowUpdateTable updateTable;
@@ -329,6 +376,10 @@ class ParticipantRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnDateTime lastSeenAt;
 
+  late final _i1.ColumnString destinationPlaceId;
+
+  late final _i1.ColumnInt destinationChoiceRevision;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -341,6 +392,8 @@ class ParticipantRowTable extends _i1.Table<_i1.UuidValue?> {
     currentIndex,
     hasCompleted,
     lastSeenAt,
+    destinationPlaceId,
+    destinationChoiceRevision,
   ];
 }
 

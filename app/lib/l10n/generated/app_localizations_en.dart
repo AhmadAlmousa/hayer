@@ -10,6 +10,61 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get placeDetails => 'Details';
+
+  @override
+  String get myChoice => 'My choice';
+
+  @override
+  String choiceVotes(String count) {
+    return '$count votes';
+  }
+
+  @override
+  String choiceProgress(String chosen, String total) {
+    return '$chosen of $total have chosen';
+  }
+
+  @override
+  String get chooseDestination => 'Where are we going?';
+
+  @override
+  String get choiceHint =>
+      'Tap My choice on your favorite. Most votes wins; the host’s choice breaks a tie. You can change your choice.';
+
+  @override
+  String get leadingChoice => 'Leading choice';
+
+  @override
+  String get groupChoice => 'Group choice';
+
+  @override
+  String get choiceTie => 'Tied — waiting for the host’s choice';
+
+  @override
+  String get choiceHostTie => 'Choose one of the tied places to break the tie.';
+
+  @override
+  String get choiceHostDecided => 'The host’s choice broke the tie.';
+
+  @override
+  String get choiceSaving => 'Saving…';
+
+  @override
+  String get choiceFailed =>
+      'Couldn’t confirm your choice. Check the latest counts and try again.';
+
+  @override
+  String get choiceConflict =>
+      'Your choice changed elsewhere. The latest choice is shown.';
+
+  @override
+  String get choiceNotReady => 'Choices open when everyone finishes swiping.';
+
+  @override
+  String get choiceClosed => 'Voting has ended. These are the saved choices.';
+
+  @override
   String get appName => 'Hayer';
 
   @override

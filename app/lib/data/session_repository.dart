@@ -106,6 +106,19 @@ class SessionRepository {
   Future<String?> activeSessionId() =>
       secureStorage.read(key: activeSessionKey);
 
+  Future<SessionBundle> chooseDestination({
+    required String sessionId,
+    required String placeId,
+    required int expectedRevision,
+  }) => withAnonymousAuthentication(
+    client,
+    () => client.hayerSession.chooseDestination(
+      sessionId: sessionId,
+      placeId: placeId,
+      expectedRevision: expectedRevision,
+    ),
+  );
+
   Future<void> remember(String sessionId) async {
     try {
       await secureStorage.write(key: activeSessionKey, value: sessionId);

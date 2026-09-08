@@ -1,7 +1,7 @@
 name: hayer_app
 description: Hayer's Android-first place decision application.
 publish_to: none
-version: 0.2.0+6
+version: 0.2.1+7
 
 environment:
   sdk: ^3.13.0

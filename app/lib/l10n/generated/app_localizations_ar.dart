@@ -10,6 +10,61 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get placeDetails => 'التفاصيل';
+
+  @override
+  String get myChoice => 'اختياري';
+
+  @override
+  String choiceVotes(String count) {
+    return '$count أصوات';
+  }
+
+  @override
+  String choiceProgress(String chosen, String total) {
+    return 'اختار $chosen من $total';
+  }
+
+  @override
+  String get chooseDestination => 'وين نروح؟';
+
+  @override
+  String get choiceHint =>
+      'اضغط «اختياري» على مكانك المفضل. يفوز الأكثر أصواتًا، وعند التعادل يحسم اختيار المضيف النتيجة. تقدر تغيّر اختيارك.';
+
+  @override
+  String get leadingChoice => 'المكان المتصدّر';
+
+  @override
+  String get groupChoice => 'اختيار المجموعة';
+
+  @override
+  String get choiceTie => 'تعادل — ننتظر اختيار المضيف';
+
+  @override
+  String get choiceHostTie => 'اختر أحد الأماكن المتعادلة لحسم النتيجة.';
+
+  @override
+  String get choiceHostDecided => 'حسم اختيار المضيف التعادل.';
+
+  @override
+  String get choiceSaving => 'جارٍ الحفظ…';
+
+  @override
+  String get choiceFailed =>
+      'تعذّر تأكيد اختيارك. راجع آخر الأصوات وحاول مرة ثانية.';
+
+  @override
+  String get choiceConflict =>
+      'تغيّر اختيارك من جهاز آخر. يظهر الآن آخر اختيار.';
+
+  @override
+  String get choiceNotReady => 'يفتح الاختيار بعد ما يخلص الجميع التمرير.';
+
+  @override
+  String get choiceClosed => 'انتهى التصويت. هذه الاختيارات المحفوظة.';
+
+  @override
   String get appName => 'حيّر';
 
   @override

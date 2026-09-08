@@ -1,5 +1,18 @@
 # Hayer production-readiness audit
 
+Product decision update, 8 September 2026: the owner approved P01 shared
+details before swiping and revised P03 to an inline multiplayer election.
+Each participant gets one editable My choice ballot; every result shows its
+choice count. The highest count wins, with the host's own ballot breaking a
+leading tie only. If that ballot is absent or outside the tie, the leaders
+remain tied. There is no host-only selection, confirmation dialog, or new
+screen. Choices wait for group swiping (or an instant match); late joiners
+keep results provisional without erasing prior choices. The owner deferred
+P04 runoffs/new rounds to preserve Hayer's low-friction, playful premise.
+These changes are implemented for unpublished build 7; the recommendations
+below retain their original audit wording. Deployment and real-PostGIS /
+two-device acceptance remain separate gates in PROJECT.md.
+
 ## 1. Executive Summary
 
 Audit date: 7 September 2026. Repository baseline: commit 2429d51 and the existing working tree. Scope: consumer Flutter application, Flutter administration application, generated API contract, Serverpod backend, PostgreSQL/PostGIS schema and migrations, extraction/calibration pipeline, deployment, operational scripts, and tests.

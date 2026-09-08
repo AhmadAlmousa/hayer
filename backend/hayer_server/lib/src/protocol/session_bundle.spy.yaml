@@ -5,3 +5,4 @@ fields:
   participants: List<ParticipantView>
   selfParticipant: ParticipantView
   routeEstimatePolicy: RouteEstimatePolicy?
+  destinationChoices: DestinationChoiceState?

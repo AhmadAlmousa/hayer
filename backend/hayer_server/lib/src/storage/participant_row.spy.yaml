@@ -12,6 +12,8 @@ fields:
   currentIndex: int
   hasCompleted: bool
   lastSeenAt: DateTime
+  destinationPlaceId: String?
+  destinationChoiceRevision: int, default=0
 indexes:
   hayer_participant_id:
     fields: participantId

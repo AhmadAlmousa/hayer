@@ -98,6 +98,102 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @placeDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get placeDetails;
+
+  /// No description provided for @myChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'My choice'**
+  String get myChoice;
+
+  /// No description provided for @choiceVotes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} votes'**
+  String choiceVotes(String count);
+
+  /// No description provided for @choiceProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{chosen} of {total} have chosen'**
+  String choiceProgress(String chosen, String total);
+
+  /// No description provided for @chooseDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are we going?'**
+  String get chooseDestination;
+
+  /// No description provided for @choiceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap My choice on your favorite. Most votes wins; the host’s choice breaks a tie. You can change your choice.'**
+  String get choiceHint;
+
+  /// No description provided for @leadingChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Leading choice'**
+  String get leadingChoice;
+
+  /// No description provided for @groupChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Group choice'**
+  String get groupChoice;
+
+  /// No description provided for @choiceTie.
+  ///
+  /// In en, this message translates to:
+  /// **'Tied — waiting for the host’s choice'**
+  String get choiceTie;
+
+  /// No description provided for @choiceHostTie.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one of the tied places to break the tie.'**
+  String get choiceHostTie;
+
+  /// No description provided for @choiceHostDecided.
+  ///
+  /// In en, this message translates to:
+  /// **'The host’s choice broke the tie.'**
+  String get choiceHostDecided;
+
+  /// No description provided for @choiceSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get choiceSaving;
+
+  /// No description provided for @choiceFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t confirm your choice. Check the latest counts and try again.'**
+  String get choiceFailed;
+
+  /// No description provided for @choiceConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice changed elsewhere. The latest choice is shown.'**
+  String get choiceConflict;
+
+  /// No description provided for @choiceNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Choices open when everyone finishes swiping.'**
+  String get choiceNotReady;
+
+  /// No description provided for @choiceClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting has ended. These are the saved choices.'**
+  String get choiceClosed;
+
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:

@@ -4,8 +4,8 @@ Last updated: 2026-09-08
 
 Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7-E — consumer UI/UX remediation for audit release 0.2.0+6;
-M7-A session-integrity acceptance remains an open release prerequisite
+Current focus: M7-G — owner-prioritized place details and multiplayer choices;
+M7-A/M7-E/M7-F safety acceptance remains an open release prerequisite
 
 Product brief: [`overview.md`](overview.md)
 
@@ -44,6 +44,11 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   changes first while build 5 remains accepted; set minimum build 6 only after
   the signed build passes production verification. Begin post-safety product
   and administration improvements at `0.2.1+7`.
+- Owner exception (2026-09-08): implement P01/P03 ahead of safety release
+  acceptance, staging an unpublished `0.2.1+7` APK. This does not authorize
+  deployment or raising the minimum build. Multiplayer destination selection
+  is one editable participant ballot, plurality wins, and the host's ballot
+  breaks a leading tie only. No host override, confirmation dialog, or runoff.
 - Use Flutter and Dart across the client, admin dashboard, and backend.
 - Use Serverpod 3.4.13 in monolith mode with PostgreSQL/PostGIS and no Redis.
 - Self-host on Unraid through Docker Compose. Cloudflare Tunnel publishes
@@ -487,7 +492,7 @@ available; dashboards distinguish fresh data from fallback.
 Exit: a fresh production-like stack is reproducible, least-privileged,
 observable, restorable, and rollback-capable without undocumented host state.
 
-#### M7-E — Client, realtime, accessibility, and analytics integrity `[~]`
+#### M7-E — Client, realtime, accessibility, and analytics integrity `[ ]`
 
 The 2026-09-08 UI/UX implementation pass was prioritized at the owner's
 request. This does not waive the earlier safety checkpoints or authorize a
@@ -541,16 +546,29 @@ remain bounded and semantically correct.
 Exit: invited users can install build 6 and complete the core decision flow;
 build 5 is rejected only after build 6 and rollback evidence are verified.
 
-#### M7-G — Decision intelligence (`0.2.1+7`) `[ ]`
+#### M7-G — Decision intelligence (`0.2.1+7`) `[~]`
 
 - [ ] Implement G02 with correctly named deck inclusions, measured/deduplicated
   card impressions, short-lived random journey linkage, explicit-choice and
   no-match outcomes, schema/version metadata, and no persistent installation
   identity.
-- [ ] Implement P01/P03/P04: shared place details before voting, an authorized
-  explicit final destination choice, truthful no-match causes, and a short
-  immutable runoff/new-round recovery path that never silently relaxes hard
-  constraints.
+- [x] Implement P01: a labeled Details action on swipe cards opens the shared
+  result details sheet without casting a vote or advancing the card.
+- [x] Implement the owner-revised P03 UI and tally: one editable My choice
+  ballot per participant, per-place aggregate counts, an automatic plurality
+  leader/group choice, and the host's ballot as a tie-break only. No extra
+  screen or confirmation. A tie without a host ballot among the leaders stays
+  unresolved. Choices open after group swiping (or an instant match); a late
+  join pauses choices and retains prior ballots while results are provisional.
+- [x] Add membership/expiry/candidate validation, per-participant choice
+  revisions, no-op same-choice retries, transactional snapshots/mutations,
+  bilingual controls, and old-server compatibility via an optional bundle
+  field. Likes and deck completion remain separate from destination ballots.
+- [ ] Execute the new real-PostGIS concurrent choice/retry/heartbeat,
+  authorization, expiry, and late-join regressions; certify two-device
+  reconnect behavior before server-first deployment.
+- P04 runoff/new-round recovery is explicitly deferred by the owner
+  (2026-09-08): keep finding a place short and fun. Do not add it implicitly.
 
 Exit: the product and dashboard distinguish inclusion, human impression,
 preference, voting completion, declared choice, no-match, and technical failure.
@@ -698,6 +716,53 @@ measurements and rollback paths.
   Build warnings about existing Kotlin plugin migration and missing Cupertino
   icon fonts remain follow-up work. No production deployment, minimum-build
   change, or beta tag was performed.
+
+- 2026-09-08: implemented the owner-revised P01/P03 pass. Swipe cards reuse
+  the result details sheet without advancing or voting. Results expose one
+  editable My choice action, live aggregate counts, a provisional leader or
+  complete group choice, host-ballot tie-breaking, and direct directions.
+  Sharing includes the current leader/choice and per-place choice counts.
+  P04 runoffs/new rounds are deferred by explicit owner decision.
+- 2026-09-08: generated the additive `DestinationChoiceState` protocol and
+  `chooseDestination` RPC with Serverpod 3.4.13. Migration
+  `20260908061228738-destination-choices` adds nullable destination ID and
+  default-zero choice revision to participant rows; the fresh definition
+  retains custom PostGIS, indexes, constraints, and foreign keys. Each change
+  locks the room before membership/ballots, validates expiry and matched
+  candidates, and updates only choice columns and the room revision.
+  Same-choice retries are no-ops; stale different choices conflict. Anonymous
+  caller identity is resolved server-side; payloads expose aggregate counts
+  and only the caller's own ballot. No analytics event is relabeled as a
+  destination choice, and no attendance or confirmed visit is inferred.
+- 2026-09-08: verification with pinned Flutter 3.47.2/Dart 3.13.2 passed:
+  consumer full suite (101 tests), final result/accessibility suite (24),
+  final choice suite including editable ballots and lost responses (8),
+  backend full unit suite (88), admin suite (8), fatal-info analysis of app,
+  admin, server and generated client, formatting, and `git diff --check`.
+  Four new real-PostGIS integration cases compile but were not executed:
+  Docker/server binaries and a listening local test database are unavailable.
+  They cover concurrent/retried changes, heartbeat overlap, tie-breaking,
+  membership/candidate/expiry validation, and late joins. These are not a
+  substitute for two-device or production acceptance.
+- 2026-09-08: the unit/widget-test and static-analysis skills guided tally,
+  retry, RTL and large-text verification. Postgres concurrency guidance
+  informed short transactions and consistent lock ordering. The widget-preview
+  skill added an isolated choice-control preview; its initial generated
+  scaffold lacked dependencies. Recreating it allowed web compilation, but
+  the watcher repeatedly reloaded without a browser connected; it was stopped,
+  and no visual/device certification is claimed. Graft graph cards and tgrep
+  guided navigation; `graft build` could not run because the CLI is absent.
+- 2026-09-08: `scripts/build-release-apk.sh` succeeded for unpublished
+  `0.2.1+7` using the pinned Flutter toolchain. Staged
+  `backend/deploy/releases/hayer-0.2.1-7.apk` and the local `hayer.apk` alias
+  (103,106,171 bytes); both SHA-256 manifests verify. Artifact SHA-256:
+  `bb28c7ecf070c119eb480a4d5b2d64f7a2390cad4739256686e27a5c3ef65120`.
+  APK Signature Scheme v2 verifies with `apksigner`. Existing Kotlin plugin
+  migration and Cupertino icon-font warnings remain follow-ups.
+  Do not publish until safety gates and live choice acceptance pass; deploy
+  the additive migration/server before the client. An old server omits
+  `destinationChoices`, so build 7 keeps legacy results without unsupported
+  actions. No deployment, minimum-build change, push, or beta tag was performed.
 
 - 2026-08-31: Git is initialized on `main`, tracking `origin/main` at
   `git@github.com:AhmadAlmousa/hayer.git`; Vela is clean at

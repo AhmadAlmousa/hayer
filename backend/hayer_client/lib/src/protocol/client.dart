@@ -465,6 +465,20 @@ class EndpointHayerSession extends _i1.EndpointRef {
         {'command': command},
       );
 
+  _i2.Future<_i25.SessionBundle> chooseDestination({
+    required String sessionId,
+    required String placeId,
+    required int expectedRevision,
+  }) => caller.callServerEndpoint<_i25.SessionBundle>(
+    'hayerSession',
+    'chooseDestination',
+    {
+      'sessionId': sessionId,
+      'placeId': placeId,
+      'expectedRevision': expectedRevision,
+    },
+  );
+
   _i2.Future<List<_i28.SessionResult>> results({required String sessionId}) =>
       caller.callServerEndpoint<List<_i28.SessionResult>>(
         'hayerSession',

@@ -37,6 +37,7 @@ hayerSession:
   - load:
   - abandon:
   - swipe:
+  - chooseDestination:
   - results:
   - watch:
 place:

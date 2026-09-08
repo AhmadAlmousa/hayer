@@ -955,6 +955,37 @@ class Endpoints extends _i1.EndpointDispatch {
                     command: params['command'],
                   ),
         ),
+        'chooseDestination': _i1.MethodConnector(
+          name: 'chooseDestination',
+          params: {
+            'sessionId': _i1.ParameterDescription(
+              name: 'sessionId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'placeId': _i1.ParameterDescription(
+              name: 'placeId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'expectedRevision': _i1.ParameterDescription(
+              name: 'expectedRevision',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+                  .chooseDestination(
+                    session,
+                    sessionId: params['sessionId'],
+                    placeId: params['placeId'],
+                    expectedRevision: params['expectedRevision'],
+                  ),
+        ),
         'results': _i1.MethodConnector(
           name: 'results',
           params: {
