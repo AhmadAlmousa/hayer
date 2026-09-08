@@ -82,9 +82,21 @@ nginx limits:
 
 - block `http.host eq "hayer.almou.sa" and starts_with(http.request.uri.path,
   "/admin")`;
-- rate-limit POSTs to `/api/anonymousIdp/login` and
-  `/api/hayerSession/join` to 10 requests/minute per source IP with a temporary
-  block response.
+- rate-limit POSTs to `/api/anonymousIdp` to 10 requests/minute per source IP
+  with a temporary block response. Serverpod carries the method in the request
+  body, so a rule written against `/api/anonymousIdp/login` never matches real
+  traffic.
+
+Do not add an equivalent rule for `/api/hayerSession`: every session RPC,
+swipes included, shares that one path, so a join-shaped limit would throttle
+normal play. Join is budgeted per user inside the application, and the signup
+that a join requires is budgeted per client address.
+
+The gateway overwrites `X-Hayer-Client-Ip` on every proxied request and the
+server budgets anonymous signups against it, falling back to the peer address
+when it is absent. That fallback is what makes a bypass self-limiting, so the
+host firewall restricting `8432/tcp` to the local cloudflared connector remains
+load-bearing: without it, a LAN host can present its own `CF-Connecting-IP`.
 
 After deployment, verify the public `/`, `/api/`, `/api/websocket`, join,
 App-Link, and APK routes. Confirm public `/admin`, `/admin/api/`, and

@@ -11,10 +11,11 @@ class RateLimiter {
     required String subject,
     required int limit,
     required Duration window,
+    Transaction? transaction,
   }) async {
     final key = '$operation:$subject';
     final now = DateTime.now().toUtc();
-    await session.db.transaction((transaction) async {
+    Future<void> run(Transaction transaction) async {
       final inserted = await RateLimitRow.db.insert(
         session,
         [
@@ -62,6 +63,15 @@ class RateLimiter {
         existing,
         transaction: transaction,
       );
-    });
+    }
+
+    // A caller already inside a transaction must share it. Opening a second one
+    // would take another pooled connection while the caller still holds
+    // `for update` locks, which deadlocks.
+    if (transaction != null) {
+      await run(transaction);
+      return;
+    }
+    await session.db.transaction(run);
   }
 }

@@ -153,7 +153,6 @@ void main() {
         ).readAsString();
 
         expect(configuration, contains('hayer_public_login:10m rate=10r/m'));
-        expect(configuration, contains('hayer_public_join:10m rate=10r/m'));
         expect(configuration, contains('hayer_public_api:10m rate=30r/s'));
         expect(configuration, contains('hayer_admin_enroll:10m rate=3r/m'));
         expect(

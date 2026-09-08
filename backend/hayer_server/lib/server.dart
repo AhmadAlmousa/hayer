@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
-import 'package:serverpod_auth_idp_server/providers/email.dart' show RateLimit;
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 import 'src/generated/endpoints.dart';
@@ -12,6 +11,8 @@ import 'src/generated/protocol.dart';
 import 'src/admin/refresh_job_service.dart';
 import 'src/analytics/analytics_aggregation_service.dart';
 import 'src/places/vela_calibration_sync.dart';
+import 'src/security/public_gateway_access.dart';
+import 'src/security/rate_limiter.dart';
 import 'src/storage/maintenance_service.dart';
 import 'src/web/routes/app_config_route.dart';
 import 'src/web/routes/root.dart';
@@ -30,11 +31,21 @@ void run(List<String> args) async {
       JwtConfigFromPasswords(),
     ],
     identityProviderBuilders: [
-      const AnonymousIdpConfig(
-        perIpAddressRateLimit: RateLimit(
-          maxAttempts: 30,
-          timeframe: Duration(hours: 1),
-        ),
+      // The framework's own quota keys on the TCP peer, which behind the
+      // gateway is always the proxy, making it one shared bucket for every
+      // client. It is replaced by a budget keyed on the address the gateway
+      // vouched for.
+      AnonymousIdpConfig(
+        perIpAddressRateLimit: null,
+        onBeforeAnonymousAccountCreated:
+            (session, {token, required transaction}) => RateLimiter.check(
+              session,
+              operation: 'anon-signup',
+              subject: PublicGatewayAccess.rateLimitSubject(session),
+              limit: 30,
+              window: const Duration(hours: 1),
+              transaction: transaction,
+            ),
       ),
       PasskeyIdpConfig(
         hostname: pod.runMode == ServerpodRunMode.production
