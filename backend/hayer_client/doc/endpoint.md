@@ -13,3 +13,21 @@ client.<endpoint>.<method>(...);
 ```
 
 Please see the full official documentation [here](https://docs.serverpod.dev)
+
+## Hayer session choices
+
+`client.hayerSession.chooseDestination` records or changes the authenticated
+participant's single destination ballot:
+
+```dart
+final bundle = await client.hayerSession.chooseDestination(
+  sessionId: sessionId,
+  placeId: placeId,
+  expectedRevision: bundle.destinationChoices!.myRevision,
+);
+```
+
+Use only place IDs in `eligiblePlaceIds`. A null `destinationChoices` means
+the connected server does not expose the build-7 choice contract. On a
+`choice_conflict`, reload the bundle before another change. The response does
+not reveal other participants' identities or individual ballots.

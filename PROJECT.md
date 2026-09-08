@@ -763,6 +763,13 @@ measurements and rollback paths.
   the additive migration/server before the client. An old server omits
   `destinationChoices`, so build 7 keeps legacy results without unsupported
   actions. No deployment, minimum-build change, push, or beta tag was performed.
+- 2026-09-08: synchronized the repository overview, consumer/server/client
+  READMEs, generated-client endpoint guide, server/client changelogs, and
+  deployment runbook with P01 and the owner-revised P03 contract. The docs now
+  distinguish swipe likes from destination ballots, specify editable
+  single-choice plurality and host-ballot tie behavior, cover late joins and
+  stale/lost-response reconciliation, and require server/migration verification
+  before replacing the served build-7 APK.
 
 - 2026-08-31: Git is initialized on `main`, tracking `origin/main` at
   `git@github.com:AhmadAlmousa/hayer.git`; Vela is clean at

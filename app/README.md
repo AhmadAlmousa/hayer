@@ -1,13 +1,18 @@
 # Hayer consumer
 
-Android-first Flutter client for solo and multiplayer place swiping. It uses
-Riverpod, GoRouter, Serverpod anonymous auth, secure active-session storage,
-and a Drift swipe outbox.
+Android-first Flutter client for solo and multiplayer place decisions. Swipe
+cards open the shared details sheet without advancing. Multiplayer results show
+aggregate destination-choice counts and one editable `My choice` ballot per
+participant; the highest count wins and the host's ballot breaks a leading tie.
+It uses Riverpod, GoRouter, Serverpod anonymous auth, secure active-session
+storage, and a Drift swipe outbox.
 
 Current multiplayer codes are shown and shared as `ABC-124`. The API stores
 the canonical `ABC124` value; pasted dashed/plain codes, localized digits, and
 active historical three- or six-character codes remain accepted. Build 5 is
-the minimum server-supported build for this format.
+the minimum server-supported build for this format. Build 7 keeps legacy
+results when an older server omits the optional destination-choice state, but
+the choice action is available only after the additive build-7 server migration.
 
 ```bash
 flutter run --dart-define=SERVER_URL=http://localhost:8080/

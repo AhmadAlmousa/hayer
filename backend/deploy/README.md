@@ -11,6 +11,12 @@ the signed APK with `../../scripts/build-release-apk.sh`, then copy the
 resulting `releases` directory beside this Compose file on Unraid. The stable
 download artifact must be named `releases/hayer.apk`.
 
+When a release changes generated protocol or database schema, deploy and
+verify the compatible server and migration before replacing `hayer.apk`.
+For build 7, migration `20260908061228738-destination-choices` is additive;
+keep the previously accepted app available during validation, then publish
+build 7 only after live PostGIS and two-device choice checks pass.
+
 Optional Compose environment variables are `HAYER_ADMIN_USER` (defaults to
 `operator`), `HAYER_ADMIN_PASSWORD`, the release certificate fingerprint
 `HAYER_ANDROID_SHA256`, and `HAYER_ADMIN_ENROLLMENT_ENABLED` (defaults to

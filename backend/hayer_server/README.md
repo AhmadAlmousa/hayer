@@ -5,6 +5,14 @@ PostGIS POI catalog, calibrated Google web extractor, maintenance jobs, admin
 API, WebAuthn passkey verifier, and public web routes. Redis is deliberately
 disabled for the beta.
 
+Multiplayer destination ballots are stored separately from swipe likes. The
+`chooseDestination` RPC accepts one matched place and the caller's expected
+choice revision, authorizes membership server-side, and returns aggregate
+counts plus only the caller's ballot. The highest count leads; the host's own
+ballot breaks a leading tie. Deploy migration
+`20260908061228738-destination-choices` with this server before exposing the
+build-7 choice UI.
+
 The bundled place calibration is the offline fallback. The running server
 checks Vela's detached-signature-protected calibration feed at startup and once
 per hour, ignores fields outside Hayer's search contract, and automatically

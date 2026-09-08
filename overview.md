@@ -8,7 +8,8 @@ Hayer is a mobile-first app for deciding where to go. A user chooses what they w
 
 - In solo mode, the user swipes alone and receives a ranked list of liked places.
 - In multiplayer mode, one person creates a session, shares a six-character code, link, or QR code, and every participant swipes the same ordered deck asynchronously.
-- Group results support majority or unanimous matching.
+- Group results support majority or unanimous matching, followed by one
+  editable top-choice ballot per participant.
 - A session may wait until everyone finishes or stop at the first valid match.
 - The primary targets are Android, iOS, and web/PWA.
 
@@ -35,10 +36,12 @@ Vela is GPLv3. If source code is copied or adapted directly, comply with its lic
 1. One session owns one immutable, ordered place deck.
 2. Every multiplayer participant sees the same places in the same order.
 3. A participant may swipe each place at most once.
-4. Swipes are private inputs; participant progress and aggregate results are shared outputs.
+4. Swipes are private inputs; participant progress, aggregate matches, and
+   aggregate destination-choice counts are shared outputs.
 5. Sessions expire 24 hours after creation.
 6. A six-character uppercase code identifies a session for sharing.
-7. The backend is authoritative for identity, membership, place decks, swipes, progress, completion, and results.
+7. The backend is authoritative for identity, membership, place decks, swipes,
+   progress, results, and destination choices.
 8. Place acquisition uses the Vela-style logged-out Google Maps web extractor as its only POI source.
 9. No paid Google developer credential is required or shipped in a client or server.
 10. The place deck is fetched once at session creation and persisted; joining, swiping, and viewing results never repeat the place search.
@@ -86,6 +89,8 @@ flowchart LR
 - Cache the active session code and local swipe queue for recovery.
 - Treat server-pushed events as refresh hints, not authoritative state payloads.
 - Retry or reconcile failed swipe writes without losing the user's action.
+- Submit a destination choice without optimistic vote counts and reconcile a
+  lost response from the next authoritative session snapshot.
 - Never construct extractor requests or parse Google response arrays in UI code.
 
 ### 5.2 Backend responsibilities
@@ -96,7 +101,10 @@ flowchart LR
 - Run the place extractor only while creating a new session or resolving a typed location.
 - Persist the exact place snapshot and deck order returned to the host.
 - Enforce session membership, expiry, one-swipe-per-user-per-place, and consensus rules.
-- Expose aggregate results without exposing individual votes.
+- Authorize one editable destination choice per multiplayer participant after
+  matching is ready.
+- Expose aggregate results and choice counts without exposing another
+  participant's swipe or destination ballot.
 - Publish scoped session-change notifications and support polling reads.
 - Proxy/cache approved place images when direct loading is unsuitable, especially on web.
 
@@ -115,6 +123,11 @@ abstract interface class SessionRepository {
   Future<SessionBundle> load(String code);
   Future<void> recordSwipe(RecordSwipeCommand command);
   Future<List<SessionResult>> results(String sessionId);
+  Future<SessionBundle> chooseDestination(
+    String sessionId,
+    String placeId,
+    int expectedChoiceRevision,
+  );
 }
 
 abstract interface class PlaceSource {
@@ -566,6 +579,8 @@ Each card contains:
 - Transparent-to-black readability gradient.
 - Open/Closed and distance badges when known.
 - Name, category, rating, compact review count, price, and one-line address.
+- A labeled **Details** action that opens the shared place sheet and returns to
+  the same card without advancing or recording a swipe.
 - Rotated LIKE/NOPE stamp whose opacity tracks drag progress.
 
 Swiping should feel immediate. Persist through a small ordered queue and reconcile failures; never ignore a failed durable write permanently.
@@ -577,10 +592,22 @@ Swiping should feel immediate. Persist through a small ordered queue and reconci
 - Sort chips: Rating, Reviews, Distance.
 - Solo shows places liked by the current user.
 - Multiplayer shows only server-confirmed matches.
-- Result card: 84 × 84 image, rank badge, name, rating/reviews, distance, price, optional vote bar, category, and map action.
+- Result card: 84 × 84 image, rank badge, name, rating/reviews, distance, price,
+  optional like bar, category, details/map actions, destination-choice count,
+  and **My choice**.
 - Vote bar: yes percentage and `yes/total`.
-- Sticky actions: New search and Navigate.
-- Navigate targets the first result in the current sort.
+- Every multiplayer participant may hold one editable destination ballot. A
+  new choice moves that ballot rather than adding another vote.
+- The highest choice count is the leader. Once everyone has chosen it is the
+  group choice. If leaders are tied, the host's own ballot breaks the tie only
+  when it is among those leaders; otherwise the tie remains visible.
+- No confirmation dialog, host-only override, runoff, or extra choice screen.
+- Choices open after all current participants finish swiping, or when instant
+  matching completes the room. A late join pauses new choices without erasing
+  saved ballots until the group is ready again.
+- The summary names the leader/group choice and offers directions. Sticky
+  actions are New search and Share; shared results include the leader and
+  aggregate choice counts.
 
 ## 10. Visual design system
 
@@ -691,6 +718,8 @@ isHost
 currentIndex
 hasCompleted
 lastSeenAt
+destinationPlaceId
+destinationChoiceRevision
 ```
 
 ### 11.4 Swipe
@@ -715,6 +744,26 @@ yesPercentage
 isMatch
 ```
 
+### 11.6 Destination choice state
+
+```text
+eligiblePlaceIds
+countsByPlaceId
+myPlaceId
+myRevision
+winnerPlaceId
+tiedPlaceIds
+chosenCount
+participantCount
+canChoose
+isComplete
+hostBrokeTie
+```
+
+Only `myPlaceId` identifies a participant's ballot, and it always belongs to
+the authenticated caller. Other ballots are represented only by aggregate
+counts.
+
 ## 12. Logical persistence model
 
 The physical database may be relational, document-oriented, or another transactional store, but it must enforce equivalent constraints.
@@ -722,7 +771,7 @@ The physical database may be relational, document-oriented, or another transacti
 | Collection/table | Required constraints and indexes |
 | --- | --- |
 | `sessions` | Unique code; index status + expiry; host index |
-| `participants` | Unique session + user; session index |
+| `participants` | Unique session + user; session index; nullable destination place and monotonically increasing choice revision |
 | `session_places` | Unique session + deck order; unique session + place ID |
 | `swipes` | Unique session + user + place; session/user and session/place indexes |
 | `rate_limits` | Unique counter key; expiry index |
@@ -838,7 +887,30 @@ GET /v1/sessions/{sessionId}/results
 
 Return one result per place with its place snapshot and aggregate vote fields. Never return named individual votes to other participants.
 
-### 13.6 Location suggestions
+### 13.6 Choose destination
+
+```http
+POST /v1/sessions/{sessionId}/destination-choice
+```
+
+```json
+{
+  "placeId": "source-place-id",
+  "expectedRevision": 1
+}
+```
+
+- Derive the participant from authentication and require room membership.
+- Accept only a current server-confirmed match after choices become available.
+- Store exactly one ballot per participant; selecting another place moves it.
+- Treat a retry of the already-saved place as a no-op.
+- Reject a stale different-place change with `choice_conflict`, then require
+  the client to reload before retrying.
+- Increment the room revision and emit a results refresh hint.
+- Return eligible place IDs, aggregate counts, the caller's ballot/revision,
+  and deterministic plurality/tie state. Never return named ballots.
+
+### 13.7 Location suggestions
 
 ```http
 GET /v1/places/suggest?q=riyadh%20park&lat=...&lng=...
@@ -846,7 +918,7 @@ GET /v1/places/suggest?q=riyadh%20park&lat=...&lng=...
 
 Return normalized suggestions including coordinates so selection does not require another lookup.
 
-### 13.7 Photo media
+### 13.8 Photo media
 
 ```http
 GET /v1/media/place-photo?session={sessionId}&place={placeId}&width=1000
@@ -876,8 +948,12 @@ Instant mode:
 After-deck mode:
 
 - Allow asynchronous progress.
-- Complete when all current participants finish.
+- Make destination choices available when all current participants finish
+  without closing the active room to late joiners.
 - Keep partial results viewable while waiting.
+- If a participant joins later, pause further destination changes until every
+  current participant finishes; retain earlier ballots and recalculate
+  eligibility from current aggregate swipes.
 
 Default result ordering from the backend:
 
@@ -889,7 +965,17 @@ Default result ordering from the backend:
 
 The UI may then apply rating, reviews, or distance sorting to its filtered display.
 
-Participant-join semantics must be stable: either lock membership when the first swipe occurs or explicitly define how late joiners affect completion and existing unanimous matches. The recommended first implementation locks new joins after a session has completed, but permits joins while it is active.
+After-deck rooms remain active and joinable until expiry. Instant-match rooms
+are completed by the first valid match and are no longer joinable.
+
+Destination election:
+
+- Zero destination ballots produce no leader.
+- The highest destination count wins regardless of result-card sort or rating.
+- A tied leader is resolved only when the host's ballot belongs to the tie.
+- A leader is provisional until every current participant has a valid ballot.
+- Likes, completion, navigation taps, and host status never substitute for a
+  destination ballot.
 
 ## 15. Live updates and consistency
 
@@ -906,7 +992,8 @@ session_expired
 
 Events are refresh hints. On receipt, reload the affected session bundle or results through authenticated reads.
 
-- Do not transmit private swipe choices through broadly visible event payloads.
+- Do not transmit private swipe or destination choices through broadly visible
+  event payloads.
 - Coalesce bursts of events.
 - Reconnect after lifecycle changes and transient failures.
 - Start five-second polling when the live channel is unavailable.
@@ -1007,6 +1094,11 @@ Guidelines:
 - Solo with no likes: **No places liked. Start a new search to try again.**
 - Multiplayer waiting with no match: explain that results may change as people finish.
 - Multiplayer complete with no match: **No places matched the group.**
+- Destination choice unavailable: explain that everyone must finish swiping.
+- Unresolved destination tie: tell the group that the host must choose one of
+  the tied leaders; do not silently use rating, rank, or random order.
+- Failed destination change: keep authoritative counts visible and the action
+  retryable; a stale revision reloads the caller's latest saved choice.
 - Place source unavailable: show a temporary-service message without exposing parser details.
 
 ## 20. Testing strategy
@@ -1031,6 +1123,8 @@ Guidelines:
 - Instant match minimum-voter rule.
 - Concurrent final swipes and session completion.
 - Result aggregation and ordering.
+- Destination choice authorization, editable single-ballot counts, retries,
+  stale revisions, plurality, host-ballot ties, expiry, and late joins.
 - Photo proxy SSRF protection.
 
 ### Flutter
@@ -1041,6 +1135,8 @@ Guidelines:
 - Lobby participant rendering and polling fallback.
 - Swipe gestures, buttons, pending queue, retry, and resume.
 - Solo/multiplayer result filtering and sorting.
+- Choice controls, count refresh, lost-response reconciliation, large text,
+  RTL, and no confirmation step.
 - Empty/error/expiry/offline states.
 - Small phone, large text, tablet, desktop, dark mode, and RTL layout tests.
 
@@ -1049,6 +1145,8 @@ Guidelines:
 - Solo create → swipe → resume → results.
 - Two or more clients create/join the same session and receive identical deck order.
 - Majority and unanimous outcomes.
+- Simultaneous destination choices, editable ballots, host-ballot ties, and a
+  tie where the host has not chosen a leading place.
 - Stop on first match.
 - Live-update disconnect and polling recovery.
 - Deep links and QR flow on web and native.
@@ -1087,6 +1185,9 @@ Guidelines:
 - Apply majority/unanimous using per-place voters.
 - Stop on the first valid instant match when configured.
 - Keep partial results viewable while participants are pending.
+- Open place details from a swipe card and return without recording a vote.
+- Let each participant choose one matched destination, change that choice, see
+  aggregate counts, and converge on plurality with the host-ballot tie rule.
 - Expire safely after 24 hours.
 
 ### Place quality
@@ -1102,7 +1203,8 @@ Guidelines:
 
 - No paid Google developer credential exists in the project.
 - No lost optimistic swipes.
-- Duplicate create/join/swipe retries are safe.
+- Duplicate create/join/swipe retries and same-choice retries are safe; stale
+  destination changes cannot overwrite a newer ballot.
 - Public routes and extraction work are rate-limited.
 - No unrestricted image proxy or cross-session data access.
 - Missing, expired, empty, denied-permission, photo-failure, and offline states are recoverable.

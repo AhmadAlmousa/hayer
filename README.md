@@ -2,8 +2,11 @@
 
 Hayer is an Android-first place decision app: pick a category and location,
 swipe a deterministic deck of nearby places, or share an `ABC-124` session
-so a group can decide from the same ordered deck. The repository also contains
-the Serverpod/PostGIS backend and a protected Flutter web operations console.
+so a group can decide from the same ordered deck. Swipe cards can open full
+place details without consuming a vote. After group matching, every participant
+gets one editable `My choice` ballot; plurality wins and the host's own ballot
+breaks a leading tie. The repository also contains the Serverpod/PostGIS
+backend and a protected Flutter web operations console.
 
 The product decisions, implementation status, verification evidence, and next
 release gates live in [`PROJECT.md`](PROJECT.md). The longer product brief is
@@ -117,8 +120,8 @@ This runner is fully containerized; the host only needs Docker Compose.
 2. Run `scripts/build-release-apk.sh`; it writes the APK and SHA-256 file under
    the ignored `backend/deploy/releases/` directory, including the stable
    `hayer.apk` filename served by the stack.
-3. Clone or copy the repository to the Docker host and place the release files
-   under `backend/deploy`. Optionally set `HAYER_ADMIN_USER`,
+3. Clone or copy the repository to the Docker host without replacing the
+   currently served `hayer.apk`. Optionally set `HAYER_ADMIN_USER`,
    `HAYER_ADMIN_PASSWORD`, and `HAYER_ANDROID_SHA256` in the Compose stack.
    The admin username/password are recovery-only credentials used to enroll a
    passkey, so keep them outside the browser password store.
@@ -131,11 +134,17 @@ This runner is fully containerized; the host only needs Docker Compose.
    changes—not after Compose, nginx, environment, or APK changes. If no admin
    password was supplied, save the generated recovery password shown in the
    `runtime-init` container logs. Keep enrollment disabled during routine use.
-6. Configure Cloudflare Tunnel for public `hayer.almou.sa` only, targeting
+6. For a generated-contract or migration change, verify that server with the
+   previously accepted app before replacing `backend/deploy/releases/hayer.apk`.
+   Build 7's destination-choice migration is additive, but its `My choice`
+   action requires the new server.
+7. Copy the new release files under `backend/deploy/releases`, verify their
+   SHA-256 manifests and public download, then configure Cloudflare Tunnel for
+   public `hayer.almou.sa` only, targeting
    `http://192.168.225.20:8432`. Configure the private Nginx Proxy Manager host
    `hayer.vpn.almou.sa` to `http://192.168.225.20:8433`, with private DNS and
    TLS. The two host ports terminate on separate nginx listeners.
-7. Run `scripts/admin-enrollment.sh reenroll`, register and verify two
+8. Run `scripts/admin-enrollment.sh reenroll`, register and verify two
    private-host passkeys, press Enter to close enrollment, then verify
    HTTPS/WSS, App Links, public-admin rejection, and the backup restore drill.
 
