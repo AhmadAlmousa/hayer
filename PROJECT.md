@@ -8,10 +8,10 @@ Current focus: M7-A/M7-E/M7-F — physical-device and live safety acceptance;
 M7-H structured POI issue reporting is complete
 
 Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`; P05 is complete
-in commit `da8e7ca`; P06 is implementation-complete and awaiting its scoped
-commit. Pinned full preflight passes generation/formatting, all fatal-info
-analyses, 101 server tests, 123 app tests, nine admin tests, shell checks, and
-diff checks. Signed build `0.2.1+7` passes both manifests, package/version
+in commit `da8e7ca`; P06 is complete in commit `a17567b`. Pinned full preflight
+passes generation/formatting, all fatal-info analyses, 101 server tests, 123
+app tests, nine admin tests, shell checks, and diff checks. Signed build
+`0.2.1+7` passes both manifests, package/version
 inspection, and v2 signature verification. New P05/P06 real-PostGIS cases
 compile but cannot run because this host has no `docker` command. Next M7 work
 is the open M7-A/M7-E/M7-F physical-device and live safety acceptance. Claude's
@@ -20,18 +20,18 @@ unrelated working-tree changes are being preserved.
 
 Team lanes after P06 (2026-09-09): Codex owns backend work. Claude owns
 frontend work from the clean `worktree-claude-lane`; its tracker-split commit
-is `ffe8d16`, and it is paused until this P06 commit lands so it can rebase
+is `ffe8d16`. Claude can now rebase it onto `main` at `a17567b` and resume
 without overlapping implementation. No new frontend work should start in the
 main worktree after P06.
 
-P06 completed handoff (2026-09-09; scoped commit pending): Codex implemented the
+P06 completed handoff (2026-09-09; commit `a17567b`): Codex implemented the
 POI-report protocol/storage, consumer details-sheet reporting flow, admin
 moderation inbox, generated Serverpod artifacts/migration, tests, and P06
-documentation. The boundary is
-an authenticated, idempotent report validated against room membership and its
+documentation. The boundary is an authenticated, idempotent report validated
+against room membership and its
 immutable deck, with hourly/daily budgets and one active report per
-reporter/place/type. Reporter identity remains
-server-only and salted. Operators can claim, release, resolve, dismiss, and
+reporter/place/type. Reporter identity remains server-only and salted.
+Operators can claim, release, resolve, dismiss, and
 reopen reports with source evidence and append-only audit entries; recurrence
 and affected-room counts are exposed without reporter identity. Quarantine is
 a separate explicit, reversible operator action and is never a report-submit
