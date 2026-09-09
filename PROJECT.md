@@ -86,6 +86,49 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 - Record material implementation or verification decisions in this tracker's
   evidence or change log before committing.
 
+## Agent worktrees and role split
+
+Two agents develop this repository in parallel. They never share a working
+directory. Each commits from its own Git worktree and integrates through
+`main`.
+
+- Codex works in the primary worktree `/mnt/unraid/places_swiper/hayer` on
+  branch `main`. Claude works in `.claude/worktrees/claude-lane` on branch
+  `worktree-claude-lane`, and rebases onto `main` to pick up Codex's commits.
+- Codex owns the back end and delivery: `backend/`, generated Serverpod
+  protocol and client artifacts, migrations, `scripts/`, deployment, and the
+  M7 safety milestone (M7-A, M7-E, and M7-F acceptance).
+- Claude owns the front ends: presentation and client-side behavior in `app/`
+  and `admin/`, meaning screens, widgets, routing, state wiring, localization,
+  and their widget and unit tests.
+- The generated protocol under `backend/hayer_client/` is Codex's output.
+  Claude consumes it read-only and rebases to pick up new endpoints rather
+  than regenerating or hand-editing it. Claude does not edit `backend/`,
+  migrations, or deployment scripts.
+- A front-end change that needs a new or altered endpoint is a handoff to
+  Codex, not a reason to cross the boundary. Record the request in the change
+  log and keep the client work behind the existing contract until it lands.
+- Uncommitted work is invisible across worktrees, so the split protects only
+  committed state. Codex hands over pending front-end work by committing it;
+  before editing a front-end file, confirm the handoff note above does not
+  list it as in flight.
+- Both agents edit this tracker. Keep each edit scoped to your own checkpoint,
+  evidence, and handoff lines, and resolve overlaps as an ordinary merge
+  instead of rewriting the other agent's paragraphs.
+- A worktree materializes tracked files only. `build/` is ignored, so the
+  pinned toolchain exists solely in the primary worktree. Build from a
+  secondary worktree with `export FLUTTER_BIN=/mnt/unraid/places_swiper/hayer/build/toolchains/flutter-3.47.2/bin/flutter`,
+  which `scripts/resolve-toolchain.sh` honors ahead of any `flutter` on `PATH`.
+
+In flight at the split (2026-09-09): Codex holds uncommitted P06 front-end
+files, namely `app/lib/features/report/`,
+`app/lib/data/poi_issue_repository.dart`, `admin/lib/features/issues/`, and
+edits to `place_details_sheet.dart`, `results_screen.dart`, `place_card.dart`,
+`core/providers.dart`, the `l10n` ARB and generated localizations,
+`admin_app.dart`, and `admin_operations.dart`. Claude leaves these to P06's
+scoped commit. Claude's open F01 join-limiter item sits in
+`backend/hayer_server/`, so it now belongs to Codex's lane.
+
 ## Locked decisions
 
 - Release an Android-first, release-signed APK to an invited beta of at most
@@ -1300,3 +1343,13 @@ measurements and rollback paths.
   host-anchored deck, votes, result ordering, session data, or analytics. Keep
   the feature and its operational limits adjustable in the protected admin
   System policy.
+- 2026-09-09: Split parallel agent development by worktree and role rather
+  than by coordination. Codex keeps the primary worktree on `main` and owns
+  the back end, generated protocol, migrations, delivery scripts, and the M7
+  safety milestone. Claude works from `.claude/worktrees/claude-lane` on
+  `worktree-claude-lane` and owns the consumer app and admin dashboard front
+  ends. Isolation is filesystem-level, so the two never contend for a working
+  directory and meet only as ordinary merges on `main`. Because the split
+  protects committed state only, pending front-end work is handed over by
+  committing it, and the F01 join limiter moves to Codex's lane with the rest
+  of `backend/hayer_server/`.
