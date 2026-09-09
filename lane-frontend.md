@@ -161,6 +161,38 @@ wide `NavigationRail` the grouping that only the narrow drawer has (its group
 boundaries are hardcoded index ranges over parallel label/icon lists, which
 M7-J's new pages will trip over).
 
+### Admin robustness: large text and reloads (2026-09-10)
+
+Two of the design-review items left open, picked up because the first was a
+risk the previous commit had just increased.
+
+The analytics grids set a fixed `mainAxisExtent`, so a tile that outgrows its
+cell overflows rather than scrolling. Adding the denominator line to `KpiTile`
+made that cell tighter. Measured: the default scale still fits, but a KPI tile
+overran its cell by 130 pixels at 200% text and by 84 at 1.6 with a long
+label — a pre-existing defect, since the dashboard never had the F24–F27 pass
+the consumer app got. Cell height now scales with the viewer's text scale.
+Because a card's text scales linearly while its padding does not, scaling the
+whole cell leaves headroom that grows with the factor, so the fix holds rather
+than merely moving the breaking point; the tests sweep 1.0, 1.3, 1.6 and 2.0
+against the worst case the overview can produce.
+
+Each page also swapped its entire body for a spinner on every filter change,
+and replaced good figures with an error panel when a reload failed — so an
+operator lost the numbers they were comparing against at exactly the moment
+they were comparing them. `AdminAsyncSection` keeps the last successful
+response on screen, marks it refreshing while a new request is in flight, and
+on failure keeps it behind a banner saying it is stale. It also ignores a
+response for a filter the operator has already moved on from, which the plain
+`FutureBuilder` did not guard.
+
+Verification: pinned full preflight passes with 101 server, 128 app, and 33
+admin tests, up from 23. No release APK: nothing under `app/` changed, and
+`flutter build web --release` compiles the dashboard clean.
+
+Still open from the review: next-action links, and the wide `NavigationRail`
+grouping.
+
 ### P06 independent re-verification (2026-09-09)
 
 P06 was re-verified from this worktree before new work started, rather than

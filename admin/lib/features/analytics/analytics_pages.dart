@@ -89,14 +89,9 @@ class _AnalyticsOverviewPageState extends State<AnalyticsOverviewPage> {
           },
         ),
         const SizedBox(height: 18),
-        FutureBuilder(
+        AdminAsyncSection(
           future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return AdminErrorPanel(snapshot.error!);
-            final data = snapshot.data;
-            if (data == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          builder: (context, data) {
             return _OverviewBody(
               data: data,
               live: _live ?? data.live,
@@ -272,14 +267,9 @@ class _UsageAnalyticsPageState extends State<UsageAnalyticsPage> {
           },
         ),
         const SizedBox(height: 18),
-        FutureBuilder(
+        AdminAsyncSection(
           future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return AdminErrorPanel(snapshot.error!);
-            final data = snapshot.data;
-            if (data == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          builder: (context, data) {
             return Column(
               children: [
                 Align(
@@ -456,14 +446,9 @@ class _PlaceAnalyticsPageState extends State<PlaceAnalyticsPage> {
           ],
         ),
         const SizedBox(height: 12),
-        FutureBuilder(
+        AdminAsyncSection(
           future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return AdminErrorPanel(snapshot.error!);
-            final data = snapshot.data;
-            if (data == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          builder: (context, data) {
             return Column(
               children: [
                 ResponsivePair(
@@ -726,6 +711,128 @@ class AdminPageFrame extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Renders [future] without discarding what is already on screen.
+///
+/// Each page previously swapped its whole body for a spinner on every filter
+/// change, so an operator lost the figures they were comparing against, and a
+/// failed reload replaced good data with an error panel. A reload now keeps the
+/// last successful response visible and marks it as refreshing or stale.
+class AdminAsyncSection<T> extends StatefulWidget {
+  const AdminAsyncSection({
+    super.key,
+    required this.future,
+    required this.builder,
+  });
+
+  final Future<T> future;
+  final Widget Function(BuildContext context, T value) builder;
+
+  @override
+  State<AdminAsyncSection<T>> createState() => _AdminAsyncSectionState<T>();
+}
+
+class _AdminAsyncSectionState<T> extends State<AdminAsyncSection<T>> {
+  T? _value;
+  Object? _error;
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _watch();
+  }
+
+  @override
+  void didUpdateWidget(covariant AdminAsyncSection<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.future, widget.future)) _watch();
+  }
+
+  void _watch() {
+    final future = widget.future;
+    _loading = true;
+    _error = null;
+    future.then(
+      (value) {
+        // A response for a filter the operator has already moved on from must
+        // not overwrite the current one.
+        if (!mounted || !identical(future, widget.future)) return;
+        setState(() {
+          _value = value;
+          _error = null;
+          _loading = false;
+        });
+      },
+      onError: (Object error) {
+        if (!mounted || !identical(future, widget.future)) return;
+        setState(() {
+          _error = error;
+          _loading = false;
+        });
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final value = _value;
+    final error = _error;
+    if (value == null) {
+      if (error != null) return AdminErrorPanel(error);
+      return const Center(child: CircularProgressIndicator());
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_loading)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: LinearProgressIndicator(
+              key: Key('admin-section-refreshing'),
+              minHeight: 2,
+            ),
+          ),
+        if (error != null) ...[
+          AdminStaleBanner(error),
+          const SizedBox(height: 8),
+        ],
+        widget.builder(context, value),
+      ],
+    );
+  }
+}
+
+/// Says that what is on screen is the last good response, not the current one.
+class AdminStaleBanner extends StatelessWidget {
+  const AdminStaleBanner(this.error, {super.key});
+
+  final Object error;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      key: const Key('admin-stale-banner'),
+      color: colors.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: colors.onErrorContainer),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Showing the last successful load. Refresh failed: $error',
+                style: TextStyle(color: colors.onErrorContainer),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class AdminErrorPanel extends StatelessWidget {
@@ -1379,6 +1486,24 @@ class ResponsivePair extends StatelessWidget {
   );
 }
 
+/// How far the viewer has scaled text, as a plain multiplier.
+double gridTextScale(BuildContext context) =>
+    MediaQuery.textScalerOf(context).scale(14) / 14;
+
+/// Height for a grid cell whose design height is [designHeight] at 100% text.
+///
+/// These grids set a fixed `mainAxisExtent`, so a tile that grows past it
+/// overflows instead of scrolling: at 200% text a KPI tile overran its cell by
+/// 130 pixels. Cell text scales linearly while the card's padding does not, so
+/// scaling the whole cell leaves headroom that grows with the scale factor —
+/// the padding is paid once at any size. The extra constant absorbs rounding
+/// and the fixed gaps between rows within a tile.
+double gridCellHeight(BuildContext context, double designHeight) {
+  final scale = gridTextScale(context);
+  if (scale <= 1) return designHeight;
+  return designHeight * scale + 12;
+}
+
 class _ResponsiveGrid extends StatelessWidget {
   const _ResponsiveGrid({
     required this.children,
@@ -1395,8 +1520,8 @@ class _ResponsiveGrid extends StatelessWidget {
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-      maxCrossAxisExtent: extent,
-      mainAxisExtent: height,
+      maxCrossAxisExtent: extent * gridTextScale(context),
+      mainAxisExtent: gridCellHeight(context, height),
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
     ),

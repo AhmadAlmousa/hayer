@@ -395,9 +395,9 @@ class _OverviewPageState extends State<_OverviewPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             GridView.builder(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 280,
-                mainAxisExtent: 150,
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 280 * gridTextScale(context),
+                mainAxisExtent: gridCellHeight(context, 150),
                 crossAxisSpacing: 14,
                 mainAxisSpacing: 14,
               ),
