@@ -20,9 +20,9 @@ unrelated working-tree changes are being preserved.
 
 Team lanes after P06 (2026-09-09): Codex owns backend work. Claude owns
 frontend work from the clean `worktree-claude-lane`; its tracker-split commit
-is `ffe8d16`. Claude can now rebase it onto `main` at `a17567b` and resume
-without overlapping implementation. No new frontend work should start in the
-main worktree after P06.
+is `ffe8d16`. Claude can now rebase it onto current `main` and resume without
+overlapping implementation. No new frontend work should start in the main
+worktree after P06.
 
 P06 completed handoff (2026-09-09; commit `a17567b`): Codex implemented the
 POI-report protocol/storage, consumer details-sheet reporting flow, admin
