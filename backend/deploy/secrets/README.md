@@ -9,8 +9,12 @@ Set these optional environment variables in the Unraid Compose stack:
 - `HAYER_ADMIN_USER` selects the Basic Auth username and defaults to
   `operator`.
 - `HAYER_ADMIN_PASSWORD` selects the Basic Auth password. When omitted, a
-  secure value is generated and printed once in the `runtime-init` logs. This
-  nginx account is used only at `/enroll` and `/enroll-api/` to
+  previously initialized password is reused; first-time initialization fails
+  closed. Supply the first password through the protected Unraid
+  configuration, store it offline, and remove it from the runtime environment
+  after the secret volume is initialized. Recovery credentials are never
+  printed to logs. This nginx account is used only at `/enroll` and
+  `/enroll-api/` to
   enroll or recover a passkey; it is not the routine dashboard login and Hayer
   never stores it in browser application storage.
 - `HAYER_ADMIN_ENROLLMENT_ENABLED` is an internal Compose input shared by the

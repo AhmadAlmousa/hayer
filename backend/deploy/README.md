@@ -22,9 +22,12 @@ Optional Compose environment variables are `HAYER_ADMIN_USER` (defaults to
 `HAYER_ANDROID_SHA256`, and `HAYER_ADMIN_ENROLLMENT_ENABLED` (defaults to
 `false`). The admin username/password are break-glass passkey enrollment
 credentials, not the routine dashboard login. When no admin password is
-supplied, `runtime-init` generates one on first start and prints it once in that
-container's logs. When no fingerprint is supplied, the stack starts normally
-but Android App Links remain disabled.
+supplied, `runtime-init` reuses the initialized secret volume or fails closed
+on first start. Supply the first password through the protected Unraid
+configuration, store it offline, then remove it from the runtime environment
+after initialization; recovery credentials are never printed to container
+logs. When no fingerprint is supplied, the stack starts normally but Android
+App Links remain disabled.
 
 Build the local production image once after cloning, or whenever application,
 admin, generated client, or server code changes:

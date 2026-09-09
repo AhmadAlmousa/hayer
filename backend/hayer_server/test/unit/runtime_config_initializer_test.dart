@@ -34,11 +34,25 @@ void main() {
           '$username:bcrypt($password)',
     );
 
-    test('creates every runtime file without host-provided secrets', () async {
-      final result = await createInitializer().initialize();
+    test('requires a recovery password on first initialization', () async {
+      await expectLater(
+        createInitializer().initialize(),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('HAYER_ADMIN_PASSWORD is required'),
+          ),
+        ),
+      );
+    });
+
+    test('creates every runtime file with a preprovisioned password', () async {
+      final result = await createInitializer(
+        environment: const {'HAYER_ADMIN_PASSWORD': 'chosen-password'},
+      ).initialize();
 
       expect(result.adminUsername, 'operator');
-      expect(result.generatedAdminPassword, 'secret-5');
       expect(result.adminEnrollmentEnabled, isFalse);
       expect(result.assetLinksConfigured, isFalse);
       expect(
@@ -59,7 +73,7 @@ void main() {
         await File(
           '${paths.gatewaySecrets.path}/admin.htpasswd',
         ).readAsString(),
-        'operator:bcrypt(secret-5)\n',
+        'operator:bcrypt(chosen-password)\n',
       );
       expect(
         await File(
@@ -80,7 +94,9 @@ void main() {
     test(
       'preserves database secrets and applies explicit public values',
       () async {
-        await createInitializer().initialize();
+        await createInitializer(
+          environment: const {'HAYER_ADMIN_PASSWORD': 'initial-password'},
+        ).initialize();
         final passwordsBefore = await File(
           '${paths.serverSecrets.path}/passwords.yaml',
         ).readAsString();
@@ -97,7 +113,6 @@ void main() {
           },
         ).initialize();
 
-        expect(result.generatedAdminPassword, isNull);
         expect(result.adminEnrollmentEnabled, isTrue);
         expect(result.assetLinksConfigured, isTrue);
         expect(
@@ -130,10 +145,23 @@ void main() {
 
     test('rejects an invalid Android certificate fingerprint', () async {
       final initializer = createInitializer(
-        environment: const {'HAYER_ANDROID_SHA256': 'not-a-fingerprint'},
+        environment: const {
+          'HAYER_ADMIN_PASSWORD': 'chosen-password',
+          'HAYER_ANDROID_SHA256': 'not-a-fingerprint',
+        },
       );
 
       await expectLater(initializer.initialize(), throwsFormatException);
+    });
+
+    test('the runtime command never prints recovery credentials', () async {
+      final commandSource = await File(
+        'tool/init_runtime_config.dart',
+      ).readAsString();
+
+      expect(commandSource, isNot(contains('generatedAdminPassword')));
+      expect(commandSource, isNot(contains('Generated admin credentials')));
+      expect(commandSource, isNot(contains("writeln('  password:")));
     });
   });
 }

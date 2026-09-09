@@ -521,9 +521,10 @@ meaning across Android and web.
   - [ ] Decide whether CF trust is pinned to the connector source address.
     It currently rests on the public port plus the documented host firewall,
     because Docker NAT masks the connector address.
-- [ ] Fix F13/F14/F20/F30: require passkey UP/UV, revoke issued admin/enrollment
+- [~] Fix F13/F14/F20/F30: require passkey UP/UV, revoke issued admin/enrollment
   sessions, make compare-and-swap mutations atomic with audit records, and
-  stop emitting recovery credentials to logs.
+  stop emitting recovery credentials to logs. F30 is complete: first-start
+  recovery credentials must be preprovisioned and never enter normal logs.
 - [ ] Close F29/F35 with an in-product identity/location lifecycle explanation,
   a provider/source-use inventory, a named reviewer, and documented retention,
   attribution, outage, and commercial-use decisions.
@@ -781,6 +782,19 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-09: closed F30 by removing generated recovery passwords from the
+  runtime initializer result and container output. A new secret volume must be
+  initialized with a preprovisioned `HAYER_ADMIN_PASSWORD`; missing input fails
+  closed, while an existing `admin.htpasswd` remains restart-compatible without
+  that environment value. Deployment guidance requires offline storage and
+  removal of the initial environment value after initialization. Targeted
+  regressions cover first-start failure, configured creation, preservation,
+  and the absence of credential-printing code. Pinned full preflight passes
+  103 server, 123 app, and nine admin tests plus all analyses/checks. Signed
+  `0.2.1+7` and its alias remain 104,876,403 bytes at SHA-256
+  `34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+  both manifests, package/version metadata, and APK Signature Scheme v2
+  verify. No deployment or credential rotation was performed.
 - 2026-09-09: implemented F17's additive back-end progress contract. Members
   can read mutable session/participant/self state, aggregate per-place vote
   tallies, and destination choices without retransmitting immutable place

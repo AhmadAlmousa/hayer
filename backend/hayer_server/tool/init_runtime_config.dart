@@ -22,12 +22,6 @@ Future<void> main(List<String> arguments) async {
     ).initialize();
 
     stdout.writeln('Hayer runtime configuration is ready.');
-    if (result.generatedAdminPassword case final password?) {
-      stdout
-        ..writeln('Generated admin credentials (save these now):')
-        ..writeln('  username: ${result.adminUsername}')
-        ..writeln('  password: $password');
-    }
     if (!result.assetLinksConfigured) {
       stdout.writeln(
         'HAYER_ANDROID_SHA256 is unset; Android App Links remain disabled.',

@@ -23,6 +23,27 @@ Last updated: 2026-09-09
 
 ## Checkpoints
 
+### F30 recovery credentials stay out of logs — complete (2026-09-09)
+
+First-time runtime initialization now requires a preprovisioned
+`HAYER_ADMIN_PASSWORD` and fails closed when it is absent. Once
+`admin.htpasswd` exists in the persistent gateway secret volume, restarts no
+longer require the environment value. The initializer result and command no
+longer carry or print a generated recovery password.
+
+Deployment guidance tells the operator to supply the initial value through the
+protected Unraid configuration, store it offline, and remove it from the
+runtime environment after initialization. Targeted tests cover first-start
+failure, configured initialization, secret preservation, and the absence of
+credential-printing code.
+
+Verification: pinned full preflight passes generation/formatting, all fatal-
+info analyses, 103 server tests, 123 app tests, nine admin tests, and repository
+checks. The required signed `0.2.1+7` APK and alias are 104,876,403 bytes at
+SHA-256
+`34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+both manifests, package/version metadata, and APK Signature Scheme v2 verify.
+
 ### F01 method-aware join budget — implemented (2026-09-09)
 
 `hayerSession.join` retains its 30-request/minute authenticated-user budget and

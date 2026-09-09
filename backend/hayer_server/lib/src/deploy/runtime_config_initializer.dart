@@ -25,13 +25,11 @@ class RuntimeConfigPaths {
 class RuntimeConfigResult {
   const RuntimeConfigResult({
     required this.adminUsername,
-    required this.generatedAdminPassword,
     required this.adminEnrollmentEnabled,
     required this.assetLinksConfigured,
   });
 
   final String adminUsername;
-  final String? generatedAdminPassword;
   final bool adminEnrollmentEnabled;
   final bool assetLinksConfigured;
 }
@@ -92,15 +90,19 @@ class RuntimeConfigInitializer {
     final configuredAdminPassword = environment['HAYER_ADMIN_PASSWORD'];
     final hasConfiguredAdminPassword =
         configuredAdminPassword != null && configuredAdminPassword.isNotEmpty;
-    String? generatedAdminPassword;
-    if (hasConfiguredAdminPassword || !await htpasswdFile.exists()) {
-      final adminPassword = hasConfiguredAdminPassword
-          ? configuredAdminPassword
-          : generateSecret();
-      generatedAdminPassword = hasConfiguredAdminPassword
-          ? null
-          : adminPassword;
-      final encoded = await encodeHtpasswd(adminUsername, adminPassword);
+    final hasExistingAdminPassword = await htpasswdFile.exists();
+    if (!hasConfiguredAdminPassword && !hasExistingAdminPassword) {
+      throw StateError(
+        'HAYER_ADMIN_PASSWORD is required for first-time initialization. '
+        'Store the recovery credential offline, then remove it from the '
+        'runtime environment after the secret volume is initialized.',
+      );
+    }
+    if (hasConfiguredAdminPassword) {
+      final encoded = await encodeHtpasswd(
+        adminUsername,
+        configuredAdminPassword,
+      );
       await _writeText(htpasswdFile, '${encoded.trim()}\n');
     }
 
@@ -137,7 +139,6 @@ class RuntimeConfigInitializer {
 
     return RuntimeConfigResult(
       adminUsername: adminUsername,
-      generatedAdminPassword: generatedAdminPassword,
       adminEnrollmentEnabled: adminEnrollmentEnabled,
       assetLinksConfigured: assetLinksConfigured,
     );
