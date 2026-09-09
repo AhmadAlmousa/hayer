@@ -8,7 +8,7 @@ Current focus: M7-H — structured, moderated POI issue reporting (P06);
 M7-A/M7-E/M7-F safety acceptance remains an open release prerequisite
 
 Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`. P05 is complete
-in the current slice: secure local Want to try/Favorites lists, private notes,
+in commit `da8e7ca`: secure local Want to try/Favorites lists, private notes,
 device-loss/no-sync/export disclosure, save actions across cards/results,
 2–20-place shortlist rooms, an optional five-place fresh mix, authoritative
 server re-resolution, and fail-closed server compatibility. Cached snapshots
