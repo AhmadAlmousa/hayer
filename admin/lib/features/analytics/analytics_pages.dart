@@ -7,6 +7,8 @@ import 'package:hayer_client/hayer_client.dart';
 import 'package:intl/intl.dart';
 
 import '../../admin_operations.dart';
+import 'analytics_period.dart';
+import 'metric_semantics.dart';
 
 class AnalyticsOverviewPage extends StatefulWidget {
   const AnalyticsOverviewPage({super.key, required this.operations});
@@ -21,6 +23,7 @@ class _AnalyticsOverviewPageState extends State<AnalyticsOverviewPage> {
   late AnalyticsFilter _filter = defaultAnalyticsFilter();
   late Future<AdminAnalyticsOverview> _future = _load();
   AdminLiveUsage? _live;
+  DateTime? _generatedAt;
   Timer? _liveTimer;
   Timer? _historyTimer;
 
@@ -44,8 +47,13 @@ class _AnalyticsOverviewPageState extends State<AnalyticsOverviewPage> {
     super.dispose();
   }
 
-  Future<AdminAnalyticsOverview> _load() =>
-      widget.operations.analyticsOverview(_filter);
+  // The frame renders outside the FutureBuilder, so the response's own
+  // timestamp is lifted into state to drive the freshness line.
+  Future<AdminAnalyticsOverview> _load() async {
+    final value = await widget.operations.analyticsOverview(_filter);
+    if (mounted) setState(() => _generatedAt = value.generatedAt);
+    return value;
+  }
 
   Future<void> _refreshLive() async {
     try {
@@ -62,7 +70,9 @@ class _AnalyticsOverviewPageState extends State<AnalyticsOverviewPage> {
   @override
   Widget build(BuildContext context) => AdminPageFrame(
     title: 'Overview',
-    subtitle: 'Anonymous product signals · Asia/Riyadh · historical data refreshes every 5 minutes',
+    subtitle: 'Anonymous product signals · Asia/Riyadh',
+    generatedAt: _generatedAt,
+    period: describePeriod(_filter),
     trailing: IconButton(
       tooltip: 'Refresh analytics',
       onPressed: _reload,
@@ -87,7 +97,11 @@ class _AnalyticsOverviewPageState extends State<AnalyticsOverviewPage> {
             if (data == null) {
               return const Center(child: CircularProgressIndicator());
             }
-            return _OverviewBody(data: data, live: _live ?? data.live);
+            return _OverviewBody(
+              data: data,
+              live: _live ?? data.live,
+              comparison: describeComparison(_filter),
+            );
           },
         ),
       ],
@@ -96,10 +110,15 @@ class _AnalyticsOverviewPageState extends State<AnalyticsOverviewPage> {
 }
 
 class _OverviewBody extends StatelessWidget {
-  const _OverviewBody({required this.data, required this.live});
+  const _OverviewBody({
+    required this.data,
+    required this.live,
+    required this.comparison,
+  });
 
   final AdminAnalyticsOverview data;
   final AdminLiveUsage live;
+  final String comparison;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -140,7 +159,10 @@ class _OverviewBody extends StatelessWidget {
       _ResponsiveGrid(
         extent: 230,
         height: 145,
-        children: [for (final value in data.kpis) KpiTile(value: value)],
+        children: [
+          for (final value in data.kpis)
+            KpiTile(value: value, comparison: comparison, siblings: data.kpis),
+        ],
       ),
       const SizedBox(height: 24),
       ResponsivePair(
@@ -216,9 +238,13 @@ class UsageAnalyticsPage extends StatefulWidget {
 class _UsageAnalyticsPageState extends State<UsageAnalyticsPage> {
   late AnalyticsFilter _filter = defaultAnalyticsFilter();
   late Future<AdminUsageAnalytics> _future = _load();
+  DateTime? _generatedAt;
 
-  Future<AdminUsageAnalytics> _load() =>
-      widget.operations.usageAnalytics(_filter);
+  Future<AdminUsageAnalytics> _load() async {
+    final value = await widget.operations.usageAnalytics(_filter);
+    if (mounted) setState(() => _generatedAt = value.generatedAt);
+    return value;
+  }
 
   void _reload() => setState(() => _future = _load());
 
@@ -227,6 +253,9 @@ class _UsageAnalyticsPageState extends State<UsageAnalyticsPage> {
     title: 'Usage',
     subtitle:
         'Sessions, participation, completion, setup choices, and peak hours',
+    generatedAt: _generatedAt,
+    period:
+        '${describePeriod(_filter)} · ${describeGranularity(_filter.granularity)}',
     trailing: IconButton(
       tooltip: 'Refresh usage',
       onPressed: _reload,
@@ -339,12 +368,17 @@ class _PlaceAnalyticsPageState extends State<PlaceAnalyticsPage> {
   PlaceRanking _ranking = PlaceRanking.liked;
   int _minimumSamples = 5;
   late Future<AdminPlaceAnalytics> _future = _load();
+  DateTime? _generatedAt;
 
-  Future<AdminPlaceAnalytics> _load() => widget.operations.placeAnalytics(
-    filter: _filter,
-    ranking: _ranking,
-    minimumSamples: _minimumSamples,
-  );
+  Future<AdminPlaceAnalytics> _load() async {
+    final value = await widget.operations.placeAnalytics(
+      filter: _filter,
+      ranking: _ranking,
+      minimumSamples: _minimumSamples,
+    );
+    if (mounted) setState(() => _generatedAt = value.generatedAt);
+    return value;
+  }
 
   void _reload() => setState(() => _future = _load());
 
@@ -352,6 +386,8 @@ class _PlaceAnalyticsPageState extends State<PlaceAnalyticsPage> {
   Widget build(BuildContext context) => AdminPageFrame(
     title: 'Places',
     subtitle: 'Vote totals and rates; rankings exclude low-sample places',
+    generatedAt: _generatedAt,
+    period: '${describePeriod(_filter)} · n ≥ $_minimumSamples votes',
     trailing: IconButton(
       tooltip: 'Refresh place insights',
       onPressed: _reload,
@@ -594,12 +630,55 @@ class AdminPageFrame extends StatelessWidget {
     required this.child,
     this.subtitle,
     this.trailing,
+    this.generatedAt,
+    this.period,
   });
 
   final String title;
   final String? subtitle;
   final Widget child;
   final Widget? trailing;
+
+  /// When the response was produced. Rendered as a measured lag, replacing the
+  /// page's former claim that data "refreshes every 5 minutes" — a promise the
+  /// page could not verify and that hid a stalled rollup.
+  final DateTime? generatedAt;
+
+  /// The window the figures cover, so a reader never has to infer it from the
+  /// filter bar.
+  final String? period;
+
+  Widget? _freshness(BuildContext context) {
+    final stamp = generatedAt;
+    if (stamp == null && period == null) return null;
+    final scheme = Theme.of(context).colorScheme;
+    final concerning = stamp != null && isLagConcerning(stamp);
+    final parts = [
+      if (period != null) 'Period $period',
+      if (stamp != null) describeLag(stamp),
+    ];
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        children: [
+          if (concerning) ...[
+            Icon(Icons.warning_amber_rounded, size: 16, color: scheme.error),
+            const SizedBox(width: 4),
+          ],
+          Flexible(
+            child: Text(
+              parts.join(' · '),
+              key: const Key('admin-data-freshness'),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: concerning ? scheme.error : scheme.onSurfaceVariant,
+                fontWeight: concerning ? FontWeight.w800 : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -633,6 +712,7 @@ class AdminPageFrame extends StatelessWidget {
                           ),
                         ),
                       ],
+                      ?_freshness(context),
                     ],
                   ),
                 ),
@@ -699,50 +779,98 @@ class MetricTile extends StatelessWidget {
 }
 
 class KpiTile extends StatelessWidget {
-  const KpiTile({super.key, required this.value});
+  const KpiTile({
+    super.key,
+    required this.value,
+    required this.comparison,
+    this.siblings = const [],
+  });
 
   final AnalyticsKpi value;
 
+  /// What the delta is measured against, e.g. `vs previous 30 days`.
+  final String comparison;
+
+  /// The other KPIs in the same response, used to resolve a rate's denominator.
+  final List<AnalyticsKpi> siblings;
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final delta = value.value - value.previousValue;
-    final positive = delta >= 0;
+    final rising = delta > 0;
+    final verdict = metricVerdict(value.key, delta);
+    // Direction and verdict are separate: an arrow says which way the metric
+    // moved, colour says whether that is good. Reading every rise as good is
+    // what made a slower average decision time look like an improvement.
+    final deltaColor = switch (verdict) {
+      MetricVerdict.better => colors.tertiary,
+      MetricVerdict.worse => colors.error,
+      MetricVerdict.none => colors.onSurfaceVariant,
+    };
+    final verdictWord = switch (verdict) {
+      MetricVerdict.better => 'better',
+      MetricVerdict.worse => 'worse',
+      MetricVerdict.none => 'no change in direction',
+    };
+    final basis = metricBasis(value, siblings);
+    final basisNoun = metricSemanticsFor(value.key).basisNoun;
+    final change = delta == 0
+        ? 'No change $comparison'
+        : '${rising ? 'Up' : 'Down'} '
+              '${_formatKpi(delta.abs(), value.unit)} $comparison';
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(value.label, maxLines: 1, overflow: TextOverflow.ellipsis),
-            const Spacer(),
-            Text(
-              _formatKpi(value.value, value.unit),
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 3),
-            Row(
-              children: [
-                Icon(
-                  positive
-                      ? Icons.arrow_upward_rounded
-                      : Icons.arrow_downward_rounded,
-                  size: 15,
-                  color: positive
-                      ? Colors.teal
-                      : Theme.of(context).colorScheme.error,
+        child: Semantics(
+          label:
+              '${value.label}: ${_formatKpi(value.value, value.unit)}. '
+              '$change, $verdictWord.'
+              '${basis == null ? '' : ' Based on ${basis.round()} $basisNoun.'}',
+          excludeSemantics: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(value.label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              const Spacer(),
+              Text(
+                _formatKpi(value.value, value.unit),
+                style: Theme.of(context).textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.w900),
+              ),
+              if (basis != null)
+                Text(
+                  'n = ${basis.round()} $basisNoun',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: colors.onSurfaceVariant),
                 ),
-                Expanded(
-                  child: Text(
-                    ' ${_formatKpi(delta.abs(), value.unit)} vs previous',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
+              const SizedBox(height: 3),
+              Row(
+                children: [
+                  Icon(
+                    delta == 0
+                        ? Icons.remove_rounded
+                        : rising
+                        ? Icons.arrow_upward_rounded
+                        : Icons.arrow_downward_rounded,
+                    size: 15,
+                    color: deltaColor,
                   ),
-                ),
-              ],
-            ),
-          ],
+                  Expanded(
+                    child: Text(
+                      ' $change',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: deltaColor),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -895,10 +1023,33 @@ class BreakdownDonut extends StatelessWidget {
     if (values.isEmpty) {
       return const Center(child: Text('No data in this period'));
     }
-    final colors = [
-      Theme.of(context).colorScheme.primary,
-      Theme.of(context).colorScheme.tertiary,
-      Colors.orange,
+    final scheme = Theme.of(context).colorScheme;
+    final (shown: shown, withheld: withheld) = suppressSmallCohorts(values);
+    if (shown.isEmpty) {
+      return Center(
+        child: Text(
+          '$withheld cohorts withheld (n < $minimumCohortSamples)',
+          style: TextStyle(color: scheme.onSurfaceVariant),
+        ),
+      );
+    }
+    // Enough distinct fills that a slice and its legend entry stay paired; the
+    // previous three cycled, so a fourth slice reused the first colour.
+    final fills = [
+      scheme.primary,
+      scheme.tertiary,
+      scheme.secondary,
+      scheme.primaryContainer,
+      scheme.tertiaryContainer,
+      scheme.secondaryContainer,
+    ];
+    final labels = [
+      scheme.onPrimary,
+      scheme.onTertiary,
+      scheme.onSecondary,
+      scheme.onPrimaryContainer,
+      scheme.onTertiaryContainer,
+      scheme.onSecondaryContainer,
     ];
     return Row(
       children: [
@@ -908,14 +1059,16 @@ class BreakdownDonut extends StatelessWidget {
               centerSpaceRadius: 48,
               sectionsSpace: 3,
               sections: [
-                for (var i = 0; i < values.length; i++)
+                for (var i = 0; i < shown.length; i++)
                   PieChartSectionData(
-                    value: values[i].value,
-                    color: colors[i % colors.length],
+                    value: shown[i].value,
+                    color: fills[i % fills.length],
                     radius: 45,
-                    title: '${values[i].percentage.toStringAsFixed(0)}%',
-                    titleStyle: const TextStyle(
-                      color: Colors.white,
+                    title: '${shown[i].percentage.toStringAsFixed(0)}%',
+                    titleStyle: TextStyle(
+                      // Paired with its fill so the label keeps contrast in
+                      // both themes rather than assuming white on every slice.
+                      color: labels[i % labels.length],
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -927,11 +1080,23 @@ class BreakdownDonut extends StatelessWidget {
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var i = 0; i < values.length; i++)
+              for (var i = 0; i < shown.length; i++)
                 _Legend(
-                  color: colors[i % colors.length],
-                  label: '${values[i].label} · ${values[i].value.round()}',
+                  color: fills[i % fills.length],
+                  label:
+                      '${shown[i].label} · ${shown[i].value.round()} '
+                      '(n = ${shown[i].sampleCount})',
+                ),
+              if (withheld > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    '$withheld withheld (n < $minimumCohortSamples)',
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: scheme.onSurfaceVariant),
+                  ),
                 ),
             ],
           ),
@@ -947,53 +1112,90 @@ class BreakdownCard extends StatelessWidget {
   final String title;
   final List<AnalyticsBreakdown> values;
 
+  static const _visibleRows = 8;
+
   @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 14),
-          if (values.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 26),
-              child: Center(child: Text('No data in this period')),
-            )
-          else
-            for (final value in values.take(8)) ...[
-              Tooltip(
-                message:
-                    '${value.value.toStringAsFixed(0)} selections · ${value.percentage.toStringAsFixed(1)}%',
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(value.label, overflow: TextOverflow.ellipsis),
-                    ),
-                    Text(
-                      value.value.toStringAsFixed(0),
-                      style: const TextStyle(fontWeight: FontWeight.w800),
-                    ),
-                  ],
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final (shown: reportable, withheld: withheld) = suppressSmallCohorts(
+      values,
+    );
+    final truncated = reportable.length > _visibleRows
+        ? reportable.length - _visibleRows
+        : 0;
+    // Anything the card is not showing is stated, so a truncated or suppressed
+    // list never reads as the whole picture.
+    final notes = [
+      if (truncated > 0) '$truncated more not shown',
+      if (withheld > 0) '$withheld withheld (n < $minimumCohortSamples)',
+    ];
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 14),
+            if (values.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 26),
+                child: Center(child: Text('No data in this period')),
+              )
+            else ...[
+              for (final value in reportable.take(_visibleRows)) ...[
+                Tooltip(
+                  message:
+                      '${value.value.toStringAsFixed(0)} selections · '
+                      '${value.percentage.toStringAsFixed(1)}% of '
+                      '${value.sampleCount} samples',
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          value.label,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        value.value.toStringAsFixed(0),
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                      // A share is unreadable without the count behind it:
+                      // 50% of four is not 50% of four thousand.
+                      Text(
+                        '  n = ${value.sampleCount}',
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              LinearProgressIndicator(
-                value: (value.percentage / 100).clamp(0, 1),
-                minHeight: 7,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              const SizedBox(height: 10),
+                const SizedBox(height: 5),
+                LinearProgressIndicator(
+                  value: (value.percentage / 100).clamp(0, 1),
+                  minHeight: 7,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (notes.isNotEmpty)
+                Text(
+                  notes.join(' · '),
+                  key: const Key('breakdown-footnote'),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: colors.onSurfaceVariant),
+                ),
             ],
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class PeakUsageCard extends StatelessWidget {

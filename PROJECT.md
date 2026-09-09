@@ -741,10 +741,15 @@ selection history; recommendation changes are measurable and reversible.
 
 #### M7-J — Actionable administration `[ ]`
 
-- [ ] Add decision health, host/guest funnels, POI quality/freshness, demand
+- [~] Add decision health, host/guest funnels, POI quality/freshness, demand
   versus usable supply, and incident/extractor views with explicit periods,
   denominators, sample sizes, lag, source type, version overlays, and links to
-  the next operator action.
+  the next operator action. Explicit periods, the denominators and sample
+  sizes the protocol already carries, small-cohort suppression, measured lag,
+  and correct metric polarity are done in `worktree-claude-lane`; see
+  [`lane-frontend.md`](lane-frontend.md). Sample counts on KPIs and trend
+  points, source type, and version overlays need protocol fields that do not
+  exist yet, and are an open handoff to the back-end lane.
 - [ ] Add source/rights governance, moderation ownership, measurement-health,
   alert acknowledgement/resolution, and controlled aggregate export manifests.
   Suppress unsafe small cohorts; journey IDs never become a retention identity.

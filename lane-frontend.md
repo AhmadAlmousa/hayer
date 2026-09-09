@@ -14,7 +14,7 @@ itself. Check a milestone box in `PROJECT.md`; explain how it was earned here.
 The back-end lane keeps its own equivalent file. Neither agent edits the
 other's.
 
-Last updated: 2026-09-09
+Last updated: 2026-09-10
 
 ## Current state
 
@@ -100,6 +100,66 @@ the previous code. The signed `0.2.1+7` APK is 104,876,403 bytes at SHA-256
 `87f0ce99f30919eb07228f52e2831774961f2348b79df34e4cb11b4a3fdec08a`, declares
 `sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
 Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
+
+### M7-J number legibility, and admin English-only (2026-09-10)
+
+The M7-J slice that needs no back-end change: make every figure on the
+analytics pages say what it is drawn from.
+
+`KpiTile` painted every increase teal with an up arrow, so a rising average
+decision time read as an improvement. `AnalyticsKpi` carries no polarity, so
+`metric_semantics.dart` supplies it per key: sessions, participants,
+completion and match rate are higher-is-better; `decision_time` is
+lower-is-better; `participants_per_session` is neutral, because group size is
+a usage characteristic rather than a quality signal. An unknown key reads as
+neutral, so a KPI added server-side is never given a verdict this dashboard
+cannot justify. Direction and verdict are now separate: the arrow says which
+way the metric moved, colour says whether that is good, and a `Semantics`
+label spells out both rather than leaving colour to carry the meaning alone.
+
+Rates now show their denominator where the response carries one, resolved from
+the sibling KPI that holds it — `completion_rate` and
+`participants_per_session` from `sessions`. `match_rate` deliberately shows
+none: its denominator is completed decisions, which the overview does not
+expose, and inventing one would be worse than omitting it.
+
+Breakdown rows show `n` per row and withhold cohorts below five samples,
+stating how many were withheld and how many rows were truncated. Previously
+`sampleCount` was carried by the protocol and dropped by the UI entirely, so
+50% of four looked like 50% of four thousand, and `take(8)` truncated
+silently. The donut carries the same treatment and now draws from six
+theme-derived fills paired with their own label colours; three hardcoded
+colours meant a fourth slice reused the first, and white slice labels assumed
+a contrast that the orange fill did not provide.
+
+The Overview subtitle asserted that data "refreshes every 5 minutes" while
+`generatedAt` sat unused in every response. Pages now measure lag from the
+response itself and flag it past twenty minutes, so a stalled rollup is
+visible rather than papered over by a static claim. Each page also states the
+period its figures cover, and deltas name their comparison window instead of
+saying only "vs previous".
+
+Separately, the dashboard is now explicitly English-only per the owner's
+decision. Five nav labels were hardcoded English while six went through 23 ARB
+keys used at seven call sites — a half-finished effort that made every new page
+guess which convention to follow. The keys are inlined, `admin/lib/l10n/` and
+`admin/l10n.yaml` are gone, and `generate: true` is off. Removing the
+localization delegates also removed what initialized `intl`'s locale data, so
+date formatting no longer names a locale explicitly; that regression was caught
+by the existing admin widget tests.
+
+Verification: pinned full preflight passes with 101 server, 128 app, and 23
+admin tests, up from nine. No release APK accompanies this work because
+nothing under `app/` changed; the admin dashboard ships as Flutter web, and
+`flutter build web --release` compiles clean. The signed `0.2.1+7` from the
+previous commit still covers the consumer tree exactly.
+
+Open from the design review, not built: next-action links from an insight to
+the page that can act on it, keeping content during reload instead of blanking
+the page, fixed-height grid tiles that overflow at large text, and giving the
+wide `NavigationRail` the grouping that only the narrow drawer has (its group
+boundaries are hardcoded index ranges over parallel label/icon lists, which
+M7-J's new pages will trip over).
 
 ### P06 independent re-verification (2026-09-09)
 

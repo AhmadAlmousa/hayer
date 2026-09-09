@@ -419,9 +419,7 @@ class _PoiIssuePageState extends State<PoiIssuePage> {
   }
 
   String _formatDate(DateTime value) =>
-      DateFormat.yMd(Localizations.localeOf(context).languageCode)
-          .add_Hm()
-          .format(value.toLocal());
+      DateFormat.yMd().add_Hm().format(value.toLocal());
 
   String _duration(Duration value) {
     if (value.inDays > 0) return '${value.inDays}d ${value.inHours % 24}h';

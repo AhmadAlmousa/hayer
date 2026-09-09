@@ -10,7 +10,6 @@ import 'features/auth/admin_auth_controller.dart';
 import 'features/auth/admin_auth_page.dart';
 import 'features/issues/poi_issue_page.dart';
 import 'features/taxonomy/taxonomy_page.dart';
-import 'l10n/generated/admin_localizations.dart';
 
 class AdminApp extends StatefulWidget {
   const AdminApp({
@@ -131,8 +130,6 @@ class _AdminAppState extends State<AdminApp> {
     debugShowCheckedModeBanner: false,
     theme: _theme(Brightness.light),
     darkTheme: _theme(Brightness.dark),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: _router,
   );
 
@@ -189,19 +186,18 @@ class _Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final strings = AppLocalizations.of(context)!;
     final labels = [
       'Overview',
       'Usage',
       'Places',
       'Taxonomy',
-      strings.catalog,
+      'POI catalog',
       'Reports',
-      strings.coverage,
-      strings.jobs,
-      strings.settings,
-      strings.calibration,
-      strings.audit,
+      'Coverage',
+      'Refresh jobs',
+      'System policy',
+      'Calibration',
+      'Audit log',
     ];
     final icons = [
       Icons.dashboard_outlined,
@@ -222,7 +218,7 @@ class _Dashboard extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              strings.appName,
+              'Hayer Admin',
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
             actions: [
@@ -845,8 +841,7 @@ class _CoveragePageState extends State<_CoveragePage> {
                           ),
                           _MetaText(
                             icon: Icons.schedule_rounded,
-                            value:
-                                'Expires ${_formatDate(context, coverage.expiresAt)}',
+                            value: 'Expires ${_formatDate(coverage.expiresAt)}',
                           ),
                         ],
                       ),
@@ -1113,7 +1108,7 @@ class _JobsPageState extends State<_JobsPage> {
                       SelectableText(job.coverageKey),
                       const SizedBox(height: 6),
                       Text('${job.requestedBy} · ${job.reason}'),
-                      Text('Created ${_formatDate(context, job.createdAt)}'),
+                      Text('Created ${_formatDate(job.createdAt)}'),
                       if (job.errorCode != null)
                         Text(
                           'Error: ${job.errorCode}',
@@ -1277,7 +1272,7 @@ class _AuditPageState extends State<_AuditPage> {
                   subtitle: Text(
                     '${entry.operatorName} · ${entry.targetType}'
                     '${entry.targetId == null ? '' : ' · ${entry.targetId}'}\n'
-                    '${_formatDate(context, entry.occurredAt)}',
+                    '${_formatDate(entry.occurredAt)}',
                   ),
                   childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   expandedCrossAxisAlignment: CrossAxisAlignment.start,
@@ -1836,8 +1831,8 @@ class _TrendCard extends StatelessWidget {
             if (points.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                '${_formatDate(context, points.first.bucketStartedAt)} – '
-                '${_formatDate(context, points.last.bucketStartedAt)}',
+                '${_formatDate(points.first.bucketStartedAt)} – '
+                '${_formatDate(points.last.bucketStartedAt)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -1990,10 +1985,11 @@ class _Pager extends StatelessWidget {
   }
 }
 
-String _formatDate(BuildContext context, DateTime value) {
-  final locale = Localizations.localeOf(context).languageCode;
-  return DateFormat.yMd(locale).add_Hm().format(value.toLocal());
-}
+// The dashboard is English-only, so dates use intl's default locale data
+// rather than the widget locale. Naming a locale explicitly would require
+// initializeDateFormatting for it.
+String _formatDate(DateTime value) =>
+    DateFormat.yMd().add_Hm().format(value.toLocal());
 
 String _jobStatusLabel(JobStatus status) => switch (status) {
   JobStatus.pending => 'Pending',
