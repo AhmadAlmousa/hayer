@@ -5,7 +5,8 @@ Last updated: 2026-09-09
 Status: audit remediation active; invited-beta release remains blocked
 
 Current focus: M7-A/M7-E/M7-F — physical-device and live safety acceptance;
-M7-H structured POI issue reporting is complete
+M7-H structured POI issue reporting is complete; the F17 client convergence
+half is complete and its server half is an open handoff
 
 Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`; P05 is complete
 in commit `da8e7ca`; P06 is complete in commit `a17567b`. Pinned full preflight
@@ -18,11 +19,68 @@ is the open M7-A/M7-E/M7-F physical-device and live safety acceptance. Claude's
 F01 signup work is separate and its join limiter remains open. Existing
 unrelated working-tree changes are being preserved.
 
+Claude lane verification (2026-09-09): P06 was re-verified independently from
+`worktree-claude-lane` before new work started. The 101/123/9 test counts,
+all three fatal-info analyses, and the absent `docker` runtime reproduce
+exactly, and the staged `0.2.1+7` APK matches its recorded size and SHA-256.
+The two Vela calibration tests fail in a fresh worktree until
+`git submodule update --init` materializes `references/Vela`. With the F17
+client work added, pinned full preflight passes generation/formatting, all
+fatal-info analyses, 101 server tests, 127 app tests, nine admin tests, shell
+checks, and diff checks. The rebuilt signed `0.2.1+7` APK is 104,892,787 bytes
+at SHA-256
+`d8d34935f840a3cf42710976986c3a9bee4ad97fdf44d4166d5ebb3cfeea2f45`, declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
+Signature Scheme v2 with the same signing certificate
+(`426f3bf4…77a6`) as the previous release.
+
 Team lanes after P06 (2026-09-09): Codex owns backend work. Claude owns
 frontend work from the clean `worktree-claude-lane`; its tracker-split commit
-is `ffe8d16`. Claude can now rebase it onto current `main` and resume without
-overlapping implementation. No new frontend work should start in the main
-worktree after P06.
+is `ffe8d16`. That branch is rebased onto `4c9520a` and carries the F17 client
+convergence work below. No new frontend work should start in the main worktree
+after P06.
+
+F17 client convergence checkpoint (2026-09-09): the consumer half of F17 is
+implemented in `worktree-claude-lane`. `SessionRealtimeListener` now
+acknowledges a revision only after its refresh completes, so a failed refresh
+is retried instead of being filtered out by the `<=` revision guard; an event
+burst collapses to the highest pending revision rather than chaining one full
+refresh per event; reconnects and failed refreshes share one exponential
+backoff capped at two minutes and jittered across the upper half of each
+window, so a room does not reconnect in lockstep after a gateway restart; and
+`pause`/`resume` release the connection while a screen is not resumed, with the
+reconnect's first event acting as the resync. Lobby now queues a concurrent
+refresh instead of dropping it, and lobby and results propagate refresh
+failures to the listener so an unapplied revision is never acknowledged. The
+listener's coalescing replaces the per-screen duplication rather than adding a
+third copy of it.
+
+F17 remaining server half (handoff to Codex): the client still fetches the
+whole immutable deck per refresh, because `_loadById` is the only read
+available. A lightweight `sessionProgress` response — revision, participant
+progress, match and choice counts, no deck — would cut a refresh from roughly
+75-150 KB to 1-2 KB, which is where the bulk of F17's amplification lives. The
+audit's jittered polling fallback is deliberately not implemented yet: against
+today's full-deck `load` it would make a blocked-WebSocket client cost more
+than it does now, so it should land with that endpoint. Folding `results` and
+`load` into one response and decoupling the `lastSeenAt` write from every read
+belong with F02/F03/F04 under M7-A and are not started here.
+
+Toolchain defect found while verifying (handoff to Codex): `hayer_resolve_dart`
+in `scripts/resolve-toolchain.sh` prefers any `dart` on `PATH` over the SDK
+belonging to the resolved Flutter. On this host that silently pairs pinned
+Flutter 3.47.2 with system Dart 3.12.2, and the 3.12 formatter reports 15
+committed files as unformatted, failing preflight at `--set-exit-if-changed`.
+Exporting `DART_BIN` alongside `FLUTTER_BIN` is the current workaround; the
+resolved Flutter's own `dart` should take precedence over `PATH`.
+
+Release keystore path is stale (2026-09-09): `app/android/key.properties`
+points `storeFile` at `/mnt/cache/coding/places_swiper/hayer/...`, which no
+longer exists, so `scripts/build-release-apk.sh` fails at
+`validateSigningRelease`. The keystore itself is present at
+`app/android/hayer-release.jks`. The file is gitignored and per-worktree, so
+only Claude's copy was corrected; the main worktree's copy still needs the same
+change before Codex's next release build.
 
 P06 completed handoff (2026-09-09; commit `a17567b`): Codex implemented the
 POI-report protocol/storage, consumer details-sheet reporting flow, admin
@@ -628,9 +686,16 @@ production rollout.
 - [ ] Complete physical-device TalkBack/focus/contrast, largest native text,
   denied/approximate-location, background/reconnect, and performance checks.
 
-- [ ] Fix F17–F19 with coalesced lightweight progress refresh, dependable
+- [~] Fix F17–F19 with coalesced lightweight progress refresh, dependable
   stream retry/poll convergence, prompt startup shell, recoverable screen
-  states, and GPS success independent of reverse-geocoder failure.
+  states, and GPS success independent of reverse-geocoder failure. The F18
+  startup shell and F19 location independence are checked above. The F17
+  client half is done: revisions acknowledge only on a successful refresh,
+  bursts coalesce to the highest pending revision, reconnect and refresh retry
+  share one jittered backoff capped at two minutes, and connections release
+  while a screen is not resumed. Still open, as a server handoff, are the
+  lightweight progress response that would stop shipping the immutable deck on
+  every refresh and the polling fallback that depends on it.
 - [ ] Fix F22/F23 by using bounded SQL aggregation/query paths and attributing
   matches to the actual matched place under versioned metric definitions.
 - [ ] Fix F24–F27 as one adaptive presentation pass: support at least 200%
@@ -1353,3 +1418,21 @@ measurements and rollback paths.
   protects committed state only, pending front-end work is handed over by
   committing it, and the F01 join limiter moves to Codex's lane with the rest
   of `backend/hayer_server/`.
+- 2026-09-09: Fix F17 in two halves along the lane boundary rather than as one
+  cross-lane change. The client half — acknowledge a revision only after its
+  refresh succeeds, coalesce a burst to the highest pending revision, share one
+  jittered capped backoff between reconnects and failed refreshes, and release
+  the connection while a screen is not resumed — needs no protocol change and
+  ships now, because the silent non-convergence it removes is a correctness
+  defect, not a performance one. The server half, a lightweight progress
+  response that stops shipping the immutable deck on every refresh, stays a
+  handoff: it is where the amplification actually lives, but it is a shared-lane
+  change that reads better once M7-A's state contract lands. The audit's
+  jittered polling fallback waits for that endpoint on purpose, since polling a
+  full-deck `load` would cost a blocked-WebSocket client more than receiving
+  nothing does today.
+- 2026-09-09: Put refresh coalescing in `SessionRealtimeListener` instead of
+  copying the per-screen `_loadInProgress`/`_reloadQueued` pattern a third
+  time. Acknowledging only successful refreshes requires the listener to own
+  revision state regardless, so the two concerns belong in one place; screens
+  now only have to report whether their refresh failed.

@@ -68,7 +68,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _load();
+    if (state == AppLifecycleState.resumed) {
+      _updates?.resume();
+      _load();
+    } else {
+      _updates?.pause();
+    }
   }
 
   void _connect() {
@@ -77,11 +82,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           .read(clientProvider)
           .hayerSession
           .watch(sessionId: widget.sessionId),
-      onEvent: (_) => _load(),
+      onEvent: (_) => _load(propagateError: true),
     )..start();
   }
 
-  Future<void> _load() async {
+  /// [propagateError] lets the real-time listener see a failed refresh so it
+  /// retries instead of acknowledging a revision it never applied. The manual
+  /// retry path keeps swallowing into [_error], which drives the recovery UI.
+  Future<void> _load({bool propagateError = false}) async {
     if (_loadInProgress) {
       _reloadQueued = true;
       return;
@@ -123,6 +131,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       } while (_reloadQueued);
     } catch (error) {
       if (mounted) setState(() => _error = error);
+      if (propagateError) rethrow;
     } finally {
       _loadInProgress = false;
     }
