@@ -46,6 +46,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   SessionRealtimeListener? _updates;
   bool _loadInProgress = false;
   bool _reloadQueued = false;
+  Completer<(Object, StackTrace)?>? _loadSettled;
   String? _savingPlaceId;
   Object? _choiceError;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
@@ -89,12 +90,24 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   /// [propagateError] lets the real-time listener see a failed refresh so it
   /// retries instead of acknowledging a revision it never applied. The manual
   /// retry path keeps swallowing into [_error], which drives the recovery UI.
+  ///
+  /// The listener's first event routinely lands while `initState`'s load is
+  /// still in flight, so a deferred refresh has to wait for the pass that
+  /// absorbs it and report that pass's outcome. Returning early instead would
+  /// acknowledge a revision this screen has not applied yet.
   Future<void> _load({bool propagateError = false}) async {
     if (_loadInProgress) {
       _reloadQueued = true;
+      final settled = _loadSettled ??= Completer<(Object, StackTrace)?>();
+      final failure = await settled.future;
+      if (propagateError && failure != null) {
+        Error.throwWithStackTrace(failure.$1, failure.$2);
+      }
       return;
     }
     _loadInProgress = true;
+    final settled = _loadSettled ??= Completer<(Object, StackTrace)?>();
+    (Object, StackTrace)? failure;
     try {
       do {
         _reloadQueued = false;
@@ -129,11 +142,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           );
         }
       } while (_reloadQueued);
-    } catch (error) {
+    } catch (error, stack) {
+      failure = (error, stack);
       if (mounted) setState(() => _error = error);
-      if (propagateError) rethrow;
     } finally {
       _loadInProgress = false;
+      _loadSettled = null;
+      settled.complete(failure);
+    }
+    if (propagateError && failure != null) {
+      Error.throwWithStackTrace(failure.$1, failure.$2);
     }
   }
 

@@ -169,6 +169,70 @@ void main() {
     }
   });
 
+  test('a deferred refresh that later fails is still retried', () async {
+    // Behavior under test: a screen whose initial load is still in flight
+    // defers the listener's first refresh. If it reports success immediately,
+    // the revision is acknowledged before it was applied and a failure in the
+    // absorbing pass is never retried. The screen must instead report that
+    // pass's outcome, which the listener then treats as a normal failure.
+    // Arrange: a screen-shaped load that coalesces the way lobby and results do.
+    final stream = StreamController<SessionEvent>();
+    final applied = <int>[];
+    var loading = false;
+    var queued = false;
+    var failNextPass = true;
+    Completer<Object?>? settled;
+
+    Future<void> load() async {
+      if (loading) {
+        queued = true;
+        final failure = await (settled ??= Completer<Object?>()).future;
+        if (failure != null) throw failure;
+        return;
+      }
+      loading = true;
+      final pending = settled ??= Completer<Object?>();
+      Object? failure;
+      try {
+        do {
+          queued = false;
+          await Future<void>.delayed(Duration.zero);
+          if (failNextPass) {
+            failNextPass = false;
+            throw StateError('load failed');
+          }
+          applied.add(applied.length);
+        } while (queued);
+      } catch (error) {
+        failure = error;
+      } finally {
+        loading = false;
+        settled = null;
+        pending.complete(failure);
+      }
+      if (failure != null) throw failure;
+    }
+
+    final listener = SessionRealtimeListener(
+      connect: () => stream.stream,
+      onEvent: (_) => load(),
+      retryDelay: Duration.zero,
+    );
+
+    // Act: start the screen's own initial load, then let the first event land
+    // while it is still running, exactly as initState does.
+    final initial = load();
+    listener.start();
+    stream.add(_event(3));
+    await initial.catchError((_) {});
+    await _until(() => applied.isNotEmpty);
+
+    // Assert: the failed pass was retried rather than acknowledged.
+    expect(applied, isNotEmpty);
+    await listener.dispose();
+    await stream.close();
+  });
+
   test('reconnect backoff grows and stays jittered within its window', () async {
     // Behavior under test: twelve clients dropped by one gateway restart must
     // not reconnect in lockstep, and a server that stays down must not be

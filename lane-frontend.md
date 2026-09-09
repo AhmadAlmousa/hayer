@@ -74,6 +74,33 @@ declares `sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under
 APK Signature Scheme v2 with the same signing certificate (`426f3bf4…77a6`) as
 the previous release.
 
+### F17 follow-up: deferred refreshes (2026-09-09)
+
+The first pass left one acknowledge-before-apply case open, and it sat on the
+common path rather than in a rare race. Lobby and results both call `_load()`
+from `initState` and then connect; the listener's first event therefore lands
+while that initial load is usually still in flight. The deferred branch set
+`_reloadQueued` and returned normally, which told the listener the refresh had
+succeeded. If the absorbing pass then failed, the revision was already
+acknowledged, so the listener never retried it and every later event at or
+below that revision was filtered — the same defect class the first pass
+removed, reached by a different route.
+
+A deferred refresh now waits for the pass that absorbs it and reports that
+pass's outcome, carrying the original stack trace through
+`Error.throwWithStackTrace`. The completer is stored per load loop and settles
+with a nullable `(Object, StackTrace)` record rather than an error, so a
+deferred caller that does not care about failures cannot leave an unhandled
+async error behind.
+
+Verification: pinned full preflight passes with 101 server, 128 app, and nine
+admin tests. The regression test drives the real shape — an initial load in
+flight, an event deferred into it, and that pass failing — and fails against
+the previous code. The signed `0.2.1+7` APK is 104,876,403 bytes at SHA-256
+`87f0ce99f30919eb07228f52e2831774961f2348b79df34e4cb11b4a3fdec08a`, declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
+Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
+
 ### P06 independent re-verification (2026-09-09)
 
 P06 was re-verified from this worktree before new work started, rather than
