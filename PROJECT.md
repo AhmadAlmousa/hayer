@@ -4,22 +4,58 @@ Last updated: 2026-09-09
 
 Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7-H — structured, moderated POI issue reporting (P06);
-M7-A/M7-E/M7-F safety acceptance remains an open release prerequisite
+Current focus: M7-A/M7-E/M7-F — physical-device and live safety acceptance;
+M7-H structured POI issue reporting is complete
 
-Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`. P05 is complete
-in commit `da8e7ca`: secure local Want to try/Favorites lists, private notes,
-device-loss/no-sync/export disclosure, save actions across cards/results,
-2–20-place shortlist rooms, an optional five-place fresh mix, authoritative
-server re-resolution, and fail-closed server compatibility. Cached snapshots
-and notes never cross the room API. Raw save telemetry is deliberately absent;
-only successful room reuse records `shortlist_used`. Pinned full preflight
-passes generation/formatting, all fatal-info analyses, 96 server tests, 119 app
-tests, eight admin tests, shell checks, and diff checks. Signed build 7 passes
-manifest and v2 signature verification. New shortlist PostGIS cases compile
-but cannot run because this host has no `docker` command. Next is P06; Claude's
+Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`; P05 is complete
+in commit `da8e7ca`; P06 is implementation-complete and awaiting its scoped
+commit. Pinned full preflight passes generation/formatting, all fatal-info
+analyses, 101 server tests, 123 app tests, nine admin tests, shell checks, and
+diff checks. Signed build `0.2.1+7` passes both manifests, package/version
+inspection, and v2 signature verification. New P05/P06 real-PostGIS cases
+compile but cannot run because this host has no `docker` command. Next M7 work
+is the open M7-A/M7-E/M7-F physical-device and live safety acceptance. Claude's
 F01 signup work is separate and its join limiter remains open. Existing
 unrelated working-tree changes are being preserved.
+
+Team lanes after P06 (2026-09-09): Codex owns backend work. Claude owns
+frontend work from the clean `worktree-claude-lane`; its tracker-split commit
+is `ffe8d16`, and it is paused until this P06 commit lands so it can rebase
+without overlapping implementation. No new frontend work should start in the
+main worktree after P06.
+
+P06 completed handoff (2026-09-09; scoped commit pending): Codex implemented the
+POI-report protocol/storage, consumer details-sheet reporting flow, admin
+moderation inbox, generated Serverpod artifacts/migration, tests, and P06
+documentation. The boundary is
+an authenticated, idempotent report validated against room membership and its
+immutable deck, with hourly/daily budgets and one active report per
+reporter/place/type. Reporter identity remains
+server-only and salted. Operators can claim, release, resolve, dismiss, and
+reopen reports with source evidence and append-only audit entries; recurrence
+and affected-room counts are exposed without reporter identity. Quarantine is
+a separate explicit, reversible operator action and is never a report-submit
+side effect.
+
+P06 implementation checkpoint (2026-09-09): the structured consumer sheet is
+wired from swipe/results place details in English and Arabic; transient retries
+reuse one key and neither raw report data nor reporter identity enters product
+analytics. `place.reportIssue` enforces membership/deck provenance,
+idempotency, salted report/idempotency correlation, transaction-scoped
+concurrent deduplication, and six-per-hour plus 20-per-day budgets without
+touching catalog quarantine. Migration `20260909025500100-poi-issue-reports`
+adds lifecycle constraints and indexed queue/dedupe paths while preserving the
+current definition's custom PostGIS DDL. The admin inbox exposes outcome
+counts, recurrence, affected-room counts, source snapshots, ownership,
+evidenced resolve/dismiss, release/reopen, and a separately labelled quarantine
+action. Current verification: 101 server unit tests, 123 app tests, and nine
+admin tests pass; fatal-info analysis passes for all three packages. The new
+concurrent submission/moderation/flood real-Postgres cases analyze, but
+`scripts/test-server-integration.sh` still stops immediately because `docker`
+is not installed on this host. Pinned full preflight passes. The signed
+`0.2.1+7` APK is 104,876,403 bytes at SHA-256
+`0ac17018b52c8685eaa783836bb2c79da44ff1fe9ba1af5e35cf6c0a7da7de0f`;
+both manifests, package/version metadata, and APK Signature Scheme v2 verify.
 
 Product brief: [`overview.md`](overview.md)
 
@@ -604,7 +640,7 @@ build 5 is rejected only after build 6 and rollback evidence are verified.
 Exit: the product and dashboard distinguish inclusion, human impression,
 preference, voting completion, declared choice, no-match, and technical failure.
 
-#### M7-H — Return value and POI feedback `[~]`
+#### M7-H — Return value and POI feedback `[x]`
 
 - [x] Implement P05 as private local-first saved/favorite lists and reusable
   shortlists; preserve notes locally unless a user explicitly shares them.
@@ -617,10 +653,16 @@ preference, voting completion, declared choice, no-match, and technical failure.
   passes with 96 server, 119 app, and eight admin tests. Signed build 7 and both
   checksum manifests pass. The compiled real-PostGIS cases remain blocked by
   the absent Docker runtime.
-- [ ] Implement P06 as structured, rate-limited POI issue reporting with
+- [x] Implement P06 as structured, rate-limited POI issue reporting with
   reversible moderation, source corroboration, ownership, resolution state,
   and an audit trail. Never convert one anonymous report directly into a
-  closure or catalog fact.
+  closure or catalog fact. Active implementation uses six factual issue types,
+  idempotent membership/deck validation, hourly and daily reporter budgets,
+  salted server-only reporter correlation, and one active report per
+  reporter/place/type. The admin queue exposes recurrence and affected-room
+  counts, requires ownership plus source evidence for confirmed resolution,
+  and audits claim/release/resolve/dismiss/reopen transitions. Catalog
+  quarantine/restore remains an explicit separate moderation action.
 
 Exit: users can reuse prior candidates, and operators can resolve factual POI
 problems without conflating a dislike with bad source data.
@@ -732,6 +774,35 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-09: completed P06 structured POI issue reporting. Authenticated
+  consumers can optionally report six factual issue types from swipe or result
+  details in English and Arabic; dislikes remain separate. `place.reportIssue`
+  validates room membership and immutable-deck provenance, reuses idempotency
+  keys for transient retries, salts server-only reporter correlation, serializes
+  active-report deduplication, and enforces six-per-hour plus 20-per-day budgets.
+  The admin inbox exposes outcome counts, recurrence, affected-room counts,
+  reported/current source snapshots, ownership, evidenced resolve/dismiss,
+  release/reopen, and append-only transition audits without reporter/session
+  identity. Catalog quarantine/restore is a separately labelled, reversible
+  operator action and never occurs on report submission. Migration
+  `20260909025500100-poi-issue-reports` adds lifecycle constraints and indexed
+  queue/dedupe paths while retaining the custom PostGIS definition. The Flutter
+  architecture, unit/widget-test, static-analysis, and Postgres-practice skills
+  guided the boundary, validation, transaction, privacy, and regression work.
+- 2026-09-09: pinned final `scripts/preflight.sh` passed Serverpod generation,
+  formatting, fatal-info analysis of server/generated client/app/admin, 101
+  server tests, 123 app tests, nine admin tests, shell syntax, and diff checks.
+  New real-PostGIS cases cover concurrent different-key deduplication,
+  same-key replay/conflict, authorization/provenance, immutable snapshots,
+  ownership/evidence/auditing, reopen, and hourly flooding; they compile but
+  `scripts/test-server-integration.sh` cannot execute because this host has no
+  `docker` command. `scripts/build-release-apk.sh` produced signed unpublished
+  `0.2.1+7`; `hayer-0.2.1-7.apk` and `hayer.apk` are each 104,876,403 bytes and
+  both manifests verify at SHA-256
+  `0ac17018b52c8685eaa783836bb2c79da44ff1fe9ba1af5e35cf6c0a7da7de0f`.
+  `apksigner verify --verbose` confirms APK Signature Scheme v2 and `aapt2`
+  confirms `sa.almou.hayer` version code 7/name 0.2.1, min SDK 26, target SDK
+  36. No deployment, publish, minimum-build change, push, or tag was performed.
 - 2026-09-08: completed P05 saved places and reusable shortlists. The consumer
   stores up to 100 local snapshots in secure storage, organized as Want to try
   or Favorites with optional 500-character private notes; save/remove actions

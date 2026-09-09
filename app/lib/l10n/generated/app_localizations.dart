@@ -1519,6 +1519,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'~{minutes} min · {distance}'**
   String approximateRouteEstimate(int minutes, String distance);
+
+  /// No description provided for @reportDataIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a data issue'**
+  String get reportDataIssue;
+
+  /// No description provided for @reportDataIssueExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this for factual problems with the place data—not because the place is not your taste.'**
+  String get reportDataIssueExplanation;
+
+  /// No description provided for @reportReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the factual issue type.'**
+  String get reportReasonRequired;
+
+  /// No description provided for @reportWrongCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong category'**
+  String get reportWrongCategory;
+
+  /// No description provided for @reportClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get reportClosed;
+
+  /// No description provided for @reportWrongLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong location'**
+  String get reportWrongLocation;
+
+  /// No description provided for @reportDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate place'**
+  String get reportDuplicate;
+
+  /// No description provided for @reportMisleadingPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Misleading photo'**
+  String get reportMisleadingPhoto;
+
+  /// No description provided for @reportOtherDataIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Other data issue'**
+  String get reportOtherDataIssue;
+
+  /// No description provided for @reportDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Details (optional)'**
+  String get reportDetailsLabel;
+
+  /// No description provided for @reportDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What should our reviewer verify?'**
+  String get reportDetailsHint;
+
+  /// No description provided for @reportDetailsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please describe the other data issue.'**
+  String get reportDetailsRequired;
+
+  /// No description provided for @reportDetailsLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 4–500 characters.'**
+  String get reportDetailsLength;
+
+  /// No description provided for @reportPrivacyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not include personal or sensitive information.'**
+  String get reportPrivacyHint;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Send for review'**
+  String get submitReport;
+
+  /// No description provided for @reportThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks—your report was sent for review.'**
+  String get reportThanks;
+
+  /// No description provided for @reportRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'You have sent several reports. Please try again later.'**
+  String get reportRateLimited;
+
+  /// No description provided for @reportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the report. Please try again.'**
+  String get reportFailed;
 }
 
 class _AppLocalizationsDelegate

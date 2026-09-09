@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import '../analytics/analytics_query_service.dart';
 import 'admin_authorization.dart';
 import 'admin_gateway_access.dart';
+import 'poi_issue_moderation_service.dart';
 import '../generated/protocol.dart';
 import '../places/calibration.dart';
 import '../places/google_web_place_source.dart';
@@ -460,6 +461,176 @@ class AdminEndpoint extends Endpoint {
       pageSize: safeSize,
     );
   }
+
+  Future<AdminPoiIssuePage> poiIssues(
+    Session session, {
+    required int page,
+    required int pageSize,
+    String? query,
+    PoiIssueStatus? status,
+  }) async {
+    await _authorize(session);
+    final safePage = page.clamp(0, 100000);
+    final safeSize = pageSize.clamp(1, 100);
+    final search = query?.trim();
+    final hasSearch = search != null && search.isNotEmpty;
+    final pattern = hasSearch ? '%${_escapeLike(search)}%' : '';
+    Expression<dynamic> where(PoiIssueReportRowTable table) {
+      final searchExpression = hasSearch
+          ? table.reportId.ilike(pattern) |
+                table.placeId.ilike(pattern) |
+                table.placeName.ilike(pattern)
+          : table.reportId.notEquals('');
+      return status == null
+          ? searchExpression
+          : table.status.equals(status) & searchExpression;
+    }
+
+    final counts = await Future.wait([
+      PoiIssueReportRow.db.count(
+        session,
+        where: (table) => table.status.equals(PoiIssueStatus.open),
+      ),
+      PoiIssueReportRow.db.count(
+        session,
+        where: (table) => table.status.equals(PoiIssueStatus.inReview),
+      ),
+      PoiIssueReportRow.db.count(
+        session,
+        where: (table) => table.status.equals(PoiIssueStatus.resolved),
+      ),
+      PoiIssueReportRow.db.count(
+        session,
+        where: (table) => table.status.equals(PoiIssueStatus.dismissed),
+      ),
+    ]);
+    final total = await PoiIssueReportRow.db.count(session, where: where);
+    final rows = await PoiIssueReportRow.db.find(
+      session,
+      where: where,
+      orderBy: (table) => table.createdAt,
+      orderDescending: true,
+      offset: safePage * safeSize,
+      limit: safeSize,
+    );
+    if (rows.isEmpty) {
+      return AdminPoiIssuePage(
+        items: const [],
+        total: total,
+        page: safePage,
+        pageSize: safeSize,
+        openCount: counts[0],
+        inReviewCount: counts[1],
+        resolvedCount: counts[2],
+        dismissedCount: counts[3],
+      );
+    }
+
+    final placeIds = rows.map((row) => row.placeId).toSet();
+    final related = await PoiIssueReportRow.db.find(
+      session,
+      where: (table) => table.placeId.inSet(placeIds),
+    );
+    final catalog = await PoiCatalogRow.db.find(
+      session,
+      where: (table) => table.providerPlaceId.inSet(placeIds),
+    );
+    final catalogByPlaceId = {
+      for (final row in catalog) row.providerPlaceId: row,
+    };
+    final recurrenceByKey = <String, int>{};
+    final sessionsByKey = <String, Set<String>>{};
+    for (final report in related) {
+      final key = _poiIssueGroupKey(report.placeId, report.issueType);
+      recurrenceByKey.update(key, (value) => value + 1, ifAbsent: () => 1);
+      sessionsByKey.putIfAbsent(key, () => <String>{}).add(report.sessionId);
+    }
+
+    return AdminPoiIssuePage(
+      items: [
+        for (final row in rows)
+          _adminPoiIssue(
+            row,
+            catalog: catalogByPlaceId[row.placeId],
+            recurrenceCount:
+                recurrenceByKey[_poiIssueGroupKey(
+                  row.placeId,
+                  row.issueType,
+                )] ??
+                1,
+            affectedSessionCount:
+                sessionsByKey[_poiIssueGroupKey(row.placeId, row.issueType)]
+                    ?.length ??
+                1,
+          ),
+      ],
+      total: total,
+      page: safePage,
+      pageSize: safeSize,
+      openCount: counts[0],
+      inReviewCount: counts[1],
+      resolvedCount: counts[2],
+      dismissedCount: counts[3],
+    );
+  }
+
+  Future<bool> claimPoiIssue(
+    Session session, {
+    required String reportId,
+  }) => _mutatePoiIssue(
+    session,
+    reportId: reportId,
+    action: PoiIssueModerationAction.claim,
+    reason: 'Claimed for review.',
+  );
+
+  Future<bool> releasePoiIssue(
+    Session session, {
+    required String reportId,
+    required String reason,
+  }) => _mutatePoiIssue(
+    session,
+    reportId: reportId,
+    action: PoiIssueModerationAction.release,
+    reason: reason,
+  );
+
+  Future<bool> resolvePoiIssue(
+    Session session, {
+    required String reportId,
+    required String resolution,
+    required String sourceEvidence,
+  }) => _mutatePoiIssue(
+    session,
+    reportId: reportId,
+    action: PoiIssueModerationAction.resolve,
+    reason: resolution,
+    sourceEvidence: sourceEvidence,
+  );
+
+  Future<bool> dismissPoiIssue(
+    Session session, {
+    required String reportId,
+    required String resolution,
+    required String sourceEvidence,
+  }) => _mutatePoiIssue(
+    session,
+    reportId: reportId,
+    action: PoiIssueModerationAction.dismiss,
+    reason: resolution,
+    sourceEvidence: sourceEvidence,
+  );
+
+  Future<bool> reopenPoiIssue(
+    Session session, {
+    required String reportId,
+    required String reason,
+  }) => _mutatePoiIssue(
+    session,
+    reportId: reportId,
+    action: PoiIssueModerationAction.reopen,
+    reason: reason,
+  );
 
   Future<AdminAuditPage> auditLog(
     Session session, {
@@ -1000,6 +1171,53 @@ class AdminEndpoint extends Endpoint {
     return true;
   }
 
+  Future<bool> _mutatePoiIssue(
+    Session session, {
+    required String reportId,
+    required PoiIssueModerationAction action,
+    required String reason,
+    String? sourceEvidence,
+  }) async {
+    final operatorName = await _authorize(session);
+    return PoiIssueModerationService.mutate(
+      session,
+      operatorName: operatorName,
+      reportId: reportId,
+      action: action,
+      reason: reason,
+      sourceEvidence: sourceEvidence,
+    );
+  }
+
+  String _poiIssueGroupKey(String placeId, PoiIssueType issueType) =>
+      '$placeId\u0000${issueType.name}';
+
+  AdminPoiIssue _adminPoiIssue(
+    PoiIssueReportRow row, {
+    required PoiCatalogRow? catalog,
+    required int recurrenceCount,
+    required int affectedSessionCount,
+  }) => AdminPoiIssue(
+    reportId: row.reportId,
+    placeId: row.placeId,
+    placeName: row.placeName,
+    issueType: row.issueType,
+    details: row.details,
+    status: row.status,
+    ownerName: row.ownerName,
+    resolution: row.resolution,
+    sourceEvidence: row.sourceEvidence,
+    reportedSnapshot: row.reportedSnapshot,
+    currentSnapshot: catalog?.snapshot,
+    quarantinedAt: catalog?.quarantinedAt,
+    quarantineReason: catalog?.quarantineReason,
+    recurrenceCount: recurrenceCount,
+    affectedSessionCount: affectedSessionCount,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    resolvedAt: row.resolvedAt,
+  );
+
   Future<TaxonomyCanarySample> _taxonomyCanary(
     PlaceSource source,
     AdminTaxonomyItem item,
@@ -1241,6 +1459,7 @@ WHERE "metricName" = @name
     required String reason,
     Map<String, String>? before,
     Map<String, String>? after,
+    Transaction? transaction,
   }) async {
     final salt = session.passwords['adminIpHashSalt'] ?? 'unconfigured';
     final ipHash = sha256.convert(utf8.encode('$salt:rpc')).toString();
@@ -1258,6 +1477,7 @@ WHERE "metricName" = @name
         afterData: after,
         occurredAt: DateTime.now().toUtc(),
       ),
+      transaction: transaction,
     );
   }
 }

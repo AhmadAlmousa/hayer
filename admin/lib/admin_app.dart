@@ -8,6 +8,7 @@ import 'admin_operations.dart';
 import 'features/analytics/analytics_pages.dart';
 import 'features/auth/admin_auth_controller.dart';
 import 'features/auth/admin_auth_page.dart';
+import 'features/issues/poi_issue_page.dart';
 import 'features/taxonomy/taxonomy_page.dart';
 import 'l10n/generated/admin_localizations.dart';
 
@@ -55,7 +56,7 @@ class _AdminAppState extends State<AdminApp> {
       ),
       ShellRoute(
         builder: (context, state, child) => _Dashboard(
-          selectedIndex: _adminRoutes.indexOf(state.uri.path).clamp(0, 9),
+          selectedIndex: _adminRoutes.indexOf(state.uri.path).clamp(0, 10),
           onSelect: (index) => context.go(_adminRoutes[index]),
           authController: widget.authController,
           child: child,
@@ -83,6 +84,10 @@ class _AdminAppState extends State<AdminApp> {
           GoRoute(
             path: '/catalog',
             pageBuilder: (_, _) => _page(_CatalogPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/reports',
+            pageBuilder: (_, _) => _page(PoiIssuePage(operations: _operations)),
           ),
           GoRoute(
             path: '/coverage',
@@ -161,6 +166,7 @@ const _adminRoutes = [
   '/places',
   '/taxonomy',
   '/catalog',
+  '/reports',
   '/coverage',
   '/jobs',
   '/settings',
@@ -190,6 +196,7 @@ class _Dashboard extends StatelessWidget {
       'Places',
       'Taxonomy',
       strings.catalog,
+      'Reports',
       strings.coverage,
       strings.jobs,
       strings.settings,
@@ -202,6 +209,7 @@ class _Dashboard extends StatelessWidget {
       Icons.favorite_outline_rounded,
       Icons.account_tree_outlined,
       Icons.place_outlined,
+      Icons.outlined_flag_rounded,
       Icons.map_outlined,
       Icons.sync_rounded,
       Icons.tune_rounded,
@@ -281,19 +289,19 @@ class _Dashboard extends StatelessWidget {
                         label: Text(labels[i]),
                       ),
                     const _NavigationGroupLabel('Content'),
-                    for (var i = 3; i < 4; i++)
+                    for (var i = 3; i < 5; i++)
                       NavigationDrawerDestination(
                         icon: Icon(icons[i]),
                         label: Text(labels[i]),
                       ),
                     const _NavigationGroupLabel('Operations'),
-                    for (var i = 4; i < 8; i++)
+                    for (var i = 5; i < 9; i++)
                       NavigationDrawerDestination(
                         icon: Icon(icons[i]),
                         label: Text(labels[i]),
                       ),
                     const _NavigationGroupLabel('Governance'),
-                    for (var i = 8; i < labels.length; i++)
+                    for (var i = 9; i < labels.length; i++)
                       NavigationDrawerDestination(
                         icon: Icon(icons[i]),
                         label: Text(labels[i]),

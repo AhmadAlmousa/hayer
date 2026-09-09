@@ -141,7 +141,10 @@ This runner is fully containerized; the host only needs Docker Compose.
    Build 7's destination-choice migration is additive, but its `My choice`
    action requires the new server. Deploy the P05 server before a client that
    creates saved shortlists; the client rejects a response that does not begin
-   with its exact ordered saved selection.
+   with its exact ordered saved selection. Deploy the P06 server and
+   `hayer_poi_issue_report` migration before exposing the consumer
+   `Report a data issue` action or the admin reports inbox; older servers do not
+   provide that generated contract or endpoint.
 7. Copy the new release files under `backend/deploy/releases`, verify their
    SHA-256 manifests and public download, then configure Cloudflare Tunnel for
    public `hayer.almou.sa` only, targeting

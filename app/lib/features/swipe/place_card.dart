@@ -12,6 +12,7 @@ import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/place_details_sheet.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../saved/save_place_button.dart';
+import '../report/report_place_issue_sheet.dart';
 
 class PlaceCard extends StatelessWidget {
   const PlaceCard({
@@ -315,6 +316,11 @@ class PlaceCard extends StatelessWidget {
       countryCode: countryCode,
       routeOrigin: routeOrigin,
       routeEstimatesEnabled: routeEstimatesEnabled,
+      onReportIssue: () => showReportPlaceIssue(
+        context,
+        sessionId: sessionId,
+        place: place,
+      ),
     );
     onDetailsClosed?.call();
   }

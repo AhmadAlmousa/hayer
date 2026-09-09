@@ -9,6 +9,7 @@ import '../data/display_name_store.dart';
 import '../data/location_warmup.dart';
 import '../data/location_repository.dart';
 import '../data/pending_swipe_store.dart';
+import '../data/poi_issue_repository.dart';
 import '../data/session_repository.dart';
 import '../data/route_estimate_repository.dart';
 import '../data/saved_place_store.dart';
@@ -58,6 +59,10 @@ final sessionRepositoryProvider = Provider<SessionRepository>(
     outbox: ref.watch(pendingSwipeStoreProvider),
     analyticsMetadata: ref.watch(clientAnalyticsMetadataProvider),
   ),
+);
+
+final poiIssueRepositoryProvider = Provider<PoiIssueRepository>(
+  (ref) => PoiIssueRepository(client: ref.watch(clientProvider)),
 );
 
 final routeEstimateRepositoryProvider = Provider<RouteEstimateRepository>(

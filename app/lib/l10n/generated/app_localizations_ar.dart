@@ -807,4 +807,59 @@ class AppLocalizationsAr extends AppLocalizations {
   String approximateRouteEstimate(int minutes, String distance) {
     return '~$minutes د · $distance';
   }
+
+  @override
+  String get reportDataIssue => 'الإبلاغ عن خطأ في البيانات';
+
+  @override
+  String get reportDataIssueExplanation =>
+      'استخدم هذا للأخطاء الواقعية في بيانات المكان، وليس لأن المكان لا يناسب ذوقك.';
+
+  @override
+  String get reportReasonRequired => 'اختر نوع الخطأ الواقعي.';
+
+  @override
+  String get reportWrongCategory => 'تصنيف غير صحيح';
+
+  @override
+  String get reportClosed => 'المكان مغلق';
+
+  @override
+  String get reportWrongLocation => 'الموقع غير صحيح';
+
+  @override
+  String get reportDuplicate => 'مكان مكرر';
+
+  @override
+  String get reportMisleadingPhoto => 'صورة مضللة';
+
+  @override
+  String get reportOtherDataIssue => 'خطأ آخر في البيانات';
+
+  @override
+  String get reportDetailsLabel => 'التفاصيل (اختياري)';
+
+  @override
+  String get reportDetailsHint => 'ما الذي ينبغي أن يتحقق منه المراجع؟';
+
+  @override
+  String get reportDetailsRequired => 'يرجى وصف الخطأ الآخر في البيانات.';
+
+  @override
+  String get reportDetailsLength => 'أدخل من 4 إلى 500 حرف.';
+
+  @override
+  String get reportPrivacyHint => 'لا تُدرج معلومات شخصية أو حساسة.';
+
+  @override
+  String get submitReport => 'إرسال للمراجعة';
+
+  @override
+  String get reportThanks => 'شكراً، أُرسل بلاغك للمراجعة.';
+
+  @override
+  String get reportRateLimited => 'أرسلت عدة بلاغات. حاول مرة أخرى لاحقاً.';
+
+  @override
+  String get reportFailed => 'تعذر إرسال البلاغ. حاول مرة أخرى.';
 }

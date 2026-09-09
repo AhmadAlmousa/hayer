@@ -1,0 +1,34 @@
+class: PoiIssueReportRow
+serverOnly: true
+table: hayer_poi_issue_report
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  reportId: String
+  reporterHash: String
+  activeDedupeKey: String?
+  sessionId: String
+  placeId: String
+  placeName: String
+  reportedSnapshot: PlaceSnapshot
+  issueType: PoiIssueType
+  details: String?
+  status: PoiIssueStatus
+  ownerName: String?
+  resolution: String?
+  sourceEvidence: String?
+  createdAt: DateTime
+  updatedAt: DateTime
+  resolvedAt: DateTime?
+indexes:
+  hayer_poi_issue_report_id:
+    fields: reportId
+    unique: true
+  hayer_poi_issue_active_dedupe:
+    fields: activeDedupeKey
+    unique: true
+  hayer_poi_issue_status_created:
+    fields: status, createdAt
+  hayer_poi_issue_place_type_created:
+    fields: placeId, issueType, createdAt
+  hayer_poi_issue_owner_status:
+    fields: ownerName, status

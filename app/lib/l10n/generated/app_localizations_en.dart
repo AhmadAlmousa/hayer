@@ -818,4 +818,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String approximateRouteEstimate(int minutes, String distance) {
     return '~$minutes min · $distance';
   }
+
+  @override
+  String get reportDataIssue => 'Report a data issue';
+
+  @override
+  String get reportDataIssueExplanation =>
+      'Use this for factual problems with the place data—not because the place is not your taste.';
+
+  @override
+  String get reportReasonRequired => 'Choose the factual issue type.';
+
+  @override
+  String get reportWrongCategory => 'Wrong category';
+
+  @override
+  String get reportClosed => 'Closed';
+
+  @override
+  String get reportWrongLocation => 'Wrong location';
+
+  @override
+  String get reportDuplicate => 'Duplicate place';
+
+  @override
+  String get reportMisleadingPhoto => 'Misleading photo';
+
+  @override
+  String get reportOtherDataIssue => 'Other data issue';
+
+  @override
+  String get reportDetailsLabel => 'Details (optional)';
+
+  @override
+  String get reportDetailsHint => 'What should our reviewer verify?';
+
+  @override
+  String get reportDetailsRequired => 'Please describe the other data issue.';
+
+  @override
+  String get reportDetailsLength => 'Enter 4–500 characters.';
+
+  @override
+  String get reportPrivacyHint =>
+      'Do not include personal or sensitive information.';
+
+  @override
+  String get submitReport => 'Send for review';
+
+  @override
+  String get reportThanks => 'Thanks—your report was sent for review.';
+
+  @override
+  String get reportRateLimited =>
+      'You have sent several reports. Please try again later.';
+
+  @override
+  String get reportFailed => 'Could not send the report. Please try again.';
 }

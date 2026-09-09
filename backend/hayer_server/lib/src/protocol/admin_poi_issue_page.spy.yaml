@@ -1,0 +1,10 @@
+class: AdminPoiIssuePage
+fields:
+  items: List<AdminPoiIssue>
+  total: int
+  page: int
+  pageSize: int
+  openCount: int
+  inReviewCount: int
+  resolvedCount: int
+  dismissedCount: int

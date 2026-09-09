@@ -1,0 +1,20 @@
+class: AdminPoiIssue
+fields:
+  reportId: String
+  placeId: String
+  placeName: String
+  issueType: PoiIssueType
+  details: String?
+  status: PoiIssueStatus
+  ownerName: String?
+  resolution: String?
+  sourceEvidence: String?
+  reportedSnapshot: PlaceSnapshot
+  currentSnapshot: PlaceSnapshot?
+  quarantinedAt: DateTime?
+  quarantineReason: String?
+  recurrenceCount: int
+  affectedSessionCount: int
+  createdAt: DateTime
+  updatedAt: DateTime
+  resolvedAt: DateTime?

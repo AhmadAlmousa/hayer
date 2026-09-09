@@ -18,10 +18,11 @@ Future<void> showPlaceDetails(
   required String sessionId,
   required RouteOriginMode routeOrigin,
   required bool routeEstimatesEnabled,
+  Future<void> Function()? onReportIssue,
   String? countryCode,
-}) {
+}) async {
   FocusManager.instance.primaryFocus?.unfocus();
-  return showModalBottomSheet<void>(
+  final report = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
@@ -31,8 +32,10 @@ Future<void> showPlaceDetails(
       sessionId: sessionId,
       routeOrigin: routeOrigin,
       routeEstimatesEnabled: routeEstimatesEnabled,
+      onReportIssue: () => Navigator.pop(context, true),
     ),
   );
+  if (report == true && context.mounted) await onReportIssue?.call();
 }
 
 class PlaceDetailsSheet extends StatelessWidget {
@@ -43,6 +46,7 @@ class PlaceDetailsSheet extends StatelessWidget {
     required this.sessionId,
     required this.routeOrigin,
     required this.routeEstimatesEnabled,
+    required this.onReportIssue,
   });
 
   final PlaceSnapshot place;
@@ -50,6 +54,7 @@ class PlaceDetailsSheet extends StatelessWidget {
   final String sessionId;
   final RouteOriginMode routeOrigin;
   final bool routeEstimatesEnabled;
+  final VoidCallback onReportIssue;
 
   @override
   Widget build(BuildContext context) {
@@ -205,6 +210,16 @@ class PlaceDetailsSheet extends StatelessWidget {
                   label: Text(strings.directions),
                 ),
               ],
+            ),
+            const SizedBox(height: 10),
+            const Divider(),
+            ListTile(
+              key: const ValueKey('report-poi-issue'),
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.outlined_flag_rounded),
+              title: Text(strings.reportDataIssue),
+              subtitle: Text(strings.reportDataIssueExplanation),
+              onTap: onReportIssue,
             ),
             const SizedBox(height: 22),
             Text(

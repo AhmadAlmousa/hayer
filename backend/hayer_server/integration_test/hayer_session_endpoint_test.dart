@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:hayer_server/src/admin/poi_issue_moderation_service.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:hayer_server/src/storage/catalog_pruner.dart';
 import 'package:serverpod/serverpod.dart';
@@ -921,6 +922,240 @@ void main() {
           SessionStatus.expired,
         );
       });
+
+      test(
+        'POI reports are membership-bound, retry safe and catalog inert',
+        () async {
+          final room = await endpoints.hayerSession.create(
+            host,
+            request: _request(mode: SessionMode.solo),
+            idempotencyKey: 'create-report-room',
+          );
+          final place = room.deck.first;
+          final concurrent = await Future.wait([
+            endpoints.place.reportIssue(
+              host,
+              sessionId: room.session.sessionId,
+              placeId: place.placeId,
+              issueType: PoiIssueType.wrongLocation,
+              details: 'Pin is across the street.',
+              idempotencyKey: 'report-retry-key',
+            ),
+            endpoints.place.reportIssue(
+              host,
+              sessionId: room.session.sessionId,
+              placeId: place.placeId,
+              issueType: PoiIssueType.wrongLocation,
+              details: 'Pin is across the street.',
+              idempotencyKey: 'report-concurrent-key',
+            ),
+          ]);
+          expect(concurrent.toSet(), hasLength(1));
+          final reportId = concurrent.first;
+          expect(
+            await endpoints.place.reportIssue(
+              host,
+              sessionId: room.session.sessionId,
+              placeId: place.placeId,
+              issueType: PoiIssueType.wrongLocation,
+              details: 'Pin is across the street.',
+              idempotencyKey: 'report-retry-key',
+            ),
+            reportId,
+          );
+          expect(
+            await endpoints.place.reportIssue(
+              host,
+              sessionId: room.session.sessionId,
+              placeId: place.placeId,
+              issueType: PoiIssueType.wrongLocation,
+              details: 'Pin is across the street.',
+              idempotencyKey: 'report-dedupe-key',
+            ),
+            reportId,
+          );
+          await expectLater(
+            endpoints.place.reportIssue(
+              host,
+              sessionId: room.session.sessionId,
+              placeId: place.placeId,
+              issueType: PoiIssueType.wrongLocation,
+              details: 'A different request body.',
+              idempotencyKey: 'report-retry-key',
+            ),
+            throwsA(_apiError('conflict')),
+          );
+          await expectLater(
+            endpoints.place.reportIssue(
+              outsider,
+              sessionId: room.session.sessionId,
+              placeId: place.placeId,
+              issueType: PoiIssueType.closed,
+              idempotencyKey: 'outsider-report-key',
+            ),
+            throwsA(_apiError('forbidden')),
+          );
+          await expectLater(
+            endpoints.place.reportIssue(
+              host,
+              sessionId: room.session.sessionId,
+              placeId: 'not-in-deck',
+              issueType: PoiIssueType.closed,
+              idempotencyKey: 'missing-place-key',
+            ),
+            throwsA(_apiError('not_found')),
+          );
+
+          final reports = await _issueReports(sessionBuilder);
+          expect(reports, hasLength(1));
+          expect(reports.single.reportId, reportId);
+          expect(reports.single.reporterHash, isNot(contains('user-host')));
+          expect(reports.single.reporterHash, hasLength(64));
+          expect(reports.single.status, PoiIssueStatus.open);
+          expect(reports.single.activeDedupeKey, hasLength(64));
+          expect(reports.single.reportedSnapshot.name, place.name);
+          final reportKeys = await _reportIdempotencyRows(sessionBuilder);
+          expect(reportKeys, hasLength(3));
+          expect(
+            reportKeys.map((row) => row.userId),
+            everyElement(hasLength(64)),
+          );
+          expect(
+            reportKeys.map((row) => row.userId),
+            isNot(contains('user-host')),
+          );
+          expect(await _catalogQuarantineCount(sessionBuilder), 0);
+        },
+      );
+
+      test(
+        'POI report moderation is owned, evidenced, audited and reversible',
+        () async {
+          final room = await endpoints.hayerSession.create(
+            host,
+            request: _request(mode: SessionMode.solo),
+            idempotencyKey: 'create-moderation-room',
+          );
+          final reportId = await endpoints.place.reportIssue(
+            host,
+            sessionId: room.session.sessionId,
+            placeId: room.deck.first.placeId,
+            issueType: PoiIssueType.wrongCategory,
+            details: 'This appears to be a bakery.',
+            idempotencyKey: 'moderation-report-key',
+          );
+          final session = sessionBuilder.build();
+          try {
+            await expectLater(
+              PoiIssueModerationService.mutate(
+                session,
+                operatorName: 'operator',
+                reportId: reportId,
+                action: PoiIssueModerationAction.resolve,
+                reason: 'Corrected provider mapping.',
+                sourceEvidence: 'Provider page and storefront agree.',
+              ),
+              throwsA(_apiError('conflict')),
+            );
+            await PoiIssueModerationService.mutate(
+              session,
+              operatorName: 'operator',
+              reportId: reportId,
+              action: PoiIssueModerationAction.claim,
+              reason: 'Claimed for review.',
+            );
+            await expectLater(
+              PoiIssueModerationService.mutate(
+                session,
+                operatorName: 'another.operator',
+                reportId: reportId,
+                action: PoiIssueModerationAction.dismiss,
+                reason: 'Report is not reproducible.',
+                sourceEvidence: 'Provider page still shows the same category.',
+              ),
+              throwsA(_apiError('conflict')),
+            );
+            await PoiIssueModerationService.mutate(
+              session,
+              operatorName: 'operator',
+              reportId: reportId,
+              action: PoiIssueModerationAction.resolve,
+              reason: 'Corrected provider mapping.',
+              sourceEvidence: 'Provider page and storefront agree.',
+            );
+            var report = (await PoiIssueReportRow.db.find(
+              session,
+            )).single;
+            expect(report.status, PoiIssueStatus.resolved);
+            expect(report.activeDedupeKey, isNull);
+            expect(report.sourceEvidence, isNotNull);
+            expect(await _catalogQuarantineCount(sessionBuilder), 0);
+
+            await PoiIssueModerationService.mutate(
+              session,
+              operatorName: 'operator',
+              reportId: reportId,
+              action: PoiIssueModerationAction.reopen,
+              reason: 'New source evidence needs review.',
+            );
+            report = (await PoiIssueReportRow.db.find(session)).single;
+            expect(report.status, PoiIssueStatus.open);
+            expect(report.ownerName, isNull);
+            expect(report.activeDedupeKey, isNotNull);
+            expect(report.sourceEvidence, isNull);
+
+            final audit = await AdminAuditRow.db.find(
+              session,
+              orderBy: (table) => table.occurredAt,
+            );
+            expect(
+              audit.map((entry) => entry.action),
+              [
+                'poi_issue.claim',
+                'poi_issue.resolve',
+                'poi_issue.reopen',
+              ],
+            );
+            expect(audit.last.beforeData?['status'], 'resolved');
+            expect(audit.last.afterData?['status'], 'open');
+          } finally {
+            await session.close();
+          }
+        },
+      );
+
+      test('POI report hourly budget stops anonymous flooding', () async {
+        final room = await endpoints.hayerSession.create(
+          host,
+          request: _request(mode: SessionMode.solo),
+          idempotencyKey: 'create-report-budget-room',
+        );
+        for (var index = 0; index < 6; index++) {
+          await endpoints.place.reportIssue(
+            host,
+            sessionId: room.session.sessionId,
+            placeId: room.deck[index].placeId,
+            issueType: PoiIssueType.closed,
+            idempotencyKey: 'budget-report-$index',
+          );
+        }
+        await expectLater(
+          endpoints.place.reportIssue(
+            host,
+            sessionId: room.session.sessionId,
+            placeId: room.deck[6].placeId,
+            issueType: PoiIssueType.closed,
+            idempotencyKey: 'budget-report-6',
+          ),
+          throwsA(_apiError('rate_limited')),
+        );
+
+        expect(await _issueReports(sessionBuilder), hasLength(6));
+        final reportLimits = await _reportRateLimits(sessionBuilder);
+        expect(reportLimits, hasLength(2));
+        expect(reportLimits.map((row) => row.attemptCount), everyElement(6));
+        expect(await _catalogQuarantineCount(sessionBuilder), 0);
+      });
     },
     rollbackDatabase: RollbackDatabase.disabled,
     serverpodStartTimeout: const Duration(minutes: 2),
@@ -1137,6 +1372,8 @@ Future<void> _resetHayerTables(TestSessionBuilder sessionBuilder) async {
   try {
     await session.db.unsafeExecute('''
 TRUNCATE TABLE
+  "hayer_admin_audit",
+  "hayer_poi_issue_report",
   "hayer_product_analytics_hour",
   "hayer_product_analytics_event",
   "hayer_swipe",
@@ -1151,6 +1388,62 @@ TRUNCATE TABLE
   "hayer_poi_catalog"
 CASCADE
 ''');
+  } finally {
+    await session.close();
+  }
+}
+
+Future<List<PoiIssueReportRow>> _issueReports(
+  TestSessionBuilder sessionBuilder,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    return await PoiIssueReportRow.db.find(
+      session,
+      orderBy: (table) => table.createdAt,
+    );
+  } finally {
+    await session.close();
+  }
+}
+
+Future<List<RateLimitRow>> _reportRateLimits(
+  TestSessionBuilder sessionBuilder,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    final rows = await RateLimitRow.db.find(session);
+    return rows
+        .where((row) => row.counterKey.startsWith('poi-issue-report-'))
+        .toList(growable: false);
+  } finally {
+    await session.close();
+  }
+}
+
+Future<List<IdempotencyRow>> _reportIdempotencyRows(
+  TestSessionBuilder sessionBuilder,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    return await IdempotencyRow.db.find(
+      session,
+      where: (table) => table.scope.equals('poi-issue-report'),
+    );
+  } finally {
+    await session.close();
+  }
+}
+
+Future<int> _catalogQuarantineCount(
+  TestSessionBuilder sessionBuilder,
+) async {
+  final session = sessionBuilder.build();
+  try {
+    return await PoiCatalogRow.db.count(
+      session,
+      where: (table) => table.quarantinedAt.notEquals(null),
+    );
   } finally {
     await session.close();
   }

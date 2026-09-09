@@ -1,0 +1,8 @@
+enum: PoiIssueType
+values:
+  - wrongCategory
+  - closed
+  - wrongLocation
+  - duplicate
+  - misleadingPhoto
+  - other

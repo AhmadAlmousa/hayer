@@ -1,0 +1,6 @@
+enum: PoiIssueStatus
+values:
+  - open
+  - inReview
+  - resolved
+  - dismissed

@@ -15,6 +15,12 @@ admin:
   - catalog:
   - coverage:
   - refreshJobs:
+  - poiIssues:
+  - claimPoiIssue:
+  - releasePoiIssue:
+  - resolvePoiIssue:
+  - dismissPoiIssue:
+  - reopenPoiIssue:
   - auditLog:
   - metricTrend:
   - prunePreview:
@@ -45,6 +51,7 @@ place:
   - suggest:
   - reverseGeocode:
   - routeEstimate:
+  - reportIssue:
 taxonomy:
   - current:
 adminAuth:

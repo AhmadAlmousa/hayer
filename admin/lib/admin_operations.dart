@@ -82,6 +82,37 @@ abstract interface class AdminOperations {
     required String query,
   });
 
+  Future<AdminPoiIssuePage> poiIssues({
+    required int page,
+    required int pageSize,
+    required String query,
+    PoiIssueStatus? status,
+  });
+
+  Future<bool> claimPoiIssue({required String reportId});
+
+  Future<bool> releasePoiIssue({
+    required String reportId,
+    required String reason,
+  });
+
+  Future<bool> resolvePoiIssue({
+    required String reportId,
+    required String resolution,
+    required String sourceEvidence,
+  });
+
+  Future<bool> dismissPoiIssue({
+    required String reportId,
+    required String resolution,
+    required String sourceEvidence,
+  });
+
+  Future<bool> reopenPoiIssue({
+    required String reportId,
+    required String reason,
+  });
+
   Future<List<MetricPoint>> metricTrend({int hours = 24});
 
   Future<CatalogPrunePreview> prunePreview();
@@ -275,6 +306,57 @@ class ServerpodAdminOperations implements AdminOperations {
     required int pageSize,
     required String query,
   }) => client.admin.auditLog(page: page, pageSize: pageSize, query: query);
+
+  @override
+  Future<AdminPoiIssuePage> poiIssues({
+    required int page,
+    required int pageSize,
+    required String query,
+    PoiIssueStatus? status,
+  }) => client.admin.poiIssues(
+    page: page,
+    pageSize: pageSize,
+    query: query,
+    status: status,
+  );
+
+  @override
+  Future<bool> claimPoiIssue({required String reportId}) =>
+      client.admin.claimPoiIssue(reportId: reportId);
+
+  @override
+  Future<bool> releasePoiIssue({
+    required String reportId,
+    required String reason,
+  }) => client.admin.releasePoiIssue(reportId: reportId, reason: reason);
+
+  @override
+  Future<bool> resolvePoiIssue({
+    required String reportId,
+    required String resolution,
+    required String sourceEvidence,
+  }) => client.admin.resolvePoiIssue(
+    reportId: reportId,
+    resolution: resolution,
+    sourceEvidence: sourceEvidence,
+  );
+
+  @override
+  Future<bool> dismissPoiIssue({
+    required String reportId,
+    required String resolution,
+    required String sourceEvidence,
+  }) => client.admin.dismissPoiIssue(
+    reportId: reportId,
+    resolution: resolution,
+    sourceEvidence: sourceEvidence,
+  );
+
+  @override
+  Future<bool> reopenPoiIssue({
+    required String reportId,
+    required String reason,
+  }) => client.admin.reopenPoiIssue(reportId: reportId, reason: reason);
 
   @override
   Future<List<MetricPoint>> metricTrend({int hours = 24}) =>

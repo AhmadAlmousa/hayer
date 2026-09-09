@@ -25,6 +25,7 @@ import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'destination_choice_controls.dart';
 import '../saved/save_place_button.dart';
+import '../report/report_place_issue_sheet.dart';
 
 enum _Sort { rating, reviews, distance }
 
@@ -626,6 +627,11 @@ class _ResultCard extends StatelessWidget {
             sessionId: sessionId,
             routeOrigin: routeOrigin,
             routeEstimatesEnabled: routeEstimatesEnabled,
+            onReportIssue: () => showReportPlaceIssue(
+              context,
+              sessionId: sessionId,
+              place: place,
+            ),
           );
         },
         child: Padding(

@@ -157,6 +157,60 @@ void main() {
     expect(find.text('Allow a guest’s current location'), findsOneWidget);
     expect(find.text('Host search location'), findsOneWidget);
   });
+
+  testWidgets(
+    'moderation requires claim and evidence without auto quarantine',
+    (tester) async {
+      await _setSurface(tester, const Size(1400, 1100));
+      final operations = _FakeAdminOperations();
+      await _pumpDashboard(tester, operations);
+
+      await tester.tap(find.text('Reports'));
+      await tester.pumpAndSettle();
+      expect(find.text('POI issue reports'), findsOneWidget);
+      expect(find.text('1 similar reports'), findsOneWidget);
+      expect(find.text('1 affected rooms'), findsOneWidget);
+      expect(
+        find.textContaining('never changes catalog facts'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('claim-report-1')));
+      await tester.pumpAndSettle();
+      expect(operations.issueStatus, PoiIssueStatus.inReview);
+      expect(find.text('Owner: operator'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('resolve-report-1')));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('does not change or quarantine'),
+        findsOneWidget,
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('poi-issue-resolution')),
+        'Corrected category mapping.',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('poi-issue-evidence')),
+        'Provider page and storefront agree.',
+      );
+      await tester.pump();
+      final closeButton = tester.widget<FilledButton>(
+        find.byKey(const ValueKey('close-poi-issue')),
+      );
+      expect(closeButton.onPressed, isNotNull);
+      closeButton.onPressed!();
+      await tester.pumpAndSettle();
+
+      expect(operations.issueStatus, PoiIssueStatus.resolved);
+      expect(operations.quarantined, isFalse);
+      expect(find.text('Resolved'), findsWidgets);
+      expect(
+        find.text('Evidence: Provider page and storefront agree.'),
+        findsOneWidget,
+      );
+    },
+  );
 }
 
 Future<void> _setSurface(WidgetTester tester, Size size) async {
@@ -212,6 +266,11 @@ class _FakeAdminAuthRepository implements AdminAuthRepository {
 
 class _FakeAdminOperations implements AdminOperations {
   String? cancelledJobId;
+  PoiIssueStatus issueStatus = PoiIssueStatus.open;
+  String? issueOwner;
+  String? issueResolution;
+  String? issueEvidence;
+  bool quarantined = false;
 
   @override
   Future<AdminLiveUsage> liveUsage() async => AdminLiveUsage(
@@ -429,5 +488,98 @@ class _FakeAdminOperations implements AdminOperations {
   );
 
   @override
+  Future<AdminPoiIssuePage> poiIssues({
+    required int page,
+    required int pageSize,
+    required String query,
+    PoiIssueStatus? status,
+  }) async {
+    final issue = AdminPoiIssue(
+      reportId: 'report-1',
+      placeId: 'place-1',
+      placeName: 'Questionable Cafe',
+      issueType: PoiIssueType.wrongCategory,
+      details: 'This is a bakery.',
+      status: issueStatus,
+      ownerName: issueOwner,
+      resolution: issueResolution,
+      sourceEvidence: issueEvidence,
+      reportedSnapshot: _reportedPlace(),
+      currentSnapshot: _reportedPlace(),
+      quarantinedAt: quarantined ? DateTime.utc(2026, 9, 9, 11) : null,
+      quarantineReason: quarantined ? 'Confirmed separately' : null,
+      recurrenceCount: 1,
+      affectedSessionCount: 1,
+      createdAt: DateTime.utc(2026, 9, 9, 10),
+      updatedAt: DateTime.utc(2026, 9, 9, 10),
+      resolvedAt: issueStatus == PoiIssueStatus.resolved
+          ? DateTime.utc(2026, 9, 9, 11)
+          : null,
+    );
+    final visible = status == null || status == issueStatus;
+    return AdminPoiIssuePage(
+      items: visible ? [issue] : const [],
+      total: visible ? 1 : 0,
+      page: page,
+      pageSize: pageSize,
+      openCount: issueStatus == PoiIssueStatus.open ? 1 : 0,
+      inReviewCount: issueStatus == PoiIssueStatus.inReview ? 1 : 0,
+      resolvedCount: issueStatus == PoiIssueStatus.resolved ? 1 : 0,
+      dismissedCount: issueStatus == PoiIssueStatus.dismissed ? 1 : 0,
+    );
+  }
+
+  @override
+  Future<bool> claimPoiIssue({required String reportId}) async {
+    issueStatus = PoiIssueStatus.inReview;
+    issueOwner = 'operator';
+    return true;
+  }
+
+  @override
+  Future<bool> resolvePoiIssue({
+    required String reportId,
+    required String resolution,
+    required String sourceEvidence,
+  }) async {
+    issueStatus = PoiIssueStatus.resolved;
+    issueResolution = resolution;
+    issueEvidence = sourceEvidence;
+    return true;
+  }
+
+  @override
+  Future<bool> quarantine({
+    required String providerPlaceId,
+    required String reason,
+  }) async {
+    quarantined = true;
+    return true;
+  }
+
+  @override
+  Future<bool> restore({
+    required String providerPlaceId,
+    required String reason,
+  }) async {
+    quarantined = false;
+    return true;
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
+
+PlaceSnapshot _reportedPlace() => PlaceSnapshot(
+  placeId: 'place-1',
+  name: 'Questionable Cafe',
+  categoryIds: const ['restaurant'],
+  hours: const [],
+  distanceMeters: 200,
+  latitude: 24.7,
+  longitude: 46.7,
+  photoUrls: const [],
+  attributions: const ['Google'],
+  sourceCheckedAt: DateTime.utc(2026, 9, 9, 9),
+  isStale: false,
+);
