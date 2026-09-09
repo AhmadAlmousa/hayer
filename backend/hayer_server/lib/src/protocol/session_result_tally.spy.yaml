@@ -1,0 +1,6 @@
+class: SessionResultTally
+fields:
+  placeId: String
+  likeCount: int
+  voterCount: int
+  match: bool

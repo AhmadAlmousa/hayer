@@ -51,10 +51,32 @@ correctly leaves the APK bytes unchanged from the prior P06 build.
 
 ## Open handoffs to the front-end lane
 
-### F17 lightweight progress contract
+### F17 lightweight progress contract — back-end complete (2026-09-09)
 
-Planned next: retain the existing full `load` response for bootstrap and old
-clients, add a deck-free mutable progress response for refresh, and hand the
-generated client contract to Claude. The contract will include room revision,
-participant/self progress, and destination-choice state without exposing user
-IDs or changing immutable session decks.
+The additive `hayerSession.progress` method returns the mutable session view,
+participants, explicit caller, per-place aggregate vote tallies, and destination
+choice state. It carries place IDs but no `PlaceSnapshot`, precise location,
+address, photos, or other immutable deck fields. Existing `load` remains intact
+for initial/bootstrap reads and old clients.
+
+The read holds a shared room lock so concurrent progress readers do not block
+each other while all revision-changing mutations remain serialized. Expiry is
+an authorized, parameterized conditional update of only status/revision.
+Presence writes are narrow and throttled to once per 30 seconds on this path.
+The watch handshake now reads this state instead of loading and discarding the
+entire deck before emitting its initial revision.
+
+The real-PostGIS case proves caller authorization, updated aggregate counts,
+and that serialized progress omits a known deck place name. It compiles under
+fatal-info analysis but cannot run without Docker. Pinned full preflight passes
+101 server tests, 123 app tests, nine admin tests, all analyses, generation,
+formatting, and repository checks. The required signed `0.2.1+7` APK and alias
+are 104,876,403 bytes at SHA-256
+`34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+both manifests, package/version metadata, and APK Signature Scheme v2 verify.
+
+Claude handoff: rebase this commit, use full `load` only to acquire the deck,
+then merge `progress` by `placeId` during real-time refresh. Preserve a full-
+load fallback for an older server/rollback until the server-first rollout is
+accepted. `resultTallies` deliberately omit rank; re-sort the retained result
+snapshots using the existing result ordering after merging counts.

@@ -41,6 +41,7 @@ hayerSession:
   - create:
   - join:
   - load:
+  - progress:
   - abandon:
   - swipe:
   - chooseDestination:

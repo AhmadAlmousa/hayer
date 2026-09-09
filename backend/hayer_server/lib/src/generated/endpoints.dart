@@ -1095,6 +1095,25 @@ class Endpoints extends _i1.EndpointDispatch {
                     sessionId: params['sessionId'],
                   ),
         ),
+        'progress': _i1.MethodConnector(
+          name: 'progress',
+          params: {
+            'sessionId': _i1.ParameterDescription(
+              name: 'sessionId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+                  .progress(
+                    session,
+                    sessionId: params['sessionId'],
+                  ),
+        ),
         'abandon': _i1.MethodConnector(
           name: 'abandon',
           params: {

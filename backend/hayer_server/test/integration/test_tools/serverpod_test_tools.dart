@@ -44,19 +44,20 @@ import 'package:hayer_server/src/generated/session_bundle.dart' as _i28;
 import 'package:hayer_server/src/generated/create_session_request.dart' as _i29;
 import 'package:hayer_server/src/generated/client_analytics_context.dart'
     as _i30;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i31;
-import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i32;
-import 'package:hayer_server/src/generated/session_result.dart' as _i33;
-import 'package:hayer_server/src/generated/session_event.dart' as _i34;
-import 'package:hayer_server/src/generated/route_estimate.dart' as _i35;
-import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i36;
-import 'package:hayer_server/src/generated/taxonomy_snapshot.dart' as _i37;
+import 'package:hayer_server/src/generated/session_progress.dart' as _i31;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i32;
+import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i33;
+import 'package:hayer_server/src/generated/session_result.dart' as _i34;
+import 'package:hayer_server/src/generated/session_event.dart' as _i35;
+import 'package:hayer_server/src/generated/route_estimate.dart' as _i36;
+import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i37;
+import 'package:hayer_server/src/generated/taxonomy_snapshot.dart' as _i38;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i38;
-import 'package:hayer_server/src/generated/protocol.dart' as _i39;
-import 'dart:typed_data' as _i40;
+    as _i39;
+import 'package:hayer_server/src/generated/protocol.dart' as _i40;
+import 'dart:typed_data' as _i41;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i41;
+    as _i42;
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:hayer_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -1654,6 +1655,37 @@ class _HayerSessionEndpoint {
     });
   }
 
+  _i3.Future<_i31.SessionProgress> progress(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String sessionId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'hayerSession',
+            method: 'progress',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'hayerSession',
+          methodName: 'progress',
+          parameters: _i1.testObjectToJson({'sessionId': sessionId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i31.SessionProgress>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<void> abandon(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
@@ -1687,7 +1719,7 @@ class _HayerSessionEndpoint {
 
   _i3.Future<_i28.SessionBundle> swipe(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i31.SwipeCommand command,
+    required _i32.SwipeCommand command,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1757,7 +1789,7 @@ class _HayerSessionEndpoint {
 
   _i3.Future<void> recordClientAnalytics(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i32.ClientAnalyticsEvent event,
+    required _i33.ClientAnalyticsEvent event,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1786,7 +1818,7 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<List<_i33.SessionResult>> results(
+  _i3.Future<List<_i34.SessionResult>> results(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
@@ -1809,7 +1841,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i33.SessionResult>>);
+                as _i3.Future<List<_i34.SessionResult>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1817,11 +1849,11 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Stream<_i34.SessionEvent> watch(
+  _i3.Stream<_i35.SessionEvent> watch(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i34.SessionEvent>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i35.SessionEvent>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -1936,7 +1968,7 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<_i35.RouteEstimate> routeEstimate(
+  _i3.Future<_i36.RouteEstimate> routeEstimate(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
@@ -1967,7 +1999,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i35.RouteEstimate>);
+                as _i3.Future<_i36.RouteEstimate>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1979,7 +2011,7 @@ class _PlaceEndpoint {
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
-    required _i36.PoiIssueType issueType,
+    required _i37.PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
   }) async {
@@ -2027,7 +2059,7 @@ class _TaxonomyEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i37.TaxonomySnapshot> current(
+  _i3.Future<_i38.TaxonomySnapshot> current(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2049,7 +2081,7 @@ class _TaxonomyEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i37.TaxonomySnapshot>);
+                as _i3.Future<_i38.TaxonomySnapshot>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2137,7 +2169,7 @@ class _AdminEnrollmentEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<({_i38.AuthSuccess auth, String operator})> begin(
+  _i3.Future<({_i39.AuthSuccess auth, String operator})> begin(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2160,8 +2192,8 @@ class _AdminEnrollmentEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i39.Protocol()
-                  .deserialize<({_i38.AuthSuccess auth, String operator})>(
+              (record) => _i40.Protocol()
+                  .deserialize<({_i39.AuthSuccess auth, String operator})>(
                     record,
                   ),
             );
@@ -2183,7 +2215,7 @@ class _AnonymousIdpEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i38.AuthSuccess> login(
+  _i3.Future<_i39.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     String? token,
   }) async {
@@ -2206,7 +2238,7 @@ class _AnonymousIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AuthSuccess>);
+                as _i3.Future<_i39.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2225,7 +2257,7 @@ class _JwtRefreshEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i38.AuthSuccess> refreshAccessToken(
+  _i3.Future<_i39.AuthSuccess> refreshAccessToken(
     _i1.TestSessionBuilder sessionBuilder, {
     required String refreshToken,
   }) async {
@@ -2248,7 +2280,7 @@ class _JwtRefreshEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AuthSuccess>);
+                as _i3.Future<_i39.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2267,7 +2299,7 @@ class _PasskeyIdpEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<({_i40.ByteData challenge, _i2.UuidValue id})> createChallenge(
+  _i3.Future<({_i41.ByteData challenge, _i2.UuidValue id})> createChallenge(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2290,8 +2322,8 @@ class _PasskeyIdpEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i39.Protocol()
-                  .deserialize<({_i40.ByteData challenge, _i2.UuidValue id})>(
+              (record) => _i40.Protocol()
+                  .deserialize<({_i41.ByteData challenge, _i2.UuidValue id})>(
                     record,
                   ),
             );
@@ -2304,7 +2336,7 @@ class _PasskeyIdpEndpoint {
 
   _i3.Future<void> register(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i41.PasskeyRegistrationRequest registrationRequest,
+    required _i42.PasskeyRegistrationRequest registrationRequest,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2335,9 +2367,9 @@ class _PasskeyIdpEndpoint {
     });
   }
 
-  _i3.Future<_i38.AuthSuccess> login(
+  _i3.Future<_i39.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i41.PasskeyLoginRequest loginRequest,
+    required _i42.PasskeyLoginRequest loginRequest,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2358,7 +2390,7 @@ class _PasskeyIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AuthSuccess>);
+                as _i3.Future<_i39.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

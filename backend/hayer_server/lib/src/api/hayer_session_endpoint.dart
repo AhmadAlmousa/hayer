@@ -17,6 +17,7 @@ import '../sessions/consensus.dart';
 import '../sessions/destination_choices.dart';
 import '../sessions/session_code.dart';
 import '../sessions/session_mapper.dart';
+import '../sessions/session_progress_service.dart';
 import '../security/public_gateway_access.dart';
 import '../security/rate_limiter.dart';
 
@@ -583,6 +584,16 @@ class HayerSessionEndpoint extends Endpoint {
     Session session, {
     required String sessionId,
   }) => _loadById(session, sessionId, userId: _userId(session));
+
+  /// Returns mutable room state without retransmitting the immutable deck.
+  Future<SessionProgress> progress(
+    Session session, {
+    required String sessionId,
+  }) => SessionProgressService.load(
+    session,
+    sessionId: sessionId,
+    userId: _userId(session),
+  );
 
   /// Permanently deletes an active solo session owned by the caller.
   Future<void> abandon(
@@ -1296,15 +1307,15 @@ class HayerSessionEndpoint extends Endpoint {
     final updates = session.messages.createStream<SessionEvent>(
       _channel(sessionId),
     );
-    final bundle = await _loadById(
+    final progress = await SessionProgressService.load(
       session,
-      sessionId,
+      sessionId: sessionId,
       userId: _userId(session),
     );
     yield SessionEvent(
       sessionId: sessionId,
       type: SessionEventType.resultsChanged,
-      revision: bundle.session.revision,
+      revision: progress.session.revision,
       occurredAt: DateTime.now().toUtc(),
     );
     yield* updates;

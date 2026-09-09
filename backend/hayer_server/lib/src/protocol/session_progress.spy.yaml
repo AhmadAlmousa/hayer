@@ -1,0 +1,7 @@
+class: SessionProgress
+fields:
+  session: SessionView
+  participants: List<ParticipantView>
+  selfParticipant: ParticipantView
+  resultTallies: List<SessionResultTally>
+  destinationChoices: DestinationChoiceState?

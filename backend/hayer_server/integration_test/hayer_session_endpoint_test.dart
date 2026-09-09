@@ -665,6 +665,63 @@ void main() {
         }
       });
 
+      test(
+        'progress returns mutable state without the immutable deck',
+        () async {
+          final created = await endpoints.hayerSession.create(
+            host,
+            request: _request(),
+            idempotencyKey: 'create-lightweight-progress',
+          );
+          await endpoints.hayerSession.join(
+            guest,
+            code: created.session.code,
+            displayName: 'Guest',
+          );
+          await endpoints.hayerSession.swipe(
+            host,
+            command: _swipe(
+              created,
+              index: 0,
+              liked: true,
+              suffix: 'progress',
+            ),
+          );
+
+          final progress = await endpoints.hayerSession.progress(
+            guest,
+            sessionId: created.session.sessionId,
+          );
+
+          expect(progress.session.revision, 3);
+          expect(progress.participants, hasLength(2));
+          expect(progress.selfParticipant.displayName, 'Guest');
+          expect(progress.resultTallies, hasLength(created.deck.length));
+          expect(
+            progress.resultTallies.first,
+            isA<SessionResultTally>()
+                .having(
+                  (value) => value.placeId,
+                  'placeId',
+                  created.deck[0].placeId,
+                )
+                .having((value) => value.likeCount, 'likeCount', 1)
+                .having((value) => value.voterCount, 'voterCount', 1),
+          );
+          expect(
+            jsonEncode(progress.toJson()),
+            isNot(contains(created.deck[0].name)),
+          );
+          await expectLater(
+            endpoints.hayerSession.progress(
+              outsider,
+              sessionId: created.session.sessionId,
+            ),
+            throwsA(_apiError('forbidden')),
+          );
+        },
+      );
+
       test('join attempts share a resolved-client budget', () async {
         for (var index = 0; index < 120; index++) {
           final rotatingIdentity = _authenticated(

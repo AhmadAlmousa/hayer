@@ -209,6 +209,9 @@ Public generated Serverpod endpoint groups:
   names case-insensitively, and permits late joins while active.
 - `sessions.getBundle(sessionId)` returns the session, deck, participants,
   explicit authenticated participant/progress, and revision to members only.
+- `sessions.progress(sessionId)` returns the mutable session, participant/self
+  progress, vote tallies, and destination-choice state without retransmitting
+  the immutable deck.
 - `sessions.recordSwipe(command)` is idempotent by session/user/place.
 - `sessions.getResults(sessionId)` returns aggregate results without named
   individual votes.
@@ -586,9 +589,12 @@ production rollout.
 - [ ] Complete physical-device TalkBack/focus/contrast, largest native text,
   denied/approximate-location, background/reconnect, and performance checks.
 
-- [ ] Fix F17–F19 with coalesced lightweight progress refresh, dependable
+- [~] Fix F17–F19 with coalesced lightweight progress refresh, dependable
   stream retry/poll convergence, prompt startup shell, recoverable screen
-  states, and GPS success independent of reverse-geocoder failure.
+  states, and GPS success independent of reverse-geocoder failure. F18/F19,
+  Claude's F17 client convergence commit `6277dcd`, and the additive deck-free
+  server progress contract are implemented; client contract integration,
+  rollback fallback, and blocked-stream acceptance remain.
 - [ ] Fix F22/F23 by using bounded SQL aggregation/query paths and attributing
   matches to the actual matched place under versioned metric definitions.
 - [ ] Fix F24–F27 as one adaptive presentation pass: support at least 200%
@@ -775,6 +781,22 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-09: implemented F17's additive back-end progress contract. Members
+  can read mutable session/participant/self state, aggregate per-place vote
+  tallies, and destination choices without retransmitting immutable place
+  snapshots. Progress reads use a shared room lock, throttle narrow presence
+  writes to 30 seconds, and perform expiry as an authorized parameterized
+  status/revision update. The WebSocket handshake no longer loads and discards
+  the deck before yielding its current revision. Existing full `load` remains
+  compatible for initial reads and rollback. The real-PostGIS authorization,
+  tally, and no-snapshot regression compiles but cannot run because Docker is
+  absent. Pinned full preflight passes 101 server, 123 app, and nine admin
+  tests plus all analyses/checks. Signed `0.2.1+7` and its alias are
+  104,876,403 bytes at SHA-256
+  `34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+  both manifests, package/version metadata, and APK Signature Scheme v2
+  verify. Claude's client branch must consume the generated contract and keep
+  an old-server fallback before F17 is complete.
 - 2026-09-09: implemented F01's remaining method-aware join budget. The join
   method retains 30 requests/minute per authenticated anonymous user and now
   also enforces 120 requests/minute per gateway-resolved client address, using

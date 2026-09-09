@@ -64,26 +64,28 @@ import 'session_bundle.dart' as _i50;
 import 'session_event.dart' as _i51;
 import 'session_event_type.dart' as _i52;
 import 'session_mode.dart' as _i53;
-import 'session_result.dart' as _i54;
-import 'session_status.dart' as _i55;
-import 'session_view.dart' as _i56;
-import 'swipe_command.dart' as _i57;
-import 'taxonomy_canary_sample.dart' as _i58;
-import 'taxonomy_item.dart' as _i59;
-import 'taxonomy_kind.dart' as _i60;
-import 'taxonomy_snapshot.dart' as _i61;
-import 'taxonomy_status.dart' as _i62;
-import 'taxonomy_validation.dart' as _i63;
-import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i64;
-import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i65;
-import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i66;
-import 'package:hayer_client/src/protocol/metric_point.dart' as _i67;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i68;
+import 'session_progress.dart' as _i54;
+import 'session_result.dart' as _i55;
+import 'session_result_tally.dart' as _i56;
+import 'session_status.dart' as _i57;
+import 'session_view.dart' as _i58;
+import 'swipe_command.dart' as _i59;
+import 'taxonomy_canary_sample.dart' as _i60;
+import 'taxonomy_item.dart' as _i61;
+import 'taxonomy_kind.dart' as _i62;
+import 'taxonomy_snapshot.dart' as _i63;
+import 'taxonomy_status.dart' as _i64;
+import 'taxonomy_validation.dart' as _i65;
+import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i66;
+import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i67;
+import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i68;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i69;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i70;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i69;
-import 'dart:typed_data' as _i70;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i71;
+import 'dart:typed_data' as _i72;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i73;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -136,7 +138,9 @@ export 'session_bundle.dart';
 export 'session_event.dart';
 export 'session_event_type.dart';
 export 'session_mode.dart';
+export 'session_progress.dart';
 export 'session_result.dart';
+export 'session_result_tally.dart';
 export 'session_status.dart';
 export 'session_view.dart';
 export 'swipe_command.dart';
@@ -338,35 +342,41 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i53.SessionMode) {
       return _i53.SessionMode.fromJson(data) as T;
     }
-    if (t == _i54.SessionResult) {
-      return _i54.SessionResult.fromJson(data) as T;
+    if (t == _i54.SessionProgress) {
+      return _i54.SessionProgress.fromJson(data) as T;
     }
-    if (t == _i55.SessionStatus) {
-      return _i55.SessionStatus.fromJson(data) as T;
+    if (t == _i55.SessionResult) {
+      return _i55.SessionResult.fromJson(data) as T;
     }
-    if (t == _i56.SessionView) {
-      return _i56.SessionView.fromJson(data) as T;
+    if (t == _i56.SessionResultTally) {
+      return _i56.SessionResultTally.fromJson(data) as T;
     }
-    if (t == _i57.SwipeCommand) {
-      return _i57.SwipeCommand.fromJson(data) as T;
+    if (t == _i57.SessionStatus) {
+      return _i57.SessionStatus.fromJson(data) as T;
     }
-    if (t == _i58.TaxonomyCanarySample) {
-      return _i58.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _i58.SessionView) {
+      return _i58.SessionView.fromJson(data) as T;
     }
-    if (t == _i59.TaxonomyItem) {
-      return _i59.TaxonomyItem.fromJson(data) as T;
+    if (t == _i59.SwipeCommand) {
+      return _i59.SwipeCommand.fromJson(data) as T;
     }
-    if (t == _i60.TaxonomyKind) {
-      return _i60.TaxonomyKind.fromJson(data) as T;
+    if (t == _i60.TaxonomyCanarySample) {
+      return _i60.TaxonomyCanarySample.fromJson(data) as T;
     }
-    if (t == _i61.TaxonomySnapshot) {
-      return _i61.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i61.TaxonomyItem) {
+      return _i61.TaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i62.TaxonomyStatus) {
-      return _i62.TaxonomyStatus.fromJson(data) as T;
+    if (t == _i62.TaxonomyKind) {
+      return _i62.TaxonomyKind.fromJson(data) as T;
     }
-    if (t == _i63.TaxonomyValidation) {
-      return _i63.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i63.TaxonomySnapshot) {
+      return _i63.TaxonomySnapshot.fromJson(data) as T;
+    }
+    if (t == _i64.TaxonomyStatus) {
+      return _i64.TaxonomyStatus.fromJson(data) as T;
+    }
+    if (t == _i65.TaxonomyValidation) {
+      return _i65.TaxonomyValidation.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AdminAnalyticsOverview?>()) {
       return (data != null ? _i2.AdminAnalyticsOverview.fromJson(data) : null)
@@ -539,36 +549,43 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i53.SessionMode?>()) {
       return (data != null ? _i53.SessionMode.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i54.SessionResult?>()) {
-      return (data != null ? _i54.SessionResult.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i54.SessionProgress?>()) {
+      return (data != null ? _i54.SessionProgress.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i55.SessionStatus?>()) {
-      return (data != null ? _i55.SessionStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i55.SessionResult?>()) {
+      return (data != null ? _i55.SessionResult.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i56.SessionView?>()) {
-      return (data != null ? _i56.SessionView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i57.SwipeCommand?>()) {
-      return (data != null ? _i57.SwipeCommand.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i58.TaxonomyCanarySample?>()) {
-      return (data != null ? _i58.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _i1.getType<_i56.SessionResultTally?>()) {
+      return (data != null ? _i56.SessionResultTally.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i59.TaxonomyItem?>()) {
-      return (data != null ? _i59.TaxonomyItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i57.SessionStatus?>()) {
+      return (data != null ? _i57.SessionStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i60.TaxonomyKind?>()) {
-      return (data != null ? _i60.TaxonomyKind.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i58.SessionView?>()) {
+      return (data != null ? _i58.SessionView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i61.TaxonomySnapshot?>()) {
-      return (data != null ? _i61.TaxonomySnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i59.SwipeCommand?>()) {
+      return (data != null ? _i59.SwipeCommand.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i62.TaxonomyStatus?>()) {
-      return (data != null ? _i62.TaxonomyStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i60.TaxonomyCanarySample?>()) {
+      return (data != null ? _i60.TaxonomyCanarySample.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i63.TaxonomyValidation?>()) {
-      return (data != null ? _i63.TaxonomyValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i61.TaxonomyItem?>()) {
+      return (data != null ? _i61.TaxonomyItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i62.TaxonomyKind?>()) {
+      return (data != null ? _i62.TaxonomyKind.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i63.TaxonomySnapshot?>()) {
+      return (data != null ? _i63.TaxonomySnapshot.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i64.TaxonomyStatus?>()) {
+      return (data != null ? _i64.TaxonomyStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i65.TaxonomyValidation?>()) {
+      return (data != null ? _i65.TaxonomyValidation.fromJson(data) : null)
           as T;
     }
     if (t == List<_i17.AnalyticsKpi>) {
@@ -679,60 +696,66 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i59.TaxonomyItem>) {
+    if (t == List<_i56.SessionResultTally>) {
       return (data as List)
-              .map((e) => deserialize<_i59.TaxonomyItem>(e))
+              .map((e) => deserialize<_i56.SessionResultTally>(e))
               .toList()
           as T;
     }
-    if (t == List<_i58.TaxonomyCanarySample>) {
+    if (t == List<_i61.TaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i58.TaxonomyCanarySample>(e))
+              .map((e) => deserialize<_i61.TaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i64.LocationSuggestion>) {
+    if (t == List<_i60.TaxonomyCanarySample>) {
       return (data as List)
-              .map((e) => deserialize<_i64.LocationSuggestion>(e))
+              .map((e) => deserialize<_i60.TaxonomyCanarySample>(e))
               .toList()
           as T;
     }
-    if (t == List<_i65.AdminTaxonomyVersion>) {
+    if (t == List<_i66.LocationSuggestion>) {
       return (data as List)
-              .map((e) => deserialize<_i65.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_i66.LocationSuggestion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i66.AdminTaxonomyItem>) {
+    if (t == List<_i67.AdminTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i66.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i67.AdminTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i67.MetricPoint>) {
+    if (t == List<_i68.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i67.MetricPoint>(e))
+              .map((e) => deserialize<_i68.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i68.SessionResult>) {
+    if (t == List<_i69.MetricPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i68.SessionResult>(e))
+              .map((e) => deserialize<_i69.MetricPoint>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<({_i69.AuthSuccess auth, String operator})>()) {
+    if (t == List<_i70.SessionResult>) {
+      return (data as List)
+              .map((e) => deserialize<_i70.SessionResult>(e))
+              .toList()
+          as T;
+    }
+    if (t == _i1.getType<({_i71.AuthSuccess auth, String operator})>()) {
       return (
-            auth: deserialize<_i69.AuthSuccess>(
+            auth: deserialize<_i71.AuthSuccess>(
               ((data as Map)['n'] as Map)['auth'],
             ),
             operator: deserialize<String>(data['n']['operator']),
           )
           as T;
     }
-    if (t == _i1.getType<({_i70.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i72.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i70.ByteData>(
+            challenge: deserialize<_i72.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -740,10 +763,10 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     try {
-      return _i71.Protocol().deserialize<T>(data, t);
+      return _i73.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i69.Protocol().deserialize<T>(data, t);
+      return _i71.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -802,16 +825,18 @@ class Protocol extends _i1.SerializationManager {
       _i51.SessionEvent => 'SessionEvent',
       _i52.SessionEventType => 'SessionEventType',
       _i53.SessionMode => 'SessionMode',
-      _i54.SessionResult => 'SessionResult',
-      _i55.SessionStatus => 'SessionStatus',
-      _i56.SessionView => 'SessionView',
-      _i57.SwipeCommand => 'SwipeCommand',
-      _i58.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i59.TaxonomyItem => 'TaxonomyItem',
-      _i60.TaxonomyKind => 'TaxonomyKind',
-      _i61.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i62.TaxonomyStatus => 'TaxonomyStatus',
-      _i63.TaxonomyValidation => 'TaxonomyValidation',
+      _i54.SessionProgress => 'SessionProgress',
+      _i55.SessionResult => 'SessionResult',
+      _i56.SessionResultTally => 'SessionResultTally',
+      _i57.SessionStatus => 'SessionStatus',
+      _i58.SessionView => 'SessionView',
+      _i59.SwipeCommand => 'SwipeCommand',
+      _i60.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _i61.TaxonomyItem => 'TaxonomyItem',
+      _i62.TaxonomyKind => 'TaxonomyKind',
+      _i63.TaxonomySnapshot => 'TaxonomySnapshot',
+      _i64.TaxonomyStatus => 'TaxonomyStatus',
+      _i65.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -930,32 +955,36 @@ class Protocol extends _i1.SerializationManager {
         return 'SessionEventType';
       case _i53.SessionMode():
         return 'SessionMode';
-      case _i54.SessionResult():
+      case _i54.SessionProgress():
+        return 'SessionProgress';
+      case _i55.SessionResult():
         return 'SessionResult';
-      case _i55.SessionStatus():
+      case _i56.SessionResultTally():
+        return 'SessionResultTally';
+      case _i57.SessionStatus():
         return 'SessionStatus';
-      case _i56.SessionView():
+      case _i58.SessionView():
         return 'SessionView';
-      case _i57.SwipeCommand():
+      case _i59.SwipeCommand():
         return 'SwipeCommand';
-      case _i58.TaxonomyCanarySample():
+      case _i60.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i59.TaxonomyItem():
+      case _i61.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i60.TaxonomyKind():
+      case _i62.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i61.TaxonomySnapshot():
+      case _i63.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i62.TaxonomyStatus():
+      case _i64.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i63.TaxonomyValidation():
+      case _i65.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
-    className = _i71.Protocol().getClassNameForObject(data);
+    className = _i73.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i69.Protocol().getClassNameForObject(data);
+    className = _i71.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -1124,43 +1153,49 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'SessionMode') {
       return deserialize<_i53.SessionMode>(data['data']);
     }
+    if (dataClassName == 'SessionProgress') {
+      return deserialize<_i54.SessionProgress>(data['data']);
+    }
     if (dataClassName == 'SessionResult') {
-      return deserialize<_i54.SessionResult>(data['data']);
+      return deserialize<_i55.SessionResult>(data['data']);
+    }
+    if (dataClassName == 'SessionResultTally') {
+      return deserialize<_i56.SessionResultTally>(data['data']);
     }
     if (dataClassName == 'SessionStatus') {
-      return deserialize<_i55.SessionStatus>(data['data']);
+      return deserialize<_i57.SessionStatus>(data['data']);
     }
     if (dataClassName == 'SessionView') {
-      return deserialize<_i56.SessionView>(data['data']);
+      return deserialize<_i58.SessionView>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i57.SwipeCommand>(data['data']);
+      return deserialize<_i59.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i58.TaxonomyCanarySample>(data['data']);
+      return deserialize<_i60.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i59.TaxonomyItem>(data['data']);
+      return deserialize<_i61.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i60.TaxonomyKind>(data['data']);
+      return deserialize<_i62.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i61.TaxonomySnapshot>(data['data']);
+      return deserialize<_i63.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i62.TaxonomyStatus>(data['data']);
+      return deserialize<_i64.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i63.TaxonomyValidation>(data['data']);
+      return deserialize<_i65.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i71.Protocol().deserializeByClassName(data);
+      return _i73.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i69.Protocol().deserializeByClassName(data);
+      return _i71.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -1174,7 +1209,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i69.AuthSuccess auth, String operator})) {
+    if (record is ({_i71.AuthSuccess auth, String operator})) {
       return {
         "n": {
           "auth": record.auth.toJson(),
@@ -1182,7 +1217,7 @@ class Protocol extends _i1.SerializationManager {
         },
       };
     }
-    if (record is ({_i70.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i72.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -1191,10 +1226,10 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i71.Protocol().mapRecordToJson(record);
+      return _i73.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i69.Protocol().mapRecordToJson(record);
+      return _i71.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }
