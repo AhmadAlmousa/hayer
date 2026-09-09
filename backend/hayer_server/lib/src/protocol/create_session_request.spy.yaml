@@ -14,3 +14,5 @@ fields:
   consensusRule: ConsensusRule
   matchingTiming: MatchingTiming
   analyticsContext: ClientAnalyticsContext?
+  shortlistPlaceIds: List<String>?
+  freshDiscoveryCount: int?

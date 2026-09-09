@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_app/app/theme.dart';
 import 'package:hayer_app/features/swipe/place_deck_swiper.dart';
@@ -20,30 +21,32 @@ void main() {
       final detailsOpened = <int>[];
       final detailsClosed = <int>[];
       await tester.pumpWidget(
-        MaterialApp(
-          theme: HayerTheme.light(),
-          locale: Locale(locale),
-          localizationsDelegates: hayerLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: PlaceDeckSwiper(
-              sessionId: 'session-1',
-              places: [
-                _place('first').copyWith(formattedAddress: 'Full address'),
-                _place('second'),
-              ],
-              initialIndex: 0,
-              controller: controller,
-              disabled: false,
-              routeOrigin: RouteOriginMode.sessionAnchor,
-              routeEstimatesEnabled: false,
-              onHaptic: (liked) async => haptics.add(liked),
-              onDetailsOpened: detailsOpened.add,
-              onDetailsClosed: detailsClosed.add,
-              onDecision: (index, liked) {
-                decisions.add((index, liked));
-                return true;
-              },
+        ProviderScope(
+          child: MaterialApp(
+            theme: HayerTheme.light(),
+            locale: Locale(locale),
+            localizationsDelegates: hayerLocalizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: PlaceDeckSwiper(
+                sessionId: 'session-1',
+                places: [
+                  _place('first').copyWith(formattedAddress: 'Full address'),
+                  _place('second'),
+                ],
+                initialIndex: 0,
+                controller: controller,
+                disabled: false,
+                routeOrigin: RouteOriginMode.sessionAnchor,
+                routeEstimatesEnabled: false,
+                onHaptic: (liked) async => haptics.add(liked),
+                onDetailsOpened: detailsOpened.add,
+                onDetailsClosed: detailsClosed.add,
+                onDecision: (index, liked) {
+                  decisions.add((index, liked));
+                  return true;
+                },
+              ),
             ),
           ),
         ),
@@ -84,27 +87,29 @@ void main() {
     final haptics = <bool>[];
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: HayerTheme.dark(),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: SizedBox(
-            width: 400,
-            height: 700,
-            child: PlaceDeckSwiper(
-              sessionId: 'session-1',
-              places: [_place('first'), _place('second')],
-              initialIndex: 0,
-              controller: controller,
-              disabled: false,
-              routeOrigin: RouteOriginMode.sessionAnchor,
-              routeEstimatesEnabled: false,
-              onHaptic: (liked) async => haptics.add(liked),
-              onDecision: (index, liked) {
-                decisions.add((index, liked));
-                return true;
-              },
+      ProviderScope(
+        child: MaterialApp(
+          theme: HayerTheme.dark(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 700,
+              child: PlaceDeckSwiper(
+                sessionId: 'session-1',
+                places: [_place('first'), _place('second')],
+                initialIndex: 0,
+                controller: controller,
+                disabled: false,
+                routeOrigin: RouteOriginMode.sessionAnchor,
+                routeEstimatesEnabled: false,
+                onHaptic: (liked) async => haptics.add(liked),
+                onDecision: (index, liked) {
+                  decisions.add((index, liked));
+                  return true;
+                },
+              ),
             ),
           ),
         ),
@@ -138,23 +143,25 @@ void main() {
     final haptics = <bool>[];
     final decisions = <(int, bool)>[];
     await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: PlaceDeckSwiper(
-            sessionId: 'session-1',
-            places: [_place('first')],
-            initialIndex: 0,
-            controller: controller,
-            disabled: false,
-            routeOrigin: RouteOriginMode.sessionAnchor,
-            routeEstimatesEnabled: false,
-            onHaptic: (liked) async => haptics.add(liked),
-            onDecision: (index, liked) {
-              decisions.add((index, liked));
-              return true;
-            },
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: PlaceDeckSwiper(
+              sessionId: 'session-1',
+              places: [_place('first')],
+              initialIndex: 0,
+              controller: controller,
+              disabled: false,
+              routeOrigin: RouteOriginMode.sessionAnchor,
+              routeEstimatesEnabled: false,
+              onHaptic: (liked) async => haptics.add(liked),
+              onDecision: (index, liked) {
+                decisions.add((index, liked));
+                return true;
+              },
+            ),
           ),
         ),
       ),
@@ -184,27 +191,29 @@ void main() {
     final decisions = <(int, bool)>[];
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: HayerTheme.light(),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: SizedBox(
-            width: 400,
-            height: 700,
-            child: PlaceDeckSwiper(
-              sessionId: 'session-1',
-              places: [_place('first'), _place('second')],
-              initialIndex: 0,
-              controller: controller,
-              disabled: false,
-              routeOrigin: RouteOriginMode.sessionAnchor,
-              routeEstimatesEnabled: false,
-              onHaptic: (_) async {},
-              onDecision: (index, liked) {
-                decisions.add((index, liked));
-                return true;
-              },
+      ProviderScope(
+        child: MaterialApp(
+          theme: HayerTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 700,
+              child: PlaceDeckSwiper(
+                sessionId: 'session-1',
+                places: [_place('first'), _place('second')],
+                initialIndex: 0,
+                controller: controller,
+                disabled: false,
+                routeOrigin: RouteOriginMode.sessionAnchor,
+                routeEstimatesEnabled: false,
+                onHaptic: (_) async {},
+                onDecision: (index, liked) {
+                  decisions.add((index, liked));
+                  return true;
+                },
+              ),
             ),
           ),
         ),

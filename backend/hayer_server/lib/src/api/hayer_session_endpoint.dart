@@ -85,56 +85,115 @@ class HayerSessionEndpoint extends Endpoint {
       longitude: request.anchorLongitude,
       countryCode: countryCode,
     );
+    final shortlistIds = request.shortlistPlaceIds ?? const <String>[];
+    final freshDiscoveryCount = request.freshDiscoveryCount ?? 0;
+    final targetDeckSize = shortlistIds.isEmpty
+        ? request.deckSize
+        : shortlistIds.length + freshDiscoveryCount;
+    var shortlist = const <PlaceSnapshot>[];
     late final List<PlaceSnapshot> candidates;
     try {
       final services = await PlaceServices.forSession(session);
-      final candidateCount = request.visitAt == null
-          ? request.deckSize
-          : min(50, max(request.deckSize * 3, request.deckSize + 10));
-      candidates =
-          await CatalogPlaceService(
-            source: services.source,
-            calibrationVersion: services.calibration.version,
-          ).buildDeck(
-            session,
-            categoryId: request.categoryId,
-            subcategoryIds: request.subcategoryIds,
-            latitude: request.anchorLatitude,
-            longitude: request.anchorLongitude,
-            radiusMeters: request.radiusMeters,
-            deckSize: candidateCount,
-            maximumPriceLevel: request.priceLevel,
-            countryCode: countryCode,
+      final catalog = CatalogPlaceService(
+        source: services.source,
+        calibrationVersion: services.calibration.version,
+      );
+      if (shortlistIds.isNotEmpty) {
+        shortlist = await catalog.resolveShortlist(
+          session,
+          placeIds: shortlistIds,
+          latitude: request.anchorLatitude,
+          longitude: request.anchorLongitude,
+          radiusMeters: request.radiusMeters,
+          maximumPriceLevel: request.priceLevel,
+          countryCode: countryCode,
+        );
+        if (shortlist.length != shortlistIds.length) {
+          throw ApiException(
+            code: 'shortlist_unavailable',
+            message: 'Some saved places are no longer eligible for this room.',
           );
+        }
+      }
+      final requestedFresh = shortlistIds.isEmpty
+          ? request.deckSize
+          : freshDiscoveryCount;
+      final baseCandidateCount = shortlistIds.isEmpty
+          ? requestedFresh
+          : min(50, requestedFresh + shortlistIds.length);
+      final candidateCount = request.visitAt == null
+          ? baseCandidateCount
+          : min(
+              50,
+              max(baseCandidateCount * 3, baseCandidateCount + 10),
+            );
+      final fresh = requestedFresh == 0
+          ? const <PlaceSnapshot>[]
+          : await catalog.buildDeck(
+              session,
+              categoryId: request.categoryId,
+              subcategoryIds: request.subcategoryIds,
+              latitude: request.anchorLatitude,
+              longitude: request.anchorLongitude,
+              radiusMeters: request.radiusMeters,
+              deckSize: candidateCount,
+              maximumPriceLevel: request.priceLevel,
+              countryCode: countryCode,
+            );
+      final shortlistedIds = shortlistIds.toSet();
+      candidates = [
+        ...shortlist,
+        ...fresh.where((place) => !shortlistedIds.contains(place.placeId)),
+      ];
     } on PlaceSourceException catch (error, stackTrace) {
       await cityFuture;
-      session.log(
-        'Session creation place source failure (${error.code}): '
-        '${error.message}',
-        level: LogLevel.error,
-        exception: error.cause ?? error,
-        stackTrace: stackTrace,
-      );
-      throw ApiException(
-        code: error.code,
-        message: error.message,
-      );
+      if (shortlist.isNotEmpty) {
+        session.log(
+          'Fresh shortlist discovery failed (${error.code}); creating the room '
+          'with the saved places only.',
+          level: LogLevel.warning,
+          exception: error.cause ?? error,
+          stackTrace: stackTrace,
+        );
+        candidates = shortlist;
+      } else {
+        session.log(
+          'Session creation place source failure (${error.code}): '
+          '${error.message}',
+          level: LogLevel.error,
+          exception: error.cause ?? error,
+          stackTrace: stackTrace,
+        );
+        throw ApiException(
+          code: error.code,
+          message: error.message,
+        );
+      }
     } catch (_) {
       await cityFuture;
       rethrow;
     }
-    final deck = request.visitAt == null
+    final eligibleCandidates = request.visitAt == null
         ? candidates
-        : candidates
-              .where(
-                (place) => PlaceAvailability.isOpenAt(
-                  place,
-                  visitAt: request.visitAt!,
-                  countryCode: countryCode,
-                ),
-              )
-              .take(request.deckSize)
-              .toList(growable: false);
+        : candidates.where(
+            (place) => PlaceAvailability.isOpenAt(
+              place,
+              visitAt: request.visitAt!,
+              countryCode: countryCode,
+            ),
+          );
+    final deck = eligibleCandidates
+        .take(targetDeckSize)
+        .toList(growable: false);
+    if (shortlistIds.isNotEmpty &&
+        !shortlistIds.every(
+          (placeId) => deck.any((place) => place.placeId == placeId),
+        )) {
+      throw ApiException(
+        code: 'shortlist_unavailable',
+        message: 'Some saved places are not available at the selected time.',
+      );
+    }
     final city = await cityFuture;
     if (deck.isEmpty) {
       throw ApiException(
@@ -331,6 +390,19 @@ class HayerSessionEndpoint extends Endpoint {
               placeName: place.name,
               context: request.analyticsContext,
             ),
+          if (shortlistIds.isNotEmpty)
+            ProductAnalyticsRecorder.event(
+              eventId: _uuid.v7(),
+              occurredAt: now,
+              metricName: AnalyticsMetric.shortlistUsed,
+              sessionRow: sessionRow,
+              value: shortlistIds.length.toDouble(),
+              sampleCount: shortlistIds.length,
+              context: request.analyticsContext,
+              outcomeCode: deck.length == shortlistIds.length
+                  ? 'saved_only'
+                  : 'with_discovery',
+            ),
           if (deck.any((place) => place.isStale))
             ProductAnalyticsRecorder.event(
               eventId: _uuid.v7(),
@@ -339,7 +411,7 @@ class HayerSessionEndpoint extends Endpoint {
               sessionRow: sessionRow,
               context: request.analyticsContext,
             ),
-          if (deck.length < request.deckSize)
+          if (deck.length < targetDeckSize)
             ProductAnalyticsRecorder.event(
               eventId: _uuid.v7(),
               occurredAt: now,
@@ -1393,6 +1465,26 @@ class HayerSessionEndpoint extends Endpoint {
       throw ApiException(
         code: 'invalid_request',
         message: 'Choose a supported deck size.',
+      );
+    }
+    final shortlistIds = request.shortlistPlaceIds ?? const <String>[];
+    final freshDiscoveryCount = request.freshDiscoveryCount ?? 0;
+    if (shortlistIds.isEmpty) {
+      if (request.freshDiscoveryCount != null) {
+        throw ApiException(
+          code: 'bad_request',
+          message: 'Fresh shortlist discovery requires saved places.',
+        );
+      }
+    } else if (shortlistIds.length < 2 ||
+        shortlistIds.length > 20 ||
+        shortlistIds.toSet().length != shortlistIds.length ||
+        shortlistIds.any((id) => id.isEmpty || id.length > 128) ||
+        !const {0, 5}.contains(freshDiscoveryCount) ||
+        shortlistIds.length + freshDiscoveryCount > request.deckSize) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'Choose 2–20 distinct saved places for the shortlist.',
       );
     }
     if (request.priceLevel != null &&

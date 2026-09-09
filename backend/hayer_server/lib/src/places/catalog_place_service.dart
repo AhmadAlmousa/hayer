@@ -25,6 +25,51 @@ class CatalogPlaceService {
   final PlaceSearchPolicy policy;
   static final Map<String, Future<List<PlaceSnapshot>>> _inFlightRefreshes = {};
 
+  Future<List<PlaceSnapshot>> resolveShortlist(
+    Session session, {
+    required List<String> placeIds,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    int? maximumPriceLevel,
+    required String countryCode,
+  }) async {
+    if (placeIds.isEmpty) return const [];
+    final rows = await PoiCatalogRow.db.find(
+      session,
+      where: (table) =>
+          table.provider.equals('google-web') &
+          table.providerPlaceId.inSet(placeIds.toSet()) &
+          table.countryCode.equals(countryCode) &
+          table.quarantinedAt.equals(null),
+      limit: placeIds.length,
+    );
+    final settings = await _settings(session);
+    final now = DateTime.now().toUtc();
+    final retainedAfter = now.subtract(
+      Duration(days: settings.staleFallbackDays),
+    );
+    final retained = rows
+        .where((row) => !row.lastSeenAt.isBefore(retainedAfter))
+        .toList(growable: false);
+    final freshAfter = now.subtract(Duration(hours: settings.freshHours));
+    final selected = policy.select(
+      candidates: retained.map(_candidateFromRow),
+      anchorLatitude: latitude,
+      anchorLongitude: longitude,
+      radiusMeters: radiusMeters,
+      deckSize: placeIds.length,
+      maximumPriceLevel: maximumPriceLevel,
+      stale: retained.any((row) => row.sourceCheckedAt.isBefore(freshAfter)),
+    );
+    final selectedById = {
+      for (final place in selected) place.placeId: place,
+    };
+    return [
+      for (final placeId in placeIds) ?selectedById[placeId],
+    ];
+  }
+
   Future<List<PlaceSnapshot>> buildDeck(
     Session session, {
     required String categoryId,

@@ -160,6 +160,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           label: Text(strings.newSearch),
                         ),
                         const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () => context.push('/saved'),
+                          icon: const Icon(Icons.bookmarks_rounded),
+                          label: Text(strings.savedPlaces),
+                        ),
+                        const SizedBox(height: 12),
                         if (_activeSession != null) ...[
                           ResumeSessionButton(
                             bundle: _activeSession!,

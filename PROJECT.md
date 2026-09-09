@@ -1,30 +1,25 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-08
+Last updated: 2026-09-09
 
 Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7-G — trustworthy decision-journey instrumentation and
-multiplayer-choice verification; M7-A/M7-E/M7-F safety acceptance remains an
-open release prerequisite
+Current focus: M7-H — structured, moderated POI issue reporting (P06);
+M7-A/M7-E/M7-F safety acceptance remains an open release prerequisite
 
-Live handoff (2026-09-08): Codex is implementing the remaining G02 analytics
-contract. The current working tree adds additive raw-event metadata and
-migration `20260908110049218-decision-analytics`, in-memory per-journey client
-context, 500 ms foreground card impressions with server-side room/member/card
-deduplication, detail/result events, sync-failure/recovery events, explicit
-choice/change facts, and separate session match/no-match plus actual-place
-match attribution. Pinned full preflight now passes generation/formatting,
-fatal-info analysis for server/generated client/app/admin, all 96 server tests,
-105 app tests, 8 admin tests, shell syntax, and diff checks. Docker is
-unavailable, so real-PostGIS and two-device proofs remain open. The signed
-103,286,395-byte build-7 APK and alias were rebuilt; both manifests verify at
-SHA-256 `43c27ddfdf54aeb051b8f8844170e91f39ab7822e2f1e91eb176b6d510548dbe`,
-and APK Signature Scheme v2 verifies. Next action: commit only the G02 slice.
-Claude's committed F01 signup work is separate; its method-aware join limiter
-intentionally remains deferred while this slice owns
-`hayer_session_endpoint.dart`. Existing unrelated working-tree changes are
-being preserved.
+Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`. P05 is complete
+in the current slice: secure local Want to try/Favorites lists, private notes,
+device-loss/no-sync/export disclosure, save actions across cards/results,
+2–20-place shortlist rooms, an optional five-place fresh mix, authoritative
+server re-resolution, and fail-closed server compatibility. Cached snapshots
+and notes never cross the room API. Raw save telemetry is deliberately absent;
+only successful room reuse records `shortlist_used`. Pinned full preflight
+passes generation/formatting, all fatal-info analyses, 96 server tests, 119 app
+tests, eight admin tests, shell checks, and diff checks. Signed build 7 passes
+manifest and v2 signature verification. New shortlist PostGIS cases compile
+but cannot run because this host has no `docker` command. Next is P06; Claude's
+F01 signup work is separate and its join limiter remains open. Existing
+unrelated working-tree changes are being preserved.
 
 Product brief: [`overview.md`](overview.md)
 
@@ -609,10 +604,19 @@ build 5 is rejected only after build 6 and rollback evidence are verified.
 Exit: the product and dashboard distinguish inclusion, human impression,
 preference, voting completion, declared choice, no-match, and technical failure.
 
-#### M7-H — Return value and POI feedback `[ ]`
+#### M7-H — Return value and POI feedback `[~]`
 
-- [ ] Implement P05 as private local-first saved/favorite lists and reusable
+- [x] Implement P05 as private local-first saved/favorite lists and reusable
   shortlists; preserve notes locally unless a user explicitly shares them.
+  Want to try/Favorites, private 500-character notes, save/remove actions,
+  device-loss/no-sync/export disclosure, 2–20-place selection, optional five-
+  place fresh mix, and server-side catalog re-resolution are implemented.
+  The API receives only ordered place IDs; saved snapshots and notes stay
+  local. Reuse telemetry is emitted only after room creation, and compatibility
+  deck buckets no longer create false underfill events. Pinned full preflight
+  passes with 96 server, 119 app, and eight admin tests. Signed build 7 and both
+  checksum manifests pass. The compiled real-PostGIS cases remain blocked by
+  the absent Docker runtime.
 - [ ] Implement P06 as structured, rate-limited POI issue reporting with
   reversible moderation, source corroboration, ownership, resolution state,
   and an audit trail. Never convert one anonymous report directly into a
@@ -728,6 +732,35 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-08: completed P05 saved places and reusable shortlists. The consumer
+  stores up to 100 local snapshots in secure storage, organized as Want to try
+  or Favorites with optional 500-character private notes; save/remove actions
+  are available from swipe and result cards. The bilingual saved screen states
+  that data is not synced or exportable and may be lost with app data. Users
+  can select 2–20 places within one supported search area and start solo or
+  multiplayer rooms, optionally requesting up to five fresh ideas.
+  `CreateSessionRequest` sends ordered IDs and a bounded fresh count only. The
+  server re-resolves every identity from the eligible catalog, preserves the
+  selected prefix, excludes duplicate discoveries, survives fresh-source
+  failure with a saved-only room, and rejects missing/ineligible selections.
+  The client fails closed if an older server does not preserve that prefix.
+  Notes and cached snapshots are excluded from the API; raw save counts are not
+  collected. `shortlist_used` is recorded only for a successfully created room.
+  The architecture and unit/widget-test skills guided the local store,
+  repository/controller/UI separation and privacy/serialization regressions.
+- 2026-09-08: pinned final `scripts/preflight.sh` passed Serverpod generation,
+  formatting, fatal-info analysis of server/generated client/app/admin, 96
+  server tests, 119 app tests, eight admin tests, shell syntax, and diff checks.
+  Three new real-PostGIS cases cover saved ordering/reuse analytics, bounded
+  fresh deduplication, and malformed/unavailable IDs, but
+  `scripts/test-server-integration.sh` cannot execute because this host has no
+  `docker` command. `scripts/build-release-apk.sh` produced signed unpublished
+  `0.2.1+7`; `hayer-0.2.1-7.apk` and `hayer.apk` are each 104,040,735 bytes and
+  both manifests verify at SHA-256
+  `cd87705bb266d2878e9f3122e9af1ab830ba9bc3ecfdc77679c7e81734954c18`.
+  `apksigner verify --verbose` confirms APK Signature Scheme v2 and `aapt2`
+  confirms `sa.almou.hayer` version code 7/name 0.2.1, min SDK 26, target SDK
+  36. No deployment, publish, minimum-build change, push, or tag was performed.
 - 2026-09-08: implemented audit G02 across the consumer, Serverpod, and admin
   dashboard. The event contract now separates deck inclusion from a measured
   500 ms foreground card impression, details/results views, destination choice

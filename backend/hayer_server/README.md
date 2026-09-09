@@ -13,6 +13,12 @@ ballot breaks a leading tie. Deploy migration
 `20260908061228738-destination-choices` with this server before exposing the
 build-7 choice UI.
 
+Session creation can resolve an ordered shortlist of 2–20 saved place IDs from
+the authoritative catalog, optionally adding up to five fresh candidates.
+Selected places remain first, in order; local cached snapshots and private
+notes are never accepted by the API. Deploy this additive server contract
+before exposing saved-shortlist creation in a client.
+
 The bundled place calibration is the offline fallback. The running server
 checks Vela's detached-signature-protected calibration feed at startup and once
 per hour, ignores fields outside Hayer's search contract, and automatically

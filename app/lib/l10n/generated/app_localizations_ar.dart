@@ -10,6 +10,102 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get savedPlaces => 'الأماكن المحفوظة';
+
+  @override
+  String get wantToTry => 'أبغى أجربه';
+
+  @override
+  String get favorites => 'المفضلة';
+
+  @override
+  String get savePlace => 'حفظ المكان';
+
+  @override
+  String get removeSavedPlace => 'إزالة من الأماكن المحفوظة';
+
+  @override
+  String get savedPlaceConfirmation => 'حُفظ في «أبغى أجربه».';
+
+  @override
+  String get removedSavedPlaceConfirmation => 'أُزيل من الأماكن المحفوظة.';
+
+  @override
+  String get savedPlaceFailed => 'تعذّر تحديث الأماكن المحفوظة على هذا الجهاز.';
+
+  @override
+  String get privateOnDeviceTitle => 'خاص على هذا الجهاز';
+
+  @override
+  String get privateOnDeviceMessage =>
+      'تبقى الأماكن والملاحظات المحفوظة على هذا الجهاز. لا تتزامن ولا يمكن تصديرها حالياً، وقد تُفقد عند مسح بيانات التطبيق أو إزالة حيّر.';
+
+  @override
+  String get noSavedPlaces =>
+      'ما فيه أماكن هنا بعد. احفظ مكاناً أثناء السحب أو من النتائج.';
+
+  @override
+  String get selectForShortlist => 'اختر أماكن لقائمة قصيرة';
+
+  @override
+  String selectedPlacesCount(int count) {
+    return 'تم اختيار $count';
+  }
+
+  @override
+  String startShortlist(int count) {
+    return 'ابدأ بالقائمة ($count)';
+  }
+
+  @override
+  String get minimumShortlist => 'اختر مكانين على الأقل لبدء قائمة قصيرة.';
+
+  @override
+  String get editSavedPlace => 'تعديل المكان المحفوظ';
+
+  @override
+  String get privateNote => 'ملاحظة خاصة';
+
+  @override
+  String get privateNoteHint => 'لا يراها غيرك على هذا الجهاز.';
+
+  @override
+  String get deleteSavedPlace => 'حذف المكان المحفوظ';
+
+  @override
+  String get saveChanges => 'حفظ التعديلات';
+
+  @override
+  String get startShortlistTitle => 'ابدأ من الأماكن المحفوظة';
+
+  @override
+  String shortlistSelectedCount(int count) {
+    return 'ستبدأ الغرفة بـ $count أماكن محفوظة.';
+  }
+
+  @override
+  String get freshIdeas => 'أضف 5 اقتراحات جديدة';
+
+  @override
+  String get freshIdeasDescription =>
+      'سيبحث حيّر قريباً عن خمسة أماكن جديدة كحد أقصى. تبقى أماكنك المحفوظة في الغرفة حتى لو تعذّر البحث.';
+
+  @override
+  String get shortlistAreaTooWide =>
+      'اختر أماكن محفوظة تقع ضمن نطاق بحث واحد بنصف قطر 10 كم.';
+
+  @override
+  String get shortlistCategoryUnavailable =>
+      'لم تعد لهذه الأماكن المحفوظة فئة مدعومة.';
+
+  @override
+  String get shortlistUnavailable =>
+      'بعض الأماكن المحفوظة لم تعد متاحة لهذه الغرفة. عدّل قائمتك وحاول مرة ثانية.';
+
+  @override
+  String get createShortlistRoom => 'إنشاء غرفة القائمة';
+
+  @override
   String get placeDetails => 'التفاصيل';
 
   @override

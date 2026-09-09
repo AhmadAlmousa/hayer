@@ -33,6 +33,7 @@ abstract final class AnalyticsMetric {
   static const visitScheduled = 'visit_scheduled';
   static const staleDeck = 'stale_deck';
   static const underfilledDeck = 'underfilled_deck';
+  static const shortlistUsed = 'shortlist_used';
 }
 
 abstract final class AnalyticsOrigin {

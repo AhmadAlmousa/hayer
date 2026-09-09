@@ -5,8 +5,10 @@ swipe a deterministic deck of nearby places, or share an `ABC-124` session
 so a group can decide from the same ordered deck. Swipe cards can open full
 place details without consuming a vote. After group matching, every participant
 gets one editable `My choice` ballot; plurality wins and the host's own ballot
-breaks a leading tie. The repository also contains the Serverpod/PostGIS
-backend and a protected Flutter web operations console.
+breaks a leading tie. Users can privately save places on one device, organize
+Want to try/Favorites lists, and start a room from an ordered saved shortlist
+with an optional five-place fresh mix. The repository also contains the
+Serverpod/PostGIS backend and a protected Flutter web operations console.
 
 The product decisions, implementation status, verification evidence, and next
 release gates live in [`PROJECT.md`](PROJECT.md). The longer product brief is
@@ -137,7 +139,9 @@ This runner is fully containerized; the host only needs Docker Compose.
 6. For a generated-contract or migration change, verify that server with the
    previously accepted app before replacing `backend/deploy/releases/hayer.apk`.
    Build 7's destination-choice migration is additive, but its `My choice`
-   action requires the new server.
+   action requires the new server. Deploy the P05 server before a client that
+   creates saved shortlists; the client rejects a response that does not begin
+   with its exact ordered saved selection.
 7. Copy the new release files under `backend/deploy/releases`, verify their
    SHA-256 manifests and public download, then configure Cloudflare Tunnel for
    public `hayer.almou.sa` only, targeting

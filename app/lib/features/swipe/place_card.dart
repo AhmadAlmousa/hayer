@@ -11,6 +11,7 @@ import '../../core/place_links.dart';
 import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/place_details_sheet.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../saved/save_place_button.dart';
 
 class PlaceCard extends StatelessWidget {
   const PlaceCard({
@@ -95,6 +96,7 @@ class PlaceCard extends StatelessWidget {
                     icon: const Icon(Icons.info_outline_rounded),
                     label: Text(strings.placeDetails),
                   ),
+                  SavePlaceButton(place: place),
                   OutlinedButton.icon(
                     onPressed: () => launchPlaceNavigation(context, place),
                     icon: const Icon(Icons.directions_outlined),
@@ -281,6 +283,10 @@ class PlaceCard extends StatelessWidget {
                         onPressed: () => _showDetails(context),
                         icon: const Icon(Icons.info_outline_rounded),
                         label: Text(strings.placeDetails),
+                      ),
+                      SavePlaceButton(
+                        place: place,
+                        onDark: true,
                       ),
                       Text(
                         strings.sourceAttribution,

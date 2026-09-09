@@ -5,9 +5,12 @@ import '../features/home/home_screen.dart';
 import '../features/join/join_screen.dart';
 import '../features/lobby/lobby_screen.dart';
 import '../features/results/results_screen.dart';
+import '../features/saved/saved_places_screen.dart';
+import '../features/saved/shortlist_setup_screen.dart';
 import '../features/scan/scan_screen.dart';
 import '../features/setup/setup_screen.dart';
 import '../features/swipe/swipe_screen.dart';
+import '../domain/shortlist_draft.dart';
 
 GoRouter createAppRouter({String? initialLocation}) => GoRouter(
   initialLocation: initialLocation,
@@ -23,6 +26,19 @@ GoRouter createAppRouter({String? initialLocation}) => GoRouter(
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/setup', builder: (context, state) => const SetupScreen()),
     GoRoute(path: '/scan', builder: (context, state) => const ScanScreen()),
+    GoRoute(
+      path: '/saved',
+      builder: (context, state) => const SavedPlacesScreen(),
+      routes: [
+        GoRoute(
+          path: 'start',
+          builder: (context, state) => switch (state.extra) {
+            final ShortlistDraft draft => ShortlistSetupScreen(draft: draft),
+            _ => const SavedPlacesScreen(),
+          },
+        ),
+      ],
+    ),
     GoRoute(
       path: '/join',
       builder: (context, state) => const JoinScreen(),

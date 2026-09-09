@@ -10,6 +10,8 @@ Hayer is a mobile-first app for deciding where to go. A user chooses what they w
 - In multiplayer mode, one person creates a session, shares a six-character code, link, or QR code, and every participant swipes the same ordered deck asynchronously.
 - Group results support majority or unanimous matching, followed by one
   editable top-choice ballot per participant.
+- Saved places and private notes stay on one device; users can start a room
+  from 2–20 saved identities with an optional five-place fresh mix.
 - A session may wait until everyone finishes or stop at the first valid match.
 - The primary targets are Android, iOS, and web/PWA.
 
@@ -91,6 +93,9 @@ flowchart LR
 - Retry or reconcile failed swipe writes without losing the user's action.
 - Submit a destination choice without optimistic vote counts and reconcile a
   lost response from the next authoritative session snapshot.
+- Store Want to try/Favorites lists and notes locally, send only ordered place
+  IDs for shortlist creation, and fail closed if the server does not preserve
+  the selected prefix.
 - Never construct extractor requests or parse Google response arrays in UI code.
 
 ### 5.2 Backend responsibilities

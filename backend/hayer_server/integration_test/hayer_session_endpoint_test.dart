@@ -405,6 +405,103 @@ void main() {
         },
       );
 
+      test(
+        'saved-only shortlist preserves order and records reuse without underfill',
+        () async {
+          final created = await endpoints.hayerSession.create(
+            host,
+            request: _request(
+              mode: SessionMode.solo,
+              analyticsContext: _analyticsContext(7),
+              shortlistPlaceIds: const ['place-4', 'place-1'],
+              freshDiscoveryCount: 0,
+            ),
+            idempotencyKey: 'shortlist-saved-only',
+          );
+
+          expect(_placeIds(created), ['place-4', 'place-1']);
+          expect(created.session.deckSizeRequested, 10);
+          expect(created.session.deckSizeActual, 2);
+          final events = await _analyticsEvents(sessionBuilder);
+          final reuse = events.singleWhere(
+            (event) => event.metricName == 'shortlist_used',
+          );
+          expect(reuse.value, 2);
+          expect(reuse.sampleCount, 2);
+          expect(reuse.outcomeCode, 'saved_only');
+          expect(
+            events.where((event) => event.metricName == 'underfilled_deck'),
+            isEmpty,
+          );
+        },
+      );
+
+      test(
+        'shortlist fresh mix excludes saved duplicates and stays bounded',
+        () async {
+          final created = await endpoints.hayerSession.create(
+            host,
+            request: _request(
+              mode: SessionMode.solo,
+              analyticsContext: _analyticsContext(8),
+              shortlistPlaceIds: const ['place-0', 'place-1'],
+              freshDiscoveryCount: 5,
+            ),
+            idempotencyKey: 'shortlist-with-fresh',
+          );
+
+          expect(created.deck, hasLength(7));
+          expect(_placeIds(created).take(2), ['place-0', 'place-1']);
+          expect(_placeIds(created).toSet(), hasLength(7));
+          final reuse = (await _analyticsEvents(sessionBuilder)).singleWhere(
+            (event) => event.metricName == 'shortlist_used',
+          );
+          expect(reuse.outcomeCode, 'with_discovery');
+        },
+      );
+
+      test(
+        'shortlist creation rejects malformed and unavailable identities',
+        () async {
+          await expectLater(
+            endpoints.hayerSession.create(
+              host,
+              request: _request(
+                mode: SessionMode.solo,
+                shortlistPlaceIds: const ['place-0'],
+                freshDiscoveryCount: 0,
+              ),
+              idempotencyKey: 'shortlist-too-small',
+            ),
+            throwsA(_apiError('bad_request')),
+          );
+          await expectLater(
+            endpoints.hayerSession.create(
+              host,
+              request: _request(
+                mode: SessionMode.solo,
+                shortlistPlaceIds: const ['place-0', 'place-0'],
+                freshDiscoveryCount: 0,
+              ),
+              idempotencyKey: 'shortlist-duplicate',
+            ),
+            throwsA(_apiError('bad_request')),
+          );
+          await expectLater(
+            endpoints.hayerSession.create(
+              host,
+              request: _request(
+                mode: SessionMode.solo,
+                shortlistPlaceIds: const ['place-0', 'missing-place'],
+                freshDiscoveryCount: 0,
+              ),
+              idempotencyKey: 'shortlist-unavailable',
+            ),
+            throwsA(_apiError('shortlist_unavailable')),
+          );
+        },
+      );
+
       test('concurrent create retries persist one immutable session', () async {
         final request = _request();
         final bundles = await Future.wait([
@@ -846,6 +943,8 @@ CreateSessionRequest _request({
   ConsensusRule consensusRule = ConsensusRule.majority,
   MatchingTiming matchingTiming = MatchingTiming.afterDeck,
   ClientAnalyticsContext? analyticsContext,
+  List<String>? shortlistPlaceIds,
+  int? freshDiscoveryCount,
 }) => CreateSessionRequest(
   mode: mode,
   categoryId: 'restaurant',
@@ -859,6 +958,8 @@ CreateSessionRequest _request({
   consensusRule: consensusRule,
   matchingTiming: matchingTiming,
   analyticsContext: analyticsContext,
+  shortlistPlaceIds: shortlistPlaceIds,
+  freshDiscoveryCount: freshDiscoveryCount,
 );
 
 SwipeCommand _swipe(

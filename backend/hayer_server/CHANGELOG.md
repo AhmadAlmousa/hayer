@@ -6,6 +6,9 @@
   revision, and same-choice retry handling.
 - Return anonymous aggregate destination counts, the caller's own ballot, and
   plurality/host-ballot tie state in an optional session-bundle field.
+- Resolve ordered 2–20-place saved shortlists against the authoritative catalog
+  and optionally append up to five fresh candidates without accepting local
+  snapshots or notes.
 
 ## 1.0.0
 

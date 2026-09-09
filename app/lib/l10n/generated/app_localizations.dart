@@ -98,6 +98,174 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @savedPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved places'**
+  String get savedPlaces;
+
+  /// No description provided for @wantToTry.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to try'**
+  String get wantToTry;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @savePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Save place'**
+  String get savePlace;
+
+  /// No description provided for @removeSavedPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from saved places'**
+  String get removeSavedPlace;
+
+  /// No description provided for @savedPlaceConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to Want to try.'**
+  String get savedPlaceConfirmation;
+
+  /// No description provided for @removedSavedPlaceConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved places.'**
+  String get removedSavedPlaceConfirmation;
+
+  /// No description provided for @savedPlaceFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update saved places on this device.'**
+  String get savedPlaceFailed;
+
+  /// No description provided for @privateOnDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Private on this device'**
+  String get privateOnDeviceTitle;
+
+  /// No description provided for @privateOnDeviceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved places and notes stay on this device. They are not synced or exportable yet and may be lost if you clear app data or uninstall Hayer.'**
+  String get privateOnDeviceMessage;
+
+  /// No description provided for @noSavedPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'No places here yet. Save one while swiping or viewing results.'**
+  String get noSavedPlaces;
+
+  /// No description provided for @selectForShortlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Select places for a shortlist'**
+  String get selectForShortlist;
+
+  /// No description provided for @selectedPlacesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedPlacesCount(int count);
+
+  /// No description provided for @startShortlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Start shortlist ({count})'**
+  String startShortlist(int count);
+
+  /// No description provided for @minimumShortlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least two places to start a shortlist.'**
+  String get minimumShortlist;
+
+  /// No description provided for @editSavedPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit saved place'**
+  String get editSavedPlace;
+
+  /// No description provided for @privateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Private note'**
+  String get privateNote;
+
+  /// No description provided for @privateNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you can see this note on this device.'**
+  String get privateNoteHint;
+
+  /// No description provided for @deleteSavedPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete saved place'**
+  String get deleteSavedPlace;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @startShortlistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from saved places'**
+  String get startShortlistTitle;
+
+  /// No description provided for @shortlistSelectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Your room will start with {count} saved places.'**
+  String shortlistSelectedCount(int count);
+
+  /// No description provided for @freshIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Add 5 fresh ideas'**
+  String get freshIdeas;
+
+  /// No description provided for @freshIdeasDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hayer will look nearby for up to five new places. Your saved places stay in the room even if discovery is unavailable.'**
+  String get freshIdeasDescription;
+
+  /// No description provided for @shortlistAreaTooWide.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose saved places that fit within one 10 km search area.'**
+  String get shortlistAreaTooWide;
+
+  /// No description provided for @shortlistCategoryUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'These saved places no longer have a supported category.'**
+  String get shortlistCategoryUnavailable;
+
+  /// No description provided for @shortlistUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Some saved places are no longer available for this room. Update your shortlist and try again.'**
+  String get shortlistUnavailable;
+
+  /// No description provided for @createShortlistRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Create shortlist room'**
+  String get createShortlistRoom;
+
   /// No description provided for @placeDetails.
   ///
   /// In en, this message translates to:

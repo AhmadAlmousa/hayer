@@ -24,6 +24,7 @@ import '../../core/widgets/place_details_sheet.dart';
 import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'destination_choice_controls.dart';
+import '../saved/save_place_button.dart';
 
 enum _Sort { rating, reviews, distance }
 
@@ -768,13 +769,16 @@ class _ResultCard extends StatelessWidget {
                   ),
                 ),
               ],
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: TextButton.icon(
-                  onPressed: () => launchPlaceNavigation(context, place),
-                  icon: const Icon(Icons.directions_outlined),
-                  label: Text(strings.directions),
-                ),
+              Wrap(
+                alignment: WrapAlignment.end,
+                children: [
+                  SavePlaceButton(place: place),
+                  TextButton.icon(
+                    onPressed: () => launchPlaceNavigation(context, place),
+                    icon: const Icon(Icons.directions_outlined),
+                    label: Text(strings.directions),
+                  ),
+                ],
               ),
             ],
           ),

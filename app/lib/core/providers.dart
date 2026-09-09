@@ -11,6 +11,8 @@ import '../data/location_repository.dart';
 import '../data/pending_swipe_store.dart';
 import '../data/session_repository.dart';
 import '../data/route_estimate_repository.dart';
+import '../data/saved_place_store.dart';
+import '../data/saved_places_repository.dart';
 
 final clientProvider = Provider<Client>(
   (ref) => throw StateError('The Serverpod client was not initialized.'),
@@ -30,6 +32,16 @@ final locationRepositoryProvider = Provider<LocationRepository>(
 
 final displayNameStoreProvider = Provider<DisplayNameStore>(
   (ref) => const SecureDisplayNameStore(),
+);
+
+final savedPlaceStoreProvider = Provider<SavedPlaceStore>((ref) {
+  final store = SecureSavedPlaceStore();
+  ref.onDispose(() => unawaited(store.close()));
+  return store;
+});
+
+final savedPlacesRepositoryProvider = Provider<SavedPlacesRepository>(
+  (ref) => SavedPlacesRepository(store: ref.watch(savedPlaceStoreProvider)),
 );
 
 final pendingSwipeStoreProvider = Provider<PendingSwipeStore>((ref) {

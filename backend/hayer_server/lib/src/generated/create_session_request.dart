@@ -35,6 +35,8 @@ abstract class CreateSessionRequest
     required this.consensusRule,
     required this.matchingTiming,
     this.analyticsContext,
+    this.shortlistPlaceIds,
+    this.freshDiscoveryCount,
   });
 
   factory CreateSessionRequest({
@@ -52,6 +54,8 @@ abstract class CreateSessionRequest
     required _i3.ConsensusRule consensusRule,
     required _i4.MatchingTiming matchingTiming,
     _i5.ClientAnalyticsContext? analyticsContext,
+    List<String>? shortlistPlaceIds,
+    int? freshDiscoveryCount,
   }) = _CreateSessionRequestImpl;
 
   factory CreateSessionRequest.fromJson(
@@ -84,6 +88,12 @@ abstract class CreateSessionRequest
           : _i6.Protocol().deserialize<_i5.ClientAnalyticsContext>(
               jsonSerialization['analyticsContext'],
             ),
+      shortlistPlaceIds: jsonSerialization['shortlistPlaceIds'] == null
+          ? null
+          : _i6.Protocol().deserialize<List<String>>(
+              jsonSerialization['shortlistPlaceIds'],
+            ),
+      freshDiscoveryCount: jsonSerialization['freshDiscoveryCount'] as int?,
     );
   }
 
@@ -115,6 +125,10 @@ abstract class CreateSessionRequest
 
   _i5.ClientAnalyticsContext? analyticsContext;
 
+  List<String>? shortlistPlaceIds;
+
+  int? freshDiscoveryCount;
+
   /// Returns a shallow copy of this [CreateSessionRequest]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -133,6 +147,8 @@ abstract class CreateSessionRequest
     _i3.ConsensusRule? consensusRule,
     _i4.MatchingTiming? matchingTiming,
     _i5.ClientAnalyticsContext? analyticsContext,
+    List<String>? shortlistPlaceIds,
+    int? freshDiscoveryCount,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -153,6 +169,10 @@ abstract class CreateSessionRequest
       'matchingTiming': matchingTiming.toJson(),
       if (analyticsContext != null)
         'analyticsContext': analyticsContext?.toJson(),
+      if (shortlistPlaceIds != null)
+        'shortlistPlaceIds': shortlistPlaceIds?.toJson(),
+      if (freshDiscoveryCount != null)
+        'freshDiscoveryCount': freshDiscoveryCount,
     };
   }
 
@@ -175,6 +195,10 @@ abstract class CreateSessionRequest
       'matchingTiming': matchingTiming.toJson(),
       if (analyticsContext != null)
         'analyticsContext': analyticsContext?.toJsonForProtocol(),
+      if (shortlistPlaceIds != null)
+        'shortlistPlaceIds': shortlistPlaceIds?.toJson(),
+      if (freshDiscoveryCount != null)
+        'freshDiscoveryCount': freshDiscoveryCount,
     };
   }
 
@@ -202,6 +226,8 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     required _i3.ConsensusRule consensusRule,
     required _i4.MatchingTiming matchingTiming,
     _i5.ClientAnalyticsContext? analyticsContext,
+    List<String>? shortlistPlaceIds,
+    int? freshDiscoveryCount,
   }) : super._(
          mode: mode,
          categoryId: categoryId,
@@ -217,6 +243,8 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
          consensusRule: consensusRule,
          matchingTiming: matchingTiming,
          analyticsContext: analyticsContext,
+         shortlistPlaceIds: shortlistPlaceIds,
+         freshDiscoveryCount: freshDiscoveryCount,
        );
 
   /// Returns a shallow copy of this [CreateSessionRequest]
@@ -238,6 +266,8 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     _i3.ConsensusRule? consensusRule,
     _i4.MatchingTiming? matchingTiming,
     Object? analyticsContext = _Undefined,
+    Object? shortlistPlaceIds = _Undefined,
+    Object? freshDiscoveryCount = _Undefined,
   }) {
     return CreateSessionRequest(
       mode: mode ?? this.mode,
@@ -259,6 +289,12 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
       analyticsContext: analyticsContext is _i5.ClientAnalyticsContext?
           ? analyticsContext
           : this.analyticsContext?.copyWith(),
+      shortlistPlaceIds: shortlistPlaceIds is List<String>?
+          ? shortlistPlaceIds
+          : this.shortlistPlaceIds?.map((e0) => e0).toList(),
+      freshDiscoveryCount: freshDiscoveryCount is int?
+          ? freshDiscoveryCount
+          : this.freshDiscoveryCount,
     );
   }
 }

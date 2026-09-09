@@ -10,6 +10,104 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get savedPlaces => 'Saved places';
+
+  @override
+  String get wantToTry => 'Want to try';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get savePlace => 'Save place';
+
+  @override
+  String get removeSavedPlace => 'Remove from saved places';
+
+  @override
+  String get savedPlaceConfirmation => 'Saved to Want to try.';
+
+  @override
+  String get removedSavedPlaceConfirmation => 'Removed from saved places.';
+
+  @override
+  String get savedPlaceFailed =>
+      'Could not update saved places on this device.';
+
+  @override
+  String get privateOnDeviceTitle => 'Private on this device';
+
+  @override
+  String get privateOnDeviceMessage =>
+      'Saved places and notes stay on this device. They are not synced or exportable yet and may be lost if you clear app data or uninstall Hayer.';
+
+  @override
+  String get noSavedPlaces =>
+      'No places here yet. Save one while swiping or viewing results.';
+
+  @override
+  String get selectForShortlist => 'Select places for a shortlist';
+
+  @override
+  String selectedPlacesCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String startShortlist(int count) {
+    return 'Start shortlist ($count)';
+  }
+
+  @override
+  String get minimumShortlist =>
+      'Select at least two places to start a shortlist.';
+
+  @override
+  String get editSavedPlace => 'Edit saved place';
+
+  @override
+  String get privateNote => 'Private note';
+
+  @override
+  String get privateNoteHint => 'Only you can see this note on this device.';
+
+  @override
+  String get deleteSavedPlace => 'Delete saved place';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get startShortlistTitle => 'Start from saved places';
+
+  @override
+  String shortlistSelectedCount(int count) {
+    return 'Your room will start with $count saved places.';
+  }
+
+  @override
+  String get freshIdeas => 'Add 5 fresh ideas';
+
+  @override
+  String get freshIdeasDescription =>
+      'Hayer will look nearby for up to five new places. Your saved places stay in the room even if discovery is unavailable.';
+
+  @override
+  String get shortlistAreaTooWide =>
+      'Choose saved places that fit within one 10 km search area.';
+
+  @override
+  String get shortlistCategoryUnavailable =>
+      'These saved places no longer have a supported category.';
+
+  @override
+  String get shortlistUnavailable =>
+      'Some saved places are no longer available for this room. Update your shortlist and try again.';
+
+  @override
+  String get createShortlistRoom => 'Create shortlist room';
+
+  @override
   String get placeDetails => 'Details';
 
   @override
