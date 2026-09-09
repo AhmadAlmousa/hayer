@@ -665,6 +665,45 @@ void main() {
         }
       });
 
+      test('join attempts share a resolved-client budget', () async {
+        for (var index = 0; index < 120; index++) {
+          final rotatingIdentity = _authenticated(
+            sessionBuilder,
+            'join-client-$index',
+          );
+          await expectLater(
+            endpoints.hayerSession.join(
+              rotatingIdentity,
+              code: 'AAA000',
+              displayName: 'Guest',
+            ),
+            throwsA(_apiError('invalid_code')),
+          );
+        }
+
+        await expectLater(
+          endpoints.hayerSession.join(
+            _authenticated(sessionBuilder, 'join-client-over-limit'),
+            code: 'AAA000',
+            displayName: 'Guest',
+          ),
+          throwsA(_apiError('rate_limited')),
+        );
+
+        final session = sessionBuilder.build();
+        try {
+          final clientBudget = await RateLimitRow.db.findFirstRow(
+            session,
+            where: (table) =>
+                table.counterKey.equals('session-join-client:peer:unknown'),
+          );
+          expect(clientBudget, isNotNull);
+          expect(clientBudget!.attemptCount, 120);
+        } finally {
+          await session.close();
+        }
+      });
+
       test(
         'duplicate swipes advance once and the latest choice can be revised',
         () async {

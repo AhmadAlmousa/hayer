@@ -89,8 +89,10 @@ nginx limits:
 
 Do not add an equivalent rule for `/api/hayerSession`: every session RPC,
 swipes included, shares that one path, so a join-shaped limit would throttle
-normal play. Join is budgeted per user inside the application, and the signup
-that a join requires is budgeted per client address.
+normal play. The application recognizes the join method and applies both a
+30-request/minute authenticated-user budget and a 120-request/minute resolved-
+client-address budget. The signup required to obtain an identity has its own
+client-address budget.
 
 The gateway overwrites `X-Hayer-Client-Ip` on every proxied request and the
 server budgets anonymous signups against it, falling back to the peer address

@@ -15,7 +15,8 @@ app tests, nine admin tests, shell checks, and diff checks. Signed build
 inspection, and v2 signature verification. New P05/P06 real-PostGIS cases
 compile but cannot run because this host has no `docker` command. Next M7 work
 is the open M7-A/M7-E/M7-F physical-device and live safety acceptance. Claude's
-F01 signup work is separate and its join limiter remains open. Existing
+F01 signup work is separate; its join limiter is implemented and live gateway
+proof remains open. Existing
 unrelated working-tree changes are being preserved.
 
 Team lanes after P06 (2026-09-09): Codex owns backend work. Claude owns
@@ -508,9 +509,9 @@ meaning across Android and web.
     TCP-peer quota at the configured 30/hour ceiling. A request without the
     vouched header is budgeted against its own socket, so a bypass cannot
     spend a legitimate client's budget.
-  - [ ] Add the method-aware join budget. Deferred: its only call site is
-    `hayer_session_endpoint.dart`, which is being changed for M7-G. Join keeps
-    its per-user limit meanwhile.
+  - [x] Add the method-aware join budget: retain 30 requests/minute per
+    authenticated anonymous user and add 120 requests/minute per gateway-
+    resolved client address, with the same safe peer fallback as signup.
   - [ ] Prove 31 distinct clients, forged `CF-Connecting-IP`, and direct-origin
     access through the real gateway. Not yet run: no container runtime on the
     development host.
@@ -758,9 +759,9 @@ measurements and rollback paths.
   participant KPIs refresh every 30 seconds. Reporting uses Asia/Riyadh and
   Sunday–Saturday weeks.
 - Public anonymous signup is limited to 10 requests/minute/IP at the gateway
-  and 30 accounts/hour/resolved-client in Serverpod; join remains limited to
-  30 requests/minute/authenticated anonymous user until its deferred
-  method-aware edge budget is implemented. General API traffic is limited to
+  and 30 accounts/hour/resolved-client in Serverpod; join is limited to 30
+  requests/minute/authenticated anonymous user and 120 requests/minute/
+  resolved-client in Serverpod. General API traffic is limited to
   30 requests/second/IP and public streaming to 50 connections/IP. Enrollment
   is limited to three gateway requests/minute and six Serverpod
   starts/hour/operator while explicitly enabled.
@@ -774,6 +775,19 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-09: implemented F01's remaining method-aware join budget. The join
+  method retains 30 requests/minute per authenticated anonymous user and now
+  also enforces 120 requests/minute per gateway-resolved client address, using
+  the signup path's validated header and safe direct-peer fallback. This keeps
+  normal session RPCs off a coarse `/api/hayerSession` edge rule while bounding
+  identity rotation. A real-PostGIS regression uses distinct identities behind
+  one peer and proves attempt 121 is rejected; it compiles but cannot execute
+  on this host because Docker is absent. Pinned full preflight passes 101
+  server, 123 app, and nine admin tests plus all analyses and checks. Required
+  signed build `0.2.1+7` and its alias remain 104,876,403 bytes at SHA-256
+  `0ac17018b52c8685eaa783836bb2c79da44ff1fe9ba1af5e35cf6c0a7da7de0f`;
+  both manifests, package/version metadata, and APK Signature Scheme v2
+  verify. Live gateway abuse/direct-origin proof remains open.
 - 2026-09-09: completed P06 structured POI issue reporting. Authenticated
   consumers can optionally report six factual issue types from swipe or result
   details in English and Arabic; dislikes remain separate. `place.reportIssue`

@@ -17,6 +17,7 @@ import '../sessions/consensus.dart';
 import '../sessions/destination_choices.dart';
 import '../sessions/session_code.dart';
 import '../sessions/session_mapper.dart';
+import '../security/public_gateway_access.dart';
 import '../security/rate_limiter.dart';
 
 class HayerSessionEndpoint extends Endpoint {
@@ -435,6 +436,13 @@ class HayerSessionEndpoint extends Endpoint {
   }) async {
     final userId = _userId(session);
     _validateAnalyticsContext(analyticsContext);
+    await RateLimiter.check(
+      session,
+      operation: 'session-join-client',
+      subject: PublicGatewayAccess.rateLimitSubject(session),
+      limit: 120,
+      window: const Duration(minutes: 1),
+    );
     await RateLimiter.check(
       session,
       operation: 'session-join',
