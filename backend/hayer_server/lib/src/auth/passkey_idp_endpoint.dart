@@ -41,13 +41,17 @@ class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
       );
     }
     if (!PasskeyRequestVerifier.hasValidClientData(
-      registrationRequest.clientDataJSON,
-      type: 'webauthn.create',
-      originAllowed: (origin) => _originAllowed(session, origin),
-    )) {
+          registrationRequest.clientDataJSON,
+          type: 'webauthn.create',
+          originAllowed: (origin) => _originAllowed(session, origin),
+        ) ||
+        !PasskeyRequestVerifier.hasValidRegistrationData(
+          registrationRequest.attestationObject,
+          relyingPartyId: _relyingPartyId(session),
+        )) {
       throw ApiException(
         code: 'unauthorized',
-        message: 'The passkey registration origin is invalid.',
+        message: 'The passkey registration verification is invalid.',
       );
     }
 
@@ -76,13 +80,13 @@ class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
           type: 'webauthn.get',
           originAllowed: (origin) => _originAllowed(session, origin),
         ) ||
-        !PasskeyRequestVerifier.hasValidRelyingPartyHash(
+        !PasskeyRequestVerifier.hasValidAuthenticationData(
           loginRequest.authenticatorData,
           relyingPartyId: _relyingPartyId(session),
         )) {
       throw ApiException(
         code: 'unauthorized',
-        message: 'The passkey authentication origin is invalid.',
+        message: 'The passkey authentication verification is invalid.',
       );
     }
     return super.login(session, loginRequest: loginRequest);

@@ -9,7 +9,7 @@ the primary worktree on `main`; Claude owns front-end behavior in
 acceptance gates. Detailed back-end checkpoints and front-end handoffs live
 here so the two lanes do not repeatedly edit the same evidence paragraphs.
 
-Last updated: 2026-09-09
+Last updated: 2026-09-10
 
 ## Current state
 
@@ -17,11 +17,35 @@ Last updated: 2026-09-09
   regression are present. Docker and physical-device acceptance remain open.
 - F01's signup and method-aware join protections are implemented. Real gateway
   proof and the Cloudflare connector trust decision remain open.
-- Claude completed the F17 client convergence half in `6277dcd`. The next
-  back-end handoff is a lightweight mutable session-progress contract that
-  avoids transferring the immutable deck on every real-time refresh.
+- F13 and F30 are complete. F14 session/enrollment revocation is the next
+  back-end security checkpoint; F20 atomic admin mutations follows it.
+- Claude completed the F17 client convergence half in `6277dcd`, and the
+  additive deck-free server progress contract is ready for client integration.
 
 ## Checkpoints
+
+### F13 passkey UP/UV enforcement — complete (2026-09-10)
+
+The server now parses registration attestation authenticator data and validates
+login authenticator data before delegating to Serverpod's existing ceremony.
+Both paths require the configured RP hash, the 37-byte minimum authenticator
+structure, signed user presence, and signed user verification. Existing
+origin/type, challenge, key-ID, and signature checks remain in force. Signature
+counter zero remains accepted for synced passkeys.
+
+Targeted regressions cover malformed and wrong-RP data, each missing flag on
+registration, and valid ES256 login signatures whose signed authenticator data
+has UP=false or UV=false. The tests first prove the pinned dependency accepts
+those inputs, then prove Hayer's policy rejects them.
+
+Verification: pinned full preflight passes generation/formatting, all fatal-
+info analyses, 106 server tests, 123 app tests, nine admin tests, and repository
+checks. The required signed `0.2.1+7` APK and alias are 104,876,403 bytes at
+SHA-256
+`34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+both manifests, package/version metadata, and APK Signature Scheme v2 verify.
+A supervised real-authenticator registration/login ceremony remains a release
+gate.
 
 ### F30 recovery credentials stay out of logs — complete (2026-09-09)
 

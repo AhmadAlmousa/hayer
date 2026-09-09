@@ -523,8 +523,19 @@ meaning across Android and web.
     because Docker NAT masks the connector address.
 - [~] Fix F13/F14/F20/F30: require passkey UP/UV, revoke issued admin/enrollment
   sessions, make compare-and-swap mutations atomic with audit records, and
-  stop emitting recovery credentials to logs. F30 is complete: first-start
-  recovery credentials must be preprovisioned and never enter normal logs.
+  stop emitting recovery credentials to logs.
+  - [x] F13: validate the registration attestation and signed login
+    authenticator data on the server; require the expected RP hash, the
+    minimum authenticator structure, and both UP and UV while retaining the
+    existing origin, challenge, credential, and signature checks. Zero
+    signature counters remain valid for synced passkeys.
+  - [ ] F14: make issued admin sessions reject new HTTP requests after logout
+    or administrative revocation, and prove enrollment credentials are
+    single-use under replay/concurrency.
+  - [ ] F20: make compare-and-swap admin mutations and their audit records one
+    atomic transaction.
+  - [x] F30: require preprovisioned first-start recovery credentials and keep
+    them out of normal runtime output.
 - [ ] Close F29/F35 with an in-product identity/location lifecycle explanation,
   a provider/source-use inventory, a named reviewer, and documented retention,
   attribution, outage, and commercial-use decisions.
@@ -782,6 +793,20 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-10: closed F13's server enforcement. Registration parses the CBOR
+  attestation authenticator data before the existing Serverpod ceremony, and
+  login validates the signed authenticator data before the existing challenge
+  and signature verification. Both paths require a 37-byte minimum structure,
+  the configured RP hash, UP, and UV; origin/type checks remain in place and
+  zero counters are not rejected. Regressions prove malformed/wrong-RP data is
+  rejected, prove the pinned dependency accepts otherwise-valid registration
+  objects missing either flag, and use valid ES256 signatures to prove Hayer
+  rejects login assertions with UP=false or UV=false. Pinned full preflight
+  passes 106 server, 123 app, and nine admin tests plus all analyses/checks.
+  Signed `0.2.1+7` and its alias are 104,876,403 bytes at SHA-256
+  `34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+  both manifests, package/version metadata, and APK Signature Scheme v2
+  verify. A supervised real-authenticator ceremony remains a release gate.
 - 2026-09-09: closed F30 by removing generated recovery passwords from the
   runtime initializer result and container output. A new secret volume must be
   initialized with a preprovisioned `HAYER_ADMIN_PASSWORD`; missing input fails
