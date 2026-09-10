@@ -269,6 +269,132 @@ void main() {
       greaterThan(1),
     );
   });
+  test('polls the session while the stream cannot connect', () async {
+    // Behavior under test: some networks block WebSockets outright. Retrying
+    // the connection alone would leave the room frozen on whatever it last
+    // loaded while other people join, swipe and match, and say nothing.
+    // Arrange
+    final polls = <int>[];
+    var statusChanges = 0;
+    final listener = SessionRealtimeListener(
+      connect: () => Stream<SessionEvent>.error(StateError('blocked')),
+      onEvent: (_) async => fail('no event can arrive on a blocked stream'),
+      poll: () async => polls.add(polls.length),
+      onStatusChanged: () => statusChanges++,
+      retryDelay: const Duration(milliseconds: 1),
+      pollInterval: const Duration(milliseconds: 2),
+    );
+
+    // Act
+    listener.start();
+    await _until(() => polls.length >= 2);
+
+    // Assert
+    expect(listener.isDegraded, isTrue);
+    expect(statusChanges, 1);
+    await listener.dispose();
+  });
+
+  test('one dropped connection is not announced as degraded', () async {
+    // Behavior under test: an ordinary reconnect drops the stream for a few
+    // seconds. Announcing that, or polling through it, would make a healthy
+    // room flicker between live and degraded.
+    // Arrange
+    final streams = <StreamController<SessionEvent>>[];
+    final revisions = <int>[];
+    final polls = <int>[];
+    final listener = SessionRealtimeListener(
+      connect: () {
+        final controller = StreamController<SessionEvent>();
+        streams.add(controller);
+        return controller.stream;
+      },
+      onEvent: (event) async => revisions.add(event.revision),
+      poll: () async => polls.add(polls.length),
+      retryDelay: Duration.zero,
+      pollInterval: const Duration(milliseconds: 1),
+    );
+
+    // Act: a healthy connection ends, and the next one stays open but silent.
+    listener.start();
+    await _until(() => streams.isNotEmpty);
+    streams.first.add(_event(3));
+    await _until(() => revisions.isNotEmpty);
+    await streams.first.close();
+    await _until(() => streams.length == 2);
+    await Future<void>.delayed(const Duration(milliseconds: 8));
+
+    // Assert
+    expect(listener.isDegraded, isFalse);
+    expect(polls, isEmpty);
+    await listener.dispose();
+    await streams[1].close();
+  });
+
+  test('polling stops as soon as the stream delivers again', () async {
+    // Behavior under test: polling is a fallback, not a second channel. Once
+    // events arrive the client must stop paying for both.
+    // Arrange
+    var blocked = true;
+    final streams = <StreamController<SessionEvent>>[];
+    final polls = <int>[];
+    final revisions = <int>[];
+    final listener = SessionRealtimeListener(
+      connect: () {
+        if (blocked) return Stream<SessionEvent>.error(StateError('blocked'));
+        final controller = StreamController<SessionEvent>();
+        streams.add(controller);
+        return controller.stream;
+      },
+      onEvent: (event) async => revisions.add(event.revision),
+      poll: () async => polls.add(polls.length),
+      retryDelay: const Duration(milliseconds: 1),
+      pollInterval: const Duration(milliseconds: 2),
+    );
+
+    // Act
+    listener.start();
+    await _until(() => polls.isNotEmpty);
+    blocked = false;
+    await _until(() => streams.isNotEmpty);
+    streams.first.add(_event(5));
+    await _until(() => revisions.isNotEmpty);
+    final polledWhenLive = polls.length;
+    await Future<void>.delayed(const Duration(milliseconds: 8));
+
+    // Assert
+    expect(listener.isDegraded, isFalse);
+    expect(polls.length, polledWhenLive);
+    await listener.dispose();
+    await streams.first.close();
+  });
+
+  test('a failing poll is retried rather than abandoned', () async {
+    // Behavior under test: an outage that takes the stream usually takes the
+    // read with it. The fallback has to survive its own failures, and widen
+    // its window instead of retrying at a fixed cadence.
+    // Arrange
+    var attempts = 0;
+    final listener = SessionRealtimeListener(
+      connect: () => Stream<SessionEvent>.error(StateError('blocked')),
+      onEvent: (_) async {},
+      poll: () async {
+        attempts++;
+        throw StateError('offline');
+      },
+      retryDelay: const Duration(milliseconds: 1),
+      maxRetryDelay: const Duration(milliseconds: 4),
+      pollInterval: const Duration(milliseconds: 1),
+    );
+
+    // Act
+    listener.start();
+    await _until(() => attempts >= 3);
+
+    // Assert
+    expect(listener.isDegraded, isTrue);
+    await listener.dispose();
+  });
 }
 
 SessionEvent _event(int revision) => SessionEvent(

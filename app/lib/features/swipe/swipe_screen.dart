@@ -118,16 +118,25 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
           .hayerSession
           .watch(sessionId: widget.sessionId),
       onEvent: _handleSessionEvent,
+      // Without the stream this screen would never learn that the room
+      // completed, so a group that finished while one phone's WebSocket was
+      // blocked would leave that person waiting on a deck nobody else is on.
+      poll: () => _handleSessionEvent(null),
     )..start();
   }
 
-  Future<void> _handleSessionEvent(SessionEvent event) async {
+  /// [event] is null when this refresh came from a poll rather than the stream.
+  Future<void> _handleSessionEvent(SessionEvent? event) async {
     if (_transitioningToResults) return;
     final repository = ref.read(sessionRepositoryProvider);
     final flush = await repository.flushQueue(
       language: Localizations.localeOf(context).languageCode,
     );
-    final value = await repository.load(widget.sessionId);
+    // The deck is immutable, so only the mutable half is fetched here.
+    final value = (await repository.refresh(
+      widget.sessionId,
+      previous: _bundle,
+    )).bundle;
     if (!mounted || _transitioningToResults) return;
     final wasCompleted = _bundle?.session.status == SessionStatus.completed;
     final serverIndex = value.selfParticipant.currentIndex.clamp(
@@ -146,7 +155,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
       await _showResults(
         celebrate:
             _isInstantMatch(value) &&
-            (!wasCompleted || event.type == SessionEventType.matched),
+            (!wasCompleted || event?.type == SessionEventType.matched),
       );
     }
   }

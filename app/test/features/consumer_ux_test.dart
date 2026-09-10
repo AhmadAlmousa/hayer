@@ -11,6 +11,7 @@ import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/core/widgets/route_estimate_text.dart';
 import 'package:hayer_app/core/widgets/search_area_map.dart';
 import 'package:hayer_app/core/widgets/session_recovery.dart';
+import 'package:hayer_app/core/widgets/session_sync_status.dart';
 import 'package:hayer_app/data/location_repository.dart';
 import 'package:hayer_app/data/location_warmup.dart';
 import 'package:hayer_app/data/session_repository.dart';
@@ -190,6 +191,94 @@ void main() {
       expect(find.byType(SessionRecovery), findsNothing);
       expect(tester.takeException(), isNull);
       await _dispose(tester, fixture);
+    });
+  }
+
+  testWidgets('a room whose stream is blocked keeps up and says so', (
+    tester,
+  ) async {
+    // Behavior under test: on a network that blocks WebSockets the lobby would
+    // otherwise sit on the room as it was when it opened, with no sign that
+    // anything is wrong, while other people join and start swiping.
+    // Arrange
+    final fixture = _Fixture()..endpoint.blockStream = true;
+    await _pump(tester, fixture, const LobbyScreen(sessionId: 'room'));
+    expect(find.byType(SessionSyncStatus), findsNothing);
+
+    // Act: two connection attempts deliver nothing. One dropped stream is an
+    // ordinary reconnect and must stay silent.
+    await tester.pump(const Duration(seconds: 6));
+    await tester.pump(const Duration(seconds: 6));
+
+    // Assert
+    expect(find.byType(SessionSyncStatus), findsOneWidget);
+    expect(
+      find.text('Live updates are paused. Hayer keeps checking for changes.'),
+      findsOneWidget,
+    );
+    expect(find.byType(SessionRecovery), findsNothing);
+
+    // Act: the room keeps converging on a timer, and can be refreshed by hand.
+    final polled = fixture.repository.refreshes;
+    await tester.pump(const Duration(seconds: 15));
+    expect(fixture.repository.refreshes, greaterThan(polled));
+    final beforeTap = fixture.repository.refreshes;
+    await tester.tap(find.text('Refresh now'));
+    await tester.pump();
+    expect(fixture.repository.refreshes, greaterThan(beforeTap));
+
+    // Act: nothing gets through at all.
+    fixture.repository.fail = true;
+    await tester.pump(const Duration(seconds: 15));
+
+    // Assert
+    expect(
+      find.text(
+        'Hayer cannot reach the server. This is the last view that loaded.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(SessionRecovery), findsNothing);
+    expect(tester.takeException(), isNull);
+    await _dispose(tester, fixture);
+  });
+
+  for (final locale in ['en', 'ar']) {
+    testWidgets('the live-update notice fits large text in $locale', (
+      tester,
+    ) async {
+      // Behavior under test: this notice appears exactly when something is
+      // already going wrong, so it has to stay readable at the largest text
+      // size on the narrowest supported screen rather than overflow.
+      // Arrange
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      // Act
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: HayerTheme.light(),
+          locale: Locale(locale),
+          localizationsDelegates: hayerLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: SessionSyncStatus(reachable: false, onRefresh: () async {}),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(SessionSyncStatus), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   }
 
@@ -434,8 +523,13 @@ class _Client extends Fake implements Client {
 
 class _Endpoint extends Fake implements EndpointHayerSession {
   final events = StreamController<SessionEvent>.broadcast();
+  bool blockStream = false;
   @override
-  Stream<SessionEvent> watch({required String sessionId}) => events.stream;
+  Stream<SessionEvent> watch({required String sessionId}) {
+    if (blockStream) throw StateError('websockets blocked');
+    return events.stream;
+  }
+
   @override
   Future<List<SessionResult>> results({required String sessionId}) async => [
     for (var index = 0; index < 50; index++)
@@ -451,10 +545,22 @@ class _Endpoint extends Fake implements EndpointHayerSession {
 
 class _Repository extends Fake implements SessionRepository {
   bool fail = false;
+  int refreshes = 0;
   @override
   Future<SessionBundle> load(String sessionId) async {
     if (fail) throw StateError('offline');
     return _bundle();
+  }
+
+  /// Answers without tallies, the way the repository does against a server too
+  /// old for the progress read, so these screens stay covered on that path.
+  @override
+  Future<SessionRefresh> refresh(
+    String sessionId, {
+    SessionBundle? previous,
+  }) async {
+    refreshes++;
+    return SessionRefresh(bundle: await load(sessionId));
   }
 
   @override

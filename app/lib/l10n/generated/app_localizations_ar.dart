@@ -257,6 +257,17 @@ class AppLocalizationsAr extends AppLocalizations {
       'توقفت التحديثات مؤقتًا. نعرض آخر معلومات محفوظة للجلسة.';
 
   @override
+  String get liveUpdatesPaused =>
+      'التحديثات المباشرة متوقفة مؤقتًا. نواصل التحقق من التغييرات.';
+
+  @override
+  String get liveUpdatesUnreachable =>
+      'تعذّر الاتصال بالخادم. هذه آخر حالة تم تحميلها.';
+
+  @override
+  String get refreshNow => 'تحديث الآن';
+
+  @override
   String get startingHayer => 'جارٍ تجهيز حاير…';
 
   @override

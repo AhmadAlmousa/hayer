@@ -6,6 +6,10 @@ import 'package:hayer_client/hayer_client.dart';
 typedef SessionEventStreamFactory = Stream<SessionEvent> Function();
 typedef SessionEventCallback = Future<void> Function(SessionEvent event);
 
+/// Refreshes the screen without an event to go on. Used while the stream is
+/// unavailable, so it must be cheap enough to repeat on a timer.
+typedef SessionPollCallback = Future<void> Function();
+
 /// Retry window for the [failures]th consecutive failure.
 ///
 /// The ceiling doubles from [baseDelay] up to [maxDelay], and the returned
@@ -41,34 +45,54 @@ Duration sessionRetryBackoff({
 /// shared outage. [pause] releases the connection while a screen is off-screen
 /// or the application is not resumed; [resume] reconnects and refreshes.
 ///
+/// Some networks block WebSockets outright. There, reconnecting alone never
+/// converges: the room would sit on whatever it last loaded while other people
+/// join, swipe and match. Once a second consecutive attempt delivers nothing,
+/// [poll] takes over on a jittered interval until the stream returns, and
+/// [isDegraded] reports that state so a screen can say so instead of showing
+/// silently stale content. Polls back off when they fail too, so a full outage
+/// does not turn every client into a fixed-cadence retry loop.
+///
 /// Streams retry until [dispose] is called.
 class SessionRealtimeListener {
   factory SessionRealtimeListener({
     required SessionEventStreamFactory connect,
     required SessionEventCallback onEvent,
+    SessionPollCallback? poll,
+    void Function()? onStatusChanged,
     Duration retryDelay = const Duration(seconds: 5),
     Duration maxRetryDelay = const Duration(minutes: 2),
+    Duration pollInterval = const Duration(seconds: 12),
     Random? random,
   }) => SessionRealtimeListener._(
     connect,
     onEvent,
+    poll,
+    onStatusChanged,
     retryDelay,
     maxRetryDelay,
+    pollInterval,
     random ?? Random(),
   );
 
   SessionRealtimeListener._(
     this._connect,
     this._onEvent,
+    this._poll,
+    this._onStatusChanged,
     this.retryDelay,
     this.maxRetryDelay,
+    this.pollInterval,
     this._random,
   );
 
   final SessionEventStreamFactory _connect;
   final SessionEventCallback _onEvent;
+  final SessionPollCallback? _poll;
+  final void Function()? _onStatusChanged;
   final Duration retryDelay;
   final Duration maxRetryDelay;
+  final Duration pollInterval;
   final Random _random;
 
   final Completer<void> _disposedSignal = Completer<void>();
@@ -77,8 +101,10 @@ class SessionRealtimeListener {
   Completer<void>? _resumeSignal;
   Completer<void>? _sleepSignal;
   Timer? _refreshRetryTimer;
+  Timer? _pollTimer;
   Future<void>? _runFuture;
   Future<void> _drainFuture = Future<void>.value();
+  Future<void> _pollFuture = Future<void>.value();
 
   /// Highest revision whose refresh completed. Events at or below it are
   /// redundant; a failed refresh leaves it behind so the work is repeated.
@@ -92,8 +118,11 @@ class SessionRealtimeListener {
   bool _paused = false;
   bool _disposed = false;
   bool _refreshOnNextEvent = false;
+  bool _streaming = false;
+  bool _reportedDegraded = false;
   int _connectFailures = 0;
   int _refreshFailures = 0;
+  int _pollFailures = 0;
 
   void start() {
     _runFuture ??= _run();
@@ -102,6 +131,13 @@ class SessionRealtimeListener {
   /// Whether the listener is currently holding its connection open.
   bool get isPaused => _paused;
 
+  /// Whether live updates have stopped arriving and polling has taken over.
+  ///
+  /// One silent attempt is not enough: an ordinary reconnect drops the stream
+  /// for a few seconds, and a screen that announced that would flicker. This
+  /// turns true on the second consecutive attempt that delivers nothing.
+  bool get isDegraded => !_streaming && _connectFailures >= 2;
+
   /// Drops the connection and stops refreshing until [resume].
   void pause() {
     if (_paused || _disposed) return;
@@ -109,6 +145,8 @@ class SessionRealtimeListener {
     _resumeSignal = Completer<void>();
     _refreshRetryTimer?.cancel();
     _refreshRetryTimer = null;
+    _pollTimer?.cancel();
+    _pollTimer = null;
     final attempt = _activeAttempt;
     if (attempt != null) _complete(attempt);
     _wake();
@@ -121,9 +159,11 @@ class SessionRealtimeListener {
     _paused = false;
     _connectFailures = 0;
     _refreshFailures = 0;
+    _pollFailures = 0;
     final signal = _resumeSignal;
     _resumeSignal = null;
     if (signal != null) _complete(signal);
+    _updateStatus();
     _scheduleDrain();
   }
 
@@ -142,7 +182,11 @@ class SessionRealtimeListener {
       try {
         _subscription = _connect().listen(
           (event) {
-            received = true;
+            if (!received) {
+              received = true;
+              _streaming = true;
+              _updateStatus();
+            }
             _handleEvent(event);
           },
           onError: (_, _) => _complete(attempt),
@@ -157,12 +201,14 @@ class SessionRealtimeListener {
       await _subscription?.cancel();
       _subscription = null;
       _activeAttempt = null;
+      _streaming = false;
       if (_disposed) break;
       if (_paused) continue;
 
       // A connection that delivered events was healthy; only consecutive
       // failures to get anything back should widen the reconnect window.
       _connectFailures = received ? 1 : _connectFailures + 1;
+      _updateStatus();
       await _sleep(_backoff(_connectFailures));
     }
   }
@@ -224,6 +270,54 @@ class SessionRealtimeListener {
     }
   }
 
+  /// Reports a change in live-update health and starts or stops polling.
+  void _updateStatus() {
+    if (_disposed) return;
+    if (isDegraded && !_paused) {
+      _schedulePoll();
+    } else {
+      _pollTimer?.cancel();
+      _pollTimer = null;
+    }
+    final degraded = isDegraded;
+    if (degraded == _reportedDegraded) return;
+    _reportedDegraded = degraded;
+    _onStatusChanged?.call();
+  }
+
+  void _schedulePoll() {
+    if (_poll == null || _disposed || _paused || _pollTimer != null) return;
+    // A failing poll widens its own window up to the reconnect ceiling, so a
+    // full outage does not leave every client polling every few seconds.
+    _pollTimer = Timer(
+      sessionRetryBackoff(
+        baseDelay: pollInterval,
+        maxDelay: _pollFailures == 0 ? pollInterval : maxRetryDelay,
+        failures: _pollFailures + 1,
+        random: _random,
+      ),
+      () => _pollFuture = _runPoll(),
+    );
+  }
+
+  Future<void> _runPoll() async {
+    _pollTimer = null;
+    final poll = _poll;
+    if (poll == null || _disposed || _paused || !isDegraded) return;
+    // A refresh already in flight is about to deliver the same state.
+    if (!_refreshing) {
+      try {
+        await poll();
+        _pollFailures = 0;
+      } catch (_) {
+        // The screen surfaces its own failure; this only paces the next try.
+        _pollFailures++;
+      }
+    }
+    if (_disposed || _paused || !isDegraded) return;
+    _schedulePoll();
+  }
+
   void _scheduleRefreshRetry() {
     _refreshFailures++;
     _refreshRetryTimer?.cancel();
@@ -244,12 +338,16 @@ class SessionRealtimeListener {
     if (duration <= Duration.zero || _disposed) return;
     final signal = Completer<void>();
     _sleepSignal = signal;
-    await Future.any<void>([
-      Future<void>.delayed(duration),
-      signal.future,
-      _disposedSignal.future,
-    ]);
-    _sleepSignal = null;
+    // A cancellable timer rather than a delayed future: waking or disposing
+    // has to leave nothing behind, or a disposed screen keeps a live timer
+    // until its full backoff window elapses.
+    final timer = Timer(duration, () => _complete(signal));
+    try {
+      await Future.any<void>([signal.future, _disposedSignal.future]);
+    } finally {
+      timer.cancel();
+      _sleepSignal = null;
+    }
   }
 
   void _wake() {
@@ -271,6 +369,8 @@ class SessionRealtimeListener {
     if (!_disposedSignal.isCompleted) _disposedSignal.complete();
     _refreshRetryTimer?.cancel();
     _refreshRetryTimer = null;
+    _pollTimer?.cancel();
+    _pollTimer = null;
     final resumeSignal = _resumeSignal;
     _resumeSignal = null;
     if (resumeSignal != null) _complete(resumeSignal);
@@ -279,6 +379,7 @@ class SessionRealtimeListener {
     if (activeAttempt != null) _complete(activeAttempt);
     await _subscription?.cancel();
     await _drainFuture;
+    await _pollFuture;
     await _runFuture;
   }
 

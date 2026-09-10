@@ -259,6 +259,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Updates paused. Showing the last saved session information.';
 
   @override
+  String get liveUpdatesPaused =>
+      'Live updates are paused. Hayer keeps checking for changes.';
+
+  @override
+  String get liveUpdatesUnreachable =>
+      'Hayer cannot reach the server. This is the last view that loaded.';
+
+  @override
+  String get refreshNow => 'Refresh now';
+
+  @override
   String get startingHayer => 'Getting Hayer ready…';
 
   @override

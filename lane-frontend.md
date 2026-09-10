@@ -20,17 +20,20 @@ Last updated: 2026-09-10
 
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
-- Nothing in M7 is startable in this lane any more. What is left of the
-  milestone here needs a physical device (M7-E acceptance, M7-G two-device
-  reconnect), a container runtime (M7-B gateway proof, M7-G real-PostGIS
-  regressions), protocol fields the back-end lane owns (M7-J sample counts,
-  source type, version overlays), or the owner (F29's reviewer, contact, and
-  documented decisions). The open handoffs are listed below.
+- F17 is complete in this lane as of 2026-09-10: the client now refreshes
+  through `sessions.progress`, and a blocked event stream no longer strands a
+  room. See the checkpoint below.
+- Every place photo now states the size it needs decoding at, as of
+  2026-09-10. See the checkpoint below; confirming the effect on a real device
+  belongs to M7-E's outstanding performance check.
+- What is left of M7 here needs a physical device (M7-E acceptance, M7-G
+  two-device reconnect), a container runtime (M7-B gateway proof, M7-G
+  real-PostGIS regressions), protocol fields the back-end lane owns (M7-J
+  sample counts, source type, version overlays), or the owner (F29's reviewer,
+  contact, and documented decisions). The open handoffs are listed below.
 - M7-E's remaining physical-device TalkBack/focus/contrast,
   largest-native-text, denied/approximate-location, background/reconnect, and
-  performance checks need real hardware. The F17 client half is complete, and
-  its server half arrived in the merge as `sessions.progress` (`774edc7`), so
-  wiring the client onto that response is startable in this lane again.
+  performance checks need real hardware.
 - M7-A's client half is in place and was re-read for this pass: a failed local
   durability write rolls the card back with a message rather than advancing,
   and a deck whose last swipe is still queued shows a pending-sync screen with
@@ -112,6 +115,139 @@ the previous code. The signed `0.2.1+7` APK is 104,876,403 bytes at SHA-256
 `87f0ce99f30919eb07228f52e2831774961f2348b79df34e4cb11b4a3fdec08a`, declares
 `sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
 Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
+
+### F17 client integration onto `sessions.progress` (2026-09-10)
+
+The client half of F17's performance argument is in place, and with it the
+blocked-stream case the audit asked for. Lobby, swipe and results now refresh
+through `SessionRepository.refresh`, which fetches only the half of a room that
+can still change and merges it onto the bundle the screen already holds. A
+refresh of a full twelve-person room drops from roughly 75-150 KB to 1-2 KB.
+Presence survives the move: the back-end lane writes `lastSeenAt` on the
+progress read too, throttled to thirty seconds, so leaving `load` behind did
+not cost a room its presence signal.
+
+Results was the worst offender and needed one more decision. It fetched
+`results` and `load` in parallel on every event, so a single vote pulled two
+copies of the same fifty place snapshots to move three integers per place.
+`SessionResult.rank` is not read anywhere in the app — the screen sorts by the
+reader's chosen order and numbers the rows it draws — so a refresh now rebuilds
+its rows from the deck it holds plus `resultTallies`, and `applyResultTallies`
+says in its doc comment that a caller who ever needs real server ranking must
+read it from `sessions.results`. Opening the screen still fetches both, because
+a cold screen has no deck to refresh onto.
+
+Rollback is handled where it belongs. Build 6 has to work against a server
+rolled back past this contract, which cannot answer the call at all. The first
+failure that a full load then satisfies latches the repository off the
+lightweight read for the rest of the process, so a rolled-back server costs one
+wasted call rather than one per refresh. An `ApiException` is exempt: expiry,
+lost membership and not-found are the server's real answers about this room,
+and treating them as a missing endpoint would both hide the answer and disable
+the read permanently.
+
+The user-visible half is the blocked stream. Some networks refuse WebSockets
+outright, and reconnecting alone never converges there: the room sat on
+whatever it last loaded while people joined, swiped and matched, and said
+nothing. After two consecutive attempts that deliver nothing — one dropped
+stream is an ordinary reconnect and stays silent — the listener polls that
+cheap read on a jittered six-to-twelve-second interval, widening to the
+reconnect ceiling when the polls fail too, and stops the moment an event
+arrives. `SessionSyncStatus` on lobby and results says which of the two states
+the room is in, live-region announced, with a manual refresh. Swipe deliberately
+has no banner: it shows your own deck, and the group state it actually needs is
+the completion transition, which polling now delivers.
+
+Two things were checked rather than assumed. Polling cannot inflate analytics,
+because the server deduplicates a card impression per journey and place — the
+integration suite asserts exactly that. And `_sleep` used `Future.delayed`,
+which cannot be cancelled, so a disposed screen kept a live timer for the rest
+of its backoff window; it is a cancellable `Timer` now.
+
+One test-environment note for whoever extends this. Under `testWidgets`' fake
+async a stream that errors or closes asynchronously never delivers, so the
+listener makes no progress there. The blocked-stream widget test therefore uses
+a `watch` that throws on connect, which is equally faithful to a blocked
+WebSocket, and the error-stream path stays covered in real async by the
+listener's own unit tests.
+
+Verification: pinned full preflight passes with 118 server, 153 app (up from
+138), and 51 admin tests, and all four fatal-info analyses are clean. The new
+cases cover the deck being kept, the route policy surviving a refresh that
+cannot carry it, a cold screen still fetching the deck, the old-server fallback
+being used once and then dropped, an `ApiException` being reported instead of
+retried, tallies moving the counts without a second `results` call, a place
+outside the deck not being invented, polling starting only on the second silent
+attempt and stopping when the stream returns, a failing poll being retried, and
+the notice fitting 320x640 at 200% text in English and Arabic. The signed
+`0.2.1+7` APK is 105,253,887 bytes at SHA-256
+`431fb3e9dcddb6a3aaa5af41379f856bfe6376f69ca1b7a41b8510967a9c9420`, declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
+Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
+
+### Bounded place-photo decoding (2026-09-10)
+
+The audit's remaining performance item in this lane. The extractor rewrites
+every kept photo URL to `=w1600` before storing it
+(`backend/hayer_server/lib/src/places/search_parser.dart:168-188`), so a photo
+arrives 1600 logical pixels wide however small the box that draws it. Decoded,
+that is roughly 6.8 MB of bitmap for a 48-pixel saved-list thumbnail, and
+Flutter's image cache holds up to 100 MB of them — about fourteen photos — long
+after the row that asked for one has scrolled away.
+
+Four surfaces asked for the full bitmap: the swipe card in both its layouts,
+the details-sheet gallery, and the saved-places thumbnail. Results was the one
+that already bounded its decode, and it was doing it wrongly. `ResizeImage`
+defaults to `ResizeImagePolicy.exact`, which resizes to exactly the width *and*
+height it is given and ignores the source's aspect ratio, so the 84-pixel
+square passed as both dimensions squashed every photo that was not already
+square. `cached_network_image` hands `memCacheWidth`/`memCacheHeight` to
+`ResizeImage.resizeIfNeeded` and offers no way to ask for the fitting policy,
+so the fix is to pass one dimension only.
+
+A width alone leaves the height to the photo's own aspect ratio, which the
+client does not know, so the bound has to be wide enough that the resulting
+height still covers the box — a 48x48 box needs about 85 pixels of width before
+a landscape photo is 48 tall. `placePhotoDecodeWidth` takes the box and returns
+`max(width, height x 16/9) x devicePixelRatio`, 16:9 being the widest ordinary
+photograph. Nothing is upscaled by this: `ResizeImage` clamps to the source's
+own width, so a box larger than the photo leaves it alone.
+
+Two surfaces measure their box rather than assuming one. The swipe card already
+had a `LayoutBuilder`, and the readable layout's strip is inset by the card's
+own padding; the gallery gained one. The full-bleed swipe card is the honest
+non-win: a card taller than a 1600-pixel photo can cover already needs every
+pixel it has, so there the bound resolves above the source and changes nothing.
+It is passed anyway so the site stays correct if a card is ever smaller than
+the screen or a photo ever arrives larger.
+
+The saved thumbnail is where this pays: 256 pixels decoded instead of 1600 at a
+3x ratio, about 0.2 MB against 6.8 MB per row. Results drops to roughly 0.5 MB
+and stops distorting. The strip in the readable card, which is the layout large
+text and short screens fall back to, decodes under a quarter of the photo.
+
+Not done, and deliberately: no prefetch of the next card's photo. `CardSwiper`
+is configured with `numberOfCardsDisplayed: 3`
+(`app/lib/features/swipe/place_deck_swiper.dart:76`), so the next two cards are
+already built and already fetching. Adding a prefetch would duplicate work the
+deck does for itself.
+
+Verification: pinned full preflight passes with 118 server, 165 app (up from
+153), and 51 admin tests, and four clean fatal-info analyses. The helper's
+arithmetic is unit-tested for a square box, a wide box, pixel-ratio scaling, an
+unmeasurable box, and the covering property across 1:1 through 16:9 at three
+box shapes. Each surface has a case asserting it bounds the box it actually
+renders — measured with `getSize` rather than against a hardcoded layout number
+— and that no surface passes a second dimension. The signed `0.2.1+7` APK is
+105,253,887 bytes at SHA-256
+`5e8d37eaae0d60d31e0b59edb282b15a9ac8bf5b7c003f1cdae93b0152d4f98a`, declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
+Signature Scheme v2 with the usual certificate (`426f3bf4...77a6`).
+
+Unmeasured: the memory figures above are computed from the source width and
+four bytes per pixel, not read from a running profile. Confirming the frame and
+image-cache effect on a lower-end Android device is part of M7-E's outstanding
+physical-device performance check.
 
 ### M7-J number legibility, and admin English-only (2026-09-10)
 
@@ -352,15 +488,13 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ## Open handoffs to the back-end lane
 
-### F17 server half — delivered 2026-09-10
+### F17 server half — delivered 2026-09-10, client wired 2026-09-10
 
 The back-end lane landed this as `sessions.progress` in `774edc7`: a deck-free
 response carrying the mutable session, participant/self progress, vote tallies,
 and destination-choice state, with `SessionProgress` generated into
-`backend/hayer_client/`. The client is not on it yet — `_loadById` is still the
-only read this lane calls — so the work below is now an open task here rather
-than a handoff, and the jittered polling fallback can land with it as intended.
-The original request is kept for its sizing argument.
+`backend/hayer_client/`. The client now uses it; see the checkpoint above. The
+original request is kept below for its sizing argument.
 
 The client still fetches the whole immutable deck on every refresh, because
 `_loadById` is the only read available, and that read is a locking write
@@ -444,3 +578,15 @@ run from here.
   copying the per-screen queue pattern a third time. Acknowledging only
   successful refreshes requires the listener to own revision state regardless,
   so the two concerns belong in one place.
+- 2026-09-10: Let the results screen rebuild its rows from the deck and the
+  tallies rather than keep calling `sessions.results` on every refresh. The
+  alternative — reproducing the server's ranking rule in the client — would
+  duplicate a contract this lane does not own. Rebuilding is safe only because
+  nothing in the app reads `SessionResult.rank`; that condition is written into
+  `applyResultTallies`, so a future caller that needs ranking has to go back to
+  the server for it.
+- 2026-09-10: Poll on the same cheap read the stream refresh uses, and gate
+  polling on the listener's own connection health rather than a screen-level
+  timer. One dropped connection is deliberately not enough to start it: an
+  ordinary reconnect takes a few seconds, and a room that announced degradation
+  every time would train people to ignore the notice.

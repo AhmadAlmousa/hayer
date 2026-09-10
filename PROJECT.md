@@ -666,6 +666,8 @@ production rollout.
   content, lazy variable-height results with bounded thumbnail decoding,
   focusable setup steps, reduced-motion celebration/swipe/step transitions,
   labeled directions, and shared localized fractional-distance formatting.
+  The results thumbnail bound is corrected and extended to every other place
+  photo in `worktree-claude-lane`; see [`lane-frontend.md`](lane-frontend.md).
 - [x] Pass automated consumer checks: all 93 tests and fatal-info analysis;
   cover English/Arabic 200% text, 320 px portrait and short landscape results,
   setup/join with keyboard coverage, lobby/details, initialization retry,
@@ -676,12 +678,17 @@ production rollout.
 - [~] Fix F17–F19 with coalesced lightweight progress refresh, dependable
   stream retry/poll convergence, prompt startup shell, recoverable screen
   states, and GPS success independent of reverse-geocoder failure. The F18
-  startup shell and F19 location independence are checked above. Both halves of
-  F17 are now merged: the client convergence commit `6277dcd` (see
-  [`lane-frontend.md`](lane-frontend.md)) and the additive deck-free server
-  progress contract `774edc7`. Wiring the client onto that deck-free
-  `sessions.progress` response, its rollback fallback, and blocked-stream
-  acceptance remain.
+  startup shell and F19 location independence are checked above. F17's client
+  half is now complete in `worktree-claude-lane`; see
+  [`lane-frontend.md`](lane-frontend.md). Lobby, swipe and results refresh
+  through the deck-free `sessions.progress` response, keeping the immutable
+  deck they already hold; a server without that read falls back to the full
+  load once and then stops asking. A blocked stream no longer strands a room:
+  after two silent connection attempts the client polls that cheap read on a
+  jittered, self-widening interval and says on screen that live updates are
+  paused, with a manual refresh. What remains is two-device certification on
+  real hardware and the server-side fold of `results` into one response, which
+  belongs to M7-A.
 - [ ] Fix F22/F23 by using bounded SQL aggregation/query paths and attributing
   matches to the actual matched place under versioned metric definitions.
 - [ ] Fix F24–F27 as one adaptive presentation pass: support at least 200%
@@ -1562,3 +1569,11 @@ measurements and rollback paths.
   without splitting the single source of truth for milestones, decisions, and
   contracts. The milestone checklist stays here so one file still answers what
   is done, and a lane log answers how.
+- 2026-09-10: Bound a place photo's decode by width alone rather than by the
+  box it is drawn in. `ResizeImage` defaults to `ResizeImagePolicy.exact`,
+  which resizes to exactly the width *and* height it is given and ignores the
+  source's aspect ratio, and `cached_network_image` gives no way to ask for
+  the fitting policy instead. A single width leaves the height to the photo,
+  so the bound has to be wide enough that the resulting height still covers
+  the box; the client assumes photos are no wider than 16:9, which holds for
+  everything the extractor's `=w1600` request returns.

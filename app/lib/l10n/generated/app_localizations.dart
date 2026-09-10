@@ -548,6 +548,24 @@ abstract class AppLocalizations {
   /// **'Updates paused. Showing the last saved session information.'**
   String get refreshFailed;
 
+  /// No description provided for @liveUpdatesPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Live updates are paused. Hayer keeps checking for changes.'**
+  String get liveUpdatesPaused;
+
+  /// No description provided for @liveUpdatesUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Hayer cannot reach the server. This is the last view that loaded.'**
+  String get liveUpdatesUnreachable;
+
+  /// No description provided for @refreshNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh now'**
+  String get refreshNow;
+
   /// No description provided for @startingHayer.
   ///
   /// In en, this message translates to:
