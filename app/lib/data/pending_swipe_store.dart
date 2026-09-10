@@ -62,6 +62,9 @@ abstract interface class PendingSwipeStore {
 
   Future<void> removeSession(String sessionId);
 
+  /// Drops every queued command, for an erase of this device's data.
+  Future<void> clear();
+
   Future<void> close();
 }
 
@@ -112,6 +115,9 @@ final class DriftPendingSwipeStore implements PendingSwipeStore {
   @override
   Future<void> removeSession(String sessionId) =>
       database.removePendingSession(sessionId);
+
+  @override
+  Future<void> clear() => database.clearPending();
 
   @override
   Future<void> close() => database.close();
@@ -206,6 +212,9 @@ final class SecurePendingSwipeStore implements PendingSwipeStore {
       ..removeWhere((record) => record.sessionId == sessionId);
     await _write(records);
   });
+
+  @override
+  Future<void> clear() => _mutex.protect(() => storage.delete(key: storageKey));
 
   Future<void> _write(List<PendingSwipeRecord> records) => records.isEmpty
       ? storage.delete(key: storageKey)

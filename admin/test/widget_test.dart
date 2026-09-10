@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hayer_admin/admin_app.dart';
 import 'package:hayer_admin/admin_operations.dart';
 import 'package:hayer_admin/features/auth/admin_auth_controller.dart';
 import 'package:hayer_admin/features/auth/admin_auth_repository.dart';
+import 'package:hayer_admin/features/navigation/admin_navigation.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
@@ -74,12 +76,35 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.byType(AdminSideNavigation), findsOneWidget);
     expect(find.text('Overview'), findsWidgets);
     expect(find.text('42'), findsOneWidget);
     expect(find.text('Sessions over time'), findsOneWidget);
     expect(find.text('Most popular cities'), findsOneWidget);
     expect(find.text('Top cuisines'), findsOneWidget);
+  });
+
+  testWidgets('the wide navigation groups its destinations', (tester) async {
+    await _setSurface(tester, const Size(1400, 900));
+    await _pumpDashboard(tester, _FakeAdminOperations());
+
+    for (final group in adminNavigationGroups) {
+      expect(find.text(group.title.toUpperCase()), findsOneWidget);
+    }
+    // Every destination is reachable without scrolling the navigation at the
+    // height a 1080p screen leaves a browser. A page added later can push the
+    // last group past that; the column scrolls, and this is the reminder to
+    // check what an operator can still see.
+    for (final route in adminRoutes) {
+      final tile = find.byKey(Key('admin-rail-$route'));
+      expect(tile, findsOneWidget);
+      expect(tester.getRect(tile).bottom, lessThan(900));
+    }
+
+    // The far end of the list is where a hardcoded index range went wrong.
+    await tester.tap(find.byKey(Key('admin-rail-${adminRoutes.last}')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('audit-page')), findsOneWidget);
   });
 
   testWidgets('narrow dashboard uses a drawer and opens coverage records', (
@@ -89,9 +114,18 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    expect(find.byType(NavigationRail), findsNothing);
+    expect(find.byType(AdminSideNavigation), findsNothing);
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
+    for (final group in adminNavigationGroups) {
+      expect(
+        find.descendant(
+          of: find.byType(NavigationDrawer),
+          matching: find.text(group.title.toUpperCase()),
+        ),
+        findsOneWidget,
+      );
+    }
     await tester.tap(
       find.descendant(
         of: find.byType(NavigationDrawer),
@@ -113,7 +147,7 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    await tester.tap(find.text('Refresh jobs'));
+    await tester.tap(find.byKey(const Key('admin-rail-/jobs')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
@@ -131,7 +165,7 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    await tester.tap(find.text('Audit log'));
+    await tester.tap(find.byKey(const Key('admin-rail-/audit')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('catalog.prune'));
     await tester.pumpAndSettle();
@@ -148,7 +182,7 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    await tester.tap(find.text('System policy'));
+    await tester.tap(find.byKey(const Key('admin-rail-/settings')));
     await tester.pumpAndSettle();
 
     expect(find.text('System policy'), findsWidgets);
@@ -165,7 +199,7 @@ void main() {
       final operations = _FakeAdminOperations();
       await _pumpDashboard(tester, operations);
 
-      await tester.tap(find.text('Reports'));
+      await tester.tap(find.byKey(const Key('admin-rail-/reports')));
       await tester.pumpAndSettle();
       expect(find.text('POI issue reports'), findsOneWidget);
       expect(find.text('1 similar reports'), findsOneWidget);
@@ -211,6 +245,92 @@ void main() {
       );
     },
   );
+
+  testWidgets('an overview figure links to the view that owns it', (
+    tester,
+  ) async {
+    await _setSurface(tester, const Size(1400, 1200));
+    final operations = _FakeAdminOperations();
+    await _pumpDashboard(tester, operations);
+
+    // Cache and source figures are reported on the overview, but nothing can
+    // be done about them there; the queue behind them is the refresh jobs
+    // view.
+    final link = find.byKey(const Key('next-action-refresh-jobs'));
+    await tester.ensureVisible(link);
+    await tester.pumpAndSettle();
+    await tester.tap(link);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('jobs-page')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a ranked place carries into its issue reports', (tester) async {
+    await _setSurface(tester, const Size(1400, 1200));
+    final operations = _FakeAdminOperations();
+    await _pumpDashboard(tester, operations);
+
+    await tester.tap(find.byKey(const Key('admin-rail-/places')));
+    await tester.pumpAndSettle();
+    expect(find.text('Questionable Cafe'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('place-actions-place-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const Key('place-action-reports-place-place-1')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('POI issue reports'), findsOneWidget);
+    // Filtered by the place id the report rows carry, so the operator does not
+    // search the queue again by hand.
+    expect(operations.issueQuery, 'place-1');
+    expect(find.text('Questionable Cafe'), findsWidgets);
+  });
+
+  testWidgets('the place ranking controls hold together at 200% text', (
+    tester,
+  ) async {
+    // The ranking field carries a long label in a fixed-width box, which
+    // overflowed its decoration before it was allowed to grow and ellipsize.
+    await _probePlacesAtLargeText(tester);
+
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('place-actions-place-1')), findsOneWidget);
+  });
+
+  testWidgets('a second linked place replaces the first one’s filter', (
+    tester,
+  ) async {
+    await _setSurface(tester, const Size(1400, 1200));
+    final operations = _FakeAdminOperations();
+    await _pumpDashboard(tester, operations);
+    final router = GoRouter.of(
+      tester.element(find.byKey(const Key('admin-sign-out'))),
+    );
+
+    router.go('/reports?q=place-1');
+    await tester.pumpAndSettle();
+    expect(operations.issueQuery, 'place-1');
+
+    // The page's State survives a second link to the same route, so a newly
+    // carried search has to be applied outside initState too.
+    router.go('/reports?q=place-2');
+    await tester.pumpAndSettle();
+
+    expect(operations.issueQuery, 'place-2');
+    expect(find.widgetWithText(TextField, 'place-2'), findsOneWidget);
+  });
+}
+
+Future<void> _probePlacesAtLargeText(WidgetTester tester) async {
+  await _setSurface(tester, const Size(1400, 1200));
+  tester.platformDispatcher.textScaleFactorTestValue = 2;
+  addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+  await _pumpDashboard(tester, _FakeAdminOperations());
+  await tester.tap(find.text('Places'));
+  await tester.pumpAndSettle();
 }
 
 Future<void> _setSurface(WidgetTester tester, Size size) async {
@@ -266,6 +386,7 @@ class _FakeAdminAuthRepository implements AdminAuthRepository {
 
 class _FakeAdminOperations implements AdminOperations {
   String? cancelledJobId;
+  String? issueQuery;
   PoiIssueStatus issueStatus = PoiIssueStatus.open;
   String? issueOwner;
   String? issueResolution;
@@ -494,6 +615,7 @@ class _FakeAdminOperations implements AdminOperations {
     required String query,
     PoiIssueStatus? status,
   }) async {
+    issueQuery = query;
     final issue = AdminPoiIssue(
       reportId: 'report-1',
       placeId: 'place-1',
@@ -565,6 +687,28 @@ class _FakeAdminOperations implements AdminOperations {
     quarantined = false;
     return true;
   }
+
+  @override
+  Future<AdminPlaceAnalytics> placeAnalytics({
+    required AnalyticsFilter filter,
+    required PlaceRanking ranking,
+    required int minimumSamples,
+  }) async => AdminPlaceAnalytics(
+    items: [
+      PlaceInsight(
+        placeId: 'place-1',
+        name: 'Questionable Cafe',
+        likes: 4,
+        dislikes: 26,
+        deckAppearances: 30,
+        cardImpressions: 30,
+        approvalRate: 13.3,
+      ),
+    ],
+    topCuisines: [_breakdown('italian', 'Italian', 12, 40)],
+    topTypes: [_breakdown('pizza', 'Pizza', 9, 30)],
+    generatedAt: DateTime.utc(2026, 9, 5, 10),
+  );
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

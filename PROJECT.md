@@ -1,11 +1,12 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-09
+Last updated: 2026-09-10
 
 Status: audit remediation active; invited-beta release remains blocked
 
 Current focus: M7-A/M7-E/M7-F — physical-device and live safety acceptance;
-M7-H structured POI issue reporting is complete
+M7-H structured POI issue reporting is complete; both F17 halves are merged
+and their client/server integration is the open follow-up
 
 Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`; P05 is complete
 in commit `da8e7ca`; P06 is complete in commit `a17567b`. Pinned full preflight
@@ -16,14 +17,14 @@ inspection, and v2 signature verification. New P05/P06 real-PostGIS cases
 compile but cannot run because this host has no `docker` command. Next M7 work
 is the open M7-A/M7-E/M7-F physical-device and live safety acceptance. Claude's
 F01 signup work is separate; its join limiter is implemented and live gateway
-proof remains open. Existing
-unrelated working-tree changes are being preserved.
+proof remains open. Existing unrelated working-tree changes are being
+preserved.
 
-Team lanes after P06 (2026-09-09): Codex owns backend work. Claude owns
-frontend work from the clean `worktree-claude-lane`; its tracker-split commit
-is `ffe8d16`. Claude can now rebase it onto current `main` and resume without
-overlapping implementation. No new frontend work should start in the main
-worktree after P06.
+Team lanes after P06 (2026-09-09): Codex owns backend work and logs it in
+`lane-backend.md`. Claude owns frontend work from `worktree-claude-lane` and
+logs it in [`lane-frontend.md`](lane-frontend.md). Both lanes' post-`4c9520a`
+work is merged into `main`; the lane branch continues from there. No new
+frontend work should start in the main worktree after P06.
 
 P06 completed handoff (2026-09-09; commit `a17567b`): Codex implemented the
 POI-report protocol/storage, consumer details-sheet reporting flow, admin
@@ -86,6 +87,56 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
   commit with a clear summary and an explanatory commit message when useful.
 - Record material implementation or verification decisions in this tracker's
   evidence or change log before committing.
+
+## Agent worktrees and role split
+
+Two agents develop this repository in parallel. They never share a working
+directory. Each commits from its own Git worktree and integrates through
+`main`.
+
+- Codex works in the primary worktree `/mnt/unraid/places_swiper/hayer` on
+  branch `main`. Claude works in `.claude/worktrees/claude-lane` on branch
+  `worktree-claude-lane`, and rebases onto `main` to pick up Codex's commits.
+- Codex owns the back end and delivery: `backend/`, generated Serverpod
+  protocol and client artifacts, migrations, `scripts/`, deployment, and the
+  M7 safety milestone (M7-A, M7-E, and M7-F acceptance).
+- Claude owns the front ends: presentation and client-side behavior in `app/`
+  and `admin/`, meaning screens, widgets, routing, state wiring, localization,
+  and their widget and unit tests.
+- The generated protocol under `backend/hayer_client/` is Codex's output.
+  Claude consumes it read-only and rebases to pick up new endpoints rather
+  than regenerating or hand-editing it. Claude does not edit `backend/`,
+  migrations, or deployment scripts.
+- A front-end change that needs a new or altered endpoint is a handoff to
+  Codex, not a reason to cross the boundary. Record the request in the change
+  log and keep the client work behind the existing contract until it lands.
+- Uncommitted work is invisible across worktrees, so the split protects only
+  committed state. Codex hands over pending front-end work by committing it;
+  before editing a front-end file, confirm the handoff note above does not
+  list it as in flight.
+- Each lane keeps its own log, in its own worktree, and neither agent edits
+  the other's: `lane-frontend.md` for Claude, `lane-backend.md` for Codex.
+  Checkpoints, verification evidence, handoff requests, and lane-local
+  implementation decisions go there.
+- This tracker stays authoritative for everything shared: locked decisions,
+  target architecture, contracts, the milestone checklist and its exit
+  conditions, verification gates, and this role split. Check a milestone box
+  here; explain how it was earned in your lane log. Keep additions here short
+  enough that the two lanes rarely touch the same paragraph, and resolve any
+  overlap as an ordinary merge rather than rewriting the other agent's text.
+- A worktree materializes tracked files only. `build/` is ignored, so the
+  pinned toolchain exists solely in the primary worktree. Build from a
+  secondary worktree with `export FLUTTER_BIN=/mnt/unraid/places_swiper/hayer/build/toolchains/flutter-3.47.2/bin/flutter`,
+  which `scripts/resolve-toolchain.sh` honors ahead of any `flutter` on `PATH`.
+
+In flight at the split (2026-09-09): Codex holds uncommitted P06 front-end
+files, namely `app/lib/features/report/`,
+`app/lib/data/poi_issue_repository.dart`, `admin/lib/features/issues/`, and
+edits to `place_details_sheet.dart`, `results_screen.dart`, `place_card.dart`,
+`core/providers.dart`, the `l10n` ARB and generated localizations,
+`admin_app.dart`, and `admin_operations.dart`. Claude leaves these to P06's
+scoped commit. Claude's open F01 join-limiter item sits in
+`backend/hayer_server/`, so it now belongs to Codex's lane.
 
 ## Locked decisions
 
@@ -542,9 +593,15 @@ meaning across Android and web.
     cases compile but cannot run on this host because Docker is unavailable.
   - [x] F30: require preprovisioned first-start recovery credentials and keep
     them out of normal runtime output.
-- [ ] Close F29/F35 with an in-product identity/location lifecycle explanation,
+- [~] Close F29/F35 with an in-product identity/location lifecycle explanation,
   a provider/source-use inventory, a named reviewer, and documented retention,
-  attribution, outage, and commercial-use decisions.
+  attribution, outage, and commercial-use decisions. The in-product account and
+  a device-data erase are done in `worktree-claude-lane`; see
+  [`lane-frontend.md`](lane-frontend.md). The notice still carries no support
+  or deletion contact because none exists to quote, its bilingual copy needs
+  the owner's read before beta, and the inventory, reviewer, documented
+  decisions, city-only geocoding precision, and anonymous-identity cleanup
+  remain open.
 
 Exit: onboarding cannot be exhausted through the shared proxy identity;
 privileged ceremonies/revocation reject replay; mutations are atomic/audited;
@@ -618,10 +675,13 @@ production rollout.
 
 - [~] Fix F17–F19 with coalesced lightweight progress refresh, dependable
   stream retry/poll convergence, prompt startup shell, recoverable screen
-  states, and GPS success independent of reverse-geocoder failure. F18/F19,
-  Claude's F17 client convergence commit `6277dcd`, and the additive deck-free
-  server progress contract are implemented; client contract integration,
-  rollback fallback, and blocked-stream acceptance remain.
+  states, and GPS success independent of reverse-geocoder failure. The F18
+  startup shell and F19 location independence are checked above. Both halves of
+  F17 are now merged: the client convergence commit `6277dcd` (see
+  [`lane-frontend.md`](lane-frontend.md)) and the additive deck-free server
+  progress contract `774edc7`. Wiring the client onto that deck-free
+  `sessions.progress` response, its rollback fallback, and blocked-stream
+  acceptance remain.
 - [ ] Fix F22/F23 by using bounded SQL aggregation/query paths and attributing
   matches to the actual matched place under versioned metric definitions.
 - [ ] Fix F24–F27 as one adaptive presentation pass: support at least 200%
@@ -719,10 +779,16 @@ selection history; recommendation changes are measurable and reversible.
 
 #### M7-J — Actionable administration `[ ]`
 
-- [ ] Add decision health, host/guest funnels, POI quality/freshness, demand
+- [~] Add decision health, host/guest funnels, POI quality/freshness, demand
   versus usable supply, and incident/extractor views with explicit periods,
   denominators, sample sizes, lag, source type, version overlays, and links to
-  the next operator action.
+  the next operator action. Explicit periods, the denominators and sample
+  sizes the protocol already carries, small-cohort suppression, measured lag,
+  correct metric polarity, and next-action links — including per-place links
+  that carry their own filter into the catalog and the issue queue — are done
+  in `worktree-claude-lane`; see [`lane-frontend.md`](lane-frontend.md). Sample counts on KPIs and trend
+  points, source type, and version overlays need protocol fields that do not
+  exist yet, and are an open handoff to the back-end lane.
 - [ ] Add source/rights governance, moderation ownership, measurement-health,
   alert acknowledgement/resolution, and controlled aggregate export manifests.
   Suppress unsafe small cohorts; journey IDs never become a retention identity.
@@ -808,6 +874,37 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-10: merged the front-end lane into `main`. Codex's seven post-
+  `4c9520a` back-end commits and Claude's nine front-end commits converge with
+  no source-file contention: fifty and forty-four files changed respectively,
+  and `PROJECT.md` was the only file both lanes touched, which is what the
+  `lane-backend.md`/`lane-frontend.md` split was for. Both tracker conflicts sat
+  in the milestone checklist. The M7-B F13/F14/F20/F30 conflict was additive:
+  Codex's sub-bullets and Claude's `[~]` on the following F29/F35 item both
+  apply. The F17-F19 item needed a decision rather than a pick, because each
+  lane had recorded the other's half as its own open handoff, so merging
+  falsified both sentences; the item now records both halves merged and names
+  what remains, namely wiring the client onto the deck-free `sessions.progress`
+  response, its rollback fallback, and blocked-stream acceptance. Three
+  statements the textual merge carried through silently were corrected for the
+  same reason: the lane branch is no longer an unmerged rebase onto `4c9520a`,
+  the F17 client half no longer waits on a server handoff, and the tracker date
+  advances. Pinned full preflight passes generation, formatting of 245 files,
+  all fatal-info analyses, 118 server tests, 138 app tests, 51 admin tests,
+  shell checks, and diff checks; the app and admin counts rise from 123 and nine
+  because the lane's tests came across. Preflight passes only with `DART_BIN`
+  exported alongside `FLUTTER_BIN`: `scripts/resolve-toolchain.sh` resolves
+  `dart` from `PATH` independently of the Flutter it just resolved, so pinned
+  Flutter 3.47.2 is otherwise paired with system Dart 3.12.2 and the older
+  formatter fails a clean tree. That remains an open back-end-lane fix. Signed
+  `0.2.1+7` and its alias are 105,122,663 bytes at SHA-256
+  `431f0d8500c48aa1cab37795beb7ad828f02f095bf64ce4ba7da7aefaaf4bd7b`,
+  superseding the smaller pre-merge artifact; package `sa.almou.hayer`,
+  versionCode 7 and versionName 0.2.1, and APK Signature Scheme v2 under the
+  Hayer release certificate all verify. The admin dashboard is English-only by
+  owner decision, so `admin/lib/l10n/` and `admin/l10n.yaml` are gone. Nothing
+  was pushed or deployed, and the Docker-dependent PostGIS cases on both sides
+  remain unrun on this host.
 - 2026-09-10: implemented the F05/F06/F07 catalog contract. The former
   per-place/per-category read-then-write loop is replaced by ordered JSON batch
   `INSERT ... ON CONFLICT` operations for catalog rows, query evidence, and
@@ -1435,3 +1532,21 @@ measurements and rollback paths.
   host-anchored deck, votes, result ordering, session data, or analytics. Keep
   the feature and its operational limits adjustable in the protected admin
   System policy.
+- 2026-09-09: Split parallel agent development by worktree and role rather
+  than by coordination. Codex keeps the primary worktree on `main` and owns
+  the back end, generated protocol, migrations, delivery scripts, and the M7
+  safety milestone. Claude works from `.claude/worktrees/claude-lane` on
+  `worktree-claude-lane` and owns the consumer app and admin dashboard front
+  ends. Isolation is filesystem-level, so the two never contend for a working
+  directory and meet only as ordinary merges on `main`. Because the split
+  protects committed state only, pending front-end work is handed over by
+  committing it, and the F01 join limiter moves to Codex's lane with the rest
+  of `backend/hayer_server/`.
+- 2026-09-09: Give each lane its own log file in its own worktree rather than
+  appending both lanes' narrative to this tracker. Checkpoints, evidence,
+  handoffs, and lane-local decisions were the only sections both agents grew,
+  and they are exactly the sections that carry no cross-lane meaning; moving
+  them to `lane-frontend.md` and `lane-backend.md` removes the merge surface
+  without splitting the single source of truth for milestones, decisions, and
+  contracts. The milestone checklist stays here so one file still answers what
+  is done, and a lane log answers how.

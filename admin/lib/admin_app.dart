@@ -9,8 +9,8 @@ import 'features/analytics/analytics_pages.dart';
 import 'features/auth/admin_auth_controller.dart';
 import 'features/auth/admin_auth_page.dart';
 import 'features/issues/poi_issue_page.dart';
+import 'features/navigation/admin_navigation.dart';
 import 'features/taxonomy/taxonomy_page.dart';
-import 'l10n/generated/admin_localizations.dart';
 
 class AdminApp extends StatefulWidget {
   const AdminApp({
@@ -56,8 +56,10 @@ class _AdminAppState extends State<AdminApp> {
       ),
       ShellRoute(
         builder: (context, state, child) => _Dashboard(
-          selectedIndex: _adminRoutes.indexOf(state.uri.path).clamp(0, 10),
-          onSelect: (index) => context.go(_adminRoutes[index]),
+          selectedIndex: adminRoutes
+              .indexOf(state.uri.path)
+              .clamp(0, adminRoutes.length - 1),
+          onSelect: (index) => context.go(adminRoutes[index]),
           authController: widget.authController,
           child: child,
         ),
@@ -81,13 +83,26 @@ class _AdminAppState extends State<AdminApp> {
             path: '/taxonomy',
             pageBuilder: (_, _) => _page(TaxonomyPage(operations: _operations)),
           ),
+          // `q` carries the subject of the figure an operator followed here,
+          // so the place they were looking at does not have to be searched
+          // again by hand.
           GoRoute(
             path: '/catalog',
-            pageBuilder: (_, _) => _page(_CatalogPage(operations: _operations)),
+            pageBuilder: (_, state) => _page(
+              _CatalogPage(
+                operations: _operations,
+                query: state.uri.queryParameters['q'] ?? '',
+              ),
+            ),
           ),
           GoRoute(
             path: '/reports',
-            pageBuilder: (_, _) => _page(PoiIssuePage(operations: _operations)),
+            pageBuilder: (_, state) => _page(
+              PoiIssuePage(
+                operations: _operations,
+                query: state.uri.queryParameters['q'] ?? '',
+              ),
+            ),
           ),
           GoRoute(
             path: '/coverage',
@@ -131,8 +146,6 @@ class _AdminAppState extends State<AdminApp> {
     debugShowCheckedModeBanner: false,
     theme: _theme(Brightness.light),
     darkTheme: _theme(Brightness.dark),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: _router,
   );
 
@@ -160,20 +173,6 @@ class _AdminAppState extends State<AdminApp> {
   }
 }
 
-const _adminRoutes = [
-  '/overview',
-  '/usage',
-  '/places',
-  '/taxonomy',
-  '/catalog',
-  '/reports',
-  '/coverage',
-  '/jobs',
-  '/settings',
-  '/calibration',
-  '/audit',
-];
-
 class _Dashboard extends StatelessWidget {
   const _Dashboard({
     required this.selectedIndex,
@@ -188,148 +187,70 @@ class _Dashboard extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final strings = AppLocalizations.of(context)!;
-    final labels = [
-      'Overview',
-      'Usage',
-      'Places',
-      'Taxonomy',
-      strings.catalog,
-      'Reports',
-      strings.coverage,
-      strings.jobs,
-      strings.settings,
-      strings.calibration,
-      strings.audit,
-    ];
-    final icons = [
-      Icons.dashboard_outlined,
-      Icons.insights_outlined,
-      Icons.favorite_outline_rounded,
-      Icons.account_tree_outlined,
-      Icons.place_outlined,
-      Icons.outlined_flag_rounded,
-      Icons.map_outlined,
-      Icons.sync_rounded,
-      Icons.tune_rounded,
-      Icons.science_outlined,
-      Icons.history_rounded,
-    ];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 1000;
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              strings.appName,
-              style: const TextStyle(fontWeight: FontWeight.w900),
-            ),
-            actions: [
-              if (wide)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Center(
-                    child: Text(
-                      authController.operator ?? '',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final wide = constraints.maxWidth >= 1000;
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Hayer Admin',
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
+          actions: [
+            if (wide)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Center(
+                  child: Text(
+                    authController.operator ?? '',
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
-              IconButton(
-                key: const Key('admin-sign-out'),
-                tooltip: 'Sign out',
-                onPressed: authController.isBusy
-                    ? null
-                    : authController.signOut,
-                icon: const Icon(Icons.logout_rounded),
               ),
-              const SizedBox(width: 8),
-            ],
-          ),
-          body: Row(
-            children: [
-              if (wide)
-                NavigationRail(
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: onSelect,
-                  labelType: NavigationRailLabelType.all,
-                  leading: const Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Tooltip(
-                      message: 'Insights · Content · Operations · Governance',
-                      child: Icon(Icons.admin_panel_settings_outlined),
-                    ),
-                  ),
-                  destinations: [
-                    for (var i = 0; i < labels.length; i++)
-                      NavigationRailDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
+            IconButton(
+              key: const Key('admin-sign-out'),
+              tooltip: 'Sign out',
+              onPressed: authController.isBusy ? null : authController.signOut,
+              icon: const Icon(Icons.logout_rounded),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: Row(
+          children: [
+            if (wide)
+              AdminSideNavigation(
+                selectedIndex: selectedIndex,
+                onSelect: onSelect,
+              ),
+            Expanded(child: child),
+          ],
+        ),
+        drawer: wide
+            ? null
+            : NavigationDrawer(
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  Navigator.of(context).pop();
+                  onSelect(value);
+                },
+                children: [
+                  const SizedBox(height: 12),
+                  // NavigationDrawer numbers only its destinations, so the
+                  // headings between them do not disturb the index the router
+                  // reads.
+                  for (final group in adminNavigationGroups) ...[
+                    AdminNavigationGroupLabel(group.title),
+                    for (final destination in group.destinations)
+                      NavigationDrawerDestination(
+                        icon: Icon(destination.icon),
+                        label: Text(destination.label),
                       ),
                   ],
-                ),
-              Expanded(child: child),
-            ],
-          ),
-          drawer: wide
-              ? null
-              : NavigationDrawer(
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    Navigator.of(context).pop();
-                    onSelect(value);
-                  },
-                  children: [
-                    const SizedBox(height: 12),
-                    const _NavigationGroupLabel('Insights'),
-                    for (var i = 0; i < 3; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                    const _NavigationGroupLabel('Content'),
-                    for (var i = 3; i < 5; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                    const _NavigationGroupLabel('Operations'),
-                    for (var i = 5; i < 9; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                    const _NavigationGroupLabel('Governance'),
-                    for (var i = 9; i < labels.length; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                  ],
-                ),
-        );
-      },
-    );
-  }
-}
-
-class _NavigationGroupLabel extends StatelessWidget {
-  const _NavigationGroupLabel(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(28, 18, 16, 6),
-    child: Text(
-      label.toUpperCase(),
-      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color: Theme.of(context).colorScheme.primary,
-        fontWeight: FontWeight.w900,
-        letterSpacing: 1.1,
-      ),
-    ),
+                ],
+              ),
+      );
+    },
   );
 }
 
@@ -399,9 +320,9 @@ class _OverviewPageState extends State<_OverviewPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             GridView.builder(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 280,
-                mainAxisExtent: 150,
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 280 * gridTextScale(context),
+                mainAxisExtent: gridCellHeight(context, 150),
                 crossAxisSpacing: 14,
                 mainAxisSpacing: 14,
               ),
@@ -450,8 +371,12 @@ class _OverviewPageState extends State<_OverviewPage> {
 }
 
 class _CatalogPage extends StatefulWidget {
-  const _CatalogPage({required this.operations});
+  const _CatalogPage({required this.operations, this.query = ''});
   final AdminOperations operations;
+
+  /// Search this page opens on, supplied by whatever linked here.
+  final String query;
+
   @override
   State<_CatalogPage> createState() => _CatalogPageState();
 }
@@ -467,6 +392,18 @@ class _CatalogPageState extends State<_CatalogPage> {
   @override
   void initState() {
     super.initState();
+    _search.text = widget.query;
+    _load();
+  }
+
+  // A second link to this page rebuilds the same state object, so a newly
+  // carried search has to be applied here as well as in initState.
+  @override
+  void didUpdateWidget(covariant _CatalogPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.query == widget.query) return;
+    _search.text = widget.query;
+    _pageIndex = 0;
     _load();
   }
 
@@ -845,8 +782,7 @@ class _CoveragePageState extends State<_CoveragePage> {
                           ),
                           _MetaText(
                             icon: Icons.schedule_rounded,
-                            value:
-                                'Expires ${_formatDate(context, coverage.expiresAt)}',
+                            value: 'Expires ${_formatDate(coverage.expiresAt)}',
                           ),
                         ],
                       ),
@@ -1113,7 +1049,7 @@ class _JobsPageState extends State<_JobsPage> {
                       SelectableText(job.coverageKey),
                       const SizedBox(height: 6),
                       Text('${job.requestedBy} · ${job.reason}'),
-                      Text('Created ${_formatDate(context, job.createdAt)}'),
+                      Text('Created ${_formatDate(job.createdAt)}'),
                       if (job.errorCode != null)
                         Text(
                           'Error: ${job.errorCode}',
@@ -1277,7 +1213,7 @@ class _AuditPageState extends State<_AuditPage> {
                   subtitle: Text(
                     '${entry.operatorName} · ${entry.targetType}'
                     '${entry.targetId == null ? '' : ' · ${entry.targetId}'}\n'
-                    '${_formatDate(context, entry.occurredAt)}',
+                    '${_formatDate(entry.occurredAt)}',
                   ),
                   childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   expandedCrossAxisAlignment: CrossAxisAlignment.start,
@@ -1836,8 +1772,8 @@ class _TrendCard extends StatelessWidget {
             if (points.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                '${_formatDate(context, points.first.bucketStartedAt)} – '
-                '${_formatDate(context, points.last.bucketStartedAt)}',
+                '${_formatDate(points.first.bucketStartedAt)} – '
+                '${_formatDate(points.last.bucketStartedAt)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -1990,10 +1926,11 @@ class _Pager extends StatelessWidget {
   }
 }
 
-String _formatDate(BuildContext context, DateTime value) {
-  final locale = Localizations.localeOf(context).languageCode;
-  return DateFormat.yMd(locale).add_Hm().format(value.toLocal());
-}
+// The dashboard is English-only, so dates use intl's default locale data
+// rather than the widget locale. Naming a locale explicitly would require
+// initializeDateFormatting for it.
+String _formatDate(DateTime value) =>
+    DateFormat.yMd().add_Hm().format(value.toLocal());
 
 String _jobStatusLabel(JobStatus status) => switch (status) {
   JobStatus.pending => 'Pending',

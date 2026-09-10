@@ -875,4 +875,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportFailed => 'Could not send the report. Please try again.';
+
+  @override
+  String get dataAndPrivacy => 'Your data';
+
+  @override
+  String get dataIntro =>
+      'What Hayer sends, what stays on this device, and what your group can see.';
+
+  @override
+  String get dataIdentityTitle => 'No account';
+
+  @override
+  String get dataIdentityBody =>
+      'Hayer never asks for an email address, a phone number, or a password. The app signs in anonymously and keeps that sign-in on this device. The name you type when you create or join a room is shown to that room; it is not checked against anything.';
+
+  @override
+  String get dataLocationTitle => 'Location';
+
+  @override
+  String get dataLocationBody =>
+      'The search location you pick — your current position or a place you searched for — is sent to Hayer with your radius to find places nearby. Addresses come from OpenStreetMap, and place details, photos, and ratings come from Google Maps. If you ask for travel time from where you are, that position is sent with the request. Hayer does not follow your position in the background.';
+
+  @override
+  String get dataGroupTitle => 'What your group sees';
+
+  @override
+  String get dataGroupBody =>
+      'People in your room see the name you joined with, how far through the deck you are, and whether you have finished. Results show how many people liked each place and how many chose it — never who liked or chose what.';
+
+  @override
+  String get dataDeviceTitle => 'Kept on this device';
+
+  @override
+  String get dataDeviceBody =>
+      'Saved places and their notes, the name you last used, the room you can resume, and any swipes that have not reached the server yet stay here. Nothing is synced to an account, so uninstalling Hayer removes them.';
+
+  @override
+  String get dataMeasurementTitle => 'Measurement';
+
+  @override
+  String get dataMeasurementBody =>
+      'Hayer counts anonymous usage — rooms started, cards seen, decisions made — under a random identifier that covers one room and is then dropped, together with the app version, platform, and language. It carries no lasting device identity and is not tied to your saved places or notes.';
+
+  @override
+  String get dataEraseTitle => 'Remove data from this device';
+
+  @override
+  String get dataEraseBody =>
+      'Erasing deletes saved places and notes, the remembered name, the resumable room, and the anonymous sign-in. Rooms expire on the server on their own; erasing here does not remove what the server has already recorded.';
+
+  @override
+  String get dataEraseAction => 'Erase data on this device';
+
+  @override
+  String get dataEraseConfirmTitle => 'Erase data on this device?';
+
+  @override
+  String get dataEraseConfirmBody => 'This cannot be undone.';
+
+  @override
+  String dataErasePendingWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count swipes have not reached the server yet and will be lost.',
+      one: 'One swipe has not reached the server yet and will be lost.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dataEraseKeep => 'Keep data';
+
+  @override
+  String get dataEraseConfirm => 'Erase';
+
+  @override
+  String get dataErased => 'Data on this device was erased.';
+
+  @override
+  String get dataEraseFailed => 'Could not erase everything. Please try again.';
 }

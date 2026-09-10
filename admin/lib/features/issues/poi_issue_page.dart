@@ -6,9 +6,13 @@ import '../../admin_operations.dart';
 import '../analytics/analytics_pages.dart';
 
 class PoiIssuePage extends StatefulWidget {
-  const PoiIssuePage({super.key, required this.operations});
+  const PoiIssuePage({super.key, required this.operations, this.query = ''});
 
   final AdminOperations operations;
+
+  /// Search this queue opens on, supplied by whatever linked here — a place id
+  /// when an operator followed a place from the analytics ranking.
+  final String query;
 
   @override
   State<PoiIssuePage> createState() => _PoiIssuePageState();
@@ -25,6 +29,18 @@ class _PoiIssuePageState extends State<PoiIssuePage> {
   @override
   void initState() {
     super.initState();
+    _search.text = widget.query;
+    _load();
+  }
+
+  // A second link to this page rebuilds the same state object, so a newly
+  // carried search has to be applied here as well as in initState.
+  @override
+  void didUpdateWidget(covariant PoiIssuePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.query == widget.query) return;
+    _search.text = widget.query;
+    _pageIndex = 0;
     _load();
   }
 
@@ -419,9 +435,7 @@ class _PoiIssuePageState extends State<PoiIssuePage> {
   }
 
   String _formatDate(DateTime value) =>
-      DateFormat.yMd(Localizations.localeOf(context).languageCode)
-          .add_Hm()
-          .format(value.toLocal());
+      DateFormat.yMd().add_Hm().format(value.toLocal());
 
   String _duration(Duration value) {
     if (value.inDays > 0) return '${value.inDays}d ${value.inHours % 24}h';

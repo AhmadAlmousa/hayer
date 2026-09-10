@@ -4,6 +4,7 @@ import 'package:hayer_client/hayer_client.dart';
 import '../features/home/home_screen.dart';
 import '../features/join/join_screen.dart';
 import '../features/lobby/lobby_screen.dart';
+import '../features/privacy/data_and_privacy_screen.dart';
 import '../features/results/results_screen.dart';
 import '../features/saved/saved_places_screen.dart';
 import '../features/saved/shortlist_setup_screen.dart';
@@ -26,6 +27,10 @@ GoRouter createAppRouter({String? initialLocation}) => GoRouter(
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/setup', builder: (context, state) => const SetupScreen()),
     GoRoute(path: '/scan', builder: (context, state) => const ScanScreen()),
+    GoRoute(
+      path: '/data',
+      builder: (context, state) => const DataAndPrivacyScreen(),
+    ),
     GoRoute(
       path: '/saved',
       builder: (context, state) => const SavedPlacesScreen(),

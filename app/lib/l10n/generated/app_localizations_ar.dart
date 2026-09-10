@@ -862,4 +862,85 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reportFailed => 'تعذر إرسال البلاغ. حاول مرة أخرى.';
+
+  @override
+  String get dataAndPrivacy => 'بياناتك';
+
+  @override
+  String get dataIntro =>
+      'ما يُرسله حيّر، وما يبقى على هذا الجهاز، وما تراه مجموعتك.';
+
+  @override
+  String get dataIdentityTitle => 'بدون حساب';
+
+  @override
+  String get dataIdentityBody =>
+      'لا يطلب حيّر بريداً إلكترونياً ولا رقم جوال ولا كلمة مرور. يسجّل التطبيق الدخول بهوية مجهولة ويحفظها على هذا الجهاز. والاسم الذي تكتبه عند إنشاء غرفة أو الانضمام إليها يظهر لتلك الغرفة، ولا يُتحقق منه.';
+
+  @override
+  String get dataLocationTitle => 'الموقع';
+
+  @override
+  String get dataLocationBody =>
+      'يُرسَل موقع البحث الذي تختاره — موقعك الحالي أو مكان بحثت عنه — إلى حيّر مع نطاق البحث للعثور على الأماكن القريبة. العناوين من OpenStreetMap، وتفاصيل الأماكن وصورها وتقييماتها من خرائط Google. وإذا طلبت زمن الوصول من مكانك، يُرسَل موقعك مع الطلب. لا يتتبع حيّر موقعك في الخلفية.';
+
+  @override
+  String get dataGroupTitle => 'ما تراه مجموعتك';
+
+  @override
+  String get dataGroupBody =>
+      'يرى من في غرفتك الاسم الذي انضممت به، وإلى أين وصلت في البطاقات، وهل أنهيتها. وتعرض النتائج كم شخصاً أعجبه كل مكان وكم اختاره، دون إظهار من أعجبه أو من اختاره.';
+
+  @override
+  String get dataDeviceTitle => 'ما يبقى على هذا الجهاز';
+
+  @override
+  String get dataDeviceBody =>
+      'تبقى هنا الأماكن المحفوظة وملاحظاتها، والاسم الذي استخدمته آخر مرة، والغرفة التي يمكنك متابعتها، وأي سحبات لم تصل إلى الخادم بعد. لا شيء يتزامن مع حساب، لذا تُحذف بإزالة حيّر.';
+
+  @override
+  String get dataMeasurementTitle => 'القياس';
+
+  @override
+  String get dataMeasurementBody =>
+      'يحصي حيّر استخداماً مجهولاً — الغرف التي بدأت، والبطاقات التي ظهرت، والقرارات التي اتُخذت — بمعرّف عشوائي يغطي غرفة واحدة ثم يُهمَل، مع إصدار التطبيق والمنصة واللغة. لا يحمل هوية دائمة للجهاز ولا يرتبط بأماكنك المحفوظة أو ملاحظاتك.';
+
+  @override
+  String get dataEraseTitle => 'حذف البيانات من هذا الجهاز';
+
+  @override
+  String get dataEraseBody =>
+      'يحذف المسح الأماكن المحفوظة وملاحظاتها، والاسم المحفوظ، والغرفة القابلة للمتابعة، وتسجيل الدخول المجهول. تنتهي صلاحية الغرف على الخادم من تلقاء نفسها، والمسح هنا لا يحذف ما سجّله الخادم سابقاً.';
+
+  @override
+  String get dataEraseAction => 'امسح البيانات من هذا الجهاز';
+
+  @override
+  String get dataEraseConfirmTitle => 'مسح البيانات من هذا الجهاز؟';
+
+  @override
+  String get dataEraseConfirmBody => 'لا يمكن التراجع عن هذا.';
+
+  @override
+  String dataErasePendingWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'هناك $count سحبات لم تصل إلى الخادم بعد وستُفقد.',
+      one: 'هناك سحبة لم تصل إلى الخادم بعد وستُفقد.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dataEraseKeep => 'احتفظ بالبيانات';
+
+  @override
+  String get dataEraseConfirm => 'امسح';
+
+  @override
+  String get dataErased => 'مُسحت بيانات هذا الجهاز.';
+
+  @override
+  String get dataEraseFailed => 'تعذر مسح كل شيء. حاول مرة أخرى.';
 }

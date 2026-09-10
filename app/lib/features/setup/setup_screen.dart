@@ -392,6 +392,15 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               ),
               title: Text(_address ?? strings.currentLocation),
               subtitle: Text(strings.locationAddressAttribution),
+              // The audit's F29 names this step: it is where a location is
+              // chosen, so it is where the account of what happens to it
+              // belongs.
+              trailing: IconButton(
+                key: const ValueKey('setup-data-and-privacy'),
+                tooltip: strings.dataAndPrivacy,
+                onPressed: () => context.push('/data'),
+                icon: const Icon(Icons.privacy_tip_outlined),
+              ),
             ),
           ),
           const SizedBox(height: 12),

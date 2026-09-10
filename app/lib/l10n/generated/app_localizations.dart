@@ -1627,6 +1627,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not send the report. Please try again.'**
   String get reportFailed;
+
+  /// No description provided for @dataAndPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data'**
+  String get dataAndPrivacy;
+
+  /// No description provided for @dataIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'What Hayer sends, what stays on this device, and what your group can see.'**
+  String get dataIntro;
+
+  /// No description provided for @dataIdentityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No account'**
+  String get dataIdentityTitle;
+
+  /// No description provided for @dataIdentityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Hayer never asks for an email address, a phone number, or a password. The app signs in anonymously and keeps that sign-in on this device. The name you type when you create or join a room is shown to that room; it is not checked against anything.'**
+  String get dataIdentityBody;
+
+  /// No description provided for @dataLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get dataLocationTitle;
+
+  /// No description provided for @dataLocationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The search location you pick — your current position or a place you searched for — is sent to Hayer with your radius to find places nearby. Addresses come from OpenStreetMap, and place details, photos, and ratings come from Google Maps. If you ask for travel time from where you are, that position is sent with the request. Hayer does not follow your position in the background.'**
+  String get dataLocationBody;
+
+  /// No description provided for @dataGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What your group sees'**
+  String get dataGroupTitle;
+
+  /// No description provided for @dataGroupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'People in your room see the name you joined with, how far through the deck you are, and whether you have finished. Results show how many people liked each place and how many chose it — never who liked or chose what.'**
+  String get dataGroupBody;
+
+  /// No description provided for @dataDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept on this device'**
+  String get dataDeviceTitle;
+
+  /// No description provided for @dataDeviceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved places and their notes, the name you last used, the room you can resume, and any swipes that have not reached the server yet stay here. Nothing is synced to an account, so uninstalling Hayer removes them.'**
+  String get dataDeviceBody;
+
+  /// No description provided for @dataMeasurementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement'**
+  String get dataMeasurementTitle;
+
+  /// No description provided for @dataMeasurementBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Hayer counts anonymous usage — rooms started, cards seen, decisions made — under a random identifier that covers one room and is then dropped, together with the app version, platform, and language. It carries no lasting device identity and is not tied to your saved places or notes.'**
+  String get dataMeasurementBody;
+
+  /// No description provided for @dataEraseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove data from this device'**
+  String get dataEraseTitle;
+
+  /// No description provided for @dataEraseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Erasing deletes saved places and notes, the remembered name, the resumable room, and the anonymous sign-in. Rooms expire on the server on their own; erasing here does not remove what the server has already recorded.'**
+  String get dataEraseBody;
+
+  /// No description provided for @dataEraseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase data on this device'**
+  String get dataEraseAction;
+
+  /// No description provided for @dataEraseConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase data on this device?'**
+  String get dataEraseConfirmTitle;
+
+  /// No description provided for @dataEraseConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get dataEraseConfirmBody;
+
+  /// No description provided for @dataErasePendingWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{One swipe has not reached the server yet and will be lost.} other{{count} swipes have not reached the server yet and will be lost.}}'**
+  String dataErasePendingWarning(int count);
+
+  /// No description provided for @dataEraseKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep data'**
+  String get dataEraseKeep;
+
+  /// No description provided for @dataEraseConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase'**
+  String get dataEraseConfirm;
+
+  /// No description provided for @dataErased.
+  ///
+  /// In en, this message translates to:
+  /// **'Data on this device was erased.'**
+  String get dataErased;
+
+  /// No description provided for @dataEraseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not erase everything. Please try again.'**
+  String get dataEraseFailed;
 }
 
 class _AppLocalizationsDelegate

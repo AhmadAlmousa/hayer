@@ -67,9 +67,11 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed) {
+      _updates?.resume();
       unawaited(_recoverPending());
       _scheduleCardImpression();
     } else {
+      _updates?.pause();
       _impressionTimer?.cancel();
     }
   }

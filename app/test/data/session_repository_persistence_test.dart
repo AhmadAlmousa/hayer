@@ -313,10 +313,16 @@ final class _EmptyPendingSwipeStore implements PendingSwipeStore {
 
   @override
   Future<void> removeSession(String sessionId) async {}
+
+  @override
+  Future<void> clear() async {}
 }
 
 final class _MemoryPendingSwipeStore implements PendingSwipeStore {
   final records = <PendingSwipeRecord>[];
+
+  @override
+  Future<void> clear() async => records.clear();
 
   @override
   Future<void> close() async {}

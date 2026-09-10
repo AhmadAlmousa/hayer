@@ -31,18 +31,22 @@ class LobbyScreen extends ConsumerStatefulWidget {
   ConsumerState<LobbyScreen> createState() => _LobbyScreenState();
 }
 
-class _LobbyScreenState extends ConsumerState<LobbyScreen> {
+class _LobbyScreenState extends ConsumerState<LobbyScreen>
+    with WidgetsBindingObserver {
   SessionBundle? _bundle;
   Object? _error;
   SessionRealtimeListener? _updates;
   bool _celebrating = false;
   bool _loading = false;
+  bool _reloadQueued = false;
+  Completer<(Object, StackTrace)?>? _loadSettled;
   bool _routeChoiceOpen = false;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _bundle = widget.initialBundle;
     _load();
     _connect();
@@ -50,18 +54,48 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_updates?.dispose());
     super.dispose();
   }
 
-  Future<void> _load() async {
-    if (_loading) return;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _updates?.resume();
+    } else {
+      _updates?.pause();
+    }
+  }
+
+  /// [propagateError] lets the real-time listener see a failed refresh so it
+  /// retries instead of acknowledging a revision it never applied. The manual
+  /// retry path keeps swallowing into [_error], which drives the recovery UI.
+  ///
+  /// The listener's first event routinely lands while `initState`'s load is
+  /// still in flight, so a deferred refresh has to wait for the pass that
+  /// absorbs it and report that pass's outcome. Returning early instead would
+  /// acknowledge a revision this screen has not applied yet.
+  Future<void> _load({bool propagateError = false}) async {
+    if (_loading) {
+      _reloadQueued = true;
+      final settled = _loadSettled ??= Completer<(Object, StackTrace)?>();
+      final failure = await settled.future;
+      if (propagateError && failure != null) {
+        Error.throwWithStackTrace(failure.$1, failure.$2);
+      }
+      return;
+    }
     _loading = true;
+    final settled = _loadSettled ??= Completer<(Object, StackTrace)?>();
+    (Object, StackTrace)? failure;
     try {
-      final value = await ref
-          .read(sessionRepositoryProvider)
-          .load(widget.sessionId);
-      if (mounted) {
+      do {
+        _reloadQueued = false;
+        final value = await ref
+            .read(sessionRepositoryProvider)
+            .load(widget.sessionId);
+        if (!mounted) return;
         final becameInstantMatch =
             _bundle != null &&
             _bundle!.session.status != SessionStatus.completed &&
@@ -74,11 +108,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
         });
         unawaited(_syncRouteOrigin(value));
         if (becameInstantMatch) await _celebrateMatch();
-      }
-    } catch (error) {
+      } while (_reloadQueued);
+    } catch (error, stack) {
+      failure = (error, stack);
       if (mounted) setState(() => _error = error);
     } finally {
       _loading = false;
+      _loadSettled = null;
+      settled.complete(failure);
+    }
+    if (propagateError && failure != null) {
+      Error.throwWithStackTrace(failure.$1, failure.$2);
     }
   }
 
@@ -88,7 +128,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           .read(clientProvider)
           .hayerSession
           .watch(sessionId: widget.sessionId),
-      onEvent: (_) => _load(),
+      onEvent: (_) => _load(propagateError: true),
     )..start();
   }
 
