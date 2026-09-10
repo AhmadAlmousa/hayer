@@ -180,6 +180,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           label: Text(strings.joinSession),
                         ),
                         const SizedBox(height: 16),
+                        TextButton.icon(
+                          key: const ValueKey('data-and-privacy'),
+                          onPressed: () => context.push('/data'),
+                          icon: const Icon(
+                            Icons.privacy_tip_outlined,
+                            size: 18,
+                          ),
+                          label: Text(strings.dataAndPrivacy),
+                        ),
                         const VersionIndicator(),
                       ],
                     ),

@@ -61,6 +61,8 @@ class AppDatabase extends _$AppDatabase {
           ))
           .go();
 
+  Future<void> clearPending() => delete(pendingSwipes).go();
+
   Future<void> removePendingSession(String sessionId) => (delete(
     pendingSwipes,
   )..where((row) => row.sessionId.equals(sessionId))).go();

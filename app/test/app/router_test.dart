@@ -73,6 +73,31 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, '/join/Q3W');
   });
 
+  testWidgets('the data account is reachable from its own path', (
+    tester,
+  ) async {
+    // F29's finding was that nothing in the product explained the identity and
+    // location lifecycle, so the account needs a route of its own that a
+    // support answer or a link can point at.
+    final router = createAppRouter(initialLocation: '/data');
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [clientProvider.overrideWithValue(client)],
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: hayerLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your data'), findsWidgets);
+    expect(find.text('No account'), findsOneWidget);
+  });
+
   testWidgets('join form reports invalid fields before calling the server', (
     tester,
   ) async {
@@ -208,4 +233,7 @@ final class _MemoryDisplayNameStore implements DisplayNameStore {
 
   @override
   Future<void> write(String displayName) async => value = displayName;
+
+  @override
+  Future<void> clear() async => value = null;
 }

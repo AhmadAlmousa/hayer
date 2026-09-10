@@ -19,12 +19,21 @@ Last updated: 2026-09-10
 ## Current state
 
 - Branch `worktree-claude-lane`, rebased onto `main` at `4c9520a`.
-- Open milestone work in this lane: M7-E, and the M7-J presentation slices that
-  need no protocol change. The F17 client half is complete; its server half is
-  an open handoff (below). M7-E's remaining physical-device
-  TalkBack/focus/contrast, largest-native-text, denied/approximate-location,
-  background/reconnect, and performance checks need real hardware and are not
-  startable here.
+- Nothing in M7 is startable in this lane any more. What is left of the
+  milestone here needs a physical device (M7-E acceptance, M7-G two-device
+  reconnect), a container runtime (M7-B gateway proof, M7-G real-PostGIS
+  regressions), protocol fields the back-end lane owns (M7-J sample counts,
+  source type, version overlays), or the owner (F29's reviewer, contact, and
+  documented decisions). The open handoffs are listed below.
+- M7-E's remaining physical-device TalkBack/focus/contrast,
+  largest-native-text, denied/approximate-location, background/reconnect, and
+  performance checks need real hardware. The F17 client half is complete; its
+  server half is an open handoff (below).
+- M7-A's client half is in place and was re-read for this pass: a failed local
+  durability write rolls the card back with a message rather than advancing,
+  and a deck whose last swipe is still queued shows a pending-sync screen with
+  a retry instead of results. What is left of that checkpoint is the
+  crash/replay/concurrency proving, which needs a real server and two clients.
 - The F01 join limiter is *not* in this lane. It lives in
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
@@ -245,7 +254,82 @@ pointer route registered, which then fails unrelated later tests in the same
 file. The route and the seeding are the same code as the reports leg, which is
 covered end to end; the catalog link's own location is unit-tested.
 
-Still open from the review: the wide `NavigationRail` grouping.
+### Wide navigation grouping (2026-09-10)
+
+The last item from the M7-J design review. The narrow drawer had shown
+Insights / Content / Operations / Governance since that pass; the wide layout
+showed eleven destinations as one column whose only hint of structure was a
+tooltip on the rail's leading icon.
+
+Material's `NavigationRail` takes a flat `List<NavigationRailDestination>` and
+has nowhere to put a heading, so the wide layout renders the declared groups
+itself. Labels moved beside their icons rather than under them: measured, four
+headings plus stacked labels put the last destination at y≈920 in a 900-pixel
+window — the height a 1080p screen leaves a browser — so Governance would have
+been below the fold. The column still scrolls for scaled text or a later page,
+and a test pins that today's set needs no scrolling at that height.
+
+Route, label, icon, and group membership were three parallel lists plus
+hardcoded index ranges — `for (var i = 5; i < 9; i++)` was what made a page
+part of Operations — and `_adminRoutes` was a fourth list of the same routes in
+the same order. They are one declaration now, read by the router and both
+layouts, so a page added in the middle cannot change the heading of the pages
+after it or shift the index another page resolves by.
+
+A destination is also one merged semantics node announcing its name and whether
+it is the current page; selection had been carried by colour alone. That is
+verified against the navigation directly: in the assembled app neither this
+navigation nor the `NavigationRail` it replaced contributes nodes to the test
+semantics tree, which was checked against the previous commit before the change
+was kept.
+
+Verification: pinned full preflight passes with 101 server, 138 app, and 51
+admin tests. No release APK for this commit: nothing under `app/` changed.
+
+### F29 in-product data account and device erase (2026-09-10)
+
+The front-end half of M7-B's F29 bullet. The audit found no in-product account
+of the identity and location lifecycle and no deletion entry point: a user
+could see "Address from OpenStreetMap" on a card, but nothing said their
+coordinates reach the server, that the room sees their name and progress but
+not their swipes, or that saved notes never leave the device.
+
+`/data` — "Your data", reachable from home and from the setup step that asks
+for a location, which is the file F29 names. Every claim was read out of the
+path it describes rather than written from intent: no account
+(`ensureAnonymousAuthentication`, no email/phone/password), the search anchor
+and radius in `CreateSessionRequest`, the participant coordinates sent with a
+route estimate, OpenStreetMap for addresses and Google Maps for place details,
+`ParticipantView` (name, deck position, completion) and the aggregate-only
+`DestinationChoiceState`/`SessionResult` counts for what a room sees, the four
+device-local stores, and `ClientAnalyticsContext`'s per-room journey id with
+app build, platform and language. Where the app cannot promise something it
+says so: erasing this device does not remove what the server already recorded.
+
+`DeviceDataRepository` erases saved places and notes, the remembered name, the
+queued swipes, the resumable room pointer, and the anonymous sign-in. Two
+stores only knew how to add, so `clear()` was added to both. Sign-out runs last,
+so a partial failure never leaves data on the device under an identity it can
+no longer reach, and the confirmation counts undelivered swipes first — they
+are the one thing an erase destroys that the server has never seen.
+
+Verification: pinned full preflight passes with 101 server, 138 app (up from
+128), and 51 admin tests. The new cases cover each store being cleared, an
+already-empty device, a queue that cannot be read, the sections rendering, the
+question being asked before anything is destroyed, a failed erase reporting
+itself, and the account at 200% text in English and Arabic at 320×640. The
+signed `0.2.1+7` APK is 105,106,279 bytes at SHA-256
+`d533a016423af6bb1cb1962432ae94198c2e1a164261d7b49918cf416a51152a`, declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
+Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
+
+Two gaps this lane cannot close, both owner-side: the notice carries no support
+or deletion contact, because none exists to quote, and the bilingual copy makes
+user-facing claims that should have the owner's read before beta. F29 also
+wants a provider/source-use inventory, a named reviewer, and documented
+retention, attribution, outage and commercial-use decisions; those are not
+front-end work, and the server half — city-only geocoding precision and cleanup
+of inactive anonymous identities — stays with the back-end lane.
 
 ### P06 independent re-verification (2026-09-09)
 

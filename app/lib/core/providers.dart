@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import '../data/local/app_database.dart';
+import '../data/device_data_repository.dart';
 import '../data/display_name_store.dart';
 import '../data/location_warmup.dart';
 import '../data/location_repository.dart';
@@ -58,6 +60,15 @@ final sessionRepositoryProvider = Provider<SessionRepository>(
     client: ref.watch(clientProvider),
     outbox: ref.watch(pendingSwipeStoreProvider),
     analyticsMetadata: ref.watch(clientAnalyticsMetadataProvider),
+  ),
+);
+
+final deviceDataRepositoryProvider = Provider<DeviceDataRepository>(
+  (ref) => DeviceDataRepository(
+    signOut: () => ref.watch(clientProvider).auth.updateSignedInUser(null),
+    savedPlaces: ref.watch(savedPlaceStoreProvider),
+    displayNames: ref.watch(displayNameStoreProvider),
+    outbox: ref.watch(pendingSwipeStoreProvider),
   ),
 );
 

@@ -4,6 +4,9 @@ abstract interface class DisplayNameStore {
   Future<String?> read();
 
   Future<void> write(String displayName);
+
+  /// Forgets the remembered name, for an erase of this device's data.
+  Future<void> clear();
 }
 
 final class SecureDisplayNameStore implements DisplayNameStore {
@@ -19,6 +22,15 @@ final class SecureDisplayNameStore implements DisplayNameStore {
       return value == null || value.isEmpty ? null : value;
     } catch (_) {
       return null;
+    }
+  }
+
+  @override
+  Future<void> clear() async {
+    try {
+      await storage.delete(key: storageKey);
+    } catch (_) {
+      // Nothing to forget if the platform store is unavailable.
     }
   }
 

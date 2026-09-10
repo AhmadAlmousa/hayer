@@ -571,9 +571,15 @@ meaning across Android and web.
 - [ ] Fix F13/F14/F20/F30: require passkey UP/UV, revoke issued admin/enrollment
   sessions, make compare-and-swap mutations atomic with audit records, and
   stop emitting recovery credentials to logs.
-- [ ] Close F29/F35 with an in-product identity/location lifecycle explanation,
+- [~] Close F29/F35 with an in-product identity/location lifecycle explanation,
   a provider/source-use inventory, a named reviewer, and documented retention,
-  attribution, outage, and commercial-use decisions.
+  attribution, outage, and commercial-use decisions. The in-product account and
+  a device-data erase are done in `worktree-claude-lane`; see
+  [`lane-frontend.md`](lane-frontend.md). The notice still carries no support
+  or deletion contact because none exists to quote, its bilingual copy needs
+  the owner's read before beta, and the inventory, reviewer, documented
+  decisions, city-only geocoding precision, and anonymous-identity cleanup
+  remain open.
 
 Exit: onboarding cannot be exhausted through the shared proxy identity;
 privileged ceremonies/revocation reject replay; mutations are atomic/audited;
