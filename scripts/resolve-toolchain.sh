@@ -42,9 +42,18 @@ hayer_resolve_flutter() {
 
 hayer_resolve_dart() {
   local flutter_executable="$1"
-  hayer_resolve_executable \
-    "${DART_BIN:-}" \
-    dart \
-    "$(dirname "$flutter_executable")/dart" \
-    "${HOME:-}/flutter/bin/dart"
+  local configured="${DART_BIN:-}"
+  if [[ -n "$configured" ]]; then
+    hayer_resolve_executable "$configured" dart
+    return
+  fi
+
+  local flutter_dart
+  flutter_dart="$(dirname "$flutter_executable")/dart"
+  if [[ -x "$flutter_dart" ]]; then
+    printf '%s\n' "$flutter_dart"
+    return
+  fi
+
+  hayer_resolve_executable "" dart "${HOME:-}/flutter/bin/dart"
 }

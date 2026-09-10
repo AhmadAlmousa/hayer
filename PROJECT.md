@@ -892,11 +892,11 @@ measurements and rollback paths.
   advances. Pinned full preflight passes generation, formatting of 245 files,
   all fatal-info analyses, 118 server tests, 138 app tests, 51 admin tests,
   shell checks, and diff checks; the app and admin counts rise from 123 and nine
-  because the lane's tests came across. Preflight passes only with `DART_BIN`
-  exported alongside `FLUTTER_BIN`: `scripts/resolve-toolchain.sh` resolves
-  `dart` from `PATH` independently of the Flutter it just resolved, so pinned
-  Flutter 3.47.2 is otherwise paired with system Dart 3.12.2 and the older
-  formatter fails a clean tree. That remains an open back-end-lane fix. Signed
+  because the lane's tests came across. The toolchain resolver now prefers the
+  resolved Flutter's sibling `dart` over `PATH`, while an explicit `DART_BIN`
+  still has highest priority and fails closed when invalid. Its regression test
+  covers explicit, sibling, and `PATH` resolution, so `FLUTTER_BIN` alone keeps
+  the pinned Flutter and Dart versions coherent. Signed
   `0.2.1+7` and its alias are 105,122,663 bytes at SHA-256
   `431f0d8500c48aa1cab37795beb7ad828f02f095bf64ce4ba7da7aefaaf4bd7b`,
   superseding the smaller pre-merge artifact; package `sa.almou.hayer`,

@@ -395,6 +395,9 @@ the back-end lane's, so this is reported rather than fixed here. Still
 reproducing on 2026-09-10: the merge preflight failed this way twice before
 both variables were exported, the second time reporting 18 files.
 
+Resolved by the back-end lane on 2026-09-10: the Flutter sibling now precedes
+`PATH`, with explicit override, fallback, and invalid-override regression cases.
+
 ### Release keystore path is stale
 
 `app/android/key.properties` points `storeFile` at

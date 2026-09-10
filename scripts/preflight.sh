@@ -8,6 +8,7 @@ dart_bin="$(hayer_resolve_dart "$flutter_bin")"
 export PATH="$(dirname "$dart_bin"):$PATH"
 cd "$repo_root"
 
+bash scripts/test-resolve-toolchain.sh
 "$flutter_bin" pub get
 (
   cd backend/hayer_server
@@ -30,7 +31,8 @@ mapfile -t dart_sources < <(
 (cd backend/hayer_client && "$dart_bin" analyze --fatal-infos)
 (cd app && "$flutter_bin" analyze --fatal-infos && "$flutter_bin" test)
 (cd admin && "$flutter_bin" analyze --fatal-infos && "$flutter_bin" test)
-bash -n scripts/resolve-toolchain.sh scripts/preflight.sh \
+bash -n scripts/resolve-toolchain.sh scripts/test-resolve-toolchain.sh \
+  scripts/preflight.sh \
   scripts/build-release-apk.sh scripts/build-server-image.sh \
   scripts/test-server-integration.sh scripts/admin-enrollment.sh
 sh -n backend/deploy/backup-loop.sh backend/deploy/restore-backup.sh
