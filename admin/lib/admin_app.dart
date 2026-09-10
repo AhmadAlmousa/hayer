@@ -80,13 +80,26 @@ class _AdminAppState extends State<AdminApp> {
             path: '/taxonomy',
             pageBuilder: (_, _) => _page(TaxonomyPage(operations: _operations)),
           ),
+          // `q` carries the subject of the figure an operator followed here,
+          // so the place they were looking at does not have to be searched
+          // again by hand.
           GoRoute(
             path: '/catalog',
-            pageBuilder: (_, _) => _page(_CatalogPage(operations: _operations)),
+            pageBuilder: (_, state) => _page(
+              _CatalogPage(
+                operations: _operations,
+                query: state.uri.queryParameters['q'] ?? '',
+              ),
+            ),
           ),
           GoRoute(
             path: '/reports',
-            pageBuilder: (_, _) => _page(PoiIssuePage(operations: _operations)),
+            pageBuilder: (_, state) => _page(
+              PoiIssuePage(
+                operations: _operations,
+                query: state.uri.queryParameters['q'] ?? '',
+              ),
+            ),
           ),
           GoRoute(
             path: '/coverage',
@@ -446,8 +459,12 @@ class _OverviewPageState extends State<_OverviewPage> {
 }
 
 class _CatalogPage extends StatefulWidget {
-  const _CatalogPage({required this.operations});
+  const _CatalogPage({required this.operations, this.query = ''});
   final AdminOperations operations;
+
+  /// Search this page opens on, supplied by whatever linked here.
+  final String query;
+
   @override
   State<_CatalogPage> createState() => _CatalogPageState();
 }
@@ -463,6 +480,18 @@ class _CatalogPageState extends State<_CatalogPage> {
   @override
   void initState() {
     super.initState();
+    _search.text = widget.query;
+    _load();
+  }
+
+  // A second link to this page rebuilds the same state object, so a newly
+  // carried search has to be applied here as well as in initState.
+  @override
+  void didUpdateWidget(covariant _CatalogPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.query == widget.query) return;
+    _search.text = widget.query;
+    _pageIndex = 0;
     _load();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_admin/features/analytics/analytics_pages.dart';
+import 'package:hayer_admin/features/analytics/next_actions.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
@@ -42,6 +43,71 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('a breakdown card and its links fit at ${scale}x text', (
+      tester,
+    ) async {
+      // The card now carries links to the view that owns what it reports, in
+      // the narrowest column the responsive pair produces.
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+            child: Scaffold(
+              body: SingleChildScrollView(
+                child: SizedBox(
+                  width: 300,
+                  child: BreakdownCard(
+                    title: 'Most popular cities',
+                    values: [
+                      AnalyticsBreakdown(
+                        key: 'sa-riyadh',
+                        label: 'Riyadh',
+                        value: 25,
+                        percentage: 59.5,
+                        sampleCount: 25,
+                      ),
+                    ],
+                    actions: const [
+                      AdminNextAction.refreshJobs,
+                      AdminNextAction.catalog,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const Key('next-action-catalog')), findsOneWidget);
+    });
+  }
+
+  testWidgets('a card with nothing to report still offers its view', (
+    tester,
+  ) async {
+    // An empty breakdown is exactly when an operator needs the view that owns
+    // it, so the links survive the empty state.
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: BreakdownCard(
+            title: 'Most popular cities',
+            values: [],
+            actions: [AdminNextAction.coverage],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('No data in this period'), findsOneWidget);
+    expect(find.byKey(const Key('next-action-coverage')), findsOneWidget);
+  });
 }
 
 AnalyticsKpi _kpi({

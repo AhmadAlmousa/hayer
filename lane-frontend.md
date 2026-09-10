@@ -19,8 +19,9 @@ Last updated: 2026-09-10
 ## Current state
 
 - Branch `worktree-claude-lane`, rebased onto `main` at `4c9520a`.
-- Open milestone work in this lane: M7-E. The F17 client half is complete; its
-  server half is an open handoff (below). M7-E's remaining physical-device
+- Open milestone work in this lane: M7-E, and the M7-J presentation slices that
+  need no protocol change. The F17 client half is complete; its server half is
+  an open handoff (below). M7-E's remaining physical-device
   TalkBack/focus/contrast, largest-native-text, denied/approximate-location,
   background/reconnect, and performance checks need real hardware and are not
   startable here.
@@ -192,6 +193,59 @@ admin tests, up from 23. No release APK: nothing under `app/` changed, and
 
 Still open from the review: next-action links, and the wide `NavigationRail`
 grouping.
+
+### M7-J next-action links (2026-09-10)
+
+The last M7-J item in this lane that needs no protocol field: a figure now
+names the view that can act on what it shows, and carries its subject there.
+
+The analytics pages report and change nothing, so every finding ended in the
+same manual detour — work out which of eleven destinations owns the problem,
+open it, and search the place again by hand. `next_actions.dart` declares each
+destination once as an `AdminNextAction` (label, what can be done there, route)
+in the manner of `metric_semantics.dart`, and the pages attach them where a
+figure has a genuine owner: the cache and source facts and the cache-quality
+breakdown to refresh jobs and the catalog, popular cities to coverage, selected
+categories to taxonomy, and each ranked place to the catalog and to its own
+issue reports. A link states where the responsible controls are; it does not
+assert the figure is a defect, because the dashboard cannot separate product
+friction from weak supply on its own.
+
+The setup-choice breakdowns on Usage — group size, radius, deck size, price,
+visit timing — deliberately get no link. `CachePolicy` holds no defaults for
+any of them, so every candidate destination would be a guess dressed as a
+recommendation.
+
+A place travels by name into the catalog, whose search is `name ILIKE` only,
+and by id into the issue queue, whose search also matches `placeId` — two
+places can share a name. `/catalog?q=` and `/reports?q=` seed the search each
+page opens on. Both pages also apply a newly carried search in
+`didUpdateWidget`: `go_router` reuses the same `State` for a second link to the
+same route, so `initState` alone would have left an operator looking at the
+previous place's rows under a new place's link.
+
+Fixed alongside, because the same page had to be pumped to test the links: the
+`Rank places by` field overflowed its own decoration by 111 pixels, and the
+place table's action lives beside the name rather than in a trailing column,
+which the table's horizontal scroll would have put off-screen at the width the
+page opens on.
+
+Verification: pinned full preflight passes with 101 server, 128 app, and 44
+admin tests, up from 33. The new cases cover the encoded round trip of a place
+name that looks like a query string, a place carried into its issue queue by
+id, a second link replacing the first one's filter, the Places page at 200%
+text, and a breakdown card's links at 1.0x and 2.0x plus its empty state. No
+release APK: nothing under `app/` changed, and `flutter build web --release`
+compiles the dashboard clean.
+
+Not covered by a widget test: the catalog leg of the place menu. `_CatalogPage`
+embeds a `MapLibreMap` whose `dispose` throws off a device — its method channel
+is never initialized — and the interrupted unmount leaves a `RawTooltip`
+pointer route registered, which then fails unrelated later tests in the same
+file. The route and the seeding are the same code as the reports leg, which is
+covered end to end; the catalog link's own location is unit-tested.
+
+Still open from the review: the wide `NavigationRail` grouping.
 
 ### P06 independent re-verification (2026-09-09)
 

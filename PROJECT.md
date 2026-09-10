@@ -746,8 +746,9 @@ selection history; recommendation changes are measurable and reversible.
   denominators, sample sizes, lag, source type, version overlays, and links to
   the next operator action. Explicit periods, the denominators and sample
   sizes the protocol already carries, small-cohort suppression, measured lag,
-  and correct metric polarity are done in `worktree-claude-lane`; see
-  [`lane-frontend.md`](lane-frontend.md). Sample counts on KPIs and trend
+  correct metric polarity, and next-action links — including per-place links
+  that carry their own filter into the catalog and the issue queue — are done
+  in `worktree-claude-lane`; see [`lane-frontend.md`](lane-frontend.md). Sample counts on KPIs and trend
   points, source type, and version overlays need protocol fields that do not
   exist yet, and are an open handoff to the back-end lane.
 - [ ] Add source/rights governance, moderation ownership, measurement-health,

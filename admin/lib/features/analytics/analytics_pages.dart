@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../../admin_operations.dart';
 import 'analytics_period.dart';
 import 'metric_semantics.dart';
+import 'next_actions.dart';
 
 class AnalyticsOverviewPage extends StatefulWidget {
   const AnalyticsOverviewPage({super.key, required this.operations});
@@ -181,10 +182,12 @@ class _OverviewBody extends StatelessWidget {
         first: BreakdownCard(
           title: 'Most popular cities',
           values: data.topCities,
+          actions: const [AdminNextAction.coverage],
         ),
         second: BreakdownCard(
           title: 'Most selected categories',
           values: data.topCategories,
+          actions: const [AdminNextAction.taxonomy],
         ),
       ),
       const SizedBox(height: 16),
@@ -196,22 +199,30 @@ class _OverviewBody extends StatelessWidget {
       Card(
         child: Padding(
           padding: const EdgeInsets.all(18),
-          child: Wrap(
-            spacing: 26,
-            runSpacing: 12,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _SmallFact(
-                'Cache hit',
-                '${(data.cacheSummary.cacheHitRate * 100).toStringAsFixed(1)}%',
+              Wrap(
+                spacing: 26,
+                runSpacing: 12,
+                children: [
+                  _SmallFact(
+                    'Cache hit',
+                    '${(data.cacheSummary.cacheHitRate * 100).toStringAsFixed(1)}%',
+                  ),
+                  _SmallFact(
+                    'Source success',
+                    '${(data.cacheSummary.sourceSuccessRate * 100).toStringAsFixed(1)}%',
+                  ),
+                  _SmallFact('Fresh POIs', '${data.cacheSummary.freshCount}'),
+                  _SmallFact(
+                    'Pending refreshes',
+                    '${data.cacheSummary.pendingJobs}',
+                  ),
+                ],
               ),
-              _SmallFact(
-                'Source success',
-                '${(data.cacheSummary.sourceSuccessRate * 100).toStringAsFixed(1)}%',
-              ),
-              _SmallFact('Fresh POIs', '${data.cacheSummary.freshCount}'),
-              _SmallFact(
-                'Pending refreshes',
-                '${data.cacheSummary.pendingJobs}',
+              const NextActionBar(
+                actions: [AdminNextAction.refreshJobs, AdminNextAction.catalog],
               ),
             ],
           ),
@@ -333,6 +344,10 @@ class _UsageAnalyticsPageState extends State<UsageAnalyticsPage> {
                   second: BreakdownCard(
                     title: 'Cache-quality impact',
                     values: data.qualityBreakdown,
+                    actions: const [
+                      AdminNextAction.refreshJobs,
+                      AdminNextAction.catalog,
+                    ],
                   ),
                 ),
               ],
@@ -400,9 +415,13 @@ class _PlaceAnalyticsPageState extends State<PlaceAnalyticsPage> {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             SizedBox(
-              width: 220,
+              // The field carries a long label, so it grows with the viewer's
+              // text scale; `isExpanded` then ellipsizes rather than
+              // overflowing the decoration's row when it still does not fit.
+              width: 220 * gridTextScale(context),
               child: DropdownButtonFormField<PlaceRanking>(
                 initialValue: _ranking,
+                isExpanded: true,
                 decoration: const InputDecoration(labelText: 'Rank places by'),
                 items: const [
                   DropdownMenuItem(
@@ -1214,10 +1233,18 @@ class BreakdownDonut extends StatelessWidget {
 }
 
 class BreakdownCard extends StatelessWidget {
-  const BreakdownCard({super.key, required this.title, required this.values});
+  const BreakdownCard({
+    super.key,
+    required this.title,
+    required this.values,
+    this.actions = const [],
+  });
 
   final String title;
   final List<AnalyticsBreakdown> values;
+
+  /// Views that own what this breakdown describes, offered as links below it.
+  final List<AdminNextAction> actions;
 
   static const _visibleRows = 8;
 
@@ -1298,6 +1325,9 @@ class BreakdownCard extends StatelessWidget {
                       ?.copyWith(color: colors.onSurfaceVariant),
                 ),
             ],
+            // Rendered outside the empty check: an empty breakdown is exactly
+            // when an operator most needs the view that owns it.
+            NextActionBar(actions: actions),
           ],
         ),
       ),
@@ -1439,12 +1469,21 @@ class _PlaceTable extends StatelessWidget {
                       cells: [
                         DataCell(Text('${i + 1}')),
                         DataCell(
-                          SizedBox(
-                            width: 280,
-                            child: Text(
-                              items[i].name,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 280,
+                                child: Text(
+                                  items[i].name,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              // Beside the name rather than in a trailing
+                              // column: the table scrolls horizontally at the
+                              // width the page opens on, so a last column is
+                              // off-screen exactly when it is needed.
+                              _PlaceRowActions(place: items[i]),
+                            ],
                           ),
                         ),
                         DataCell(Text('${items[i].likes}')),
@@ -1463,6 +1502,47 @@ class _PlaceTable extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// The two views that own a ranked place: what it holds, and what has been
+/// reported against it.
+///
+/// A ranking answers which place a room kept rejecting but not why, and the
+/// operator's next step is the same two lookups every time. Both destinations
+/// filter to this place, so neither has to be searched again by hand.
+class _PlaceRowActions extends StatelessWidget {
+  const _PlaceRowActions({required this.place});
+
+  final PlaceInsight place;
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = [
+      AdminNextAction.catalogForPlace(place.name),
+      AdminNextAction.reportsForPlace(place.placeId, place.name),
+    ];
+    return PopupMenuButton<AdminNextAction>(
+      key: Key('place-actions-${place.placeId}'),
+      tooltip: 'Act on ${place.name}',
+      icon: const Icon(Icons.more_horiz_rounded),
+      onSelected: (action) => action.navigate(context),
+      itemBuilder: (context) => [
+        for (final action in actions)
+          PopupMenuItem(
+            key: Key('place-action-${action.id}-${place.placeId}'),
+            value: action,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(action.icon, size: 18),
+                const SizedBox(width: 10),
+                Flexible(child: Text(action.label)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 class ResponsivePair extends StatelessWidget {
