@@ -20,17 +20,17 @@ Last updated: 2026-09-10
 
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
-- Nothing in M7 is startable in this lane any more. What is left of the
-  milestone here needs a physical device (M7-E acceptance, M7-G two-device
-  reconnect), a container runtime (M7-B gateway proof, M7-G real-PostGIS
-  regressions), protocol fields the back-end lane owns (M7-J sample counts,
-  source type, version overlays), or the owner (F29's reviewer, contact, and
-  documented decisions). The open handoffs are listed below.
+- F17 is complete in this lane as of 2026-09-10: the client now refreshes
+  through `sessions.progress`, and a blocked event stream no longer strands a
+  room. See the checkpoint below.
+- What is left of M7 here needs a physical device (M7-E acceptance, M7-G
+  two-device reconnect), a container runtime (M7-B gateway proof, M7-G
+  real-PostGIS regressions), protocol fields the back-end lane owns (M7-J
+  sample counts, source type, version overlays), or the owner (F29's reviewer,
+  contact, and documented decisions). The open handoffs are listed below.
 - M7-E's remaining physical-device TalkBack/focus/contrast,
   largest-native-text, denied/approximate-location, background/reconnect, and
-  performance checks need real hardware. The F17 client half is complete, and
-  its server half arrived in the merge as `sessions.progress` (`774edc7`), so
-  wiring the client onto that response is startable in this lane again.
+  performance checks need real hardware.
 - M7-A's client half is in place and was re-read for this pass: a failed local
   durability write rolls the card back with a message rather than advancing,
   and a deck whose last swipe is still queued shows a pending-sync screen with
@@ -110,6 +110,75 @@ admin tests. The regression test drives the real shape — an initial load in
 flight, an event deferred into it, and that pass failing — and fails against
 the previous code. The signed `0.2.1+7` APK is 104,876,403 bytes at SHA-256
 `87f0ce99f30919eb07228f52e2831774961f2348b79df34e4cb11b4a3fdec08a`, declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
+Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
+
+### F17 client integration onto `sessions.progress` (2026-09-10)
+
+The client half of F17's performance argument is in place, and with it the
+blocked-stream case the audit asked for. Lobby, swipe and results now refresh
+through `SessionRepository.refresh`, which fetches only the half of a room that
+can still change and merges it onto the bundle the screen already holds. A
+refresh of a full twelve-person room drops from roughly 75-150 KB to 1-2 KB.
+Presence survives the move: the back-end lane writes `lastSeenAt` on the
+progress read too, throttled to thirty seconds, so leaving `load` behind did
+not cost a room its presence signal.
+
+Results was the worst offender and needed one more decision. It fetched
+`results` and `load` in parallel on every event, so a single vote pulled two
+copies of the same fifty place snapshots to move three integers per place.
+`SessionResult.rank` is not read anywhere in the app — the screen sorts by the
+reader's chosen order and numbers the rows it draws — so a refresh now rebuilds
+its rows from the deck it holds plus `resultTallies`, and `applyResultTallies`
+says in its doc comment that a caller who ever needs real server ranking must
+read it from `sessions.results`. Opening the screen still fetches both, because
+a cold screen has no deck to refresh onto.
+
+Rollback is handled where it belongs. Build 6 has to work against a server
+rolled back past this contract, which cannot answer the call at all. The first
+failure that a full load then satisfies latches the repository off the
+lightweight read for the rest of the process, so a rolled-back server costs one
+wasted call rather than one per refresh. An `ApiException` is exempt: expiry,
+lost membership and not-found are the server's real answers about this room,
+and treating them as a missing endpoint would both hide the answer and disable
+the read permanently.
+
+The user-visible half is the blocked stream. Some networks refuse WebSockets
+outright, and reconnecting alone never converges there: the room sat on
+whatever it last loaded while people joined, swiped and matched, and said
+nothing. After two consecutive attempts that deliver nothing — one dropped
+stream is an ordinary reconnect and stays silent — the listener polls that
+cheap read on a jittered six-to-twelve-second interval, widening to the
+reconnect ceiling when the polls fail too, and stops the moment an event
+arrives. `SessionSyncStatus` on lobby and results says which of the two states
+the room is in, live-region announced, with a manual refresh. Swipe deliberately
+has no banner: it shows your own deck, and the group state it actually needs is
+the completion transition, which polling now delivers.
+
+Two things were checked rather than assumed. Polling cannot inflate analytics,
+because the server deduplicates a card impression per journey and place — the
+integration suite asserts exactly that. And `_sleep` used `Future.delayed`,
+which cannot be cancelled, so a disposed screen kept a live timer for the rest
+of its backoff window; it is a cancellable `Timer` now.
+
+One test-environment note for whoever extends this. Under `testWidgets`' fake
+async a stream that errors or closes asynchronously never delivers, so the
+listener makes no progress there. The blocked-stream widget test therefore uses
+a `watch` that throws on connect, which is equally faithful to a blocked
+WebSocket, and the error-stream path stays covered in real async by the
+listener's own unit tests.
+
+Verification: pinned full preflight passes with 118 server, 153 app (up from
+138), and 51 admin tests, and all four fatal-info analyses are clean. The new
+cases cover the deck being kept, the route policy surviving a refresh that
+cannot carry it, a cold screen still fetching the deck, the old-server fallback
+being used once and then dropped, an `ApiException` being reported instead of
+retried, tallies moving the counts without a second `results` call, a place
+outside the deck not being invented, polling starting only on the second silent
+attempt and stopping when the stream returns, a failing poll being retried, and
+the notice fitting 320x640 at 200% text in English and Arabic. The signed
+`0.2.1+7` APK is 105,253,887 bytes at SHA-256
+`431fb3e9dcddb6a3aaa5af41379f856bfe6376f69ca1b7a41b8510967a9c9420`, declares
 `sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
 Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
 
@@ -352,15 +421,13 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ## Open handoffs to the back-end lane
 
-### F17 server half — delivered 2026-09-10
+### F17 server half — delivered 2026-09-10, client wired 2026-09-10
 
 The back-end lane landed this as `sessions.progress` in `774edc7`: a deck-free
 response carrying the mutable session, participant/self progress, vote tallies,
 and destination-choice state, with `SessionProgress` generated into
-`backend/hayer_client/`. The client is not on it yet — `_loadById` is still the
-only read this lane calls — so the work below is now an open task here rather
-than a handoff, and the jittered polling fallback can land with it as intended.
-The original request is kept for its sizing argument.
+`backend/hayer_client/`. The client now uses it; see the checkpoint above. The
+original request is kept below for its sizing argument.
 
 The client still fetches the whole immutable deck on every refresh, because
 `_loadById` is the only read available, and that read is a locking write
@@ -444,3 +511,15 @@ run from here.
   copying the per-screen queue pattern a third time. Acknowledging only
   successful refreshes requires the listener to own revision state regardless,
   so the two concerns belong in one place.
+- 2026-09-10: Let the results screen rebuild its rows from the deck and the
+  tallies rather than keep calling `sessions.results` on every refresh. The
+  alternative — reproducing the server's ranking rule in the client — would
+  duplicate a contract this lane does not own. Rebuilding is safe only because
+  nothing in the app reads `SessionResult.rank`; that condition is written into
+  `applyResultTallies`, so a future caller that needs ranking has to go back to
+  the server for it.
+- 2026-09-10: Poll on the same cheap read the stream refresh uses, and gate
+  polling on the listener's own connection health rather than a screen-level
+  timer. One dropped connection is deliberately not enough to start it: an
+  ordinary reconnect takes a few seconds, and a room that announced degradation
+  every time would train people to ignore the notice.

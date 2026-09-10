@@ -128,6 +128,57 @@ void main() {
   );
 
   testWidgets(
+    'a refreshed room moves its counts without re-fetching the deck',
+    (
+      tester,
+    ) async {
+      // Behavior under test: every vote in the room refreshes this screen. Each
+      // refresh used to pull the whole deck twice over - once as the bundle and
+      // once inside the ranked list - to move two integers.
+      // Arrange
+      final fixture = _Fixture();
+      await _pump(tester, fixture);
+      expect(find.text('100% · 2/2 liked it'), findsWidgets);
+      final fetchedOnOpen = fixture.endpoint.resultCalls;
+
+      // Act: someone in the room votes.
+      fixture.repository
+        ..bundle = _bundle().copyWith(
+          session: _bundle().session.copyWith(revision: 2),
+        )
+        ..tallies = [
+          SessionResultTally(
+            placeId: 'a',
+            likeCount: 1,
+            voterCount: 2,
+            match: false,
+          ),
+          SessionResultTally(
+            placeId: 'b',
+            likeCount: 2,
+            voterCount: 2,
+            match: true,
+          ),
+        ];
+      fixture.endpoint.events.add(
+        SessionEvent(
+          sessionId: 'room',
+          type: SessionEventType.resultsChanged,
+          revision: 2,
+          occurredAt: DateTime(2026),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.text('50% · 1/2 liked it'), findsOneWidget);
+      expect(find.text('100% · 2/2 liked it'), findsOneWidget);
+      expect(fixture.endpoint.resultCalls, fetchedOnOpen);
+      await _dispose(tester, fixture);
+    },
+  );
+
+  testWidgets(
     'realtime counts and winners refresh without changing my ballot',
     (tester) async {
       final fixture = _Fixture();
@@ -246,27 +297,43 @@ class _Client extends Fake implements Client {
 
 class _Endpoint extends Fake implements EndpointHayerSession {
   final events = StreamController<SessionEvent>.broadcast();
+  var resultCalls = 0;
   @override
   Stream<SessionEvent> watch({required String sessionId}) => events.stream;
   @override
-  Future<List<SessionResult>> results({required String sessionId}) async => [
-    for (final id in ['a', 'b'])
-      SessionResult(
-        place: _place(id),
-        likeCount: 2,
-        voterCount: 2,
-        match: true,
-        rank: 1,
-      ),
-  ];
+  Future<List<SessionResult>> results({required String sessionId}) async {
+    resultCalls++;
+    return [
+      for (final id in ['a', 'b'])
+        SessionResult(
+          place: _place(id),
+          likeCount: 2,
+          voterCount: 2,
+          match: true,
+          rank: 1,
+        ),
+    ];
+  }
 }
 
 class _Repository extends Fake implements SessionRepository {
   SessionBundle bundle = _bundle();
   Completer<SessionBundle> pending = Completer<SessionBundle>();
   final calls = <(String, int)>[];
+  var tallies = [
+    for (final id in ['a', 'b'])
+      SessionResultTally(placeId: id, likeCount: 2, voterCount: 2, match: true),
+  ];
   @override
   Future<SessionBundle> load(String sessionId) async => bundle;
+  @override
+  Future<SessionRefresh> refresh(
+    String sessionId, {
+    SessionBundle? previous,
+  }) async => SessionRefresh(
+    bundle: bundle,
+    resultTallies: previous == null ? null : tallies,
+  );
   @override
   Future<SessionBundle> chooseDestination({
     required String sessionId,

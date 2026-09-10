@@ -44,6 +44,18 @@ class SwipeSubmissionResult {
   final String? errorCode;
 }
 
+/// One refreshed view of an open session.
+///
+/// [resultTallies] is present only when the refresh came from the lightweight
+/// `sessions.progress` read. A full load carries no tallies, so a caller that
+/// needs them has to ask for them separately.
+class SessionRefresh {
+  const SessionRefresh({required this.bundle, this.resultTallies});
+
+  final SessionBundle bundle;
+  final List<SessionResultTally>? resultTallies;
+}
+
 class QueueFlushResult {
   const QueueFlushResult({
     required this.accepted,
@@ -85,6 +97,7 @@ class SessionRepository {
   final _journeysBySession = <String, String>{};
   final _startedSessionJourneys = <String>{};
   String? _pendingJourneyId;
+  bool _progressUnsupported = false;
   static const _uuid = Uuid();
   static const activeSessionKey = 'hayer.active-session-id';
 
@@ -138,6 +151,53 @@ class SessionRepository {
       () => client.hayerSession.load(sessionId: sessionId),
     );
   }
+
+  /// Refreshes the half of an open session that can still change.
+  ///
+  /// A room's deck is immutable once it is created, so a refresh only needs the
+  /// session, its participants and the current tallies. [previous] supplies the
+  /// deck that `sessions.progress` deliberately omits, which turns one refresh
+  /// of a full twelve-person room from roughly 75-150 KB into 1-2 KB. Presence
+  /// is preserved: the server writes `lastSeenAt` on this read too.
+  ///
+  /// Without a [previous] bundle there is no deck to keep, so this falls back
+  /// to the full [load].
+  ///
+  /// A server older than the progress contract — the rollback target while
+  /// build 5 is still accepted — cannot answer the call at all. The first time
+  /// that happens and the full load succeeds in its place, this repository
+  /// stops attempting the lightweight read for the rest of the process. An
+  /// [ApiException] is the server's real answer about this session, not a
+  /// missing endpoint, so it is reported rather than retried as a full load.
+  Future<SessionRefresh> refresh(
+    String sessionId, {
+    SessionBundle? previous,
+  }) async {
+    if (previous == null || _progressUnsupported) {
+      return SessionRefresh(bundle: await load(sessionId));
+    }
+    try {
+      final progress = await readProgress(sessionId);
+      return SessionRefresh(
+        bundle: mergeSessionProgress(previous, progress),
+        resultTallies: progress.resultTallies,
+      );
+    } on ApiException {
+      rethrow;
+    } catch (_) {
+      final bundle = await load(sessionId);
+      _progressUnsupported = true;
+      return SessionRefresh(bundle: bundle);
+    }
+  }
+
+  /// The lightweight read behind [refresh], kept separate from it so a test
+  /// can stand in for the server without a live client.
+  Future<SessionProgress> readProgress(String sessionId) =>
+      withAnonymousAuthentication(
+        client,
+        () => client.hayerSession.progress(sessionId: sessionId),
+      );
 
   Future<String?> activeSessionId() =>
       secureStorage.read(key: activeSessionKey);
@@ -460,6 +520,24 @@ class SessionRepository {
     }
   }
 }
+
+/// Applies a lightweight progress read onto the bundle that carries the deck.
+///
+/// The deck and the route-estimate policy are the two fields `sessions.progress`
+/// does not return. The deck cannot change for the life of a room. The policy
+/// can be edited by an operator, so a change made while a room is open reaches
+/// this client on its next full load rather than on its next refresh.
+SessionBundle mergeSessionProgress(
+  SessionBundle previous,
+  SessionProgress progress,
+) => SessionBundle(
+  session: progress.session,
+  deck: previous.deck,
+  participants: progress.participants,
+  selfParticipant: progress.selfParticipant,
+  routeEstimatePolicy: previous.routeEstimatePolicy,
+  destinationChoices: progress.destinationChoices,
+);
 
 bool _isTransientClientFailure(Object error) =>
     error is ServerpodClientException &&

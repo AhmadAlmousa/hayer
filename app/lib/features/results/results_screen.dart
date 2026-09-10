@@ -21,7 +21,9 @@ import '../../core/widgets/adaptive_actions.dart';
 import '../../core/widgets/install_app_card.dart';
 import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/place_details_sheet.dart';
+import '../../core/widgets/session_sync_status.dart';
 import '../../data/session_realtime_listener.dart';
+import '../../domain/session_results.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'destination_choice_controls.dart';
 import '../saved/save_place_button.dart';
@@ -51,6 +53,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   Object? _choiceError;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
   bool _resultsViewRecorded = false;
+  bool _degraded = false;
+  bool _syncFailed = false;
 
   @override
   void initState() {
@@ -84,7 +88,21 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           .hayerSession
           .watch(sessionId: widget.sessionId),
       onEvent: (_) => _load(propagateError: true),
+      // Results is where a blocked stream is most visible: the room can
+      // complete, and a group choice can be made, without this screen ever
+      // hearing about it.
+      poll: () => _load(propagateError: true, quiet: true),
+      onStatusChanged: _syncStatusChanged,
     )..start();
+  }
+
+  void _syncStatusChanged() {
+    if (!mounted) return;
+    final degraded = _updates?.isDegraded ?? false;
+    setState(() {
+      _degraded = degraded;
+      if (!degraded) _syncFailed = false;
+    });
   }
 
   /// [propagateError] lets the real-time listener see a failed refresh so it
@@ -95,7 +113,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   /// still in flight, so a deferred refresh has to wait for the pass that
   /// absorbs it and report that pass's outcome. Returning early instead would
   /// acknowledge a revision this screen has not applied yet.
-  Future<void> _load({bool propagateError = false}) async {
+  ///
+  /// [quiet] marks a poll taken while the live stream is down. The status
+  /// banner already says updates are not arriving, so a failed poll updates
+  /// that rather than covering a usable list with a recovery card.
+  Future<void> _load({bool propagateError = false, bool quiet = false}) async {
     if (_loadInProgress) {
       _reloadQueued = true;
       final settled = _loadSettled ??= Completer<(Object, StackTrace)?>();
@@ -112,14 +134,37 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       do {
         _reloadQueued = false;
         final repository = ref.read(sessionRepositoryProvider);
-        final values = await Future.wait([
-          ref
-              .read(clientProvider)
-              .hayerSession
-              .results(sessionId: widget.sessionId),
-          repository.load(widget.sessionId),
-        ]);
-        final nextBundle = values[1] as SessionBundle;
+        final client = ref.read(clientProvider);
+        final previous = _bundle;
+        final SessionBundle nextBundle;
+        final List<SessionResult> nextResults;
+        if (previous == null) {
+          // Nothing to refresh onto yet: this pass has to fetch the deck and
+          // the ranked list, and they are independent reads.
+          final values = await Future.wait([
+            client.hayerSession.results(sessionId: widget.sessionId),
+            repository.load(widget.sessionId),
+          ]);
+          nextResults = values[0] as List<SessionResult>;
+          nextBundle = values[1] as SessionBundle;
+        } else {
+          final refreshed = await repository.refresh(
+            widget.sessionId,
+            previous: previous,
+          );
+          nextBundle = refreshed.bundle;
+          final tallies = refreshed.resultTallies;
+          // Tallies plus the deck this screen already holds are the whole of
+          // what changes here. A server too old to answer the progress read
+          // returns none, and that path still asks for the full list.
+          nextResults = tallies == null
+              ? await client.hayerSession.results(sessionId: widget.sessionId)
+              : applyResultTallies(
+                  deck: nextBundle.deck,
+                  tallies: tallies,
+                  previous: _results ?? const [],
+                );
+        }
         final routeOrigin = await _routeOriginFor(nextBundle);
         if (!mounted) return;
         if (nextBundle.session.revision < (_bundle?.session.revision ?? -1)) {
@@ -127,10 +172,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           continue;
         }
         setState(() {
-          _results = values[0] as List<SessionResult>;
+          _results = nextResults;
           _bundle = nextBundle;
           _routeOrigin = routeOrigin;
           _error = null;
+          _syncFailed = false;
         });
         if (!_resultsViewRecorded) {
           _resultsViewRecorded = true;
@@ -144,7 +190,15 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       } while (_reloadQueued);
     } catch (error, stack) {
       failure = (error, stack);
-      if (mounted) setState(() => _error = error);
+      if (mounted) {
+        setState(() {
+          if (quiet) {
+            _syncFailed = true;
+          } else {
+            _error = error;
+          }
+        });
+      }
     } finally {
       _loadInProgress = false;
       _loadSettled = null;
@@ -373,6 +427,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                             error: _error!,
                             onRetry: _load,
                             hasSavedContent: true,
+                          )
+                        else if (_degraded)
+                          SessionSyncStatus(
+                            reachable: !_syncFailed,
+                            onRefresh: _load,
                           ),
                         if (bundle?.session.freshnessWarning != null)
                           Card(

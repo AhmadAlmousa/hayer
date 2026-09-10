@@ -18,6 +18,7 @@ import '../../core/widgets/session_recovery.dart';
 import '../../core/widgets/fireworks_celebration.dart';
 import '../../core/widgets/search_area_map.dart';
 import '../../core/widgets/session_qr_code.dart';
+import '../../core/widgets/session_sync_status.dart';
 import '../../data/session_realtime_listener.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'route_origin_choice_sheet.dart';
@@ -41,6 +42,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen>
   bool _reloadQueued = false;
   Completer<(Object, StackTrace)?>? _loadSettled;
   bool _routeChoiceOpen = false;
+  bool _degraded = false;
+  bool _syncFailed = false;
   RouteOriginMode _routeOrigin = RouteOriginMode.sessionAnchor;
 
   @override
@@ -76,7 +79,12 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen>
   /// still in flight, so a deferred refresh has to wait for the pass that
   /// absorbs it and report that pass's outcome. Returning early instead would
   /// acknowledge a revision this screen has not applied yet.
-  Future<void> _load({bool propagateError = false}) async {
+  ///
+  /// [quiet] marks a poll taken while the live stream is down. The status
+  /// banner is already telling the user that updates are not arriving, so a
+  /// failed poll updates that banner instead of raising a second recovery card
+  /// over content that is still perfectly usable.
+  Future<void> _load({bool propagateError = false, bool quiet = false}) async {
     if (_loading) {
       _reloadQueued = true;
       final settled = _loadSettled ??= Completer<(Object, StackTrace)?>();
@@ -92,26 +100,38 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen>
     try {
       do {
         _reloadQueued = false;
+        // With a bundle in hand only the mutable half is fetched; the deck
+        // this room already has cannot change.
         final value = await ref
             .read(sessionRepositoryProvider)
-            .load(widget.sessionId);
+            .refresh(widget.sessionId, previous: _bundle);
         if (!mounted) return;
+        final bundle = value.bundle;
         final becameInstantMatch =
             _bundle != null &&
             _bundle!.session.status != SessionStatus.completed &&
-            value.session.status == SessionStatus.completed &&
-            value.session.matchingTiming == MatchingTiming.instant &&
-            value.session.matchedPlaceId != null;
+            bundle.session.status == SessionStatus.completed &&
+            bundle.session.matchingTiming == MatchingTiming.instant &&
+            bundle.session.matchedPlaceId != null;
         setState(() {
-          _bundle = value;
+          _bundle = bundle;
           _error = null;
+          _syncFailed = false;
         });
-        unawaited(_syncRouteOrigin(value));
+        unawaited(_syncRouteOrigin(bundle));
         if (becameInstantMatch) await _celebrateMatch();
       } while (_reloadQueued);
     } catch (error, stack) {
       failure = (error, stack);
-      if (mounted) setState(() => _error = error);
+      if (mounted) {
+        setState(() {
+          if (quiet) {
+            _syncFailed = true;
+          } else {
+            _error = error;
+          }
+        });
+      }
     } finally {
       _loading = false;
       _loadSettled = null;
@@ -129,7 +149,20 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen>
           .hayerSession
           .watch(sessionId: widget.sessionId),
       onEvent: (_) => _load(propagateError: true),
+      // A blocked stream would otherwise leave this screen showing the room as
+      // it was when it opened while people join and start swiping.
+      poll: () => _load(propagateError: true, quiet: true),
+      onStatusChanged: _syncStatusChanged,
     )..start();
+  }
+
+  void _syncStatusChanged() {
+    if (!mounted) return;
+    final degraded = _updates?.isDegraded ?? false;
+    setState(() {
+      _degraded = degraded;
+      if (!degraded) _syncFailed = false;
+    });
   }
 
   Future<void> _celebrateMatch() async {
@@ -169,6 +202,11 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen>
                         error: _error!,
                         onRetry: _load,
                         hasSavedContent: true,
+                      )
+                    else if (_degraded)
+                      SessionSyncStatus(
+                        reachable: !_syncFailed,
+                        onRefresh: _load,
                       ),
                     Text(
                       strings.sessionCode,
