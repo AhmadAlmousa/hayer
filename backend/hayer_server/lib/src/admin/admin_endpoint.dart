@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../analytics/analytics_query_service.dart';
+import 'admin_audit_writer.dart';
 import 'admin_authorization.dart';
 import 'admin_gateway_access.dart';
 import 'poi_issue_moderation_service.dart';
@@ -18,6 +19,25 @@ import '../places/taxonomy_service.dart';
 import '../storage/catalog_pruner.dart';
 
 class AdminEndpoint extends Endpoint {
+  AdminEndpoint()
+    : this._(
+        AdminAuthorization.requireOperator,
+        const DatabaseAdminAuditWriter(),
+      );
+
+  factory AdminEndpoint.forTesting({
+    required Future<String> Function(Session session) authorizer,
+    AdminAuditWriter auditWriter = const DatabaseAdminAuditWriter(),
+  }) => AdminEndpoint._(
+    authorizer,
+    auditWriter,
+  );
+
+  AdminEndpoint._(this._authorizer, this._auditWriter);
+
+  final Future<String> Function(Session session) _authorizer;
+  final AdminAuditWriter _auditWriter;
+
   @override
   bool get requireLogin => true;
 
@@ -134,26 +154,30 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final draft = await TaxonomyService.saveDraft(
-      session,
-      version: version,
-      revision: revision,
-      items: items,
-      operatorName: operatorName,
-    );
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'taxonomy.draft.save',
-      targetType: 'taxonomy',
-      targetId: version,
-      reason: reason,
-      after: {
-        'revision': '${draft.revision}',
-        'items': '${draft.items.length}',
-      },
-    );
-    return draft;
+    return session.db.transaction((transaction) async {
+      final draft = await TaxonomyService.saveDraft(
+        session,
+        version: version,
+        revision: revision,
+        items: items,
+        operatorName: operatorName,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'taxonomy.draft.save',
+        targetType: 'taxonomy',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '${draft.revision}',
+          'items': '${draft.items.length}',
+        },
+        transaction: transaction,
+      );
+      return draft;
+    });
   }
 
   Future<TaxonomyValidation> validateTaxonomyDraft(
@@ -231,26 +255,31 @@ class AdminEndpoint extends Endpoint {
       }
     }
     final validatedAt = DateTime.now().toUtc();
-    await TaxonomyService.recordValidation(
-      session,
-      version: version,
-      revision: revision,
-      location: location,
-      radiusMeters: radiusMeters,
-      errors: errors,
-    );
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'taxonomy.draft.validate',
-      targetType: 'taxonomy',
-      targetId: version,
-      reason: reason,
-      after: {
-        'passed': '${errors.isEmpty}',
-        'canaries': '${samples.length}',
-      },
-    );
+    await session.db.transaction((transaction) async {
+      await TaxonomyService.recordValidation(
+        session,
+        version: version,
+        revision: revision,
+        location: location,
+        radiusMeters: radiusMeters,
+        errors: errors,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'taxonomy.draft.validate',
+        targetType: 'taxonomy',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '$revision',
+          'passed': '${errors.isEmpty}',
+          'canaries': '${samples.length}',
+        },
+        transaction: transaction,
+      );
+    });
     return TaxonomyValidation(
       passed: errors.isEmpty,
       errors: errors,
@@ -267,21 +296,25 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final result = await TaxonomyService.publish(
-      session,
-      version: version,
-      revision: revision,
-    );
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'taxonomy.publish',
-      targetType: 'taxonomy',
-      targetId: version,
-      reason: reason,
-      after: {'revision': '$revision'},
-    );
-    return result;
+    return session.db.transaction((transaction) async {
+      final result = await TaxonomyService.publish(
+        session,
+        version: version,
+        revision: revision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'taxonomy.publish',
+        targetType: 'taxonomy',
+        targetId: version,
+        reason: reason,
+        after: {'revision': '$revision'},
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminTaxonomyVersion> rollbackTaxonomy(
@@ -291,16 +324,23 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final result = await TaxonomyService.rollback(session, version: version);
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'taxonomy.rollback',
-      targetType: 'taxonomy',
-      targetId: version,
-      reason: reason,
-    );
-    return result;
+    return session.db.transaction((transaction) async {
+      final result = await TaxonomyService.rollback(
+        session,
+        version: version,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'taxonomy.rollback',
+        targetType: 'taxonomy',
+        targetId: version,
+        reason: reason,
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<CacheDashboardSummary> summary(Session session) async {
@@ -722,22 +762,39 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final preview = await prunePreview(session);
-    final removed = await CatalogPruner.prune(
-      session,
-      cutoff: preview.cutoff,
-    );
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'catalog.prune',
-      targetType: 'poi',
-      targetId: 'retention',
-      reason: reason,
-      before: {'eligibleCount': '${preview.eligibleCount}'},
-      after: {'removedCount': '$removed', 'cutoff': '${preview.cutoff}'},
-    );
-    return removed;
+    return session.db.transaction((transaction) async {
+      final policy = await _policyRow(
+        session,
+        transaction: transaction,
+        lockMode: LockMode.forShare,
+      );
+      final retentionDays = policy?.retentionDays ?? 365;
+      final cutoff = DateTime.now().toUtc().subtract(
+        Duration(days: retentionDays),
+      );
+      final eligibleCount = await CatalogPruner.eligibleCount(
+        session,
+        cutoff: cutoff,
+        transaction: transaction,
+      );
+      final removed = await CatalogPruner.prune(
+        session,
+        cutoff: cutoff,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'catalog.prune',
+        targetType: 'poi',
+        targetId: 'retention',
+        reason: reason,
+        before: {'eligibleCount': '$eligibleCount'},
+        after: {'removedCount': '$removed', 'cutoff': '$cutoff'},
+        transaction: transaction,
+      );
+      return removed;
+    });
   }
 
   Future<CachePolicy> policy(Session session) async {
@@ -758,59 +815,80 @@ class AdminEndpoint extends Endpoint {
     final operatorName = await _authorize(session);
     _reason(reason);
     _validatePolicy(policy);
-    final now = DateTime.now().toUtc();
-    final before = await CacheSettingsRow.db.findFirstRow(
-      session,
-      where: (table) => table.settingsKey.equals('default'),
-    );
-    if (before != null && policy.version != before.version) {
-      throw ApiException(
-        code: 'conflict',
-        message: 'The cache policy changed. Reload before saving.',
+    return session.db.transaction((transaction) async {
+      final before = await CacheSettingsRow.db.findFirstRow(
+        session,
+        where: (table) => table.settingsKey.equals('default'),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
       );
-    }
-    final next = CacheSettingsRow(
-      id: before?.id,
-      settingsKey: 'default',
-      version: (before?.version ?? 0) + 1,
-      freshHours: policy.freshHours,
-      staleFallbackDays: policy.staleFallbackDays,
-      retentionDays: policy.retentionDays,
-      extractorAttempts: policy.extractorAttempts,
-      perCreationConcurrency: policy.perCreationConcurrency,
-      globalRequestsPerMinute: policy.globalRequestsPerMinute,
-      globalBurst: policy.globalBurst,
-      routeEstimatesEnabled: policy.routeEstimatesEnabled,
-      allowParticipantLocation: policy.allowParticipantLocation,
-      defaultRouteOrigin: policy.defaultRouteOrigin,
-      routeEstimateCacheMinutes: policy.routeEstimateCacheMinutes,
-      routeRequestsPerMinute: policy.routeRequestsPerMinute,
-      routeBurst: policy.routeBurst,
-      updatedBy: _operator(operatorName),
-      updatedAt: now,
-    );
-    if (before == null) {
-      await CacheSettingsRow.db.insertRow(session, next);
-    } else {
-      await CacheSettingsRow.db.updateRow(session, next);
-    }
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'cache_policy.update',
-      targetType: 'cache_policy',
-      targetId: 'default',
-      reason: reason,
-      before: before == null
-          ? null
-          : _toPolicy(
-              before,
-            ).toJson().map((key, value) => MapEntry(key, '$value')),
-      after: _toPolicy(
-        next,
-      ).toJson().map((key, value) => MapEntry(key, '$value')),
-    );
-    return _toPolicy(next);
+      if (policy.version != (before?.version ?? 0)) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'The cache policy changed. Reload before saving.',
+        );
+      }
+      final next = CacheSettingsRow(
+        id: before?.id,
+        settingsKey: 'default',
+        version: policy.version + 1,
+        freshHours: policy.freshHours,
+        staleFallbackDays: policy.staleFallbackDays,
+        retentionDays: policy.retentionDays,
+        extractorAttempts: policy.extractorAttempts,
+        perCreationConcurrency: policy.perCreationConcurrency,
+        globalRequestsPerMinute: policy.globalRequestsPerMinute,
+        globalBurst: policy.globalBurst,
+        routeEstimatesEnabled: policy.routeEstimatesEnabled,
+        allowParticipantLocation: policy.allowParticipantLocation,
+        defaultRouteOrigin: policy.defaultRouteOrigin,
+        routeEstimateCacheMinutes: policy.routeEstimateCacheMinutes,
+        routeRequestsPerMinute: policy.routeRequestsPerMinute,
+        routeBurst: policy.routeBurst,
+        updatedBy: _operator(operatorName),
+        updatedAt: DateTime.now().toUtc(),
+      );
+      late CacheSettingsRow saved;
+      if (before == null) {
+        final inserted = await CacheSettingsRow.db.insert(
+          session,
+          [next],
+          ignoreConflicts: true,
+          transaction: transaction,
+        );
+        if (inserted.isEmpty) {
+          throw ApiException(
+            code: 'conflict',
+            message: 'The cache policy changed. Reload before saving.',
+          );
+        }
+        saved = inserted.single;
+      } else {
+        saved = await CacheSettingsRow.db.updateRow(
+          session,
+          next,
+          transaction: transaction,
+        );
+      }
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'cache_policy.update',
+        targetType: 'cache_policy',
+        targetId: 'default',
+        reason: reason,
+        before: before == null
+            ? null
+            : _toPolicy(
+                before,
+              ).toJson().map((key, value) => MapEntry(key, '$value')),
+        after: _toPolicy(
+          saved,
+        ).toJson().map((key, value) => MapEntry(key, '$value')),
+        transaction: transaction,
+      );
+      return _toPolicy(saved);
+    });
   }
 
   Future<bool> quarantine(
@@ -842,35 +920,41 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final existing = await RefreshJobRow.db.findFirstRow(
-      session,
-      where: (table) =>
-          table.coverageKey.equals(coverageKey) &
-          (table.status.equals(JobStatus.pending) |
-              table.status.equals(JobStatus.running)),
-    );
-    if (existing != null) return existing.jobId;
-    final jobId = _uuid.v7();
-    await RefreshJobRow.db.insertRow(
-      session,
-      RefreshJobRow(
-        jobId: jobId,
-        coverageKey: coverageKey,
-        status: JobStatus.pending,
-        requestedBy: _operator(operatorName),
-        reason: reason.trim(),
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'coverage.refresh',
-      targetType: 'coverage',
-      targetId: coverageKey,
-      reason: reason,
-    );
-    return jobId;
+    return session.db.transaction((transaction) async {
+      final existing = await RefreshJobRow.db.findFirstRow(
+        session,
+        where: (table) =>
+            table.coverageKey.equals(coverageKey) &
+            (table.status.equals(JobStatus.pending) |
+                table.status.equals(JobStatus.running)),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      if (existing != null) return existing.jobId;
+      final jobId = _uuid.v7();
+      await RefreshJobRow.db.insertRow(
+        session,
+        RefreshJobRow(
+          jobId: jobId,
+          coverageKey: coverageKey,
+          status: JobStatus.pending,
+          requestedBy: _operator(operatorName),
+          reason: reason.trim(),
+          createdAt: DateTime.now().toUtc(),
+        ),
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'coverage.refresh',
+        targetType: 'coverage',
+        targetId: coverageKey,
+        reason: reason,
+        transaction: transaction,
+      );
+      return jobId;
+    });
   }
 
   Future<bool> cancelRefreshJob(
@@ -880,48 +964,56 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final row = await RefreshJobRow.db.findFirstRow(
-      session,
-      where: (table) => table.jobId.equals(jobId),
-    );
-    if (row == null) {
-      throw ApiException(code: 'not_found', message: 'Refresh job not found.');
-    }
-    if (row.status != JobStatus.pending && row.status != JobStatus.running) {
-      throw ApiException(
-        code: 'conflict',
-        message: 'Only pending or running refresh jobs can be cancelled.',
+    return session.db.transaction((transaction) async {
+      final row = await RefreshJobRow.db.findFirstRow(
+        session,
+        where: (table) => table.jobId.equals(jobId),
+        transaction: transaction,
       );
-    }
-    final previousStatus = row.status;
-    final updated = await RefreshJobRow.db.updateWhere(
-      session,
-      where: (table) =>
-          table.jobId.equals(jobId) &
-          (table.status.equals(JobStatus.pending) |
-              table.status.equals(JobStatus.running)),
-      columnValues: (table) => [
-        table.status(JobStatus.cancelled),
-        table.completedAt(DateTime.now().toUtc()),
-      ],
-    );
-    if (updated.isEmpty) {
-      throw ApiException(
-        code: 'conflict',
-        message: 'The refresh job finished before it could be cancelled.',
+      if (row == null) {
+        throw ApiException(
+          code: 'not_found',
+          message: 'Refresh job not found.',
+        );
+      }
+      if (row.status != JobStatus.pending && row.status != JobStatus.running) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'Only pending or running refresh jobs can be cancelled.',
+        );
+      }
+      final previousStatus = row.status;
+      final updated = await RefreshJobRow.db.updateWhere(
+        session,
+        where: (table) =>
+            table.jobId.equals(jobId) &
+            (table.status.equals(JobStatus.pending) |
+                table.status.equals(JobStatus.running)),
+        columnValues: (table) => [
+          table.status(JobStatus.cancelled),
+          table.completedAt(DateTime.now().toUtc()),
+        ],
+        transaction: transaction,
       );
-    }
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'coverage.refresh.cancel',
-      targetType: 'refresh_job',
-      targetId: jobId,
-      reason: reason,
-      before: {'status': previousStatus.name},
-      after: {'status': JobStatus.cancelled.name},
-    );
-    return true;
+      if (updated.isEmpty) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'The refresh job finished before it could be cancelled.',
+        );
+      }
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'coverage.refresh.cancel',
+        targetType: 'refresh_job',
+        targetId: jobId,
+        reason: reason,
+        before: {'status': previousStatus.name},
+        after: {'status': JobStatus.cancelled.name},
+        transaction: transaction,
+      );
+      return true;
+    });
   }
 
   Future<int> invalidateCoverage(
@@ -931,20 +1023,25 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final rows = await PoiCoverageRow.db.updateWhere(
-      session,
-      where: (table) => table.coverageKey.equals(coverageKey),
-      columnValues: (table) => [table.invalidatedAt(DateTime.now().toUtc())],
-    );
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'coverage.invalidate',
-      targetType: 'coverage',
-      targetId: coverageKey,
-      reason: reason,
-    );
-    return rows.length;
+    return session.db.transaction((transaction) async {
+      final rows = await PoiCoverageRow.db.updateWhere(
+        session,
+        where: (table) => table.coverageKey.equals(coverageKey),
+        columnValues: (table) => [table.invalidatedAt(DateTime.now().toUtc())],
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'coverage.invalidate',
+        targetType: 'coverage',
+        targetId: coverageKey,
+        reason: reason,
+        after: {'invalidatedCount': '${rows.length}'},
+        transaction: transaction,
+      );
+      return rows.length;
+    });
   }
 
   Future<CalibrationValidation> validateCalibration(
@@ -1019,25 +1116,56 @@ class AdminEndpoint extends Endpoint {
       }
     }
     final now = DateTime.now().toUtc();
-    final row = CalibrationRow(
-      id: existing?.id,
-      version: normalizedVersion,
-      status: errors.isEmpty && liveCanaryPassed
-          ? CalibrationStatus.valid
-          : CalibrationStatus.invalid,
-      document: {'json': documentJson},
-      fixturePassed: fixturePassed,
-      liveCanaryPassed: liveCanaryPassed,
-      validationErrors: errors,
-      createdBy: validatedOperator,
-      createdAt: existing?.createdAt ?? now,
-      validatedAt: now,
-    );
-    if (existing == null) {
-      await CalibrationRow.db.insertRow(session, row);
-    } else {
-      await CalibrationRow.db.updateRow(session, row);
-    }
+    await session.db.transaction((transaction) async {
+      final current = await CalibrationRow.db.findFirstRow(
+        session,
+        where: (table) => table.version.equals(normalizedVersion),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      if (current != null &&
+          (current.status == CalibrationStatus.active ||
+              current.status == CalibrationStatus.superseded)) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'Activated calibration versions are immutable. Use a new version.',
+        );
+      }
+      final row = CalibrationRow(
+        id: current?.id,
+        version: normalizedVersion,
+        status: errors.isEmpty && liveCanaryPassed
+            ? CalibrationStatus.valid
+            : CalibrationStatus.invalid,
+        document: {'json': documentJson},
+        fixturePassed: fixturePassed,
+        liveCanaryPassed: liveCanaryPassed,
+        validationErrors: errors,
+        createdBy: validatedOperator,
+        createdAt: current?.createdAt ?? now,
+        validatedAt: now,
+      );
+      if (current == null) {
+        final inserted = await CalibrationRow.db.insert(
+          session,
+          [row],
+          ignoreConflicts: true,
+          transaction: transaction,
+        );
+        if (inserted.isEmpty) {
+          throw ApiException(
+            code: 'conflict',
+            message: 'This calibration version changed during validation.',
+          );
+        }
+      } else {
+        await CalibrationRow.db.updateRow(
+          session,
+          row,
+          transaction: transaction,
+        );
+      }
+    });
     return CalibrationValidation(
       version: normalizedVersion,
       fixturePassed: fixturePassed,
@@ -1054,20 +1182,22 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final candidate = await CalibrationRow.db.findFirstRow(
-      session,
-      where: (table) => table.version.equals(version),
-    );
-    if (candidate == null ||
-        !candidate.fixturePassed ||
-        !candidate.liveCanaryPassed ||
-        candidate.status != CalibrationStatus.valid) {
-      throw ApiException(
-        code: 'conflict',
-        message: 'Validate this calibration before activation.',
+    return session.db.transaction((transaction) async {
+      final candidate = await CalibrationRow.db.findFirstRow(
+        session,
+        where: (table) => table.version.equals(version),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
       );
-    }
-    await session.db.transaction((transaction) async {
+      if (candidate == null ||
+          !candidate.fixturePassed ||
+          !candidate.liveCanaryPassed ||
+          candidate.status != CalibrationStatus.valid) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'Validate this calibration before activation.',
+        );
+      }
       await CalibrationRow.db.updateWhere(
         session,
         where: (table) => table.status.equals(CalibrationStatus.active),
@@ -1081,16 +1211,17 @@ class AdminEndpoint extends Endpoint {
         candidate,
         transaction: transaction,
       );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'calibration.activate',
+        targetType: 'calibration',
+        targetId: version,
+        reason: reason,
+        transaction: transaction,
+      );
+      return true;
     });
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'calibration.activate',
-      targetType: 'calibration',
-      targetId: version,
-      reason: reason,
-    );
-    return true;
   }
 
   Future<bool> rollbackCalibration(
@@ -1100,20 +1231,22 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final candidate = await CalibrationRow.db.findFirstRow(
-      session,
-      where: (table) => table.version.equals(version),
-    );
-    if (candidate == null ||
-        !candidate.fixturePassed ||
-        !candidate.liveCanaryPassed ||
-        candidate.status != CalibrationStatus.superseded) {
-      throw ApiException(
-        code: 'conflict',
-        message: 'Only a previously validated calibration can be restored.',
+    return session.db.transaction((transaction) async {
+      final candidate = await CalibrationRow.db.findFirstRow(
+        session,
+        where: (table) => table.version.equals(version),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
       );
-    }
-    await session.db.transaction((transaction) async {
+      if (candidate == null ||
+          !candidate.fixturePassed ||
+          !candidate.liveCanaryPassed ||
+          candidate.status != CalibrationStatus.superseded) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'Only a previously validated calibration can be restored.',
+        );
+      }
       await CalibrationRow.db.updateWhere(
         session,
         where: (table) => table.status.equals(CalibrationStatus.active),
@@ -1127,16 +1260,17 @@ class AdminEndpoint extends Endpoint {
         candidate,
         transaction: transaction,
       );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'calibration.rollback',
+        targetType: 'calibration',
+        targetId: version,
+        reason: reason,
+        transaction: transaction,
+      );
+      return true;
     });
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: 'calibration.rollback',
-      targetType: 'calibration',
-      targetId: version,
-      reason: reason,
-    );
-    return true;
   }
 
   Future<bool> _setQuarantine(
@@ -1147,28 +1281,46 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    final row = await PoiCatalogRow.db.findFirstRow(
-      session,
-      where: (table) => table.providerPlaceId.equals(providerPlaceId),
-    );
-    if (row == null) {
-      throw ApiException(
-        code: 'not_found',
-        message: 'Catalog place not found.',
+    return session.db.transaction((transaction) async {
+      final row = await PoiCatalogRow.db.findFirstRow(
+        session,
+        where: (table) => table.providerPlaceId.equals(providerPlaceId),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
       );
-    }
-    row.quarantinedAt = quarantine ? DateTime.now().toUtc() : null;
-    row.quarantineReason = quarantine ? reason.trim() : null;
-    await PoiCatalogRow.db.updateRow(session, row);
-    await _audit(
-      session,
-      operatorName: operatorName,
-      action: quarantine ? 'catalog.quarantine' : 'catalog.restore',
-      targetType: 'poi',
-      targetId: providerPlaceId,
-      reason: reason,
-    );
-    return true;
+      if (row == null) {
+        throw ApiException(
+          code: 'not_found',
+          message: 'Catalog place not found.',
+        );
+      }
+      final before = {
+        'quarantined': '${row.quarantinedAt != null}',
+        if (row.quarantineReason != null) 'reason': row.quarantineReason!,
+      };
+      row.quarantinedAt = quarantine ? DateTime.now().toUtc() : null;
+      row.quarantineReason = quarantine ? reason.trim() : null;
+      await PoiCatalogRow.db.updateRow(
+        session,
+        row,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: quarantine ? 'catalog.quarantine' : 'catalog.restore',
+        targetType: 'poi',
+        targetId: providerPlaceId,
+        reason: reason,
+        before: before,
+        after: {
+          'quarantined': '$quarantine',
+          if (row.quarantineReason != null) 'reason': row.quarantineReason!,
+        },
+        transaction: transaction,
+      );
+      return true;
+    });
   }
 
   Future<bool> _mutatePoiIssue(
@@ -1308,11 +1460,16 @@ WHERE "metricName" = @name
     return (rows.first.toColumnMap()['value'] as num?)?.toDouble() ?? 0;
   }
 
-  Future<CacheSettingsRow?> _policyRow(Session session) =>
-      CacheSettingsRow.db.findFirstRow(
-        session,
-        where: (table) => table.settingsKey.equals('default'),
-      );
+  Future<CacheSettingsRow?> _policyRow(
+    Session session, {
+    Transaction? transaction,
+    LockMode? lockMode,
+  }) => CacheSettingsRow.db.findFirstRow(
+    session,
+    where: (table) => table.settingsKey.equals('default'),
+    transaction: transaction,
+    lockMode: lockMode,
+  );
 
   CoverageRecord _coverageRecord(PoiCoverageRow row) => CoverageRecord(
     coverageKey: row.coverageKey,
@@ -1427,8 +1584,7 @@ WHERE "metricName" = @name
     }
   }
 
-  Future<String> _authorize(Session session) =>
-      AdminAuthorization.requireOperator(session);
+  Future<String> _authorize(Session session) => _authorizer(session);
 
   String _operator(String value) {
     final result = value.trim();
@@ -1459,11 +1615,11 @@ WHERE "metricName" = @name
     required String reason,
     Map<String, String>? before,
     Map<String, String>? after,
-    Transaction? transaction,
+    required Transaction transaction,
   }) async {
     final salt = session.passwords['adminIpHashSalt'] ?? 'unconfigured';
     final ipHash = sha256.convert(utf8.encode('$salt:rpc')).toString();
-    await AdminAuditRow.db.insertRow(
+    await _auditWriter.write(
       session,
       AdminAuditRow(
         auditId: _uuid.v7(),

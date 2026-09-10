@@ -534,8 +534,12 @@ meaning across Android and web.
     single-use under replay/concurrency. The targeted stateful validator and
     atomic enrollment claim are implemented; their Postgres integration cases
     compile but cannot run on this host because Docker is unavailable.
-  - [ ] F20: make compare-and-swap admin mutations and their audit records one
-    atomic transaction.
+  - [~] F20: make compare-and-swap admin mutations and their audit records one
+    atomic transaction. Taxonomy revision/status checks and cache-policy
+    version checks now run under row locks, validation is rebound to the exact
+    revision after live canaries, and every audited admin mutation writes its
+    audit row in the same transaction. Five Postgres concurrency/rollback
+    cases compile but cannot run on this host because Docker is unavailable.
   - [x] F30: require preprovisioned first-start recovery credentials and keep
     them out of normal runtime output.
 - [ ] Close F29/F35 with an in-product identity/location lifecycle explanation,

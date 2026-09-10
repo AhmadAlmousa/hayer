@@ -7,12 +7,18 @@ import 'taxonomy.dart';
 
 /// Loads and versions the runtime taxonomy while preserving bundled fallback.
 abstract final class TaxonomyService {
-  static Future<TaxonomyVersionRow> activeRow(Session session) async {
+  static Future<TaxonomyVersionRow> activeRow(
+    Session session, {
+    Transaction? transaction,
+    LockMode? lockMode,
+  }) async {
     final active = await TaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.active),
       orderBy: (table) => table.publishedAt,
       orderDescending: true,
+      transaction: transaction,
+      lockMode: lockMode,
     );
     if (active != null) return active;
     final now = DateTime.now().toUtc();
@@ -33,12 +39,15 @@ abstract final class TaxonomyService {
         ),
       ],
       ignoreConflicts: true,
+      transaction: transaction,
     );
     final seeded = await TaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.active),
       orderBy: (table) => table.publishedAt,
       orderDescending: true,
+      transaction: transaction,
+      lockMode: lockMode,
     );
     if (seeded == null) {
       throw StateError('Could not initialize the bundled taxonomy.');
@@ -122,8 +131,14 @@ abstract final class TaxonomyService {
     required int revision,
     required List<AdminTaxonomyItem> items,
     required String operatorName,
+    required Transaction transaction,
   }) async {
-    final row = await _draft(session, version);
+    final row = await _draft(
+      session,
+      version,
+      transaction: transaction,
+      lockMode: LockMode.forUpdate,
+    );
     if (row.revision != revision) {
       throw ApiException(
         code: 'conflict',
@@ -133,7 +148,11 @@ abstract final class TaxonomyService {
     final normalized = items.map(_normalize).toList(growable: false);
     final errors = PlaceTaxonomy.validate(normalized);
     final active = PlaceTaxonomy.decode(
-      (await activeRow(session)).documentJson,
+      (await activeRow(
+        session,
+        transaction: transaction,
+        lockMode: LockMode.forShare,
+      )).documentJson,
     );
     final proposed = {for (final item in normalized) item.id: item};
     for (final published in active) {
@@ -154,7 +173,13 @@ abstract final class TaxonomyService {
       ..validationLocationJson = null
       ..validationRadiusMeters = null
       ..validatedAt = null;
-    return view(await TaxonomyVersionRow.db.updateRow(session, row));
+    return view(
+      await TaxonomyVersionRow.db.updateRow(
+        session,
+        row,
+        transaction: transaction,
+      ),
+    );
   }
 
   static Future<AdminTaxonomyVersion> recordValidation(
@@ -164,8 +189,14 @@ abstract final class TaxonomyService {
     required AdminMapLocation location,
     required int radiusMeters,
     required List<String> errors,
+    required Transaction transaction,
   }) async {
-    final row = await _draft(session, version);
+    final row = await _draft(
+      session,
+      version,
+      transaction: transaction,
+      lockMode: LockMode.forUpdate,
+    );
     if (row.revision != revision) {
       throw ApiException(
         code: 'conflict',
@@ -178,15 +209,27 @@ abstract final class TaxonomyService {
       ..validationLocationJson = jsonEncode(location.toJsonForProtocol())
       ..validationRadiusMeters = radiusMeters
       ..validatedAt = DateTime.now().toUtc();
-    return view(await TaxonomyVersionRow.db.updateRow(session, row));
+    return view(
+      await TaxonomyVersionRow.db.updateRow(
+        session,
+        row,
+        transaction: transaction,
+      ),
+    );
   }
 
   static Future<AdminTaxonomyVersion> publish(
     Session session, {
     required String version,
     required int revision,
+    required Transaction transaction,
   }) async {
-    final draft = await _draft(session, version);
+    final draft = await _draft(
+      session,
+      version,
+      transaction: transaction,
+      lockMode: LockMode.forUpdate,
+    );
     if (draft.revision != revision || !draft.validationPassed) {
       throw ApiException(
         code: 'conflict',
@@ -194,32 +237,33 @@ abstract final class TaxonomyService {
       );
     }
     final now = DateTime.now().toUtc();
-    await session.db.transaction((transaction) async {
-      await TaxonomyVersionRow.db.updateWhere(
-        session,
-        where: (table) => table.status.equals(TaxonomyStatus.active),
-        columnValues: (table) => [table.status(TaxonomyStatus.superseded)],
-        transaction: transaction,
-      );
-      draft
-        ..status = TaxonomyStatus.active
-        ..publishedAt = now;
-      await TaxonomyVersionRow.db.updateRow(
-        session,
-        draft,
-        transaction: transaction,
-      );
-    });
+    await TaxonomyVersionRow.db.updateWhere(
+      session,
+      where: (table) => table.status.equals(TaxonomyStatus.active),
+      columnValues: (table) => [table.status(TaxonomyStatus.superseded)],
+      transaction: transaction,
+    );
+    draft
+      ..status = TaxonomyStatus.active
+      ..publishedAt = now;
+    await TaxonomyVersionRow.db.updateRow(
+      session,
+      draft,
+      transaction: transaction,
+    );
     return view(draft);
   }
 
   static Future<AdminTaxonomyVersion> rollback(
     Session session, {
     required String version,
+    required Transaction transaction,
   }) async {
     final candidate = await TaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.version.equals(version),
+      transaction: transaction,
+      lockMode: LockMode.forUpdate,
     );
     if (candidate == null ||
         candidate.status != TaxonomyStatus.superseded ||
@@ -230,22 +274,20 @@ abstract final class TaxonomyService {
       );
     }
     final now = DateTime.now().toUtc();
-    await session.db.transaction((transaction) async {
-      await TaxonomyVersionRow.db.updateWhere(
-        session,
-        where: (table) => table.status.equals(TaxonomyStatus.active),
-        columnValues: (table) => [table.status(TaxonomyStatus.superseded)],
-        transaction: transaction,
-      );
-      candidate
-        ..status = TaxonomyStatus.active
-        ..publishedAt = now;
-      await TaxonomyVersionRow.db.updateRow(
-        session,
-        candidate,
-        transaction: transaction,
-      );
-    });
+    await TaxonomyVersionRow.db.updateWhere(
+      session,
+      where: (table) => table.status.equals(TaxonomyStatus.active),
+      columnValues: (table) => [table.status(TaxonomyStatus.superseded)],
+      transaction: transaction,
+    );
+    candidate
+      ..status = TaxonomyStatus.active
+      ..publishedAt = now;
+    await TaxonomyVersionRow.db.updateRow(
+      session,
+      candidate,
+      transaction: transaction,
+    );
     return view(candidate);
   }
 
@@ -286,18 +328,26 @@ abstract final class TaxonomyService {
 
   static Future<TaxonomyVersionRow> _draft(
     Session session,
-    String version,
-  ) async {
+    String version, {
+    Transaction? transaction,
+    LockMode? lockMode,
+  }) async {
     final row = await TaxonomyVersionRow.db.findFirstRow(
       session,
-      where: (table) =>
-          table.version.equals(version) &
-          table.status.equals(TaxonomyStatus.draft),
+      where: (table) => table.version.equals(version),
+      transaction: transaction,
+      lockMode: lockMode,
     );
     if (row == null) {
       throw ApiException(
         code: 'not_found',
         message: 'Taxonomy draft not found.',
+      );
+    }
+    if (row.status != TaxonomyStatus.draft) {
+      throw ApiException(
+        code: 'conflict',
+        message: 'The taxonomy draft is no longer editable.',
       );
     }
     return row;

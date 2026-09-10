@@ -6,6 +6,7 @@ abstract final class CatalogPruner {
   static Future<int> eligibleCount(
     Session session, {
     required DateTime cutoff,
+    Transaction? transaction,
   }) async {
     final rows = await session.db.unsafeQuery(
       '''
@@ -20,6 +21,7 @@ WHERE catalog."lastSeenAt" < @cutoff
   )
 ''',
       parameters: QueryParameters.named({'cutoff': cutoff}),
+      transaction: transaction,
     );
     if (rows.isEmpty) return 0;
     return (rows.first.toColumnMap()['count'] as num?)?.toInt() ?? 0;
@@ -28,6 +30,7 @@ WHERE catalog."lastSeenAt" < @cutoff
   static Future<int> prune(
     Session session, {
     required DateTime cutoff,
+    Transaction? transaction,
   }) async {
     final rows = await session.db.unsafeQuery(
       '''
@@ -42,6 +45,7 @@ WHERE catalog."lastSeenAt" < @cutoff
 RETURNING "providerPlaceId"
 ''',
       parameters: QueryParameters.named({'cutoff': cutoff}),
+      transaction: transaction,
     );
     return rows.length;
   }

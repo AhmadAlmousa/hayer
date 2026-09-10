@@ -47,6 +47,14 @@ enrollment JWTs are also checked against their server-side refresh-token row on
 every request, so logout or enrollment completion invalidates copied access
 tokens immediately. Anonymous consumer JWT validation remains stateless.
 
+Admin writes use short database transactions that include their append-only
+audit record. Taxonomy revisions and cache-policy versions are rechecked while
+the current row is locked; taxonomy validation is persisted only if the draft
+still has the exact revision that passed its live canaries. Expensive network
+canaries run before the transaction, while publish, rollback, calibration,
+coverage, pruning, and quarantine mutations keep their state and audit outcome
+atomic.
+
 The production Docker image compiles the server, runtime initializer, and both
 canaries to standalone native executables. Its final Debian stage contains no
 Dart or Flutter SDK. Build it explicitly with

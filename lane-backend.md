@@ -17,13 +17,39 @@ Last updated: 2026-09-10
   regression are present. Docker and physical-device acceptance remain open.
 - F01's signup and method-aware join protections are implemented. Real gateway
   proof and the Cloudflare connector trust decision remain open.
-- F13 and F30 are complete. F14's session/enrollment revocation implementation
-  is complete but its Postgres concurrency/replay cases await Docker; F20
-  atomic admin mutations is the next back-end checkpoint.
+- F13 and F30 are complete. F14's session/enrollment revocation and F20's
+  atomic admin-mutation implementations are complete, but their Postgres
+  concurrency/replay cases await Docker.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is ready for client integration.
 
 ## Checkpoints
+
+### F20 atomic admin mutations — implemented (2026-09-10)
+
+Taxonomy save, validation, publish, and rollback now hold the affected draft or
+candidate row in a short transaction. Each revision/status check is repeated
+under that lock, so a stale save conflicts, an edit invalidates in-flight
+validation, and publish is bound to the exact validated document revision.
+Cache-policy saves likewise lock the current version; concurrent first writes
+use the unique settings key as a compare-and-swap boundary.
+
+Every existing audited admin mutation now commits its audit row with its state
+change: taxonomy operations, policy updates, pruning, refresh request/cancel,
+coverage invalidation, calibration activation/rollback, and POI quarantine/
+restore. Expensive taxonomy and calibration live canaries remain outside the
+transaction, with their persisted state rechecked afterward. Calibration
+candidate persistence also rechecks immutability under a row lock.
+
+Five real-Postgres cases cover concurrent taxonomy saves, validation versus an
+edit, publish versus an edit, concurrent policy saves, and injected audit-write
+failure rollback. They compile with fatal-info analysis but cannot execute
+because this host has no Docker command or listening test Postgres instance.
+Pinned full preflight passes 111 server tests, 123 app tests, nine admin tests,
+generation/formatting, all analyses, and repository checks. The signed
+`0.2.1+7` APK and alias remain 104,876,403 bytes at SHA-256
+`34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+both manifests, package/version metadata, and APK Signature Scheme v2 verify.
 
 ### F14 privileged-session revocation — implemented (2026-09-10)
 
