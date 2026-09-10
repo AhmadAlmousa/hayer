@@ -5,6 +5,7 @@ import 'package:hayer_admin/admin_app.dart';
 import 'package:hayer_admin/admin_operations.dart';
 import 'package:hayer_admin/features/auth/admin_auth_controller.dart';
 import 'package:hayer_admin/features/auth/admin_auth_repository.dart';
+import 'package:hayer_admin/features/navigation/admin_navigation.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
@@ -75,12 +76,35 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.byType(AdminSideNavigation), findsOneWidget);
     expect(find.text('Overview'), findsWidgets);
     expect(find.text('42'), findsOneWidget);
     expect(find.text('Sessions over time'), findsOneWidget);
     expect(find.text('Most popular cities'), findsOneWidget);
     expect(find.text('Top cuisines'), findsOneWidget);
+  });
+
+  testWidgets('the wide navigation groups its destinations', (tester) async {
+    await _setSurface(tester, const Size(1400, 900));
+    await _pumpDashboard(tester, _FakeAdminOperations());
+
+    for (final group in adminNavigationGroups) {
+      expect(find.text(group.title.toUpperCase()), findsOneWidget);
+    }
+    // Every destination is reachable without scrolling the navigation at the
+    // height a 1080p screen leaves a browser. A page added later can push the
+    // last group past that; the column scrolls, and this is the reminder to
+    // check what an operator can still see.
+    for (final route in adminRoutes) {
+      final tile = find.byKey(Key('admin-rail-$route'));
+      expect(tile, findsOneWidget);
+      expect(tester.getRect(tile).bottom, lessThan(900));
+    }
+
+    // The far end of the list is where a hardcoded index range went wrong.
+    await tester.tap(find.byKey(Key('admin-rail-${adminRoutes.last}')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('audit-page')), findsOneWidget);
   });
 
   testWidgets('narrow dashboard uses a drawer and opens coverage records', (
@@ -90,9 +114,18 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    expect(find.byType(NavigationRail), findsNothing);
+    expect(find.byType(AdminSideNavigation), findsNothing);
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
+    for (final group in adminNavigationGroups) {
+      expect(
+        find.descendant(
+          of: find.byType(NavigationDrawer),
+          matching: find.text(group.title.toUpperCase()),
+        ),
+        findsOneWidget,
+      );
+    }
     await tester.tap(
       find.descendant(
         of: find.byType(NavigationDrawer),
@@ -114,12 +147,7 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(NavigationRail),
-        matching: find.text('Refresh jobs'),
-      ),
-    );
+    await tester.tap(find.byKey(const Key('admin-rail-/jobs')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
@@ -137,7 +165,7 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    await tester.tap(find.text('Audit log'));
+    await tester.tap(find.byKey(const Key('admin-rail-/audit')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('catalog.prune'));
     await tester.pumpAndSettle();
@@ -154,7 +182,7 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    await tester.tap(find.text('System policy'));
+    await tester.tap(find.byKey(const Key('admin-rail-/settings')));
     await tester.pumpAndSettle();
 
     expect(find.text('System policy'), findsWidgets);
@@ -171,7 +199,7 @@ void main() {
       final operations = _FakeAdminOperations();
       await _pumpDashboard(tester, operations);
 
-      await tester.tap(find.text('Reports'));
+      await tester.tap(find.byKey(const Key('admin-rail-/reports')));
       await tester.pumpAndSettle();
       expect(find.text('POI issue reports'), findsOneWidget);
       expect(find.text('1 similar reports'), findsOneWidget);
@@ -243,7 +271,7 @@ void main() {
     final operations = _FakeAdminOperations();
     await _pumpDashboard(tester, operations);
 
-    await tester.tap(find.text('Places'));
+    await tester.tap(find.byKey(const Key('admin-rail-/places')));
     await tester.pumpAndSettle();
     expect(find.text('Questionable Cafe'), findsOneWidget);
 

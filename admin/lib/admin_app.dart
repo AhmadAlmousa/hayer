@@ -9,6 +9,7 @@ import 'features/analytics/analytics_pages.dart';
 import 'features/auth/admin_auth_controller.dart';
 import 'features/auth/admin_auth_page.dart';
 import 'features/issues/poi_issue_page.dart';
+import 'features/navigation/admin_navigation.dart';
 import 'features/taxonomy/taxonomy_page.dart';
 
 class AdminApp extends StatefulWidget {
@@ -55,8 +56,10 @@ class _AdminAppState extends State<AdminApp> {
       ),
       ShellRoute(
         builder: (context, state, child) => _Dashboard(
-          selectedIndex: _adminRoutes.indexOf(state.uri.path).clamp(0, 10),
-          onSelect: (index) => context.go(_adminRoutes[index]),
+          selectedIndex: adminRoutes
+              .indexOf(state.uri.path)
+              .clamp(0, adminRoutes.length - 1),
+          onSelect: (index) => context.go(adminRoutes[index]),
           authController: widget.authController,
           child: child,
         ),
@@ -170,20 +173,6 @@ class _AdminAppState extends State<AdminApp> {
   }
 }
 
-const _adminRoutes = [
-  '/overview',
-  '/usage',
-  '/places',
-  '/taxonomy',
-  '/catalog',
-  '/reports',
-  '/coverage',
-  '/jobs',
-  '/settings',
-  '/calibration',
-  '/audit',
-];
-
 class _Dashboard extends StatelessWidget {
   const _Dashboard({
     required this.selectedIndex,
@@ -198,147 +187,70 @@ class _Dashboard extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final labels = [
-      'Overview',
-      'Usage',
-      'Places',
-      'Taxonomy',
-      'POI catalog',
-      'Reports',
-      'Coverage',
-      'Refresh jobs',
-      'System policy',
-      'Calibration',
-      'Audit log',
-    ];
-    final icons = [
-      Icons.dashboard_outlined,
-      Icons.insights_outlined,
-      Icons.favorite_outline_rounded,
-      Icons.account_tree_outlined,
-      Icons.place_outlined,
-      Icons.outlined_flag_rounded,
-      Icons.map_outlined,
-      Icons.sync_rounded,
-      Icons.tune_rounded,
-      Icons.science_outlined,
-      Icons.history_rounded,
-    ];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 1000;
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Hayer Admin',
-              style: const TextStyle(fontWeight: FontWeight.w900),
-            ),
-            actions: [
-              if (wide)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Center(
-                    child: Text(
-                      authController.operator ?? '',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final wide = constraints.maxWidth >= 1000;
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Hayer Admin',
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
+          actions: [
+            if (wide)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Center(
+                  child: Text(
+                    authController.operator ?? '',
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
-              IconButton(
-                key: const Key('admin-sign-out'),
-                tooltip: 'Sign out',
-                onPressed: authController.isBusy
-                    ? null
-                    : authController.signOut,
-                icon: const Icon(Icons.logout_rounded),
               ),
-              const SizedBox(width: 8),
-            ],
-          ),
-          body: Row(
-            children: [
-              if (wide)
-                NavigationRail(
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: onSelect,
-                  labelType: NavigationRailLabelType.all,
-                  leading: const Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Tooltip(
-                      message: 'Insights · Content · Operations · Governance',
-                      child: Icon(Icons.admin_panel_settings_outlined),
-                    ),
-                  ),
-                  destinations: [
-                    for (var i = 0; i < labels.length; i++)
-                      NavigationRailDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
+            IconButton(
+              key: const Key('admin-sign-out'),
+              tooltip: 'Sign out',
+              onPressed: authController.isBusy ? null : authController.signOut,
+              icon: const Icon(Icons.logout_rounded),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: Row(
+          children: [
+            if (wide)
+              AdminSideNavigation(
+                selectedIndex: selectedIndex,
+                onSelect: onSelect,
+              ),
+            Expanded(child: child),
+          ],
+        ),
+        drawer: wide
+            ? null
+            : NavigationDrawer(
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  Navigator.of(context).pop();
+                  onSelect(value);
+                },
+                children: [
+                  const SizedBox(height: 12),
+                  // NavigationDrawer numbers only its destinations, so the
+                  // headings between them do not disturb the index the router
+                  // reads.
+                  for (final group in adminNavigationGroups) ...[
+                    AdminNavigationGroupLabel(group.title),
+                    for (final destination in group.destinations)
+                      NavigationDrawerDestination(
+                        icon: Icon(destination.icon),
+                        label: Text(destination.label),
                       ),
                   ],
-                ),
-              Expanded(child: child),
-            ],
-          ),
-          drawer: wide
-              ? null
-              : NavigationDrawer(
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    Navigator.of(context).pop();
-                    onSelect(value);
-                  },
-                  children: [
-                    const SizedBox(height: 12),
-                    const _NavigationGroupLabel('Insights'),
-                    for (var i = 0; i < 3; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                    const _NavigationGroupLabel('Content'),
-                    for (var i = 3; i < 5; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                    const _NavigationGroupLabel('Operations'),
-                    for (var i = 5; i < 9; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                    const _NavigationGroupLabel('Governance'),
-                    for (var i = 9; i < labels.length; i++)
-                      NavigationDrawerDestination(
-                        icon: Icon(icons[i]),
-                        label: Text(labels[i]),
-                      ),
-                  ],
-                ),
-        );
-      },
-    );
-  }
-}
-
-class _NavigationGroupLabel extends StatelessWidget {
-  const _NavigationGroupLabel(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(28, 18, 16, 6),
-    child: Text(
-      label.toUpperCase(),
-      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color: Theme.of(context).colorScheme.primary,
-        fontWeight: FontWeight.w900,
-        letterSpacing: 1.1,
-      ),
-    ),
+                ],
+              ),
+      );
+    },
   );
 }
 
