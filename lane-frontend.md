@@ -23,6 +23,9 @@ Last updated: 2026-09-10
 - F17 is complete in this lane as of 2026-09-10: the client now refreshes
   through `sessions.progress`, and a blocked event stream no longer strands a
   room. See the checkpoint below.
+- Every place photo now states the size it needs decoding at, as of
+  2026-09-10. See the checkpoint below; confirming the effect on a real device
+  belongs to M7-E's outstanding performance check.
 - What is left of M7 here needs a physical device (M7-E acceptance, M7-G
   two-device reconnect), a container runtime (M7-B gateway proof, M7-G
   real-PostGIS regressions), protocol fields the back-end lane owns (M7-J
@@ -181,6 +184,70 @@ the notice fitting 320x640 at 200% text in English and Arabic. The signed
 `431fb3e9dcddb6a3aaa5af41379f856bfe6376f69ca1b7a41b8510967a9c9420`, declares
 `sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
 Signature Scheme v2 with the usual certificate (`426f3bf4…77a6`).
+
+### Bounded place-photo decoding (2026-09-10)
+
+The audit's remaining performance item in this lane. The extractor rewrites
+every kept photo URL to `=w1600` before storing it
+(`backend/hayer_server/lib/src/places/search_parser.dart:168-188`), so a photo
+arrives 1600 logical pixels wide however small the box that draws it. Decoded,
+that is roughly 6.8 MB of bitmap for a 48-pixel saved-list thumbnail, and
+Flutter's image cache holds up to 100 MB of them — about fourteen photos — long
+after the row that asked for one has scrolled away.
+
+Four surfaces asked for the full bitmap: the swipe card in both its layouts,
+the details-sheet gallery, and the saved-places thumbnail. Results was the one
+that already bounded its decode, and it was doing it wrongly. `ResizeImage`
+defaults to `ResizeImagePolicy.exact`, which resizes to exactly the width *and*
+height it is given and ignores the source's aspect ratio, so the 84-pixel
+square passed as both dimensions squashed every photo that was not already
+square. `cached_network_image` hands `memCacheWidth`/`memCacheHeight` to
+`ResizeImage.resizeIfNeeded` and offers no way to ask for the fitting policy,
+so the fix is to pass one dimension only.
+
+A width alone leaves the height to the photo's own aspect ratio, which the
+client does not know, so the bound has to be wide enough that the resulting
+height still covers the box — a 48x48 box needs about 85 pixels of width before
+a landscape photo is 48 tall. `placePhotoDecodeWidth` takes the box and returns
+`max(width, height x 16/9) x devicePixelRatio`, 16:9 being the widest ordinary
+photograph. Nothing is upscaled by this: `ResizeImage` clamps to the source's
+own width, so a box larger than the photo leaves it alone.
+
+Two surfaces measure their box rather than assuming one. The swipe card already
+had a `LayoutBuilder`, and the readable layout's strip is inset by the card's
+own padding; the gallery gained one. The full-bleed swipe card is the honest
+non-win: a card taller than a 1600-pixel photo can cover already needs every
+pixel it has, so there the bound resolves above the source and changes nothing.
+It is passed anyway so the site stays correct if a card is ever smaller than
+the screen or a photo ever arrives larger.
+
+The saved thumbnail is where this pays: 256 pixels decoded instead of 1600 at a
+3x ratio, about 0.2 MB against 6.8 MB per row. Results drops to roughly 0.5 MB
+and stops distorting. The strip in the readable card, which is the layout large
+text and short screens fall back to, decodes under a quarter of the photo.
+
+Not done, and deliberately: no prefetch of the next card's photo. `CardSwiper`
+is configured with `numberOfCardsDisplayed: 3`
+(`app/lib/features/swipe/place_deck_swiper.dart:76`), so the next two cards are
+already built and already fetching. Adding a prefetch would duplicate work the
+deck does for itself.
+
+Verification: pinned full preflight passes with 118 server, 165 app (up from
+153), and 51 admin tests, and four clean fatal-info analyses. The helper's
+arithmetic is unit-tested for a square box, a wide box, pixel-ratio scaling, an
+unmeasurable box, and the covering property across 1:1 through 16:9 at three
+box shapes. Each surface has a case asserting it bounds the box it actually
+renders — measured with `getSize` rather than against a hardcoded layout number
+— and that no surface passes a second dimension. The signed `0.2.1+7` APK is
+105,253,887 bytes at SHA-256
+`5e8d37eaae0d60d31e0b59edb282b15a9ac8bf5b7c003f1cdae93b0152d4f98a`, declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1, and verifies under APK
+Signature Scheme v2 with the usual certificate (`426f3bf4...77a6`).
+
+Unmeasured: the memory figures above are computed from the source width and
+four bytes per pixel, not read from a running profile. Confirming the frame and
+image-cache effect on a lower-end Android device is part of M7-E's outstanding
+physical-device performance check.
 
 ### M7-J number legibility, and admin English-only (2026-09-10)
 

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../core/page_title.dart';
+import '../../core/place_photo.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../domain/saved_place.dart';
 import '../../domain/shortlist_draft.dart';
@@ -356,6 +357,11 @@ class _SavedPlaceTile extends StatelessWidget {
                     width: 48,
                     height: 48,
                     fit: BoxFit.cover,
+                    memCacheWidth: placePhotoDecodeWidth(
+                      context,
+                      boxWidth: 48,
+                      boxHeight: 48,
+                    ),
                     errorWidget: (_, _, _) =>
                         const Icon(Icons.edit_note_rounded),
                   ),

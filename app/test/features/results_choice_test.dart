@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_app/app/theme.dart';
@@ -240,6 +241,35 @@ void main() {
       await _dispose(tester, fixture);
     });
   }
+
+  testWidgets('a result thumbnail decodes at thumbnail size', (tester) async {
+    // Photos arrive 1600 pixels wide, and a room can rank 50 of them behind
+    // an 84-pixel square each.
+    final fixture = _Fixture();
+    await _pumpResultThumbnail(tester, fixture);
+
+    final image = tester.widget<CachedNetworkImage>(
+      find.byType(CachedNetworkImage).first,
+    );
+    expect(image.memCacheWidth, isNotNull);
+    expect(image.memCacheWidth, lessThan(1600));
+    // Both dimensions would resize the photo to exactly that box and squash
+    // every photo that is not already square.
+    expect(image.memCacheHeight, isNull);
+    await _dispose(tester, fixture);
+  });
+}
+
+Future<void> _pumpResultThumbnail(WidgetTester tester, _Fixture fixture) async {
+  const photoUrls = ['https://example.invalid/photo.jpg'];
+  final bundle = fixture.repository.bundle;
+  fixture.repository.bundle = bundle.copyWith(
+    deck: [
+      for (final place in bundle.deck) place.copyWith(photoUrls: photoUrls),
+    ],
+  );
+  fixture.endpoint.photoUrls = photoUrls;
+  await _pump(tester, fixture);
 }
 
 Future<void> _pump(
@@ -298,6 +328,7 @@ class _Client extends Fake implements Client {
 class _Endpoint extends Fake implements EndpointHayerSession {
   final events = StreamController<SessionEvent>.broadcast();
   var resultCalls = 0;
+  var photoUrls = <String>[];
   @override
   Stream<SessionEvent> watch({required String sessionId}) => events.stream;
   @override
@@ -306,7 +337,7 @@ class _Endpoint extends Fake implements EndpointHayerSession {
     return [
       for (final id in ['a', 'b'])
         SessionResult(
-          place: _place(id),
+          place: _place(id).copyWith(photoUrls: photoUrls),
           likeCount: 2,
           voterCount: 2,
           match: true,

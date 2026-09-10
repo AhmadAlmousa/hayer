@@ -8,6 +8,7 @@ import '../../app/theme.dart';
 import '../display_formatters.dart';
 import '../gcc_currency_symbol.dart';
 import '../place_links.dart';
+import '../place_photo.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'route_estimate_text.dart';
 import 'weekly_hours_calendar.dart';
@@ -253,19 +254,26 @@ class _PlacePhotoGalleryState extends State<_PlacePhotoGallery> {
         borderRadius: BorderRadius.circular(20),
         child: AspectRatio(
           aspectRatio: 16 / 10,
-          child: PageView.builder(
-            itemCount: widget.place.photoUrls.length,
-            onPageChanged: (value) => setState(() => _page = value),
-            itemBuilder: (context, index) => CachedNetworkImage(
-              imageUrl: widget.place.photoUrls[index],
-              fit: BoxFit.cover,
-              fadeInDuration: const Duration(milliseconds: 220),
-              placeholder: (_, _) => const ColoredBox(
-                color: Color(0x14000000),
-              ),
-              errorWidget: (_, _, _) => const ColoredBox(
-                color: Color(0x220E9594),
-                child: Icon(Icons.broken_image_outlined),
+          child: LayoutBuilder(
+            builder: (context, constraints) => PageView.builder(
+              itemCount: widget.place.photoUrls.length,
+              onPageChanged: (value) => setState(() => _page = value),
+              itemBuilder: (context, index) => CachedNetworkImage(
+                imageUrl: widget.place.photoUrls[index],
+                fit: BoxFit.cover,
+                memCacheWidth: placePhotoDecodeWidth(
+                  context,
+                  boxWidth: constraints.maxWidth,
+                  boxHeight: constraints.maxHeight,
+                ),
+                fadeInDuration: const Duration(milliseconds: 220),
+                placeholder: (_, _) => const ColoredBox(
+                  color: Color(0x14000000),
+                ),
+                errorWidget: (_, _, _) => const ColoredBox(
+                  color: Color(0x220E9594),
+                  child: Icon(Icons.broken_image_outlined),
+                ),
               ),
             ),
           ),

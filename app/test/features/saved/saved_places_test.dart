@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -101,6 +102,33 @@ void main() {
 
     expect(store.places.single.collection, SavedPlaceCollection.favorites);
     expect(store.places.single.note, 'Window seat');
+  });
+
+  testWidgets('a saved thumbnail decodes at thumbnail size', (tester) async {
+    // Photos arrive 1600 pixels wide, which is about 6.8 MB of bitmap for a
+    // 48-pixel square that the image cache would then hold per saved row.
+    final store = _MemorySavedPlaceStore()
+      ..places = [
+        _saved('a').copyWith(
+          place: _place(
+            'a',
+          ).copyWith(photoUrls: ['https://example.invalid/photo.jpg']),
+        ),
+      ];
+    await _pump(
+      tester,
+      repository: SavedPlacesRepository(store: store),
+      home: const SavedPlacesScreen(),
+    );
+
+    final image = tester.widget<CachedNetworkImage>(
+      find.byType(CachedNetworkImage),
+    );
+    expect(image.memCacheWidth, isNotNull);
+    // 1600 is the width the extractor requests every photo at, in
+    // backend/hayer_server/lib/src/places/search_parser.dart.
+    expect(image.memCacheWidth, lessThan(1600));
+    expect(image.memCacheHeight, isNull);
   });
 }
 

@@ -8,6 +8,7 @@ import '../../app/theme.dart';
 import '../../core/gcc_currency_symbol.dart';
 import '../../core/display_formatters.dart';
 import '../../core/place_links.dart';
+import '../../core/place_photo.dart';
 import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/place_details_sheet.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -55,6 +56,13 @@ class PlaceCard extends StatelessWidget {
                       child: CachedNetworkImage(
                         imageUrl: place.photoUrls.first,
                         fit: BoxFit.cover,
+                        memCacheWidth: placePhotoDecodeWidth(
+                          context,
+                          // The card's own padding is the only inset between
+                          // this strip and the card edge.
+                          boxWidth: constraints.maxWidth - 32,
+                          boxHeight: 120,
+                        ),
                         fadeInDuration: Duration.zero,
                         placeholder: (_, _) => _fallback(colors),
                         errorWidget: (_, _, _) => _fallback(colors),
@@ -133,6 +141,15 @@ class PlaceCard extends StatelessWidget {
                   CachedNetworkImage(
                     imageUrl: place.photoUrls.first,
                     fit: BoxFit.cover,
+                    // A full-bleed card is usually taller than a 1600 px photo
+                    // can cover, so this bound mostly resolves to the source's
+                    // own width. It still holds if a card ever gets smaller
+                    // than the screen, or a photo ever arrives larger.
+                    memCacheWidth: placePhotoDecodeWidth(
+                      context,
+                      boxWidth: constraints.maxWidth,
+                      boxHeight: constraints.maxHeight,
+                    ),
                     fadeInDuration: const Duration(milliseconds: 220),
                     placeholder: (_, _) =>
                         Container(color: colors.surfaceContainerHighest),

@@ -13,6 +13,7 @@ import '../../app/theme.dart';
 import '../../core/display_formatters.dart';
 import '../../core/page_title.dart';
 import '../../core/place_links.dart';
+import '../../core/place_photo.dart';
 import '../../core/providers.dart';
 import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
@@ -740,12 +741,11 @@ class _ResultCard extends StatelessWidget {
                           : CachedNetworkImage(
                               imageUrl: place.photoUrls.first,
                               fit: BoxFit.cover,
-                              memCacheWidth:
-                                  (84 * MediaQuery.devicePixelRatioOf(context))
-                                      .ceil(),
-                              memCacheHeight:
-                                  (84 * MediaQuery.devicePixelRatioOf(context))
-                                      .ceil(),
+                              memCacheWidth: placePhotoDecodeWidth(
+                                context,
+                                boxWidth: 84,
+                                boxHeight: 84,
+                              ),
                               fadeInDuration:
                                   MediaQuery.disableAnimationsOf(context)
                                   ? Duration.zero
