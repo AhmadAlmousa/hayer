@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import 'catalog_persistence.dart';
 import 'catalog_spatial_query.dart';
 import 'google_web_place_source.dart';
 import 'place_candidate.dart';
@@ -91,8 +93,7 @@ class CatalogPlaceService {
     final requiredCategoryIds = subcategoryIds.isEmpty
         ? {categoryId}
         : subcategoryIds.toSet();
-    final persistedCategoryIds = {categoryId, ...subcategoryIds};
-    final coverageCategories = persistedCategoryIds.toList()..sort();
+    final coverageCategories = {categoryId, ...subcategoryIds}.toList()..sort();
     final coverageKey = _coverageKey(
       categoryIds: coverageCategories,
       countryCode: countryCode,
@@ -117,15 +118,12 @@ class CatalogPlaceService {
       radiusMeters: radiusMeters,
       countryCode: countryCode,
       seenAfter: now.subtract(Duration(days: settings.staleFallbackDays)),
+      requiredCategoryIds: requiredCategoryIds,
+      maximumPriceLevel: maximumPriceLevel,
     );
     final freshAfter = now.subtract(Duration(hours: settings.freshHours));
     final fresh = nearby
-        .where(
-          (row) =>
-              !row.sourceCheckedAt.isBefore(freshAfter) &&
-              row.categoryIds.any(requiredCategoryIds.contains),
-        )
-        .map(_candidateFromRow)
+        .where((place) => !place.sourceCheckedAt.isBefore(freshAfter))
         .toList(growable: false);
     final cachedDeck = policy.select(
       candidates: fresh,
@@ -140,15 +138,17 @@ class CatalogPlaceService {
       return cachedDeck;
     }
 
-    final refreshKey = [
-      countryCode,
-      latitude.toStringAsFixed(3),
-      longitude.toStringAsFixed(3),
-      radiusMeters,
-      requiredCategoryIds.toList()..sort(),
-      deckSize,
-      maximumPriceLevel ?? 'any',
-    ].join(':');
+    final refreshKey = catalogRefreshKey(
+      calibrationVersion: calibrationVersion,
+      parentCategoryId: categoryId,
+      queries: queries,
+      countryCode: countryCode,
+      latitude: latitude,
+      longitude: longitude,
+      radiusMeters: radiusMeters,
+      deckSize: deckSize,
+      maximumPriceLevel: maximumPriceLevel,
+    );
     Future<List<PlaceSnapshot>>? refresh;
     try {
       refresh = _inFlightRefreshes.putIfAbsent(
@@ -158,7 +158,6 @@ class CatalogPlaceService {
           settings: settings,
           categoryId: categoryId,
           subcategoryIds: subcategoryIds,
-          categoryIds: persistedCategoryIds,
           latitude: latitude,
           longitude: longitude,
           radiusMeters: radiusMeters,
@@ -175,12 +174,8 @@ class CatalogPlaceService {
       return live;
     } on PlaceSourceException {
       await _metric(session, 'source_success_rate', 0);
-      final stale = nearby
-          .where((row) => row.categoryIds.any(requiredCategoryIds.contains))
-          .map(_candidateFromRow)
-          .toList(growable: false);
       final fallback = policy.select(
-        candidates: stale,
+        candidates: nearby,
         anchorLatitude: latitude,
         anchorLongitude: longitude,
         radiusMeters: radiusMeters,
@@ -202,7 +197,6 @@ class CatalogPlaceService {
     required _CatalogSettings settings,
     required String categoryId,
     required List<String> subcategoryIds,
-    required Set<String> categoryIds,
     required double latitude,
     required double longitude,
     required int radiusMeters,
@@ -245,7 +239,8 @@ class CatalogPlaceService {
         await _persist(
           session,
           live,
-          categoryIds: categoryIds,
+          parentCategoryId: categoryId,
+          queries: queries,
           countryCode: countryCode,
           latitude: latitude,
           longitude: longitude,
@@ -272,20 +267,27 @@ class CatalogPlaceService {
         );
   }
 
-  Future<List<PoiCatalogRow>> _nearbyCatalog(
+  Future<List<PlaceCandidate>> _nearbyCatalog(
     Session session, {
     required double latitude,
     required double longitude,
     required int radiusMeters,
     required String countryCode,
     required DateTime seenAfter,
+    required Set<String> requiredCategoryIds,
+    required int? maximumPriceLevel,
   }) async {
+    final sortedCategoryIds = requiredCategoryIds.toList()..sort();
+    final evidencePrefix = catalogEvidencePrefix(calibrationVersion);
     final parameters = QueryParameters.named({
       'country': countryCode,
       'seenAfter': seenAfter,
       'longitude': longitude,
       'latitude': latitude,
       'radius': radiusMeters,
+      'categoryIds': jsonEncode(sortedCategoryIds),
+      'evidencePrefix': evidencePrefix,
+      'maximumPriceLevel': maximumPriceLevel ?? -1,
     });
     late final DatabaseResult spatialRows;
     try {
@@ -310,19 +312,49 @@ class CatalogPlaceService {
         .map((row) => row.toColumnMap()['providerPlaceId'] as String)
         .toSet();
     if (identities.isEmpty) return const [];
-    return PoiCatalogRow.db.find(
+    final rows = await PoiCatalogRow.db.find(
       session,
       where: (table) =>
           table.provider.equals('google-web') &
-          table.providerPlaceId.inSet(identities),
+          table.providerPlaceId.inSet(identities) &
+          table.countryCode.equals(countryCode) &
+          table.quarantinedAt.equals(null),
       limit: 500,
     );
+    final evidenceRows = await PoiCategoryRow.db.find(
+      session,
+      where: (table) =>
+          table.provider.equals('google-web') &
+          table.providerPlaceId.inSet(identities) &
+          table.categoryId.inSet(requiredCategoryIds),
+      limit: identities.length * requiredCategoryIds.length,
+    );
+    final evidenceByPlace = <String, Set<String>>{};
+    for (final evidence in evidenceRows) {
+      if (evidence.lastSeenAt.isBefore(seenAfter) ||
+          !evidence.evidenceQuery.startsWith(evidencePrefix)) {
+        continue;
+      }
+      (evidenceByPlace[evidence.providerPlaceId] ??= {}).add(
+        evidence.categoryId,
+      );
+    }
+    return [
+      for (final row in rows)
+        if (evidenceByPlace[row.providerPlaceId]?.isNotEmpty ?? false)
+          _candidateFromRow(
+            row,
+            evidenceCategoryIds: evidenceByPlace[row.providerPlaceId]!.toList()
+              ..sort(),
+          ),
+    ];
   }
 
   Future<void> _persist(
     Session session,
     List<PlaceSnapshot> places, {
-    required Set<String> categoryIds,
+    required String parentCategoryId,
+    required List<PlaceQuery> queries,
     required String countryCode,
     required double latitude,
     required double longitude,
@@ -330,7 +362,11 @@ class CatalogPlaceService {
     required DateTime now,
     required int freshHours,
   }) async {
-    final queryKey = categoryIds.toList()..sort();
+    final queryByCategory = {
+      for (final query in queries) query.categoryId: query.query,
+    };
+    final queryKey = {parentCategoryId, ...queryByCategory.keys}.toList()
+      ..sort();
     final coverageKey = _coverageKey(
       categoryIds: queryKey,
       countryCode: countryCode,
@@ -338,126 +374,106 @@ class CatalogPlaceService {
       longitude: longitude,
       radiusMeters: radiusMeters,
     );
+    final evidencePrefix = catalogEvidencePrefix(calibrationVersion);
+    final uniquePlaces = {
+      for (final place in places) place.placeId: place,
+    }.values.toList()..sort((a, b) => a.placeId.compareTo(b.placeId));
+    final catalogInput = <Map<String, Object?>>[];
+    final evidenceInput = <Map<String, Object?>>[];
+    var evidencedPlaceCount = 0;
+    for (final place in uniquePlaces) {
+      final directlyObserved =
+          place.categoryIds.where(queryByCategory.containsKey).toSet().toList()
+            ..sort();
+      if (directlyObserved.isEmpty) continue;
+      evidencedPlaceCount++;
+      final evidencedCategories = {
+        ...directlyObserved,
+        parentCategoryId,
+      }.toList()..sort();
+      final snapshot = place.copyWith(
+        categoryIds: evidencedCategories,
+        sourceCheckedAt: now,
+        isStale: false,
+      );
+      catalogInput.add({
+        'providerPlaceId': place.placeId,
+        'featureId': place.featureId,
+        'normalizedName': _normalizeName(place.name),
+        'name': place.name,
+        'countryCode': countryCode,
+        'latitude': place.latitude,
+        'longitude': place.longitude,
+        'categoryIds': evidencedCategories,
+        'snapshot': snapshot.toJson(),
+        'calibrationVersion': calibrationVersion,
+        'sourceCheckedAt': now.toIso8601String(),
+        'seenAt': now.toIso8601String(),
+      });
+      for (final categoryId in evidencedCategories) {
+        final isDirect = directlyObserved.contains(categoryId);
+        final evidenceDetail = isDirect
+            ? 'query:${queryByCategory[categoryId]}'
+            : 'parent:${directlyObserved.join(',')}';
+        evidenceInput.add({
+          'providerPlaceId': place.placeId,
+          'categoryId': categoryId,
+          'evidenceQuery': '$evidencePrefix$evidenceDetail',
+          'seenAt': now.toIso8601String(),
+        });
+      }
+    }
+    evidenceInput.sort((a, b) {
+      final byPlace = (a['providerPlaceId']! as String).compareTo(
+        b['providerPlaceId']! as String,
+      );
+      return byPlace != 0
+          ? byPlace
+          : (a['categoryId']! as String).compareTo(
+              b['categoryId']! as String,
+            );
+    });
     await session.db.transaction((transaction) async {
-      for (final place in places) {
-        final existing = await PoiCatalogRow.db.findFirstRow(
-          session,
-          where: (table) =>
-              table.provider.equals('google-web') &
-              table.providerPlaceId.equals(place.placeId),
+      if (catalogInput.isNotEmpty) {
+        await session.db.unsafeExecute(
+          catalogBatchUpsertSql,
+          parameters: QueryParameters.named({
+            'places': jsonEncode(catalogInput),
+          }),
           transaction: transaction,
         );
-        final mergedCategories = {
-          ...?existing?.categoryIds,
-          ...place.categoryIds,
-          ...categoryIds,
-        }.toList();
-        final snapshot = place.copyWith(
-          categoryIds: mergedCategories,
-          sourceCheckedAt: now,
-          isStale: false,
+        await session.db.unsafeExecute(
+          catalogEvidenceBatchUpsertSql,
+          parameters: QueryParameters.named({
+            'evidence': jsonEncode(evidenceInput),
+            'evidencePrefix': evidencePrefix,
+          }),
+          transaction: transaction,
         );
-        final row = PoiCatalogRow(
-          id: existing?.id,
-          provider: 'google-web',
-          providerPlaceId: place.placeId,
-          featureId: place.featureId,
-          normalizedName: _normalizeName(place.name),
-          name: place.name,
-          countryCode: countryCode,
-          latitude: place.latitude,
-          longitude: place.longitude,
-          categoryIds: mergedCategories,
-          snapshot: snapshot,
-          calibrationVersion: calibrationVersion,
-          sourceCheckedAt: now,
-          firstSeenAt: existing?.firstSeenAt ?? now,
-          lastSeenAt: now,
-          quarantinedAt: existing?.quarantinedAt,
-          quarantineReason: existing?.quarantineReason,
-        );
-        if (existing == null) {
-          await PoiCatalogRow.db.insertRow(
-            session,
-            row,
-            transaction: transaction,
-          );
-        } else {
-          await PoiCatalogRow.db.updateRow(
-            session,
-            row,
-            transaction: transaction,
-          );
-        }
-        for (final category in categoryIds) {
-          final evidence = await PoiCategoryRow.db.findFirstRow(
-            session,
-            where: (table) =>
-                table.provider.equals('google-web') &
-                table.providerPlaceId.equals(place.placeId) &
-                table.categoryId.equals(category),
-            transaction: transaction,
-          );
-          final categoryRow = PoiCategoryRow(
-            id: evidence?.id,
-            provider: 'google-web',
-            providerPlaceId: place.placeId,
-            categoryId: category,
-            evidenceQuery: category,
-            firstSeenAt: evidence?.firstSeenAt ?? now,
-            lastSeenAt: now,
-          );
-          if (evidence == null) {
-            await PoiCategoryRow.db.insertRow(
-              session,
-              categoryRow,
-              transaction: transaction,
-            );
-          } else {
-            await PoiCategoryRow.db.updateRow(
-              session,
-              categoryRow,
-              transaction: transaction,
-            );
-          }
-        }
       }
-      final existingCoverage = await PoiCoverageRow.db.findFirstRow(
-        session,
-        where: (table) => table.coverageKey.equals(coverageKey),
+      await session.db.unsafeExecute(
+        catalogCoverageUpsertSql,
+        parameters: QueryParameters.named({
+          'coverageKey': coverageKey,
+          'queryKey': queryKey.join(','),
+          'countryCode': countryCode,
+          'latitude': latitude,
+          'longitude': longitude,
+          'radiusMeters': radiusMeters,
+          'calibrationVersion': calibrationVersion,
+          'resultCount': evidencedPlaceCount,
+          'refreshedAt': now,
+          'expiresAt': now.add(Duration(hours: freshHours)),
+        }),
         transaction: transaction,
       );
-      final coverage = PoiCoverageRow(
-        id: existingCoverage?.id,
-        coverageKey: coverageKey,
-        queryKey: queryKey.join(','),
-        language: 'en',
-        countryCode: countryCode,
-        anchorLatitude: latitude,
-        anchorLongitude: longitude,
-        radiusMeters: radiusMeters,
-        calibrationVersion: calibrationVersion,
-        resultCount: places.length,
-        refreshedAt: now,
-        expiresAt: now.add(Duration(hours: freshHours)),
-      );
-      if (existingCoverage == null) {
-        await PoiCoverageRow.db.insertRow(
-          session,
-          coverage,
-          transaction: transaction,
-        );
-      } else {
-        await PoiCoverageRow.db.updateRow(
-          session,
-          coverage,
-          transaction: transaction,
-        );
-      }
     });
   }
 
-  PlaceCandidate _candidateFromRow(PoiCatalogRow row) {
+  PlaceCandidate _candidateFromRow(
+    PoiCatalogRow row, {
+    List<String> evidenceCategoryIds = const [],
+  }) {
     final place = row.snapshot;
     return PlaceCandidate(
       placeId: place.placeId,
@@ -484,7 +500,7 @@ class CatalogPlaceService {
       editorialSummary: place.editorialSummary,
       attributions: place.attributions,
       sourceCheckedAt: row.sourceCheckedAt,
-      evidenceCategoryId: row.categoryIds.firstOrNull,
+      evidenceCategoryIds: evidenceCategoryIds,
     );
   }
 
@@ -540,6 +556,38 @@ class CatalogPlaceService {
             .codeUnits,
       )
       .toString();
+}
+
+String catalogRefreshKey({
+  required String calibrationVersion,
+  required String parentCategoryId,
+  required List<PlaceQuery> queries,
+  required String countryCode,
+  required double latitude,
+  required double longitude,
+  required int radiusMeters,
+  required int deckSize,
+  required int? maximumPriceLevel,
+}) {
+  final request = <String, Object?>{
+    'calibrationVersion': calibrationVersion,
+    'parentCategoryId': parentCategoryId,
+    'queries': [
+      for (final query in queries)
+        {
+          'categoryId': query.categoryId,
+          'query': query.query,
+          'arabicFallbackQuery': query.arabicFallbackQuery,
+        },
+    ],
+    'countryCode': countryCode,
+    'latitude': latitude,
+    'longitude': longitude,
+    'radiusMeters': radiusMeters,
+    'deckSize': deckSize,
+    'maximumPriceLevel': maximumPriceLevel,
+  };
+  return sha256.convert(utf8.encode(jsonEncode(request))).toString();
 }
 
 class _CatalogSettings {

@@ -78,6 +78,21 @@ void main() {
     expect(source.queries, hasLength(3));
     expect(source.queries, isNot(contains('Thai restaurants')));
   });
+
+  test('records the specific query category even for a bare source', () async {
+    final deck = await _service(_BarePlaceSource()).buildDeck(
+      categoryId: 'restaurant',
+      subcategoryIds: const ['pizza'],
+      latitude: 24.7136,
+      longitude: 46.6753,
+      radiusMeters: 5000,
+      deckSize: 1,
+      countryCode: 'SA',
+    );
+
+    expect(deck.single.categoryIds, contains('pizza'));
+    expect(deck.single.categoryIds, isNot(contains('sushi')));
+  });
 }
 
 PlaceSearchService _service(PlaceSource source) =>
@@ -116,8 +131,30 @@ class _FakePlaceSource implements PlaceSource {
         latitude: latitude,
         longitude: longitude,
         sourceCheckedAt: DateTime.utc(2026, 9),
-        evidenceCategoryId: categoryId,
+        evidenceCategoryIds: [categoryId],
       ),
     ];
   }
+}
+
+class _BarePlaceSource implements PlaceSource {
+  @override
+  Future<List<PlaceCandidate>> search({
+    required String query,
+    required String categoryId,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int desiredCount,
+    required String language,
+    required String countryCode,
+  }) async => [
+    PlaceCandidate(
+      placeId: 'bare',
+      name: 'Bare source place',
+      latitude: latitude,
+      longitude: longitude,
+      sourceCheckedAt: DateTime.utc(2026, 9),
+    ),
+  ];
 }

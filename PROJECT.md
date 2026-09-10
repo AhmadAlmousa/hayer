@@ -550,12 +550,21 @@ Exit: onboarding cannot be exhausted through the shared proxy identity;
 privileged ceremonies/revocation reject replay; mutations are atomic/audited;
 privacy and provider assumptions have accountable acceptance evidence.
 
-#### M7-C — Catalog and upstream correctness `[ ]`
+#### M7-C — Catalog and upstream correctness `[~]`
 
-- [ ] Fix F05/F06/F07 as one persistence/provenance contract: batch atomic
+- [~] Fix F05/F06/F07 as one persistence/provenance contract: batch atomic
   upserts, retain query-specific category evidence, coalesce only equivalent
   searches, and apply each caller's exact radius/price/category policy before
-  its deck is selected.
+  its deck is selected. Catalog, category-evidence, and coverage writes are now
+  three ordered parameterized upserts in one transaction, preserving
+  first-seen and quarantine state. Evidence is per observed query plus its
+  validated parent and carries a calibration-scoped `hayer-v2` marker, so
+  legacy contaminated evidence is ignored and rebuilt on refresh. Cached SQL
+  applies current evidence, price, closure, radius, and deterministic ranking
+  before `LIMIT 500`; final policy selection still rechecks the exact caller.
+  Refresh sharing now requires an exact request key. Unit/static verification
+  passes; three PostGIS concurrency/provenance/dense-cache cases compile but
+  cannot run on this host because Docker is unavailable.
 - [ ] Fix F08/F09 with bounded cancellation-aware provider admission, request/
   byte/time/concurrency ceilings, and one shared geocoder cache/rate budget.
 - [ ] Fix F10/F21 by separating core readiness from optional source canaries
@@ -799,6 +808,33 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-10: implemented the F05/F06/F07 catalog contract. The former
+  per-place/per-category read-then-write loop is replaced by ordered JSON batch
+  `INSERT ... ON CONFLICT` operations for catalog rows, query evidence, and
+  coverage inside one transaction. Conflict merges keep the earliest
+  `firstSeenAt`, preserve quarantine fields, accept only newer dynamic
+  snapshots, and prevent an older coverage refresh replacing a newer one.
+  Search candidates retain every category query that actually observed them;
+  persistence adds only those categories and validated parent relationships.
+  Calibration-scoped `hayer-v2` evidence makes legacy broadened rows ineligible
+  for cache selection until a normal refresh rebuilds them, without touching
+  immutable session decks. Cached PostGIS queries now apply current evidence,
+  price, closures, radius, and review/rating/distance/ID ordering before the
+  500-row bound, then reapply the caller's exact policy in Dart. Refreshes
+  coalesce only when calibration, resolved queries, exact coordinates, radius,
+  price, and deck size all match. Focused regressions cover evidence union,
+  round-robin deduplication, exact keys, and SQL/upsert structure. Three
+  real-PostGIS cases cover overlapping refreshes with shared provider IDs,
+  first-seen/quarantine preservation, disjoint/union/subsequent cached cuisine
+  requests, and a dense 508-row category/price/radius fixture; they analyze but
+  cannot execute because this host has no Docker command or local Postgres
+  server. Pinned full preflight passes generation/formatting, fatal-info
+  analysis, 118 server tests, 123 app tests, nine admin tests, and repository
+  checks. Signed `0.2.1+7` and its alias are 104,876,403 bytes at SHA-256
+  `34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+  both manifests, package/version metadata, and APK Signature Scheme v2
+  verify. A containerized PostGIS run plus representative `EXPLAIN` remains
+  required before this checkpoint is marked verified.
 - 2026-09-10: implemented F14's revocable privileged sessions without adding a
   second token table. After normal JWT signature/expiry validation, admin and
   enrollment access tokens must still reference their Serverpod refresh-token

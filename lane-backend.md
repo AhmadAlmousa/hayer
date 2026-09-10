@@ -20,10 +20,47 @@ Last updated: 2026-09-10
 - F13 and F30 are complete. F14's session/enrollment revocation and F20's
   atomic admin-mutation implementations are complete, but their Postgres
   concurrency/replay cases await Docker.
+- F05/F06/F07's batched persistence, calibration-scoped category provenance,
+  exact refresh coalescing, and selective deterministic cache query are
+  implemented. Their PostGIS concurrency/dense-cache cases await Docker.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is ready for client integration.
 
 ## Checkpoints
+
+### F05/F06/F07 catalog contract — implemented (2026-09-10)
+
+One live result batch now reaches the database through three ordered,
+parameterized `INSERT ... ON CONFLICT` statements—catalog, category evidence,
+and coverage—inside one transaction. There are no per-place or per-category
+existence reads. Conflict merges preserve `firstSeenAt`, quarantine timestamp/
+reason, and the newest dynamic snapshot/coverage values. Stable ordering of
+provider/category keys reduces overlapping-refresh deadlock risk.
+
+Each candidate carries all query categories that actually observed it. The
+catalog stores those observations plus the validated parent category, while
+coverage retains the full requested query set. Evidence is marked with both
+the `hayer-v2` contract and active calibration version; legacy broadened rows
+remain stored for auditability but no longer satisfy cache reads, and ordinary
+refreshes progressively rebuild clean evidence. Immutable session snapshots
+are unchanged.
+
+Cache SQL now filters by current evidence, price, closure state, freshness, and
+radius before a deterministic review/rating/distance/ID `LIMIT 500`. Dart then
+reapplies the exact caller policy and balanced category selection. Shared live
+refresh results require exact calibration, resolved query order, coordinates,
+radius, price, and deck-size identity, eliminating rounded-anchor leakage.
+
+Pinned full preflight passes 118 server tests, 123 app tests, nine admin tests,
+generation/formatting, all fatal-info analyses, and repository checks. Three
+real-PostGIS cases cover overlapping provider IDs, preservation of moderation/
+first-seen metadata, disjoint and union cuisine cache behavior, and a dense
+508-row category/price/radius fixture. They compile but cannot execute because
+this host has no Docker command or local Postgres server. Representative
+`EXPLAIN` evidence is also pending. The signed `0.2.1+7` APK and alias remain
+104,876,403 bytes at SHA-256
+`34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+both manifests, package/version metadata, and APK Signature Scheme v2 verify.
 
 ### F20 atomic admin mutations — implemented (2026-09-10)
 

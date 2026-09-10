@@ -24,8 +24,9 @@ void main() {
     rating: rating,
     priceLevel: price,
     statusText: status,
+    categoryIds: [category],
     sourceCheckedAt: checkedAt,
-    evidenceCategoryId: category,
+    evidenceCategoryIds: [category],
   );
 
   test('applies radius, closure, price and stable ranking', () {
@@ -67,6 +68,24 @@ void main() {
     );
 
     expect(selected.map((item) => item.placeId), ['p1', 's1', 'p2', 's2']);
+  });
+
+  test('retains all observed evidence without selecting a place twice', () {
+    final selected = policy.select(
+      candidates: [
+        place('both', reviews: 100, category: 'pizza'),
+        place('both', reviews: 100, category: 'sushi'),
+        place('pizza', reviews: 50, category: 'pizza'),
+        place('sushi', reviews: 40, category: 'sushi'),
+      ],
+      anchorLatitude: 24.7136,
+      anchorLongitude: 46.6753,
+      radiusMeters: 3000,
+      deckSize: 4,
+    );
+
+    expect(selected.map((item) => item.placeId), ['both', 'pizza', 'sushi']);
+    expect(selected.first.categoryIds, containsAll(['pizza', 'sushi']));
   });
 
   test('hides dynamic fields when serving a stale snapshot', () {

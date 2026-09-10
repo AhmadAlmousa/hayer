@@ -172,7 +172,7 @@ class GoogleWebPlaceSource implements PlaceSource {
         .map(
           (place) => place.copyWith(
             categoryIds: {...place.categoryIds, categoryId}.toList(),
-            evidenceCategoryId: categoryId,
+            evidenceCategoryIds: [categoryId],
           ),
         )
         .toList(growable: false);

@@ -33,13 +33,33 @@ class PlaceSearchPolicy {
       final scored = _ScoredCandidate(place, distance);
       final key = _dedupeKey(place);
       final previous = deduped[key];
-      if (previous == null || _rank(scored, previous) < 0) {
+      if (previous == null) {
         deduped[key] = scored;
+      } else {
+        final preferred = _rank(scored, previous) < 0 ? scored : previous;
+        final mergedCategories = {
+          ...previous.place.categoryIds,
+          ...scored.place.categoryIds,
+        }.toList()..sort();
+        final mergedEvidence = {
+          ...previous.place.evidenceCategoryIds,
+          ...scored.place.evidenceCategoryIds,
+        }.toList()..sort();
+        deduped[key] = _ScoredCandidate(
+          preferred.place.copyWith(
+            categoryIds: mergedCategories,
+            evidenceCategoryIds: mergedEvidence,
+          ),
+          preferred.distanceMeters,
+        );
       }
     }
     final grouped = <String, List<_ScoredCandidate>>{};
     for (final scored in deduped.values) {
-      (grouped[scored.place.evidenceCategoryId ?? 'all'] ??= []).add(scored);
+      final evidence = scored.place.evidenceCategoryIds;
+      for (final categoryId in evidence.isEmpty ? const ['all'] : evidence) {
+        (grouped[categoryId] ??= []).add(scored);
+      }
     }
     for (final values in grouped.values) {
       values.sort(_rank);
@@ -59,19 +79,22 @@ class PlaceSearchPolicy {
     }
     final keys = groups.keys.toList()..sort();
     final selected = <_ScoredCandidate>[];
-    var depth = 0;
-    while (selected.length < count) {
-      var added = false;
+    final selectedKeys = <String>{};
+    final maximumDepth = groups.values.fold<int>(
+      0,
+      (maximum, items) => math.max(maximum, items.length),
+    );
+    for (var depth = 0; depth < maximumDepth; depth++) {
       for (final key in keys) {
         final items = groups[key]!;
         if (depth < items.length) {
-          selected.add(items[depth]);
-          added = true;
+          final candidate = items[depth];
+          if (!selectedKeys.add(_dedupeKey(candidate.place))) continue;
+          selected.add(candidate);
           if (selected.length == count) break;
         }
       }
-      if (!added) break;
-      depth++;
+      if (selected.length == count) break;
     }
     return selected;
   }

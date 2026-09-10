@@ -55,6 +55,22 @@ canaries run before the transaction, while publish, rollback, calibration,
 coverage, pruning, and quarantine mutations keep their state and audit outcome
 atomic.
 
+Live catalog refreshes persist one result batch with ordered, parameterized
+upserts for catalog rows, category evidence, and coverage in a single
+transaction. Conflict handling preserves first-seen and quarantine state and
+does not let an older refresh replace newer source or coverage data. Category
+evidence records only the searches that observed each place plus their valid
+parent category. Its calibration-scoped `hayer-v2` marker deliberately makes
+legacy broadened evidence ineligible; normal refreshes progressively rebuild
+clean evidence without rewriting immutable session decks.
+
+Cached deck candidates are narrowed by current category evidence, price,
+closure state, freshness, and radius before the deterministic 500-row database
+bound. The policy layer then rechecks the caller's exact location/radius/price
+constraints and balances every observed requested category. Concurrent live
+searches share results only when the full resolved query and selection request,
+including exact coordinates and deck size, is equivalent.
+
 The production Docker image compiles the server, runtime initializer, and both
 canaries to standalone native executables. Its final Debian stage contains no
 Dart or Flutter SDK. Build it explicitly with

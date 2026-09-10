@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:hayer_server/src/admin/poi_issue_moderation_service.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
+import 'package:hayer_server/src/places/catalog_persistence.dart';
 import 'package:hayer_server/src/storage/catalog_pruner.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
@@ -1388,6 +1389,21 @@ Future<void> _seedRestaurantCatalog(
             snapshot: place,
             calibrationVersion: _calibrationVersion,
             sourceCheckedAt: now,
+            firstSeenAt: now,
+            lastSeenAt: now,
+          ),
+      ],
+    );
+    await PoiCategoryRow.db.insert(
+      session,
+      [
+        for (final place in places)
+          PoiCategoryRow(
+            provider: 'google-web',
+            providerPlaceId: place.placeId,
+            categoryId: 'restaurant',
+            evidenceQuery:
+                '${catalogEvidencePrefix(_calibrationVersion)}query:restaurants',
             firstSeenAt: now,
             lastSeenAt: now,
           ),

@@ -27,7 +27,7 @@ class PlaceCandidate {
     this.editorialSummary,
     this.attributions = const ['Google Maps'],
     required this.sourceCheckedAt,
-    this.evidenceCategoryId,
+    this.evidenceCategoryIds = const [],
   });
 
   final String placeId;
@@ -54,11 +54,11 @@ class PlaceCandidate {
   final String? editorialSummary;
   final List<String> attributions;
   final DateTime sourceCheckedAt;
-  final String? evidenceCategoryId;
+  final List<String> evidenceCategoryIds;
 
   PlaceCandidate copyWith({
     List<String>? categoryIds,
-    String? evidenceCategoryId,
+    List<String>? evidenceCategoryIds,
   }) => PlaceCandidate(
     placeId: placeId,
     featureId: featureId,
@@ -84,6 +84,6 @@ class PlaceCandidate {
     editorialSummary: editorialSummary,
     attributions: attributions,
     sourceCheckedAt: sourceCheckedAt,
-    evidenceCategoryId: evidenceCategoryId ?? this.evidenceCategoryId,
+    evidenceCategoryIds: evidenceCategoryIds ?? this.evidenceCategoryIds,
   );
 }

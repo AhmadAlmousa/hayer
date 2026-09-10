@@ -37,7 +37,7 @@ class PlaceSearchService {
         batch.map(
           (query) async {
             try {
-              return await source.search(
+              final places = await source.search(
                 query: query.query,
                 categoryId: query.categoryId,
                 latitude: latitude,
@@ -47,6 +47,7 @@ class PlaceSearchService {
                 language: 'en',
                 countryCode: countryCode,
               );
+              return _withEvidence(places, query.categoryId);
             } on PlaceSourceException catch (error) {
               sourceFailure ??= error;
               return const <PlaceCandidate>[];
@@ -73,15 +74,18 @@ class PlaceSearchService {
     if (selected.length < deckSize && fallback != null) {
       try {
         candidates.addAll(
-          await source.search(
-            query: fallback,
-            categoryId: resolvedQueries.single.categoryId,
-            latitude: latitude,
-            longitude: longitude,
-            radiusMeters: radiusMeters,
-            desiredCount: deckSize - selected.length,
-            language: 'ar',
-            countryCode: countryCode,
+          _withEvidence(
+            await source.search(
+              query: fallback,
+              categoryId: resolvedQueries.single.categoryId,
+              latitude: latitude,
+              longitude: longitude,
+              radiusMeters: radiusMeters,
+              desiredCount: deckSize - selected.length,
+              language: 'ar',
+              countryCode: countryCode,
+            ),
+            resolvedQueries.single.categoryId,
           ),
         );
         selected = policy.select(
@@ -100,6 +104,20 @@ class PlaceSearchService {
     if (selected.isEmpty && failure != null) throw failure;
     return selected;
   }
+
+  List<PlaceCandidate> _withEvidence(
+    List<PlaceCandidate> places,
+    String categoryId,
+  ) => [
+    for (final place in places)
+      place.copyWith(
+        categoryIds: {...place.categoryIds, categoryId}.toList(),
+        evidenceCategoryIds: {
+          ...place.evidenceCategoryIds,
+          categoryId,
+        }.toList(),
+      ),
+  ];
 
   Future<List<LocationSuggestion>> suggest({
     required String input,
