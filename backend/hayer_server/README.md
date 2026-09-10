@@ -39,10 +39,13 @@ deployment is defined in `../deploy/`; broader setup and verification status
 are in the repository `README.md` and `PROJECT.md`.
 
 Production configures the Serverpod passkey relying party as
-`hayer.almou.sa`; development/test use `localhost`. Admin endpoints require an
+`hayer.vpn.almou.sa`; development/test use `localhost`. Admin endpoints require an
 authenticated `admin` scope and the gateway's exact-origin marker. The separate
 Basic-Auth enrollment endpoint issues only a short bootstrap flow, and its
-token is revoked immediately after a passkey is registered.
+token is atomically consumed when a passkey is registered. Signed admin and
+enrollment JWTs are also checked against their server-side refresh-token row on
+every request, so logout or enrollment completion invalidates copied access
+tokens immediately. Anonymous consumer JWT validation remains stateless.
 
 The production Docker image compiles the server, runtime initializer, and both
 canaries to standalone native executables. Its final Debian stage contains no

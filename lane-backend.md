@@ -17,12 +17,39 @@ Last updated: 2026-09-10
   regression are present. Docker and physical-device acceptance remain open.
 - F01's signup and method-aware join protections are implemented. Real gateway
   proof and the Cloudflare connector trust decision remain open.
-- F13 and F30 are complete. F14 session/enrollment revocation is the next
-  back-end security checkpoint; F20 atomic admin mutations follows it.
+- F13 and F30 are complete. F14's session/enrollment revocation implementation
+  is complete but its Postgres concurrency/replay cases await Docker; F20
+  atomic admin mutations is the next back-end checkpoint.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is ready for client integration.
 
 ## Checkpoints
+
+### F14 privileged-session revocation — implemented (2026-09-10)
+
+The JWT manager remains compatible with Serverpod's JWT refresh endpoint but
+adds one targeted state lookup after signature/expiry validation whenever an
+access token carries `admin` or `admin-enrollment`. The existing refresh-token
+row is the session record: logout or any token-manager revocation deletes it,
+so a copied privileged access JWT fails on its next authentication check.
+Anonymous consumer JWTs deliberately keep the existing stateless validation
+path.
+
+Passkey registration atomically deletes-and-claims the enrollment refresh row
+inside the same transaction that consumes the challenge and inserts the
+credential. A failed ceremony rolls the claim back; concurrent ceremonies can
+commit only one claim. Successful registration also broadcasts the existing
+revocation notification after commit.
+
+Five focused unit tests pass. Three real-Postgres cases cover copied admin-token
+replay, the stateless anonymous path, claim rollback, and concurrent one-time
+consumption. They compile with fatal-info analysis, but cannot execute because
+this host has no Docker command. Pinned full preflight passes 111 server tests,
+123 app tests, nine admin tests, generation/formatting, all analyses, and
+repository checks. The signed `0.2.1+7` APK and alias remain 104,876,403 bytes
+at SHA-256
+`34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+both manifests, package/version metadata, and APK Signature Scheme v2 verify.
 
 ### F13 passkey UP/UV enforcement — complete (2026-09-10)
 

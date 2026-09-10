@@ -8,6 +8,7 @@ import '../admin/admin_gateway_access.dart';
 import '../generated/protocol.dart';
 import 'admin_enrollment_policy.dart';
 import 'passkey_request_verifier.dart';
+import 'privileged_session_registry.dart';
 
 class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
   @override
@@ -55,18 +56,44 @@ class PasskeyIdpEndpoint extends PasskeyIdpBaseEndpoint {
       );
     }
 
-    await super.register(
-      session,
-      registrationRequest: registrationRequest,
+    await session.db.transaction(
+      (transaction) async {
+        final consumed = await PrivilegedSessionRegistry.consumeEnrollment(
+          session,
+          authentication,
+          transaction: transaction,
+        );
+        if (!consumed) {
+          throw ApiException(
+            code: 'unauthorized',
+            message: 'The admin enrollment session has already been used.',
+          );
+        }
+        await passkeyIdp.register(
+          session,
+          authUserId: authentication.authUserId,
+          request: registrationRequest,
+          transaction: transaction,
+        );
+      },
     );
 
-    // The Basic-Auth bootstrap credential is deliberately single-use. The
-    // newly registered passkey must perform a fresh login to receive admin
-    // scope.
-    await AuthServices.instance.tokenManager.revokeToken(
-      session,
-      tokenId: authentication.authId,
-    );
+    // Registration and refresh-token revocation commit together. This
+    // notification only disconnects already-open authenticated streams; new
+    // HTTP requests are rejected by the stateful privileged-token check.
+    try {
+      await session.messages.authenticationRevoked(
+        authentication.authUserId.uuid,
+        RevokedAuthenticationAuthId(authId: authentication.authId),
+      );
+    } catch (error, stackTrace) {
+      session.log(
+        'Could not broadcast completed admin enrollment revocation.',
+        level: LogLevel.warning,
+        exception: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   @override

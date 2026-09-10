@@ -8,6 +8,7 @@ import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+import 'src/auth/revocable_jwt_token_manager.dart';
 import 'src/admin/refresh_job_service.dart';
 import 'src/analytics/analytics_aggregation_service.dart';
 import 'src/places/vela_calibration_sync.dart';
@@ -28,7 +29,7 @@ void run(List<String> args) async {
   pod.initializeAuthServices(
     tokenManagerBuilders: [
       // Use JWT for authentication keys towards the server.
-      JwtConfigFromPasswords(),
+      RevocableJwtTokenManagerBuilder(JwtConfigFromPasswords()),
     ],
     identityProviderBuilders: [
       // The framework's own quota keys on the TCP peer, which behind the

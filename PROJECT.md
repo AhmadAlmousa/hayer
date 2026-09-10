@@ -529,9 +529,11 @@ meaning across Android and web.
     minimum authenticator structure, and both UP and UV while retaining the
     existing origin, challenge, credential, and signature checks. Zero
     signature counters remain valid for synced passkeys.
-  - [ ] F14: make issued admin sessions reject new HTTP requests after logout
+  - [~] F14: make issued admin sessions reject new HTTP requests after logout
     or administrative revocation, and prove enrollment credentials are
-    single-use under replay/concurrency.
+    single-use under replay/concurrency. The targeted stateful validator and
+    atomic enrollment claim are implemented; their Postgres integration cases
+    compile but cannot run on this host because Docker is unavailable.
   - [ ] F20: make compare-and-swap admin mutations and their audit records one
     atomic transaction.
   - [x] F30: require preprovisioned first-start recovery credentials and keep
@@ -793,6 +795,24 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-10: implemented F14's revocable privileged sessions without adding a
+  second token table. After normal JWT signature/expiry validation, admin and
+  enrollment access tokens must still reference their Serverpod refresh-token
+  row; logout/revoke deletes that row, so a copied access JWT fails the next
+  authentication check. The validator remains a `JwtTokenManager` subtype for
+  refresh-endpoint compatibility and skips the database lookup for anonymous
+  consumer JWTs. Passkey registration now deletes-and-claims the enrollment
+  row in the same transaction as challenge consumption and credential insert;
+  failure rolls everything back and concurrent attempts can commit only once.
+  Five focused unit tests pass. Three real-Postgres regressions cover copied
+  admin-token replay, the intentionally stateless consumer path, rollback, and
+  concurrent enrollment claims; they compile under fatal-info analysis but
+  cannot execute because this host has no Docker command. Pinned full preflight
+  passes 111 server, 123 app, and nine admin tests plus all analyses/checks.
+  Signed `0.2.1+7` and its alias remain 104,876,403 bytes at SHA-256
+  `34091e6b6eac5a2663e9cd5b2c9b1ffbc5ae879966710afc29aa4a14ec9276d2`;
+  both manifests, package/version metadata, and APK Signature Scheme v2
+  verify. Containerized concurrency and fresh HTTP replay proof remain open.
 - 2026-09-10: closed F13's server enforcement. Registration parses the CBOR
   attestation authenticator data before the existing Serverpod ceremony, and
   login validates the signed authenticator data before the existing challenge

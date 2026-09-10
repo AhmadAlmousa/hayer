@@ -148,8 +148,12 @@ global variable or persistent enrollment setting is required.
 
 `runtime-init` rewrites the gateway's fail-closed enrollment policy on every
 recreation. Serverpod also checks the flag before creating an enrollment user
-or accepting registration, and limits an operator to six starts per hour.
-Retain the Basic credentials offline and rotate them if exposed.
+or accepting registration, limits an operator to six starts per hour, and
+atomically consumes the enrollment session with successful registration. Admin
+and enrollment access JWTs require a live server-side refresh-token row on each
+request; logout and enrollment completion therefore reject copied access JWTs
+without waiting for their expiry. Retain the Basic credentials offline and
+rotate them if exposed.
 
 Docker caches the web build separately from backend compilation. Backend-only
 changes therefore reuse the Flutter layer unless the generated client changed.
