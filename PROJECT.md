@@ -874,6 +874,19 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-10: aligned the toolchain resolver in `044617b`, closing the
+  front-end lane's standing report. `hayer_resolve_dart` now prefers an explicit
+  `DART_BIN`, then the resolved Flutter's sibling `dart`, then `PATH`, then the
+  home fallback, so a pinned `FLUTTER_BIN` no longer silently pairs Flutter
+  3.47.2 with system Dart 3.12.2 and a formatter that fails a clean tree. An
+  invalid `DART_BIN` still fails closed with its reason. `scripts/test-resolve-
+  toolchain.sh` covers all four precedence branches and the fail-closed case
+  against temporary executables, and `scripts/preflight.sh` runs it before
+  anything else. Verified independently from the primary worktree: with
+  `DART_BIN` unset the resolver returns the pinned 3.13.2 Dart, and full
+  preflight exits zero, formatting 245 files unchanged and passing 118 server,
+  138 app, and 51 admin tests. No signed build was produced for this commit
+  because it changes no shipped code; the merge artifact above still stands.
 - 2026-09-10: merged the front-end lane into `main`. Codex's seven post-
   `4c9520a` back-end commits and Claude's nine front-end commits converge with
   no source-file contention: fifty and forty-four files changed respectively,
@@ -892,11 +905,10 @@ measurements and rollback paths.
   advances. Pinned full preflight passes generation, formatting of 245 files,
   all fatal-info analyses, 118 server tests, 138 app tests, 51 admin tests,
   shell checks, and diff checks; the app and admin counts rise from 123 and nine
-  because the lane's tests came across. The toolchain resolver now prefers the
-  resolved Flutter's sibling `dart` over `PATH`, while an explicit `DART_BIN`
-  still has highest priority and fails closed when invalid. Its regression test
-  covers explicit, sibling, and `PATH` resolution, so `FLUTTER_BIN` alone keeps
-  the pinned Flutter and Dart versions coherent. Signed
+  because the lane's tests came across. This run required `DART_BIN` exported
+  alongside `FLUTTER_BIN`, because `scripts/resolve-toolchain.sh` then resolved
+  `dart` from `PATH` independently of the Flutter it had just resolved; the
+  resolver was corrected afterwards in `044617b`, recorded below. Signed
   `0.2.1+7` and its alias are 105,122,663 bytes at SHA-256
   `431f0d8500c48aa1cab37795beb7ad828f02f095bf64ce4ba7da7aefaaf4bd7b`,
   superseding the smaller pre-merge artifact; package `sa.almou.hayer`,

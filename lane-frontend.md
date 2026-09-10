@@ -389,14 +389,16 @@ belong with F02/F03/F04 under M7-A, and are not started here.
 it just resolved. On this host that silently pairs pinned Flutter 3.47.2 with
 system Dart 3.12.2, and the 3.12 formatter reports 15 committed files as
 unformatted, so `scripts/preflight.sh` fails at `--set-exit-if-changed` on a
-clean tree. Exporting `DART_BIN` alongside `FLUTTER_BIN` is the workaround. The
+clean tree. Exporting `DART_BIN` alongside `FLUTTER_BIN` was the workaround. The
 resolved Flutter's own `dart` should take precedence over `PATH`. `scripts/` is
-the back-end lane's, so this is reported rather than fixed here. Still
-reproducing on 2026-09-10: the merge preflight failed this way twice before
-both variables were exported, the second time reporting 18 files.
+the back-end lane's, so this was reported rather than fixed here. It reproduced
+twice during the 2026-09-10 merge preflight, the second time reporting 18 files.
 
-Resolved by the back-end lane on 2026-09-10: the Flutter sibling now precedes
-`PATH`, with explicit override, fallback, and invalid-override regression cases.
+Resolved by the back-end lane on 2026-09-10 in `044617b`: the Flutter sibling
+now precedes `PATH`, with explicit-override, fallback, and invalid-override
+regression cases wired into preflight. Re-verified from this lane with `DART_BIN`
+unset — the resolver returns the pinned 3.13.2 Dart and preflight exits zero, so
+`FLUTTER_BIN` alone is now sufficient.
 
 ### Release keystore path is stale
 
@@ -418,12 +420,11 @@ primary worktree already has:
 - `cp <primary>/app/android/key.properties app/android/`, then check its
   `storeFile` against the stale-path note above.
 - `build/` is ignored, so the pinned toolchain exists only in the primary
-  worktree. Export both variables, not just the first — `FLUTTER_BIN` alone
-  still resolves system Dart:
+  worktree. Since `044617b` this one variable is enough, because the resolver
+  takes `dart` from the Flutter it resolved:
 
 ```
 export FLUTTER_BIN=/mnt/unraid/places_swiper/hayer/build/toolchains/flutter-3.47.2/bin/flutter
-export DART_BIN=/mnt/unraid/places_swiper/hayer/build/toolchains/flutter-3.47.2/bin/dart
 ```
 
 Release APKs and their `.sha256` files under `backend/deploy/releases/` are
