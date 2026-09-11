@@ -9,7 +9,7 @@ the primary worktree on `main`; Claude owns front-end behavior in
 acceptance gates. Detailed back-end checkpoints and front-end handoffs live
 here so the two lanes do not repeatedly edit the same evidence paragraphs.
 
-Last updated: 2026-09-10
+Last updated: 2026-09-11
 
 ## Current state
 
@@ -27,6 +27,87 @@ Last updated: 2026-09-10
   additive deck-free server progress contract is ready for client integration.
 
 ## Checkpoints
+
+### Integration suite ran against real PostGIS for the first time (2026-09-11)
+
+`scripts/test-integration-remote.sh` (committed `d150038`) points the suite at
+any reachable disposable Postgres instead of only the unavailable local Docker
+Compose stack, closing the "await Docker" gap on the F05/F06/F07, F14, and F20
+checkpoints above. Run twice against a throwaway `postgis/postgis:16-3.5-alpine`
+container for reproducibility: 32/36 passing, four deterministic (non-flaky)
+failures.
+
+The `WARNING: The database does not match the target database` line every
+`setUpAll` prints is not the cause of any of these — `psql \d hayer_poi_catalog`
+against the same container after the run confirms `location`, the GIST/GIN/trgm
+indexes, and the FK all exist exactly as the migrations define them. Whatever
+comparison produces that warning is a false positive (a generated-column
+comparison quirk is the likely cause) and can be ignored for now.
+
+One failure was a test-config gap, not a product bug, and is already fixed:
+`catalog_persistence_contract_test.dart` (F05/F06/F07's "overlapping refreshes"
+case) races two real concurrent `buildDeck()` calls but, unlike
+`admin_mutation_atomicity_test.dart`, `admin_auth_revocation_test.dart`, and
+`hayer_session_endpoint_test.dart`, never set `rollbackDatabase:
+RollbackDatabase.disabled` on `withServerpod`. The harness's single shared
+rollback transaction can't run two sessions' queries concurrently, so it threw
+`Concurrent database calls outside an already active transaction are not
+supported...` instead of exercising the real race. Added the same
+`rollbackDatabase: RollbackDatabase.disabled` the other three files use.
+
+With that fixed, the test now runs the real race and fails on an actual
+assertion instead: the `sushi-only` candidate never lands in
+`hayer_poi_catalog` when two `buildDeck()` calls overlap
+(`catalog_persistence_contract_test.dart:106`, expected
+`['pizza-only', 'shared', 'sushi-only']`, got `['pizza-only', 'shared']`). This
+is a genuine concurrency bug in the catalog upsert path this test exists to
+catch — one candidate's insert is lost under overlap. Unstarted.
+
+Three more failures, all reproduced identically across both runs:
+
+- **F20** — `admin_mutation_atomicity_test.dart`, "editing invalidates an
+  in-flight validation revision": `TaxonomyService.recordValidation`
+  (`taxonomy_service.dart:184`) reads `_draft(session, version, transaction:
+  transaction)` and compares `row.revision != revision`, which on inspection
+  should throw `ApiException(code: 'conflict')` when the draft was edited to
+  revision 2 after a stale revision-1 validation was in flight — but the call
+  resolves without throwing, then an unrelated `ApiException(code: not_found,
+  "Taxonomy draft not found.")` from `_draft` (`taxonomy_service.dart:342`)
+  surfaces asynchronously, attributed by the reporter to the next test. Read
+  through `recordValidation`/`_draft`/`saveTaxonomyDraft`
+  (`admin_endpoint.dart:148`) without finding the defect — the conflict check
+  looks correct in isolation, so the bug is likely in how the two transactions
+  interleave (a visibility/isolation issue) rather than in the check itself.
+  Needs someone who can step through it live.
+- **F20** — `admin_mutation_atomicity_test.dart`, "two cache policy saves of
+  one version commit exactly once": `type 'String' is not a subtype of type
+  'int' in type cast` in generated `cache_policy.dart:57`
+  (`CachePolicy.fromJson`), while `AdminAuditRow.fromJson` decodes its
+  `afterData`/`beforeData` field. Root cause traced: `AdminEndpoint.updatePolicy`
+  (`admin_endpoint.dart:873`) builds that audit snapshot as
+  `_toPolicy(saved).toJson().map((key, value) => MapEntry(key, '$value'))` —
+  correctly matching `AdminAuditRow`'s declared `Map<String, String>?` schema
+  (`admin_audit_row.spy.yaml:13-14`). But because the stringified map's key set
+  happens to exactly match `CachePolicy`'s field names, Serverpod's generated
+  `Protocol.deserialize` on the read-back path routes it through
+  `deserializeByClassName` into `CachePolicy.fromJson` instead of treating it
+  as a plain string map, and the cast fails on the now-stringified `version`
+  field. Looks like a Serverpod codegen/runtime ambiguity rather than an
+  application bug — the app code matches its own declared schema. Workaround
+  candidate: prefix the diff keys (e.g. `before_version`) so they no longer
+  collide with a known model's field set, but haven't verified that actually
+  avoids the dispatch.
+- **F14** — `hayer_session_endpoint_test.dart`, "catalog pruning preserves
+  places in immutable decks": `CatalogPruner.prune` returns `0` where the test
+  expects `greaterThan(0)` (`hayer_session_endpoint_test.dart:567`). Not yet
+  root-caused — most likely the test's `PlaceSource` fixture only returns
+  exactly enough candidates to fill the deck, so there's no non-deck candidate
+  left in `hayer_poi_catalog` for the prune's `NOT EXISTS` check to remove.
+  Haven't confirmed against the fixture.
+
+Claude ran this investigation from the front-end worktree at the user's
+explicit request; the remaining three findings are real backend business-logic
+bugs and are handed off here rather than fixed in place.
 
 ### F05/F06/F07 catalog contract — implemented (2026-09-10)
 

@@ -324,6 +324,7 @@ void main() {
         },
       );
     },
+    rollbackDatabase: RollbackDatabase.disabled,
   );
 }
 
