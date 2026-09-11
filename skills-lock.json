@@ -127,12 +127,6 @@
       "skillPath": "flutter-improve-design/SKILL.md",
       "computedHash": "f952ffe353f3c86e1f5f36b1f1fe5020c297c4aa7fc6867fde3754c167e3c0c7"
     },
-    "flutter-setup-declarative-routing": {
-      "source": "flutter/agent-plugins",
-      "sourceType": "github",
-      "skillPath": "skills/flutter-setup-declarative-routing/SKILL.md",
-      "computedHash": "2341440c8bce0f176663695eaa71f9f7d7c967772a1dcd0d833c9778504b227e"
-    },
     "flutter-setup-localization": {
       "source": "flutter/agent-plugins",
       "sourceType": "github",
@@ -144,12 +138,6 @@
       "sourceType": "github",
       "skillPath": "skills/flutter-use-http-package/SKILL.md",
       "computedHash": "17efcf4da9933afaf9c1d41940bd6b92f1ae73dcae4bf6c59cfe24f7e487ee9f"
-    },
-    "php-pro": {
-      "source": "jeffallan/claude-skills",
-      "sourceType": "github",
-      "skillPath": "skills/php-pro/SKILL.md",
-      "computedHash": "c163f6d5d26ddbf4a4d79e8dc95d3b41e447f1659486cf0aae8c070d950a9d86"
     }
   }
 }
