@@ -1,6 +1,6 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-10
+Last updated: 2026-09-11
 
 Status: audit remediation active; invited-beta release remains blocked
 
@@ -580,17 +580,20 @@ meaning across Android and web.
     minimum authenticator structure, and both UP and UV while retaining the
     existing origin, challenge, credential, and signature checks. Zero
     signature counters remain valid for synced passkeys.
-  - [~] F14: make issued admin sessions reject new HTTP requests after logout
+  - [x] F14: make issued admin sessions reject new HTTP requests after logout
     or administrative revocation, and prove enrollment credentials are
     single-use under replay/concurrency. The targeted stateful validator and
-    atomic enrollment claim are implemented; their Postgres integration cases
-    compile but cannot run on this host because Docker is unavailable.
-  - [~] F20: make compare-and-swap admin mutations and their audit records one
+    atomic enrollment claim are implemented, and their Postgres integration
+    cases now pass against real PostGIS via
+    `scripts/test-integration-remote.sh`.
+  - [x] F20: make compare-and-swap admin mutations and their audit records one
     atomic transaction. Taxonomy revision/status checks and cache-policy
     version checks now run under row locks, validation is rebound to the exact
     revision after live canaries, and every audited admin mutation writes its
-    audit row in the same transaction. Five Postgres concurrency/rollback
-    cases compile but cannot run on this host because Docker is unavailable.
+    audit row in the same transaction. All five Postgres concurrency/rollback
+    cases now pass; an audit diff no longer carries a model's `__className__`
+    marker, which had made the stored diff deserialize back into `CachePolicy`.
+    See [`lane-backend.md`](lane-backend.md).
   - [x] F30: require preprovisioned first-start recovery credentials and keep
     them out of normal runtime output.
 - [~] Close F29/F35 with an in-product identity/location lifecycle explanation,
@@ -619,9 +622,12 @@ privacy and provider assumptions have accountable acceptance evidence.
   legacy contaminated evidence is ignored and rebuilt on refresh. Cached SQL
   applies current evidence, price, closure, radius, and deterministic ranking
   before `LIMIT 500`; final policy selection still rechecks the exact caller.
-  Refresh sharing now requires an exact request key. Unit/static verification
-  passes; three PostGIS concurrency/provenance/dense-cache cases compile but
-  cannot run on this host because Docker is unavailable.
+  Refresh sharing now requires an exact request key. The three PostGIS
+  concurrency/provenance/dense-cache cases now pass. They exposed a real defect,
+  since fixed: a refresh persisted only the caller's selected deck, so every
+  place the provider returned beyond one caller's `deckSize` or price ceiling
+  was dropped from the shared catalog instead of being remembered. See
+  [`lane-backend.md`](lane-backend.md).
 - [ ] Fix F08/F09 with bounded cancellation-aware provider admission, request/
   byte/time/concurrency ceilings, and one shared geocoder cache/rate budget.
 - [ ] Fix F10/F21 by separating core readiness from optional source canaries
@@ -1577,3 +1583,22 @@ measurements and rollback paths.
   so the bound has to be wide enough that the resulting height still covers
   the box; the client assumes photos are no wider than 16:9, which holds for
   everything the extractor's `=w1600` request returns.
+
+- 2026-09-11: A live refresh now persists every place the provider returned,
+  not the deck the caller selected. Persisting `policy.select`'s output meant
+  the shared catalog inherited one caller's `deckSize` and price ceiling, so
+  candidates the extractor had already paid to fetch were discarded and the
+  next request re-fetched them. `PlaceSearchService` returns the deck and the
+  observation set separately; the deck still honours the caller's filter while
+  the catalog keeps everything eligible for the area, and cache reads re-apply
+  price and policy against the stored rows.
+- 2026-09-11: Audit diffs must not carry Serverpod's `__className__` marker.
+  Flattening a model with `toJson()` into `AdminAuditRow`'s free-form
+  `Map<String, String>` copied the marker, and `Protocol.deserialize`
+  dispatches on exactly that key, so reading the row back tried to rebuild the
+  model from stringified fields and threw. Audit payloads are built as plain
+  maps, not as serialized models.
+- 2026-09-11: Backend lane ownership moved from Codex to Claude while Codex is
+  at its usage limit. The worktree split in "Agent worktrees and role split" no
+  longer separates the two agents; backend work continues on `main` in the
+  primary worktree and keeps logging to `lane-backend.md`.

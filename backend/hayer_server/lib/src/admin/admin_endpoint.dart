@@ -877,14 +877,8 @@ class AdminEndpoint extends Endpoint {
         targetType: 'cache_policy',
         targetId: 'default',
         reason: reason,
-        before: before == null
-            ? null
-            : _toPolicy(
-                before,
-              ).toJson().map((key, value) => MapEntry(key, '$value')),
-        after: _toPolicy(
-          saved,
-        ).toJson().map((key, value) => MapEntry(key, '$value')),
+        before: before == null ? null : _policyAuditData(_toPolicy(before)),
+        after: _policyAuditData(_toPolicy(saved)),
         transaction: transaction,
       );
       return _toPolicy(saved);
@@ -1605,6 +1599,16 @@ WHERE "metricName" = @name
       );
     }
   }
+
+  /// Flattens a policy into the audit row's free-form string map.
+  ///
+  /// Serverpod stamps `__className__` into every model's JSON. Copying it into
+  /// the diff makes the protocol deserialize the stored map back into
+  /// `CachePolicy` on read, which then fails casting the stringified fields.
+  static Map<String, String> _policyAuditData(CachePolicy policy) =>
+      (policy.toJson()..remove('__className__')).map(
+        (key, value) => MapEntry(key, '$value'),
+      );
 
   Future<void> _audit(
     Session session, {

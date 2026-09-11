@@ -1,9 +1,9 @@
 # Back-end lane log
 
 Working notes for the back-end lane: `backend/`, deployment, server contracts,
-generated clients, and repository release tooling. Codex works this lane from
-the primary worktree on `main`; Claude owns front-end behavior in
-`.claude/worktrees/claude-lane`.
+generated clients, and repository release tooling. This lane is worked from the
+primary worktree on `main`. Codex held it through 2026-09-10; Claude took it
+over on 2026-09-11 and continues this log rather than starting a new one.
 
 `PROJECT.md` remains authoritative for shared decisions, milestone state, and
 acceptance gates. Detailed back-end checkpoints and front-end handoffs live
@@ -18,15 +18,124 @@ Last updated: 2026-09-11
 - F01's signup and method-aware join protections are implemented. Real gateway
   proof and the Cloudflare connector trust decision remain open.
 - F13 and F30 are complete. F14's session/enrollment revocation and F20's
-  atomic admin-mutation implementations are complete, but their Postgres
-  concurrency/replay cases await Docker.
+  atomic admin-mutation implementations are complete and their Postgres
+  concurrency/replay cases now execute and pass against real PostGIS.
 - F05/F06/F07's batched persistence, calibration-scoped category provenance,
   exact refresh coalescing, and selective deterministic cache query are
-  implemented. Their PostGIS concurrency/dense-cache cases await Docker.
+  implemented, and their PostGIS concurrency/dense-cache cases now pass. The
+  catalog-truncation defect the first real run exposed is fixed.
+- The integration suite is fully green: 36/36 against real PostGIS, twice.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is ready for client integration.
 
 ## Checkpoints
+
+### The first real run's four failures are closed (2026-09-11)
+
+All four defects from the 2026-09-11 integration run are resolved and
+`scripts/test-integration-remote.sh` is now 36/36, reproduced across two
+consecutive runs. Only one was a product bug; the other three were a test
+fixture, a test matcher, and an application serialization mistake. Two of the
+three earlier diagnoses recorded in the checkpoint below turned out to be
+wrong, so they are corrected here rather than edited in place.
+
+**F05/F06/F07 — the catalog dropped places the provider actually returned.**
+This was *not* a concurrency bug. `CatalogPlaceService._refresh`
+(`catalog_place_service.dart:227`) persisted `live`, the value
+`PlaceSearchService.buildDeck` returns, and that method returns `selected` —
+the deck after `policy.select` applied the caller's price ceiling and truncated
+to `deckSize` — while discarding the `candidates` list the source actually
+produced. Every place the provider returned beyond one caller's deck size was
+silently thrown away instead of entering the shared catalog.
+
+The overlapping-refresh test only looked like a race because the second
+`buildDeck()` asked for `deckSize: 1` against two candidates, so `sushi-only`
+lost the ranking to `shared` (100 reviews versus 50) and never reached
+`_persist`. A single sequential refresh with `deckSize: 1` reproduces it with no
+concurrency at all — confirmed with a temporary probe before changing anything,
+which printed `deck=[shared] catalog=[shared]`.
+
+The fix adds `PlaceSearchService.buildDeckWithObservations`, which returns both
+the caller's deck and every eligible place the search saw; `buildDeck` now
+delegates to it so the canary, the refresh job, and the unit tests are
+unaffected. `_refresh` persists `observed` and returns `deck`. The observation
+set is built by re-running `policy.select` with the candidate count as the deck
+size and no price ceiling, so dedupe, closure and radius filtering still apply
+but neither one caller's budget nor its deck size decides what the shared
+catalog is allowed to remember. Cache reads already re-apply price and policy
+against the stored rows.
+
+This also makes coverage `resultCount` reflect what was actually observed, and
+it means the background refresh job populates the catalog properly. The cache
+path is unaffected: `coverageIsFresh && cachedDeck.length >= deckSize` still
+requires both conditions, so a wider catalog cannot serve a deck that fails the
+caller's own filter.
+
+**F20 — `CachePolicy` cast failure was ours, not Serverpod's.** The earlier note
+guessed that the stringified map's key set coincidentally matched
+`CachePolicy`'s fields and that Serverpod's dispatch was ambiguous. It is more
+direct than that: `Protocol.deserialize` dispatches only on an explicit
+`__className__` key (`protocol.dart:2982`), and `CachePolicy.toJson()` emits
+`'__className__': 'CachePolicy'` (`cache_policy.dart:140`). `updatePolicy`
+flattened the policy with `.toJson().map(...)` and copied that marker straight
+into an `AdminAuditRow` field declared `Map<String, String>?`, so reading the
+audit row back routed it into `CachePolicy.fromJson`, which cast the now-string
+`version` to `int`.
+
+The fix is a private `_policyAuditData` helper that drops `__className__`
+before stringifying. The proposed key-prefixing workaround would have worked
+only by accident and would have disfigured the audit data. The other two audit
+writers (`vela_calibration_sync.dart:202`,
+`poi_issue_moderation_service.dart:169`) build literal maps and never carried
+the marker, so they needed no change.
+
+**F20 — the stale-validation test never asserted what it claimed.** The
+`recordValidation` revision check is correct; nothing in `TaxonomyService`
+needed changing. The test passed a bare `isA<ApiException>()` to `expectLater`
+instead of wrapping it in `throwsA`, so it compared the *Future object* against
+the matcher, failed immediately, and abandoned the still-running transaction.
+`tearDown` then truncated the taxonomy tables underneath that orphaned
+transaction, so its `_draft` lookup found no row and threw `not_found`, which
+surfaced asynchronously and was attributed to whichever test was running next.
+That is the whole explanation for the "leaks into the next test" symptom. A
+sweep of every `expectLater` in `test/` and `integration_test/` found no other
+instance of this mistake.
+
+**F14 — catalog pruning had nothing to prune.** Also a fixture gap, as
+suspected. `_seedRestaurantCatalog` seeds exactly ten places and the request
+asks for a ten-place deck, so every catalog row was referenced by an immutable
+session and `CatalogPruner.prune`'s `NOT EXISTS` clause correctly matched
+nothing and returned `0`. The pruner is right; the test could not tell a working
+pruner from a broken one. It now inserts one unreferenced stale row after the
+session is created and asserts `removed == 1`, that the unreferenced id is gone,
+and that all ten deck rows survive — proving both halves of the claim in its own
+name.
+
+**Verification.** Pinned full preflight passes: generation, formatting, all
+fatal-info analyses, 118 server tests, 165 app tests, 51 admin tests, shell
+syntax, and `git diff --check`. The real-PostGIS suite is 36/36 on two
+consecutive runs.
+
+The signed `0.2.1+7` APK and its alias are 105,253,887 bytes at SHA-256
+`ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`. It verifies
+under APK Signature Scheme v2 with the expected signer, and reports
+`sa.almou.hayer`, `versionCode 7`, `versionName 0.2.1`, `minSdk 26`,
+`targetSdk 36`.
+
+Note that this differs from the `34091e6b…` / 104,876,403-byte APK the
+2026-09-10 entries below record. Nothing in this change touches `app/` or
+`admin/`, so it cannot move the APK; the difference comes from client work
+already merged into `main` since those builds, principally `c5b5360`. Treat
+`ef731e25…` as the current build for `0.2.1+7`, and do not read the older hash
+as still current.
+
+**Toolchain correction.** Export only `FLUTTER_BIN`. `hayer_resolve_dart`
+already prefers the `dart` beside the resolved Flutter, so `FLUTTER_BIN` alone
+pairs 3.47.2 with Dart 3.13.2. Also exporting `DART_BIN` makes
+`scripts/test-resolve-toolchain.sh` fail — it asserts Flutter's own Dart
+precedes `PATH` — and that is preflight's first step, so preflight dies at once
+with `Flutter's Dart should precede PATH`. Piping preflight through `tail` hides
+this, because the pipeline reports `tail`'s status rather than preflight's.
 
 ### Integration suite ran against real PostGIS for the first time (2026-09-11)
 

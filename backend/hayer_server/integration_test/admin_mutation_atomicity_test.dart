@@ -101,10 +101,12 @@ void main() {
                 transaction: transaction,
               );
             }),
-            isA<ApiException>().having(
-              (error) => error.code,
-              'code',
-              'conflict',
+            throwsA(
+              isA<ApiException>().having(
+                (error) => error.code,
+                'code',
+                'conflict',
+              ),
             ),
           );
 

@@ -224,7 +224,7 @@ class CatalogPlaceService {
       if (remaining <= Duration.zero) break;
       try {
         final live = await liveSearch
-            .buildDeck(
+            .buildDeckWithObservations(
               categoryId: categoryId,
               subcategoryIds: subcategoryIds,
               latitude: latitude,
@@ -238,7 +238,7 @@ class CatalogPlaceService {
             .timeout(remaining);
         await _persist(
           session,
-          live,
+          live.observed,
           parentCategoryId: categoryId,
           queries: queries,
           countryCode: countryCode,
@@ -248,7 +248,7 @@ class CatalogPlaceService {
           now: now,
           freshHours: settings.freshHours,
         );
-        return live;
+        return live.deck;
       } on PlaceSourceException catch (error) {
         failure = error;
       } on TimeoutException catch (error) {

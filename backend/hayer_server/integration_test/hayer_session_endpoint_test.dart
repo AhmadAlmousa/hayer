@@ -549,6 +549,30 @@ void main() {
         );
         final session = sessionBuilder.build();
         try {
+          // The seeded catalog is exactly deck-sized, so without a row that no
+          // immutable deck references the prune has nothing to remove and the
+          // test cannot tell a working pruner from a broken one.
+          final unreferenced = _place(99, checkedAt: DateTime.utc(2025, 1, 1));
+          await PoiCatalogRow.db.insertRow(
+            session,
+            PoiCatalogRow(
+              provider: 'google-web',
+              providerPlaceId: unreferenced.placeId,
+              featureId: unreferenced.featureId,
+              normalizedName: unreferenced.name.toLowerCase(),
+              name: unreferenced.name,
+              countryCode: 'SA',
+              latitude: unreferenced.latitude,
+              longitude: unreferenced.longitude,
+              categoryIds: const ['restaurant'],
+              snapshot: unreferenced,
+              calibrationVersion: _calibrationVersion,
+              sourceCheckedAt: unreferenced.sourceCheckedAt,
+              firstSeenAt: unreferenced.sourceCheckedAt,
+              lastSeenAt: unreferenced.sourceCheckedAt,
+            ),
+          );
+
           final cutoff = DateTime.utc(2026, 1, 1);
           await PoiCatalogRow.db.updateWhere(
             session,
@@ -564,7 +588,8 @@ void main() {
               .map((row) => row.providerPlaceId)
               .toSet();
 
-          expect(removed, greaterThan(0));
+          expect(removed, 1);
+          expect(remainingIds, isNot(contains(unreferenced.placeId)));
           expect(
             remainingIds,
             containsAll(created.deck.map((place) => place.placeId)),

@@ -4,6 +4,13 @@ import 'place_search_policy.dart';
 import 'place_source.dart';
 import 'taxonomy.dart';
 
+/// A completed search: the deck this caller asked for, plus every eligible
+/// place the search actually saw.
+typedef PlaceSearchOutcome = ({
+  List<PlaceSnapshot> deck,
+  List<PlaceSnapshot> observed,
+});
+
 class PlaceSearchService {
   const PlaceSearchService({
     required this.source,
@@ -16,6 +23,28 @@ class PlaceSearchService {
   final int concurrency;
 
   Future<List<PlaceSnapshot>> buildDeck({
+    required String categoryId,
+    required List<String> subcategoryIds,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int deckSize,
+    int? maximumPriceLevel,
+    required String countryCode,
+    List<PlaceQuery>? queries,
+  }) async => (await buildDeckWithObservations(
+    categoryId: categoryId,
+    subcategoryIds: subcategoryIds,
+    latitude: latitude,
+    longitude: longitude,
+    radiusMeters: radiusMeters,
+    deckSize: deckSize,
+    maximumPriceLevel: maximumPriceLevel,
+    countryCode: countryCode,
+    queries: queries,
+  )).deck;
+
+  Future<PlaceSearchOutcome> buildDeckWithObservations({
     required String categoryId,
     required List<String> subcategoryIds,
     required double latitude,
@@ -102,7 +131,19 @@ class PlaceSearchService {
     }
     final failure = sourceFailure;
     if (selected.isEmpty && failure != null) throw failure;
-    return selected;
+    // The catalog is shared, so it keeps every place this search saw rather
+    // than the slice one caller's deck took. Passing the candidate count as
+    // the deck size disables the cap, and omitting the price ceiling keeps a
+    // caller's budget from deciding what the catalog is allowed to remember;
+    // cache reads re-apply both against the stored rows.
+    final observed = policy.select(
+      candidates: candidates,
+      anchorLatitude: latitude,
+      anchorLongitude: longitude,
+      radiusMeters: radiusMeters,
+      deckSize: candidates.length,
+    );
+    return (deck: selected, observed: observed);
   }
 
   List<PlaceCandidate> _withEvidence(
