@@ -10,6 +10,7 @@ import 'taxonomy.dart';
 typedef PlaceSearchOutcome = ({
   List<PlaceSnapshot> deck,
   List<PlaceSnapshot> observed,
+  String? partialFailureCode,
 });
 
 class PlaceSearchService {
@@ -145,7 +146,11 @@ class PlaceSearchService {
       radiusMeters: radiusMeters,
       deckSize: candidates.length,
     );
-    return (deck: selected, observed: observed);
+    return (
+      deck: selected,
+      observed: observed,
+      partialFailureCode: failure?.code,
+    );
   });
 
   List<PlaceCandidate> _withEvidence(

@@ -8,6 +8,7 @@ import 'admin_audit_writer.dart';
 import 'admin_authorization.dart';
 import 'admin_gateway_access.dart';
 import 'poi_issue_moderation_service.dart';
+import 'refresh_job_service.dart';
 import '../generated/protocol.dart';
 import '../discovery/discovery_contract.dart';
 import '../places/calibration.dart';
@@ -1018,7 +1019,7 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    return session.db.transaction((transaction) async {
+    final cancelled = await session.db.transaction((transaction) async {
       final row = await RefreshJobRow.db.findFirstRow(
         session,
         where: (table) => table.jobId.equals(jobId),
@@ -1068,6 +1069,8 @@ class AdminEndpoint extends Endpoint {
       );
       return true;
     });
+    RefreshJobService.cancelActive(jobId);
+    return cancelled;
   }
 
   Future<int> invalidateCoverage(

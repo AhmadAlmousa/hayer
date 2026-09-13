@@ -204,8 +204,8 @@ VALUES (
   @resultCount,
   @refreshedAt,
   @expiresAt,
-  NULL,
-  NULL
+  @lastFailureCode,
+  @invalidatedAt
 )
 ON CONFLICT ("coverageKey") DO UPDATE SET
   "queryKey" = EXCLUDED."queryKey",
@@ -218,7 +218,7 @@ ON CONFLICT ("coverageKey") DO UPDATE SET
   "resultCount" = EXCLUDED."resultCount",
   "refreshedAt" = EXCLUDED."refreshedAt",
   "expiresAt" = EXCLUDED."expiresAt",
-  "lastFailureCode" = NULL,
-  "invalidatedAt" = NULL
+  "lastFailureCode" = EXCLUDED."lastFailureCode",
+  "invalidatedAt" = EXCLUDED."invalidatedAt"
 WHERE EXCLUDED."refreshedAt" >= coverage."refreshedAt"
 ''';

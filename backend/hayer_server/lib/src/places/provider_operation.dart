@@ -30,6 +30,7 @@ class ProviderOperation {
     Future<T> Function() action, {
     Duration timeout = const Duration(seconds: 30),
     int maximumRequests = 36,
+    void Function(ProviderOperation operation)? onCreate,
   }) async {
     final inherited = current;
     if (inherited != null) {
@@ -41,8 +42,13 @@ class ProviderOperation {
       maximumRequests: maximumRequests,
     );
     try {
+      onCreate?.call(operation);
       return await runZoned(
-        () => operation.wait(Future.sync(action)),
+        () {
+          // A caller may cancel from [onCreate], before the operation begins.
+          operation.check();
+          return operation.wait(Future.sync(action));
+        },
         zoneValues: {_zoneKey: operation},
       );
     } finally {

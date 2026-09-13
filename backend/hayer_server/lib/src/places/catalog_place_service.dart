@@ -26,7 +26,7 @@ class CatalogPlaceService {
   final PlaceSource source;
   final String calibrationVersion;
   final PlaceSearchPolicy policy;
-  static final Map<String, Future<List<PlaceSnapshot>>> _inFlightRefreshes = {};
+  static final Map<String, Future<_LiveCatalogRefresh>> _inFlightRefreshes = {};
 
   Future<List<PlaceSnapshot>> resolveShortlist(
     Session session, {
@@ -83,6 +83,37 @@ class CatalogPlaceService {
     required int deckSize,
     int? maximumPriceLevel,
     required String countryCode,
+  }) async => (await buildDeckWithOutcome(
+    session,
+    categoryId: categoryId,
+    subcategoryIds: subcategoryIds,
+    latitude: latitude,
+    longitude: longitude,
+    radiusMeters: radiusMeters,
+    deckSize: deckSize,
+    maximumPriceLevel: maximumPriceLevel,
+    countryCode: countryCode,
+  )).deck;
+
+  /// Builds a deck and reports whether it came from a complete live refresh,
+  /// a partial live refresh, a fresh cache hit, or stale fallback.
+  ///
+  /// Dashboard refresh jobs set [forceRefresh] so a cache hit can never be
+  /// mistaken for a successful source refresh. [onProviderOperation] exposes
+  /// only an operation this call created; a coalesced refresh owned by another
+  /// caller remains bounded by its existing deadline instead.
+  Future<CatalogDeckOutcome> buildDeckWithOutcome(
+    Session session, {
+    required String categoryId,
+    required List<String> subcategoryIds,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int deckSize,
+    int? maximumPriceLevel,
+    required String countryCode,
+    bool forceRefresh = false,
+    void Function(ProviderOperation operation)? onProviderOperation,
   }) async {
     final queries = await TaxonomyService.resolve(
       session,
@@ -134,9 +165,12 @@ class CatalogPlaceService {
       deckSize: deckSize,
       maximumPriceLevel: maximumPriceLevel,
     );
-    if (coverageIsFresh && cachedDeck.length >= deckSize) {
+    if (!forceRefresh && coverageIsFresh && cachedDeck.length >= deckSize) {
       await _metric(session, 'cache_hit_rate', 1);
-      return cachedDeck;
+      return CatalogDeckOutcome(
+        deck: cachedDeck,
+        origin: CatalogDeckOrigin.freshCache,
+      );
     }
 
     final refreshKey = catalogRefreshKey(
@@ -150,7 +184,7 @@ class CatalogPlaceService {
       deckSize: deckSize,
       maximumPriceLevel: maximumPriceLevel,
     );
-    Future<List<PlaceSnapshot>>? refresh;
+    Future<_LiveCatalogRefresh>? refresh;
     try {
       refresh = _inFlightRefreshes.putIfAbsent(
         refreshKey,
@@ -167,13 +201,24 @@ class CatalogPlaceService {
           countryCode: countryCode,
           now: now,
           queries: queries,
+          onProviderOperation: onProviderOperation,
         ),
       );
       final live = await refresh;
       await _metric(session, 'cache_hit_rate', 0);
-      await _metric(session, 'source_success_rate', 1);
-      return live;
-    } on PlaceSourceException {
+      await _metric(
+        session,
+        'source_success_rate',
+        live.partialFailureCode == null ? 1 : 0,
+      );
+      return CatalogDeckOutcome(
+        deck: live.deck,
+        origin: live.partialFailureCode == null
+            ? CatalogDeckOrigin.live
+            : CatalogDeckOrigin.partialLive,
+        sourceFailureCode: live.partialFailureCode,
+      );
+    } on PlaceSourceException catch (error) {
       await _metric(session, 'source_success_rate', 0);
       final fallback = policy.select(
         candidates: nearby,
@@ -184,7 +229,13 @@ class CatalogPlaceService {
         maximumPriceLevel: maximumPriceLevel,
         stale: true,
       );
-      if (fallback.isNotEmpty) return fallback;
+      if (fallback.isNotEmpty) {
+        return CatalogDeckOutcome(
+          deck: fallback,
+          origin: CatalogDeckOrigin.staleFallback,
+          sourceFailureCode: error.code,
+        );
+      }
       rethrow;
     } finally {
       if (identical(_inFlightRefreshes[refreshKey], refresh)) {
@@ -193,7 +244,7 @@ class CatalogPlaceService {
     }
   }
 
-  Future<List<PlaceSnapshot>> _refresh(
+  Future<_LiveCatalogRefresh> _refresh(
     Session session, {
     required _CatalogSettings settings,
     required String categoryId,
@@ -206,6 +257,7 @@ class CatalogPlaceService {
     required String countryCode,
     required DateTime now,
     required List<PlaceQuery> queries,
+    void Function(ProviderOperation operation)? onProviderOperation,
   }) async {
     final typedSource = source;
     if (typedSource is GoogleWebPlaceSource) {
@@ -218,41 +270,44 @@ class CatalogPlaceService {
       source: source,
       concurrency: settings.perCreationConcurrency,
     );
-    final live = await ProviderOperation.run(() async {
-      final operation = ProviderOperation.current!;
-      PlaceSourceException? failure;
-      for (var attempt = 0; attempt < settings.extractorAttempts; attempt++) {
-        operation.check();
-        try {
-          return await liveSearch.buildDeckWithObservations(
-            categoryId: categoryId,
-            subcategoryIds: subcategoryIds,
-            latitude: latitude,
-            longitude: longitude,
-            radiusMeters: radiusMeters,
-            deckSize: deckSize,
-            maximumPriceLevel: maximumPriceLevel,
-            countryCode: countryCode,
-            queries: queries,
-          );
-        } on PlaceSourceException catch (error) {
-          failure = error;
-          if (error.code == 'rate_limited') break;
-        } on TimeoutException catch (error) {
-          failure = PlaceSourceException(
-            'place_source_unavailable',
-            'Place search exceeded the 30-second deadline.',
-            cause: error,
-          );
-          break;
+    final live = await ProviderOperation.run(
+      () async {
+        final operation = ProviderOperation.current!;
+        PlaceSourceException? failure;
+        for (var attempt = 0; attempt < settings.extractorAttempts; attempt++) {
+          operation.check();
+          try {
+            return await liveSearch.buildDeckWithObservations(
+              categoryId: categoryId,
+              subcategoryIds: subcategoryIds,
+              latitude: latitude,
+              longitude: longitude,
+              radiusMeters: radiusMeters,
+              deckSize: deckSize,
+              maximumPriceLevel: maximumPriceLevel,
+              countryCode: countryCode,
+              queries: queries,
+            );
+          } on PlaceSourceException catch (error) {
+            failure = error;
+            if (error.code == 'rate_limited') break;
+          } on TimeoutException catch (error) {
+            failure = PlaceSourceException(
+              'place_source_unavailable',
+              'Place search exceeded the 30-second deadline.',
+              cause: error,
+            );
+            break;
+          }
         }
-      }
-      throw failure ??
-          const PlaceSourceException(
-            'place_source_unavailable',
-            'Place search exceeded the 30-second deadline.',
-          );
-    });
+        throw failure ??
+            const PlaceSourceException(
+              'place_source_unavailable',
+              'Place search exceeded the 30-second deadline.',
+            );
+      },
+      onCreate: onProviderOperation,
+    );
     // A completed source operation is persisted outside its cancellation
     // scope, so the request keeps awaiting an already-started DB transaction.
     await _persist(
@@ -266,8 +321,12 @@ class CatalogPlaceService {
       radiusMeters: radiusMeters,
       now: now,
       freshHours: settings.freshHours,
+      partialFailureCode: live.partialFailureCode,
     );
-    return live.deck;
+    return _LiveCatalogRefresh(
+      deck: live.deck,
+      partialFailureCode: live.partialFailureCode,
+    );
   }
 
   Future<List<PlaceCandidate>> _nearbyCatalog(
@@ -364,6 +423,7 @@ class CatalogPlaceService {
     required int radiusMeters,
     required DateTime now,
     required int freshHours,
+    required String? partialFailureCode,
   }) async {
     final queryByCategory = {
       for (final query in queries) query.categoryId: query.query,
@@ -467,6 +527,8 @@ class CatalogPlaceService {
           'resultCount': evidencedPlaceCount,
           'refreshedAt': now,
           'expiresAt': now.add(Duration(hours: freshHours)),
+          'lastFailureCode': partialFailureCode,
+          'invalidatedAt': partialFailureCode == null ? null : now,
         }),
         transaction: transaction,
       );
@@ -559,6 +621,30 @@ class CatalogPlaceService {
             .codeUnits,
       )
       .toString();
+}
+
+enum CatalogDeckOrigin { freshCache, live, partialLive, staleFallback }
+
+class CatalogDeckOutcome {
+  const CatalogDeckOutcome({
+    required this.deck,
+    required this.origin,
+    this.sourceFailureCode,
+  });
+
+  final List<PlaceSnapshot> deck;
+  final CatalogDeckOrigin origin;
+  final String? sourceFailureCode;
+}
+
+class _LiveCatalogRefresh {
+  const _LiveCatalogRefresh({
+    required this.deck,
+    required this.partialFailureCode,
+  });
+
+  final List<PlaceSnapshot> deck;
+  final String? partialFailureCode;
 }
 
 String catalogRefreshKey({

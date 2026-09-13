@@ -24,24 +24,64 @@ Last updated: 2026-09-13
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 44/44 against real PostGIS,
-  including legacy-calibration repair, bounded version-retention/rollback and
-  dark discovery contract checks.
+- The latest integration suite is fully green: 52/52 against real PostGIS,
+  including legacy-calibration repair, bounded version-retention/rollback,
+  dark discovery contracts, and refresh-job concurrency/outcome handling.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is wired into the merged client.
   Two-device acceptance remains open.
 - The owner confirmed the deployed Start swiping calibration repair works.
   The incident is closed; the remaining beta gates are summarized in
-  `PROJECT.md` under the 2026-09-13 beta acceptance review. Next backend work
-  is F10/F21 source resilience; F08/F09 provider/geocoder bounds are implemented
-  and locally verified, with production deployment pending.
+  `PROJECT.md` under the 2026-09-13 beta acceptance review. F08/F09
+  provider/geocoder bounds and F10/F21 source resilience are implemented and
+  locally verified, with production deployment and outage proof pending.
 - The owner prioritized contracts to unblock Claude's discovery work. Frontend
   prework is merged in `d4b58b7`; M9-B/C/D and consumer M9-E generated contracts
   are delivered. The exact calls, mock semantics and retained-link flow are in
   [`backend/discovery-contracts.md`](backend/discovery-contracts.md). Persistent
   implementations and production activation remain open.
+- Claude's M9-F configuration/link retention commit `5863f02` is merged into
+  `main`. It adds no new backend handoff: G2–G4 can continue against the dark
+  generated contracts and fakes. The next discovery backend slice remains
+  M9-A's shared source/observation writer, followed by persistent M9-B/C/D/E.
 
 ## Checkpoints
+
+### F10/F21 source resilience and truthful refresh jobs — implemented locally (2026-09-13)
+
+The Compose server no longer depends on `place-canary` completing successfully.
+The canary remains runnable beside the stack as release evidence and a source
+capability signal, but source availability cannot prevent the core server or
+gateway from starting. A structural regression locks that dependency boundary.
+Docker is absent on this host, so a real Compose parse and the production-like
+blocked-source restart/gateway exercise remain acceptance work.
+
+Refresh workers now claim the oldest pending job in one `FOR UPDATE SKIP
+LOCKED` transaction. Completion is a compare-and-set against the job's exact
+running lease, so a cancelled or recovered job cannot be relabelled by a stale
+worker. Dashboard refreshes force a source attempt: complete live data alone is
+`succeeded`; partial live data, stale fallback and hard failures are `failed`
+with bounded stable cause codes, while cancellation stays `cancelled`. This
+keeps the existing public/admin job enum stable while ensuring fallback never
+appears green.
+
+The catalog reports fresh-cache, live, partial-live and stale-fallback origins.
+Partial observations still persist for shared cached operation, but their
+coverage remains invalidated with the source failure code. An administrator's
+cancellation cancels provider work owned by this server process; cross-process
+or coalesced work remains bounded by the existing 30-second provider deadline.
+The prior coverage failure/invalidation is not cleared when a refresh merely
+starts or is cancelled; only complete live source data clears it.
+
+Verification: pinned full preflight passed generation, formatting, all
+analyses, 154 server tests, 207 app tests and 51 admin tests. The guarded remote
+PostGIS suite passed all 52 tests; six refresh-job cases cover double-worker
+claiming, live success, partial/fallback/hard-failure reporting and active
+cancellation. Existing custom-PostGIS schema metadata warnings remain. The
+signed `0.2.1+7` APK is 105,794,923 bytes, verifies with APK Signature Scheme
+v2, and has SHA-256
+`684556bcac678aeae8991ea3a396d8e8373018ba768803476c435e229b6aad3b`.
+No schema migration, generated protocol change, or catalog reset is introduced.
 
 ### M9 frontend unblock — contract delivery (2026-09-13)
 

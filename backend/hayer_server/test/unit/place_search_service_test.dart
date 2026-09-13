@@ -23,6 +23,23 @@ void main() {
     expect(deck.map((place) => place.name), ['pizza restaurants']);
   });
 
+  test('reports a partial source failure alongside usable results', () async {
+    final source = _FakePlaceSource(failures: {'sushi restaurants'});
+
+    final outcome = await _service(source).buildDeckWithObservations(
+      categoryId: 'restaurant',
+      subcategoryIds: const ['pizza', 'sushi'],
+      latitude: 24.7136,
+      longitude: 46.6753,
+      radiusMeters: 5000,
+      deckSize: 10,
+      countryCode: 'SA',
+    );
+
+    expect(outcome.deck.map((place) => place.name), ['pizza restaurants']);
+    expect(outcome.partialFailureCode, 'place_source_unavailable');
+  });
+
   test('reports source failure when every query fails', () async {
     final source = _FakePlaceSource(
       failures: {'pizza restaurants', 'sushi restaurants'},

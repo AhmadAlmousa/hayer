@@ -67,8 +67,6 @@ services:
         condition: service_completed_successfully
       postgres:
         condition: service_healthy
-      place-canary:
-        condition: service_completed_successfully
     volumes:
       - server-secrets:/run/hayer/server:ro
       - public-config:/run/hayer/public:ro

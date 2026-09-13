@@ -125,6 +125,22 @@ void main() {
       );
       operation.cancel();
     });
+
+    test('a pre-start cancellation never invokes the operation', () async {
+      var started = false;
+
+      await expectLater(
+        ProviderOperation.run(
+          () async {
+            started = true;
+          },
+          onCreate: (operation) => operation.cancel('Cancelled by fixture.'),
+        ),
+        throwsA(isA<PlaceSourceException>()),
+      );
+
+      expect(started, isFalse);
+    });
   });
 
   group('bounded HTTP', () {

@@ -6,12 +6,15 @@ import '../generated/protocol.dart';
 import '../places/catalog_place_service.dart';
 import '../places/place_services.dart';
 import '../places/place_source.dart';
+import '../places/provider_operation.dart';
 import '../places/taxonomy.dart';
 import '../places/taxonomy_service.dart';
 
 /// Executes refresh requests created by the operations dashboard.
 abstract final class RefreshJobService {
   static bool _running = false;
+  static final Map<String, ProviderOperation> _activeOperations = {};
+  static final Map<String, DateTime> _cancelledJobs = {};
 
   static Future<void> run(Serverpod pod) async {
     if (_running) return;
@@ -20,9 +23,9 @@ abstract final class RefreshJobService {
     try {
       await _recoverInterruptedJobs(session);
       for (var count = 0; count < 3; count++) {
-        final job = await _claimNext(session);
+        final job = await claimNext(session);
         if (job == null) break;
-        await _execute(session, job);
+        await executeClaimed(session, job);
       }
     } catch (error, stackTrace) {
       session.log(
@@ -54,24 +57,37 @@ abstract final class RefreshJobService {
     );
   }
 
-  static Future<RefreshJobRow?> _claimNext(Session session) async {
-    final job = await RefreshJobRow.db.findFirstRow(
-      session,
-      where: (table) => table.status.equals(JobStatus.pending),
-      orderBy: (table) => table.createdAt,
-    );
-    if (job == null) return null;
-    job.status = JobStatus.running;
-    job.startedAt = DateTime.now().toUtc();
-    job.completedAt = null;
-    job.errorCode = null;
-    return RefreshJobRow.db.updateRow(session, job);
-  }
+  /// Atomically leases the oldest pending job to this worker.
+  static Future<RefreshJobRow?> claimNext(Session session) =>
+      session.db.transaction((transaction) async {
+        final job = await RefreshJobRow.db.findFirstRow(
+          session,
+          where: (table) => table.status.equals(JobStatus.pending),
+          orderBy: (table) => table.createdAt,
+          transaction: transaction,
+          lockMode: LockMode.forUpdate,
+          lockBehavior: LockBehavior.skipLocked,
+        );
+        if (job == null) return null;
+        job.status = JobStatus.running;
+        job.startedAt = DateTime.now().toUtc();
+        job.completedAt = null;
+        job.errorCode = null;
+        return RefreshJobRow.db.updateRow(
+          session,
+          job,
+          transaction: transaction,
+        );
+      });
 
-  static Future<void> _execute(
+  /// Executes a claimed job. [refresh] is an integration-test seam; production
+  /// obtains the active place services and performs a forced live refresh.
+  static Future<void> executeClaimed(
     Session session,
-    RefreshJobRow job,
-  ) async {
+    RefreshJobRow job, {
+    RefreshJobAction? refresh,
+  }) async {
+    ProviderOperation? activeOperation;
     final coverage = await PoiCoverageRow.db.findFirstRow(
       session,
       where: (table) => table.coverageKey.equals(job.coverageKey),
@@ -81,47 +97,118 @@ abstract final class RefreshJobService {
       return;
     }
     try {
+      if (!await _ownsLease(session, job)) return;
       final plan = RefreshJobPlan.fromCoverage(
         coverage,
         taxonomyItems: await TaxonomyService.activeItems(session),
       );
-      coverage.invalidatedAt = DateTime.now().toUtc();
-      coverage.lastFailureCode = null;
-      await PoiCoverageRow.db.updateRow(session, coverage);
-
-      final services = await PlaceServices.forSession(session);
-      await CatalogPlaceService(
-        source: services.source,
-        calibrationVersion: services.calibration.version,
-      ).buildDeck(
+      final outcome = await (refresh ?? _refresh)(
         session,
-        categoryId: plan.categoryId,
-        subcategoryIds: plan.subcategoryIds,
-        latitude: plan.latitude,
-        longitude: plan.longitude,
-        radiusMeters: plan.radiusMeters,
-        deckSize: plan.deckSize,
-        countryCode: plan.countryCode,
+        plan,
+        (operation) {
+          activeOperation = operation;
+          _registerOperation(job.jobId, operation);
+        },
       );
-      final latest = await RefreshJobRow.db.findFirstRow(
-        session,
-        where: (table) => table.jobId.equals(job.jobId),
-      );
-      if (latest == null || latest.status == JobStatus.cancelled) return;
-      latest.status = JobStatus.succeeded;
-      latest.completedAt = DateTime.now().toUtc();
-      latest.errorCode = null;
-      await RefreshJobRow.db.updateRow(session, latest);
+      if (!await _ownsLease(session, job)) return;
+      final failureCode = switch (outcome.origin) {
+        CatalogDeckOrigin.live => null,
+        CatalogDeckOrigin.partialLive => _outcomeCode(
+          'partial',
+          outcome.sourceFailureCode,
+        ),
+        CatalogDeckOrigin.staleFallback => _outcomeCode(
+          'stale_fallback',
+          outcome.sourceFailureCode,
+        ),
+        CatalogDeckOrigin.freshCache => 'cache_only',
+      };
+      if (failureCode == null) {
+        await _recordCoverageSuccess(session, coverage);
+        await _finish(session, job, JobStatus.succeeded);
+      } else {
+        await _recordCoverageFailure(session, coverage, failureCode);
+        await _finish(session, job, JobStatus.failed, failureCode);
+      }
     } on PlaceSourceException catch (error) {
+      if (!await _ownsLease(session, job)) return;
       await _recordCoverageFailure(session, coverage, error.code);
       await _fail(session, job, error.code);
     } catch (error) {
+      if (!await _ownsLease(session, job)) return;
       final code = error is FormatException
           ? 'invalid_coverage'
           : 'refresh_failed';
       await _recordCoverageFailure(session, coverage, code);
       await _fail(session, job, code);
+    } finally {
+      if (identical(_activeOperations[job.jobId], activeOperation)) {
+        _activeOperations.remove(job.jobId);
+      }
+      _cancelledJobs.remove(job.jobId);
     }
+  }
+
+  static Future<CatalogDeckOutcome> _refresh(
+    Session session,
+    RefreshJobPlan plan,
+    void Function(ProviderOperation operation) onProviderOperation,
+  ) async {
+    final services = await PlaceServices.forSession(session);
+    return CatalogPlaceService(
+      source: services.source,
+      calibrationVersion: services.calibration.version,
+    ).buildDeckWithOutcome(
+      session,
+      categoryId: plan.categoryId,
+      subcategoryIds: plan.subcategoryIds,
+      latitude: plan.latitude,
+      longitude: plan.longitude,
+      radiusMeters: plan.radiusMeters,
+      deckSize: plan.deckSize,
+      countryCode: plan.countryCode,
+      forceRefresh: true,
+      onProviderOperation: onProviderOperation,
+    );
+  }
+
+  /// Cancels provider work owned by this process. The persisted status remains
+  /// authoritative; another worker is still bounded by the provider deadline.
+  static void cancelActive(String jobId) {
+    final now = DateTime.now().toUtc();
+    _cancelledJobs.removeWhere(
+      (_, expiresAt) => !expiresAt.isAfter(now),
+    );
+    _cancelledJobs[jobId] = now.add(const Duration(minutes: 1));
+    _activeOperations[jobId]?.cancel('The refresh job was cancelled.');
+  }
+
+  static void _registerOperation(
+    String jobId,
+    ProviderOperation operation,
+  ) {
+    _activeOperations[jobId] = operation;
+    final cancellationExpiresAt = _cancelledJobs[jobId];
+    if (cancellationExpiresAt != null &&
+        cancellationExpiresAt.isAfter(DateTime.now().toUtc())) {
+      operation.cancel('The refresh job was cancelled.');
+    }
+  }
+
+  static Future<bool> _ownsLease(
+    Session session,
+    RefreshJobRow job,
+  ) async {
+    final startedAt = job.startedAt;
+    if (startedAt == null) return false;
+    return await RefreshJobRow.db.findFirstRow(
+          session,
+          where: (table) =>
+              table.jobId.equals(job.jobId) &
+              table.status.equals(JobStatus.running) &
+              table.startedAt.equals(startedAt),
+        ) !=
+        null;
   }
 
   static Future<void> _recordCoverageFailure(
@@ -135,6 +222,21 @@ abstract final class RefreshJobService {
     );
     if (latest == null) return;
     latest.lastFailureCode = _safeErrorCode(code);
+    latest.invalidatedAt ??= DateTime.now().toUtc();
+    await PoiCoverageRow.db.updateRow(session, latest);
+  }
+
+  static Future<void> _recordCoverageSuccess(
+    Session session,
+    PoiCoverageRow coverage,
+  ) async {
+    final latest = await PoiCoverageRow.db.findFirstRow(
+      session,
+      where: (table) => table.coverageKey.equals(coverage.coverageKey),
+    );
+    if (latest == null) return;
+    latest.lastFailureCode = null;
+    latest.invalidatedAt = null;
     await PoiCoverageRow.db.updateRow(session, latest);
   }
 
@@ -143,15 +245,34 @@ abstract final class RefreshJobService {
     RefreshJobRow job,
     String code,
   ) async {
-    final latest = await RefreshJobRow.db.findFirstRow(
+    await _finish(session, job, JobStatus.failed, code);
+  }
+
+  static Future<void> _finish(
+    Session session,
+    RefreshJobRow job,
+    JobStatus status, [
+    String? code,
+  ]) async {
+    final startedAt = job.startedAt;
+    if (startedAt == null) return;
+    await RefreshJobRow.db.updateWhere(
       session,
-      where: (table) => table.jobId.equals(job.jobId),
+      where: (table) =>
+          table.jobId.equals(job.jobId) &
+          table.status.equals(JobStatus.running) &
+          table.startedAt.equals(startedAt),
+      columnValues: (table) => [
+        table.status(status),
+        table.completedAt(DateTime.now().toUtc()),
+        table.errorCode(code == null ? null : _safeErrorCode(code)),
+      ],
     );
-    if (latest == null || latest.status == JobStatus.cancelled) return;
-    latest.status = JobStatus.failed;
-    latest.completedAt = DateTime.now().toUtc();
-    latest.errorCode = _safeErrorCode(code);
-    await RefreshJobRow.db.updateRow(session, latest);
+  }
+
+  static String _outcomeCode(String prefix, String? sourceCode) {
+    final safeSource = sourceCode == null ? '' : _safeErrorCode(sourceCode);
+    return safeSource.isEmpty ? prefix : '${prefix}_$safeSource';
   }
 
   static String _safeErrorCode(String value) {
@@ -168,6 +289,12 @@ abstract final class RefreshJobService {
           );
   }
 }
+
+typedef RefreshJobAction = Future<CatalogDeckOutcome> Function(
+  Session session,
+  RefreshJobPlan plan,
+  void Function(ProviderOperation operation) onProviderOperation,
+);
 
 class RefreshJobPlan {
   const RefreshJobPlan({

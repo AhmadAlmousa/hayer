@@ -216,6 +216,84 @@ void main() {
       );
 
       test(
+        'reports a partial live refresh instead of a full success',
+        () async {
+          final session = sessionBuilder.build();
+          try {
+            final outcome = await _service(_PartialSource())
+                .buildDeckWithOutcome(
+                  session,
+                  categoryId: 'restaurant',
+                  subcategoryIds: const ['pizza', 'sushi'],
+                  latitude: _latitude,
+                  longitude: _longitude,
+                  radiusMeters: 3000,
+                  deckSize: 2,
+                  maximumPriceLevel: 2,
+                  countryCode: 'SA',
+                );
+
+            expect(outcome.origin, CatalogDeckOrigin.partialLive);
+            expect(outcome.sourceFailureCode, 'place_source_unavailable');
+            expect(outcome.deck.map((place) => place.placeId), [
+              'pizza-only',
+            ]);
+            final coverage = await PoiCoverageRow.db.findFirstRow(
+              session,
+              where: (table) => table.coverageKey.equals(
+                _coverageKey(
+                  categoryIds: const ['pizza', 'restaurant', 'sushi'],
+                  countryCode: 'SA',
+                  latitude: _latitude,
+                  longitude: _longitude,
+                  radiusMeters: 3000,
+                ),
+              ),
+            );
+            expect(coverage?.lastFailureCode, 'place_source_unavailable');
+            expect(coverage?.invalidatedAt, isNotNull);
+          } finally {
+            await session.close();
+          }
+        },
+      );
+
+      test('a forced provider failure reports stale fallback', () async {
+        final session = sessionBuilder.build();
+        try {
+          await _deck(
+            _service(_CategorySource()),
+            session,
+            subcategoryIds: const ['pizza'],
+            deckSize: 1,
+          );
+
+          final outcome =
+              await _service(
+                _FailingSource(),
+              ).buildDeckWithOutcome(
+                session,
+                categoryId: 'restaurant',
+                subcategoryIds: const ['pizza'],
+                latitude: _latitude,
+                longitude: _longitude,
+                radiusMeters: 3000,
+                deckSize: 1,
+                maximumPriceLevel: 2,
+                countryCode: 'SA',
+                forceRefresh: true,
+              );
+
+          expect(outcome.origin, CatalogDeckOrigin.staleFallback);
+          expect(outcome.sourceFailureCode, 'place_source_unavailable');
+          expect(outcome.deck.single.placeId, 'pizza-only');
+          expect(outcome.deck.single.isStale, isTrue);
+        } finally {
+          await session.close();
+        }
+      });
+
+      test(
         'dense cache filters category, price and radius before its bound',
         () async {
           final session = sessionBuilder.build();
@@ -438,6 +516,45 @@ final class _NeverSource implements PlaceSource {
     required String language,
     required String countryCode,
   }) => throw StateError('The dense candidate request should remain cached.');
+}
+
+final class _PartialSource implements PlaceSource {
+  @override
+  Future<List<PlaceCandidate>> search({
+    required String query,
+    required String categoryId,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int desiredCount,
+    required String language,
+    required String countryCode,
+  }) async {
+    if (categoryId == 'sushi') {
+      throw const PlaceSourceException(
+        'place_source_unavailable',
+        'Fixture source failure.',
+      );
+    }
+    return [_candidate('$categoryId-only')];
+  }
+}
+
+final class _FailingSource implements PlaceSource {
+  @override
+  Future<List<PlaceCandidate>> search({
+    required String query,
+    required String categoryId,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int desiredCount,
+    required String language,
+    required String countryCode,
+  }) => throw const PlaceSourceException(
+    'place_source_unavailable',
+    'Fixture source failure.',
+  );
 }
 
 String _coverageKey({

@@ -670,9 +670,14 @@ privacy and provider assumptions have accountable acceptance evidence.
   Riyadh source canary returns 10 places and remote PostGIS passes 39 tests.
   Production rollout and release-load measurements remain pending; retain the
   single-replica constraint. See `lane-backend.md` and `backend/deploy/README.md`.
-- [ ] Fix F10/F21 by separating core readiness from optional source canaries
-  and reporting live refresh, stale fallback, partial, failed, and cancelled
-  outcomes truthfully.
+- [~] Fix F10/F21 by separating core readiness from optional source canaries
+  and reporting refresh outcomes truthfully. The server no longer waits for
+  the source canary, refresh workers atomically lease jobs, and only a complete
+  live result succeeds. Partial live data, stale fallback, hard failure, and
+  cancellation remain non-green with stable causes; cancellation also stops
+  provider work owned by this process and preserves prior coverage invalidation
+  until a complete live refresh clears it. Production-like blocked-source
+  restart and gateway proof remain pending. See `lane-backend.md`.
 
 Exit: overlapping refreshes do not collide or mislabel POIs; cancelled work
 does not continue unbounded; a provider outage leaves cached/core operations
@@ -967,6 +972,24 @@ implementation work after this owner-requested contract delivery.
 
 ## Evidence log
 
+- 2026-09-13: implemented the F10/F21 source-outage and refresh-truthfulness
+  boundary after fast-forwarding Claude's M9-F commit `5863f02`. The core
+  server no longer depends on the optional source canary. Dashboard jobs use
+  atomic skip-locked leases and lease-checked completion; only complete live
+  source data succeeds, while partial, stale fallback, hard failure and
+  cancellation retain distinct non-green outcomes. Active local provider work
+  is cancelled, prior coverage invalidation survives cancellation, and partial
+  observations persist without making coverage look fresh. Pinned full
+  preflight passed generation, formatting, all analyses, 154 server tests,
+  207 app tests and 51 admin tests. The guarded remote PostGIS suite passed all
+  52 tests, including six refresh-job concurrency/outcome/cancellation cases.
+  `scripts/build-release-apk.sh` produced signed `0.2.1+7` (105,794,923 bytes);
+  APK Signature Scheme v2 and package `sa.almou.hayer`, version code 7, target
+  SDK 36 verify, with SHA-256
+  `684556bcac678aeae8991ea3a396d8e8373018ba768803476c435e229b6aad3b`.
+  Docker is unavailable on this host, so Compose parsing and the required
+  production-like blocked-source restart/gateway proof remain pending. No
+  schema migration, generated protocol change, or catalog reset is introduced.
 - 2026-09-13: implemented F08/F09 provider/geocoder limits. Google operations
   share bounded process-wide admission, a cancellable deadline across pages
   and retries, request/streamed-byte limits and validated redirect hops.

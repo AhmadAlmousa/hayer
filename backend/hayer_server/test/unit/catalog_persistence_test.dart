@@ -36,7 +36,7 @@ void main() {
     expect(catalogEvidencePrefix('cal-3'), 'hayer-v2:cal-3:');
   });
 
-  test('coverage write uses a freshness-ordered upsert', () {
+  test('coverage write orders freshness and preserves partial outcomes', () {
     expect(
       catalogCoverageUpsertSql,
       contains('ON CONFLICT ("coverageKey") DO UPDATE'),
@@ -47,6 +47,15 @@ void main() {
         'WHERE EXCLUDED."refreshedAt" >= coverage."refreshedAt"',
       ),
     );
-    expect(catalogCoverageUpsertSql, contains('"invalidatedAt" = NULL'));
+    expect(catalogCoverageUpsertSql, contains('@lastFailureCode'));
+    expect(catalogCoverageUpsertSql, contains('@invalidatedAt'));
+    expect(
+      catalogCoverageUpsertSql,
+      contains('"lastFailureCode" = EXCLUDED."lastFailureCode"'),
+    );
+    expect(
+      catalogCoverageUpsertSql,
+      contains('"invalidatedAt" = EXCLUDED."invalidatedAt"'),
+    );
   });
 }

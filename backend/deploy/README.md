@@ -50,9 +50,10 @@ docker compose up -d
 The Compose file uses `pull_policy: never`, so startup fails with a direct
 missing-image error instead of pulling or silently rebuilding. A one-shot initializer
 stores generated database, Serverpod, backup, gateway, and public configuration
-in private Docker volumes before dependent services start. Compose then runs a
-live Riyadh place-deck canary before starting the native server, applies
-migrations on start, and runs an
+in private Docker volumes before dependent services start. Compose runs a live
+Riyadh place-deck canary beside the native server, without making source
+availability a prerequisite for the core API, cached rooms, or administration.
+The server applies migrations on start, and Compose runs an
 unauthenticated public bootstrap RPC canary after the gateway is healthy. Set
 `HAYER_PUBLIC_API_URL` only when verifying a hostname other than
 `https://hayer.almou.sa/api/`.
@@ -98,8 +99,9 @@ docker compose -f backend/deploy/docker-compose.yml up -d server gateway
 Then run the authenticated `backend/hayer_client/tool/create_deck_canary.dart`
 from the development checkout, and retry Start swiping in the existing APK.
 The unauthenticated bootstrap canary alone does not exercise the active
-database calibration. Keep the normal source-canary/migration gates; this fix
-does not authorize replacing a failed source calibration with arbitrary data.
+database calibration. Keep the source canary as release evidence and a
+capability signal, but never as a server-start dependency. This fix does not
+authorize replacing a failed source calibration with arbitrary data.
 
 ## Provider limits and geocoder configuration
 
@@ -140,9 +142,10 @@ To switch to a compatible reverse-geocoding endpoint, set
 the server. It defaults to `https://nominatim.openstreetmap.org/reverse`; the
 override must use HTTPS and return Nominatim-compatible JSON. No APK update or
 server-image rebuild is needed to change this setting. The F08/F09 code itself
-requires the usual server-image rebuild before deployment. Source-independent
-startup and refresh-job outcome/cancellation changes remain F10/F21 follow-up
-work; this change does not remove the existing deployment canary gates.
+requires the usual server-image rebuild before deployment. The source canary
+remains an independent deployment capability check. A failed run must alert the
+operator and block source-dependent activation, but it does not hold the server
+or gateway down.
 
 ## Network topology
 
