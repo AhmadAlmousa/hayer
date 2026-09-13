@@ -866,6 +866,51 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ## Open handoffs to the back-end lane
 
+### Discover admin contracts — requested 2026-09-14 (M9-J)
+
+`backend/discovery-contracts.md` lists M9-E's admin contracts as outstanding:
+the broad-query manifest, harvest job inspection, unmapped types and growth
+metrics. The generated client on `main` at `4ab6f5a` still has none of them.
+These parts of M9-J cannot start until they exist:
+
+- the manifest editor;
+- user-requested versus operator-requested harvests on the refresh jobs page;
+- the unmapped-types report with its map-into-tree action;
+- the growth and reuse metrics.
+
+The policy knobs, the Discover taxonomy editor and the display of
+discovery-origin issues can start on the contracts already delivered. Asked:
+the M9-E admin contract commit, ahead of its implementation, as was done for
+the consumer contracts.
+
+### Discover counts, tree and request budgets — noted 2026-09-14 (M9-G3)
+
+G3 reads `facets` and `taxonomy` in ways the M9-B and M9-C implementations
+need to allow.
+
+- **Draft previews.** The filter sheet sends an unapplied draft query to
+  `facets` with the committed generation's `DiscoverQueryContext`, as the
+  contract describes. The implementation must count a query whose
+  fingerprint differs from the context's, while still rejecting stale policy
+  or taxonomy revisions. Otherwise the sheet cannot count any edit.
+- **Request rates, per client:**
+  - one `browse` and one `facets` for each committed search;
+  - one `facets` after each 400 ms pause while the filter sheet is edited;
+  - while Open now is applied, one first-page `browse` a minute and one on
+    each return to the foreground, as requirement 7 asks.
+
+  Budgeting `facets` apart from `browse` would keep a busy filter sheet from
+  rate-limiting the results.
+- **The tree.** The app combines a taxonomy snapshot with counts only when
+  the snapshot's `revision`, the configuration's `taxonomyRevision` and the
+  counts' context revision all agree, so a publish has to advance all three
+  together. `limits.otherCategoryId` must never equal a node id. While `roots`
+  is empty the app treats the tree as unpublished and leaves link category
+  ids alone.
+- **Optional.** `facets` has no counts for hours windows or completeness
+  requirements, so those chips show none. Requirement 8 does not ask for
+  them; add them only if they come cheaply from the same statement.
+
 ### Discover area country — requested 2026-09-13 (M9-G2)
 
 `DiscoverQuery.countryCode`, `ensureArea` and `deepen` each take a country
