@@ -21,9 +21,9 @@ Last updated: 2026-09-13
 - M9, "Got time" discovery, opened on 2026-09-13 and runs alongside M7.
   G1 landed in `017e17c`. M9-F is complete: its prework in `bb212d7`, and
   the configuration read and kept links on the back-end lane's contract
-  commit `4014037`. The M9-B/C/D and consumer M9-E contracts are on `main`
-  (`backend/discovery-contracts.md`), so G2–G4, H and J can build against
-  the generated types and fakes; every discovery data RPC still answers
+  commit `4014037`. G2, the results screen, landed on 2026-09-13; G3 and G4,
+  then H and J, build on the same generated types and fakes
+  (`backend/discovery-contracts.md`). Every discovery data RPC still answers
   `feature_disabled`. See the checkpoints below and `discovery_upgrade.md`
   §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
@@ -51,6 +51,120 @@ Last updated: 2026-09-13
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-G2 Discover results — landed (2026-09-13)
+
+The Discover screen itself: a full-bleed map, the area bar, the sort chip
+and a draggable results sheet, built on the `discover.browse` contract from
+`4014037` with test doubles. Discovery stays dark. The server still answers
+`enabled: false` and every browse `feature_disabled`, so none of it is
+reachable in production.
+
+**The committed query.** The link stays the only source of truth.
+`DiscoverView` (`app/lib/features/discover/discover_view.dart`) reads it on
+every change and hands the resolved `DiscoverySearch` to the results
+notifier; nothing mirrors it.
+
+- `/discover` now sits under `/`, and Discover links are opened with `go`.
+  Query changes keep the same page, map and notifier; home stays beneath for
+  Back; the browser URL reflects each committed query.
+- Each applied search or sort is one history entry. On Android the screen
+  keeps those entries, so Back steps through earlier searches before it
+  leaves; the web leaves them to the browser.
+- A link without an area opens at the location already permitted, then the
+  last area searched here (`DiscoveryAreaStore`, erased with device data),
+  then central Riyadh. Browsing never asks for permission. The starting
+  area and any respelling of a link replace it rather than adding an entry.
+- The country for the request is picked from rough bounds of the six
+  countries. An area outside all of them is explained without a request;
+  see the handoff below.
+
+**Results.** `DiscoveryResultsController` numbers a generation for every
+first page and applies an answer only while its generation is current, so a
+slow answer to an earlier search never lands. Earlier results stay, dimmed,
+while a new generation loads and after it fails, which is what keeps a rate
+limit from emptying the screen. Later pages reuse the generation's context
+and cursor, ask for no map, and skip places already shown. `query_changed`
+or a changed revision restarts from the top once, with a notice, then offers
+a retry. A new scoring policy or category tree in the configuration reloads
+the search. `feature_disabled` reads the configuration again, and the
+existing kept-link flow takes over once it agrees.
+
+**The sheet.** The count reads "N places in view", or "in the previous area"
+once the camera has moved. The active sort's explainer sits under it, with
+the gem and review thresholds taken from the scoring policy. Refresh and a
+Full list / Show map toggle sit beside the count; at large text they wrap
+beneath it.
+
+- Rows follow artboard 1c: an emoji thumbnail from the swipe category, rank
+  and name, type, straight-line distance and price, one tag, and the rating
+  with a compact review count.
+- The tag goes by priority: hidden gem, added to the catalog within the
+  policy's days (on the server's clock), rated below 4.0, more than 20,000
+  reviews, then open, closed or "Hours unavailable".
+- Distance appears only with a location already permitted, and the footer
+  says it is a straight line. The footer also carries the fetch time, the
+  cached-details warning when a row is stale, and the Google Maps
+  attribution.
+- Empty results say which case they are: filters excluding everything
+  (with Clear filters), an area nothing is known about ("We haven't explored
+  this area yet"), or a sort nothing qualifies for (with Show Best).
+- Failures name rate limits with their wait, invalid and unsupported
+  areas, and unusable queries, and offer a retry only where one can help.
+  More pages load as the list nears its end.
+
+**The map and the pending area.** `DiscoveryMap` is the G1 `HayerMap` with
+no annotations yet. It fits the camera to the committed viewport and reports
+the whole visible area each time the camera settles. The camera counts as
+moved once that area no longer contains the committed viewport while filling
+one axis. Then "Search this area" appears and the bar reads "Previous area".
+The location button asks for permission on use and only recentres, and the
+area bar names the area through the geocoder, falling back to "This area".
+
+**Strings.** Every new string is in English and Arabic: sorts and
+explainers, tags, empty and error states, the sheet and the area bar.
+
+**Not in G2.** The Filters chip, category chips and filter sheet are G3.
+Pins, pin and row selection, `ensureArea` and the coverage strip are G4. The
+details affordance on a row is M9-H. The Data & Privacy copy does not yet
+mention the kept link from M9-F or the last area searched; both belong with
+the M9-K release pass, together with the note that Discover sends the map
+area, not the device location.
+
+Tests: `discovery_area_test.dart` covers camera and viewport arithmetic, the
+moved-camera test, straight-line distance and the country pick.
+`discovery_results_controller_test.dart` covers first and later pages,
+duplicate ids, out-of-order answers, kept results while loading and after a
+rate limit, restarts, revision changes, retries, refresh and the error map.
+`discover_view_test.dart` drives the screen through the real router: the
+three starting areas, rows and tags, distance with and without location, the
+area label, Search this area with Back, sorts explained from policy, each
+empty state, a failed first load, the unsupported area, paging, the restart
+cap, and Arabic at 200% on a 320×640 screen. `discovery_url_query_test.dart`
+gained the query changes; the route tests now supply an area, since an
+opened link otherwise gains the starting area; and the erase test seeds the
+last area.
+
+The screen was also rendered with the real Nunito and Material icon fonts, in
+English at both sheet heights and in Arabic at 200%, and compared against
+artboard 1c. That render was a throwaway and is not committed; it is what
+found the squeezed header and the oversized sort chip.
+
+Verification: pinned full preflight passes generation, formatting, fatal-info
+analyses, 154 server, 254 app (up from 207) and 51 admin tests, shell checks,
+and diff checks. `scripts/build-release-apk.sh` produced signed `0.2.1+7` at
+106,630,595 bytes with SHA-256
+`ba8e607d3351070189dd19812327204e5e220c0eca86db844015d0fc77b0ba00`. It
+declares `sa.almou.hayer` versionCode 7 / versionName 0.2.1 with target SDK
+36, verifies under APK Signature Scheme v2 with the same signing certificate
+(`426f3bf4…77a6`) as previous releases, and its compiled manifest still
+carries both discovery App Link paths.
+
+Not verified here: the MapLibre camera and visible-region reports, sheet
+gestures and the location prompt on a device; browser Back and forward
+through committed queries on the web host; and any real browse, which the
+server still refuses. The first two belong to M9-K; real results wait on
+M9-C's implementation.
 
 ### M9-F configuration and kept links — landed (2026-09-13)
 
@@ -628,6 +742,28 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ## Open handoffs to the back-end lane
 
+### Discover area country — requested 2026-09-13 (M9-G2)
+
+`DiscoverQuery.countryCode`, `ensureArea` and `deepen` each take a country
+for the committed area, and the contract says it describes the area rather
+than the device. The app has no country geometry, so G2 picks one from rough
+bounding boxes of the six countries (`discoveryCountryFor` in
+`app/lib/domain/discovery_area.dart`), smallest first, and explains an area
+outside all of them without a request. Near a border that guess can name the
+neighbour. Asked: derive the country from the viewport on the server, or
+accept a null country and return the resolved one in `DiscoverQueryContext`,
+and keep rejecting a mismatch with `unsupported_area` as planned.
+
+### Discover area label — requested 2026-09-13 (M9-G2)
+
+The area header uses `place.reverseGeocode`, as requirement 2 asks, but that
+read returns one formatted line: street, district, city, region, country,
+with whichever parts are known. `discoveryAreaName` takes the district part
+by position, which names a street when the geocoder has no district. Asked:
+a structured locality and city on a consumer reverse-geocoding read (the
+server already has them in `ResolvedLocation`), or an area label on `browse`.
+F09's shared budget is in place, so the label is enabled now.
+
 ### F17 server half — delivered 2026-09-10, client wired 2026-09-10
 
 The back-end lane landed this as `sessions.progress` in `774edc7`: a deck-free
@@ -708,6 +844,34 @@ run from here.
 
 ## Lane decisions
 
+- 2026-09-13: Register `/discover` under `/` and navigate to Discover links
+  with `go`. Every committed query change then matches the same page key,
+  so one screen, one map and one results notifier survive a change of
+  query, home stays beneath for Back, and the browser URL reflects every
+  committed query. This supersedes pushing the link over home.
+- 2026-09-13: Keep Android Back history for Discover inside the screen, one
+  entry per applied search, sort or filter change, and leave it to the
+  browser on the web, where browser Back never reaches `PopScope`. A
+  starting area and a canonical respelling replace the link through
+  `Router.neglect` instead of adding an entry.
+- 2026-09-13: Hold Discover results in one auto-disposed notifier with
+  numbered generations, not a provider family keyed by query. A family
+  would drop the previous results the moment a new query starts; the plan
+  wants them kept while the next generation loads, and kept after a rate
+  limit.
+- 2026-09-13: Decide whether the camera has moved by geometry alone: the map
+  still shows the committed viewport while it contains it and fills one
+  axis within 5%. The camera fitted to a shared link's box passes; a pan, a
+  zoom in or a clear zoom out fails. Nothing has to remember which camera
+  moves the app made itself.
+- 2026-09-13: Restart a scroll from the top at most once in a row after
+  `query_changed` or a revision change, then offer a retry. A server that
+  keeps rejecting the fresh cursor would otherwise reload the list forever.
+  A later page that adds nothing and returns the cursor it was given also
+  ends paging, for the same reason.
+- 2026-09-13: Colour row tags with the scheme's primary and error colours
+  rather than the design's green and coral, which fall under text contrast
+  at 11.5 px on a light surface.
 - 2026-09-13: Count a discovery configuration's lifetime as the server's
   `expiresAt - serverTime` from the moment it arrives, rather than comparing
   `expiresAt` with the device clock. A phone set a few minutes wrong would
@@ -723,7 +887,7 @@ run from here.
   already does. go_router does not reflect a push in the browser URL by
   default, so on the web the address bar stays at `/` after either. G2
   derives its committed query from the router and has to settle URL
-  reflection there.
+  reflection there. Superseded in G2: both now `go` to the nested route.
 - 2026-09-13: Gate discovery on a local `discoveryEnabledProvider` that is
   always false instead of waiting for M9-B. The entry, route and links can
   land and be tested now through an override, and the configuration

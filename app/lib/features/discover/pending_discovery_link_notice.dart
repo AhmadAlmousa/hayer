@@ -111,7 +111,7 @@ class _PendingDiscoveryLinkNoticeState
           .refresh();
       if (!mounted) return;
       if (availability.enabled) {
-        unawaited(context.push(location));
+        context.go(location);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

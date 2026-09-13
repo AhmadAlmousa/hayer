@@ -1021,4 +1021,258 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get discoveryStillUnavailable =>
       '«عندي وقت» لا يزال غير متاح. احتفظنا برابطك.';
+
+  @override
+  String get discoveryThisArea => 'هذه المنطقة';
+
+  @override
+  String discoveryAreaThisView(String area) {
+    return '$area · النطاق الحالي';
+  }
+
+  @override
+  String discoveryPreviousArea(String area) {
+    return 'المنطقة السابقة · $area';
+  }
+
+  @override
+  String discoveryPlacesInView(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString مكان في الخريطة',
+      many: '$countString مكاناً في الخريطة',
+      few: '$countString أماكن في الخريطة',
+      two: 'مكانان في الخريطة',
+      one: 'مكان واحد في الخريطة',
+      zero: 'لا أماكن في الخريطة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryPlacesInPreviousArea(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString مكان في المنطقة السابقة',
+      many: '$countString مكاناً في المنطقة السابقة',
+      few: '$countString أماكن في المنطقة السابقة',
+      two: 'مكانان في المنطقة السابقة',
+      one: 'مكان واحد في المنطقة السابقة',
+      zero: 'لا أماكن في المنطقة السابقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryLoadingPlaces => 'جارٍ تحميل الأماكن';
+
+  @override
+  String get discoverySearchThisArea => 'ابحث في هذه المنطقة';
+
+  @override
+  String get discoveryShowMyLocation => 'اعرض موقعي';
+
+  @override
+  String get discoverySortTitle => 'ترتيب الأماكن';
+
+  @override
+  String get discoverySortBest => 'الأفضل';
+
+  @override
+  String get discoverySortTopRated => 'الأعلى تقييماً';
+
+  @override
+  String get discoverySortMostReviewed => 'الأكثر مراجعات';
+
+  @override
+  String get discoverySortHiddenGems => 'جواهر مخفية';
+
+  @override
+  String get discoverySortWorstRated => 'الأقل تقييماً';
+
+  @override
+  String get discoverySortRecent => 'المضافة حديثاً';
+
+  @override
+  String get discoveryExplainBest => 'التقييم موزوناً بعدد من قيّموا المكان';
+
+  @override
+  String get discoveryExplainTopRated =>
+      'الأعلى تقييماً أولاً، مهما كان عدد المراجعات';
+
+  @override
+  String discoveryExplainTopRatedMinimum(String count) {
+    return 'الأعلى تقييماً أولاً، بشرط $count مراجعة على الأقل';
+  }
+
+  @override
+  String get discoveryExplainMostReviewed => 'أكثر الأماكن زحمة في هذه المنطقة';
+
+  @override
+  String discoveryExplainHiddenGems(String rating, String reviews) {
+    return 'تقييم $rating+ بأقل من $reviews مراجعة';
+  }
+
+  @override
+  String get discoveryExplainWorstRated =>
+      'الأقل تقييماً أولاً — مفيد لاستبعاد الأماكن';
+
+  @override
+  String discoveryExplainWorstRatedMinimum(String count) {
+    return 'الأقل تقييماً أولاً، بشرط $count مراجعة على الأقل — مفيد لاستبعاد الأماكن';
+  }
+
+  @override
+  String get discoveryExplainRecent => 'أحدث ما أضيف إلى دليلنا';
+
+  @override
+  String discoveryTagHiddenGem(String count) {
+    return '💎 جوهرة مخفية · $count مراجعة فقط';
+  }
+
+  @override
+  String get discoveryTagHiddenGemPlain => '💎 جوهرة مخفية';
+
+  @override
+  String discoveryTagAdded(int days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '🆕 أضيف قبل $daysString يوم',
+      many: '🆕 أضيف قبل $daysString يوماً',
+      few: '🆕 أضيف قبل $daysString أيام',
+      two: '🆕 أضيف قبل يومين',
+      one: '🆕 أضيف أمس',
+      zero: '🆕 أضيف اليوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryTagRatedBelow(String rating) {
+    return '⚠️ تقييمه أقل من $rating';
+  }
+
+  @override
+  String discoveryTagManyReviews(String count) {
+    return '🔥 $count مراجعة';
+  }
+
+  @override
+  String discoveryReviewsCompact(String count) {
+    return '$count مراجعة';
+  }
+
+  @override
+  String get discoveryNoRating => 'بدون تقييم';
+
+  @override
+  String discoveryDistanceAway(String distance) {
+    return 'على بعد $distance';
+  }
+
+  @override
+  String get discoveryStraightLineNote => 'المسافات بخط مستقيم من موقعك.';
+
+  @override
+  String discoveryCountedAt(String time) {
+    return 'حُسبت الساعة $time';
+  }
+
+  @override
+  String get discoveryFullList => 'القائمة كاملة';
+
+  @override
+  String get discoveryShowMap => 'اعرض الخريطة';
+
+  @override
+  String get discoveryRefresh => 'حدّث النتائج';
+
+  @override
+  String get discoveryEmptyFiltered => 'لا توجد أماكن هنا تطابق التصفية.';
+
+  @override
+  String get discoveryClearFilters => 'امسح التصفية';
+
+  @override
+  String get discoveryEmptyUnexplored => 'لم نستكشف هذه المنطقة بعد.';
+
+  @override
+  String get discoveryEmptyUnexploredHint =>
+      'ستظهر الأماكن هنا بعد استكشافها. جرّب منطقة قريبة في الأثناء.';
+
+  @override
+  String discoveryEmptySort(String sort) {
+    return 'لا توجد أماكن هنا تناسب «$sort».';
+  }
+
+  @override
+  String get discoveryShowBest => 'اعرض «الأفضل» بدلاً منها';
+
+  @override
+  String get discoveryLoadFailed =>
+      'تعذّر تحميل الأماكن. تحقق من الاتصال وحاول مرة أخرى.';
+
+  @override
+  String discoveryRateLimited(int seconds) {
+    final intl.NumberFormat secondsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String secondsString = secondsNumberFormat.format(seconds);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'عمليات بحث كثيرة. حاول بعد $secondsString ثانية.',
+      many: 'عمليات بحث كثيرة. حاول بعد $secondsString ثانية.',
+      few: 'عمليات بحث كثيرة. حاول بعد $secondsString ثوانٍ.',
+      two: 'عمليات بحث كثيرة. حاول بعد ثانيتين.',
+      one: 'عمليات بحث كثيرة. حاول بعد ثانية.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryRateLimitedShort =>
+      'عمليات بحث كثيرة حالياً. حاول بعد قليل.';
+
+  @override
+  String get discoveryInvalidArea =>
+      'لا يمكن البحث في هذه المنطقة. قرّب الخريطة وابحث مجدداً.';
+
+  @override
+  String get discoveryUnsupportedArea =>
+      '«عندي وقت» يغطي دول الخليج فقط. حرّك الخريطة إليها وابحث مجدداً.';
+
+  @override
+  String get discoveryBadQuery =>
+      'جزء من هذا البحث غير صالح. امسح التصفية وحاول مرة أخرى.';
+
+  @override
+  String get discoveryShowingPrevious => 'نعرض النتائج السابقة.';
+
+  @override
+  String get discoveryMoreFailed => 'تعذّر تحميل المزيد من الأماكن.';
+
+  @override
+  String get discoveryResultsChanged =>
+      'تغيّرت النتائج، فبدأت القائمة من جديد.';
+
+  @override
+  String get discoveryLinkPartlyApplied =>
+      'تعذّر استخدام جزء من هذا الرابط، فتم تجاهله.';
 }

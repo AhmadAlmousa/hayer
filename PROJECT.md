@@ -905,7 +905,8 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   the configuration read and kept disabled links landed on 2026-09-13. Device
   App Link checks belong to M9-K.
 - [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
-  `017e17c`; G2–G4 are unblocked against generated contracts and mocks.
+  `017e17c`; G2, the results screen, landed on 2026-09-13. G3 and G4 remain,
+  against generated contracts and mocks.
 - [ ] M9-H — Place detail, save, share and report (front end).
 - [ ] M9-J — Admin (front end).
 - [ ] M9-K — Cross-mode verification and dark release (both lanes).
@@ -1028,6 +1029,16 @@ implementation work after this owner-requested contract delivery.
   SHA-256 `4bb1f8986178a0e579baed9c899a6308b335035d03e713b6eaef0cf55461b2e4`
   and verifies under APK Signature Scheme v2 with the existing signer.
   Discovery stays disabled. Details are in `lane-frontend.md`.
+- 2026-09-13: landed M9-G2 in the front-end lane on the `discover.browse`
+  contract: the Discover map, area bar, sort and results sheet, with query
+  generations, kept results on failure, keyset paging and bilingual rows.
+  `/discover` now sits under `/` so committed query changes keep one screen.
+  Handoffs for the area's country and a structured area label are in the
+  lane log. Pinned full preflight passed 154 server, 254 app and 51 admin
+  tests with clean analyses. Signed `0.2.1+7` built at SHA-256
+  `ba8e607d3351070189dd19812327204e5e220c0eca86db844015d0fc77b0ba00` and
+  verifies under APK Signature Scheme v2 with the existing signer. Discovery
+  stays disabled. Details are in `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

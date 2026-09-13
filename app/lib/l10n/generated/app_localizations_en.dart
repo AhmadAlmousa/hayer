@@ -1033,4 +1033,249 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get discoveryStillUnavailable =>
       'Got time still isn’t available. Your link is kept.';
+
+  @override
+  String get discoveryThisArea => 'This area';
+
+  @override
+  String discoveryAreaThisView(String area) {
+    return '$area · this view';
+  }
+
+  @override
+  String discoveryPreviousArea(String area) {
+    return 'Previous area · $area';
+  }
+
+  @override
+  String discoveryPlacesInView(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString places in view',
+      one: '1 place in view',
+      zero: 'No places in view',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryPlacesInPreviousArea(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString places in the previous area',
+      one: '1 place in the previous area',
+      zero: 'No places in the previous area',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryLoadingPlaces => 'Loading places';
+
+  @override
+  String get discoverySearchThisArea => 'Search this area';
+
+  @override
+  String get discoveryShowMyLocation => 'Show my location';
+
+  @override
+  String get discoverySortTitle => 'Sort places';
+
+  @override
+  String get discoverySortBest => 'Best';
+
+  @override
+  String get discoverySortTopRated => 'Top rated';
+
+  @override
+  String get discoverySortMostReviewed => 'Most reviewed';
+
+  @override
+  String get discoverySortHiddenGems => 'Hidden gems';
+
+  @override
+  String get discoverySortWorstRated => 'Worst rated';
+
+  @override
+  String get discoverySortRecent => 'Recently discovered';
+
+  @override
+  String get discoveryExplainBest =>
+      'Rating weighted by how many people rated it';
+
+  @override
+  String get discoveryExplainTopRated =>
+      'Highest rating first, any review count';
+
+  @override
+  String discoveryExplainTopRatedMinimum(String count) {
+    return 'Highest rating first, with at least $count reviews';
+  }
+
+  @override
+  String get discoveryExplainMostReviewed => 'The busiest places in this view';
+
+  @override
+  String discoveryExplainHiddenGems(String rating, String reviews) {
+    return '$rating+ on fewer than $reviews reviews';
+  }
+
+  @override
+  String get discoveryExplainWorstRated =>
+      'Lowest rating first — useful for ruling out';
+
+  @override
+  String discoveryExplainWorstRatedMinimum(String count) {
+    return 'Lowest rating first, with at least $count reviews — useful for ruling out';
+  }
+
+  @override
+  String get discoveryExplainRecent => 'Newest to our catalog';
+
+  @override
+  String discoveryTagHiddenGem(String count) {
+    return '💎 Hidden gem · only $count reviews';
+  }
+
+  @override
+  String get discoveryTagHiddenGemPlain => '💎 Hidden gem';
+
+  @override
+  String discoveryTagAdded(int days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '🆕 Added $daysString days ago',
+      one: '🆕 Added yesterday',
+      zero: '🆕 Added today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryTagRatedBelow(String rating) {
+    return '⚠️ Rated below $rating';
+  }
+
+  @override
+  String discoveryTagManyReviews(String count) {
+    return '🔥 $count reviews';
+  }
+
+  @override
+  String discoveryReviewsCompact(String count) {
+    return '$count reviews';
+  }
+
+  @override
+  String get discoveryNoRating => 'No rating';
+
+  @override
+  String discoveryDistanceAway(String distance) {
+    return '$distance away';
+  }
+
+  @override
+  String get discoveryStraightLineNote =>
+      'Distances are in a straight line from your location.';
+
+  @override
+  String discoveryCountedAt(String time) {
+    return 'Counted at $time';
+  }
+
+  @override
+  String get discoveryFullList => 'Full list';
+
+  @override
+  String get discoveryShowMap => 'Show map';
+
+  @override
+  String get discoveryRefresh => 'Refresh results';
+
+  @override
+  String get discoveryEmptyFiltered =>
+      'No places in this view match your filters.';
+
+  @override
+  String get discoveryClearFilters => 'Clear filters';
+
+  @override
+  String get discoveryEmptyUnexplored => 'We haven’t explored this area yet.';
+
+  @override
+  String get discoveryEmptyUnexploredHint =>
+      'Places will show up here once we have. Try a nearby area in the meantime.';
+
+  @override
+  String discoveryEmptySort(String sort) {
+    return 'No places in this view qualify for $sort.';
+  }
+
+  @override
+  String get discoveryShowBest => 'Show Best instead';
+
+  @override
+  String get discoveryLoadFailed =>
+      'Couldn’t load places. Check your connection and try again.';
+
+  @override
+  String discoveryRateLimited(int seconds) {
+    final intl.NumberFormat secondsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String secondsString = secondsNumberFormat.format(seconds);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Too many searches. Try again in $secondsString seconds.',
+      one: 'Too many searches. Try again in 1 second.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryRateLimitedShort =>
+      'Too many searches right now. Try again shortly.';
+
+  @override
+  String get discoveryInvalidArea =>
+      'This area can’t be searched. Zoom in and search again.';
+
+  @override
+  String get discoveryUnsupportedArea =>
+      'Got time covers the Gulf countries only. Move the map there and search again.';
+
+  @override
+  String get discoveryBadQuery =>
+      'Part of this search can’t be used. Clear the filters and try again.';
+
+  @override
+  String get discoveryShowingPrevious => 'Showing the previous results.';
+
+  @override
+  String get discoveryMoreFailed => 'Couldn’t load more places.';
+
+  @override
+  String get discoveryResultsChanged =>
+      'Results changed, so the list started over.';
+
+  @override
+  String get discoveryLinkPartlyApplied =>
+      'Part of this link couldn’t be used, so it was left out.';
 }

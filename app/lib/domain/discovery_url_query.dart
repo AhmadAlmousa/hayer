@@ -348,6 +348,40 @@ final class DiscoveryUrlQuery {
     return (query: query, issues: issues);
   }
 
+  /// Whether anything besides the area and the sort narrows the results.
+  bool get hasFilters =>
+      categoryIds.isNotEmpty ||
+      reviewBands.isNotEmpty ||
+      priceLevel != null ||
+      minimumRating != null ||
+      hoursWindows.isNotEmpty ||
+      completeness.isNotEmpty ||
+      text.isNotEmpty;
+
+  /// This query over [viewport] instead.
+  DiscoveryUrlQuery withViewport(DiscoveryViewport viewport) =>
+      _copy(viewport: viewport);
+
+  /// This query ranked by [sort] instead.
+  DiscoveryUrlQuery withSort(DiscoverySort sort) => _copy(sort: sort);
+
+  /// This query's area and sort, with every filter cleared.
+  DiscoveryUrlQuery withoutFilters() =>
+      DiscoveryUrlQuery(viewport: viewport, sort: sort);
+
+  DiscoveryUrlQuery _copy({DiscoveryViewport? viewport, DiscoverySort? sort}) =>
+      DiscoveryUrlQuery(
+        viewport: viewport ?? this.viewport,
+        sort: sort ?? this.sort,
+        categoryIds: categoryIds,
+        reviewBands: reviewBands,
+        priceLevel: priceLevel,
+        minimumRating: minimumRating,
+        hoursWindows: hoursWindows,
+        completeness: completeness,
+        text: text,
+      );
+
   /// The canonical parameters, in a fixed order and without defaults.
   Map<String, String> get parameters => {
     'v': '$discoveryLinkVersion',

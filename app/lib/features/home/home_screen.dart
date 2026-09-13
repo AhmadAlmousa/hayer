@@ -289,7 +289,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           strings.gotTimeHiddenGems,
           strings.gotTimeFullMap,
         ],
-        onPressed: () => context.push('/discover'),
+        onPressed: () => context.go('/discover'),
       ),
       const Spacer(),
       const SizedBox(height: 20),

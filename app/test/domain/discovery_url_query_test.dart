@@ -9,6 +9,59 @@ void main() {
     expect(DiscoveryUrlQuery().location, '/discover?v=1');
   });
 
+  test('a new area or sort keeps the rest of the query, and clearing filters '
+      'keeps only the area and sort', () {
+    final viewport = DiscoveryViewport.tryCreate(
+      south: 24.6,
+      west: 46.6,
+      north: 24.8,
+      east: 46.8,
+    )!;
+    final moved = DiscoveryViewport.tryCreate(
+      south: 24.7,
+      west: 46.7,
+      north: 24.9,
+      east: 46.9,
+    )!;
+    final query = DiscoveryUrlQuery(
+      viewport: viewport,
+      sort: DiscoverySort.hiddenGems,
+      categoryIds: const ['food.cafes'],
+      priceLevel: 2,
+      text: 'late',
+    );
+
+    expect(query.hasFilters, isTrue);
+    expect(
+      query.withViewport(moved),
+      DiscoveryUrlQuery(
+        viewport: moved,
+        sort: DiscoverySort.hiddenGems,
+        categoryIds: const ['food.cafes'],
+        priceLevel: 2,
+        text: 'late',
+      ),
+    );
+    final resorted = query.withSort(DiscoverySort.best);
+    expect(resorted.sort, DiscoverySort.best);
+    expect(resorted.categoryIds, ['food.cafes']);
+    expect(resorted.viewport?.token, viewport.token);
+
+    final cleared = query.withoutFilters();
+    expect(cleared.hasFilters, isFalse);
+    expect(
+      cleared.location,
+      '/discover?v=1&bbox=24.6,46.6,24.8,46.8&sort=hidden_gems',
+    );
+    expect(
+      DiscoveryUrlQuery(
+        viewport: viewport,
+        sort: DiscoverySort.worstRated,
+      ).hasFilters,
+      isFalse,
+    );
+  });
+
   test('a fully specified query round-trips through its link', () {
     final query = DiscoveryUrlQuery(
       viewport: DiscoveryViewport.tryCreate(

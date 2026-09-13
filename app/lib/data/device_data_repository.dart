@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'discovery_area_store.dart';
 import 'display_name_store.dart';
 import 'pending_discovery_link_store.dart';
 import 'pending_swipe_store.dart';
@@ -9,10 +10,11 @@ import 'session_repository.dart';
 /// Erases everything Hayer keeps on this device.
 ///
 /// The audit's F29 found no in-product way to remove what the app has stored,
-/// and what it stores is spread across four keys and a queue: saved places
+/// and what it stores is spread across five keys and a queue: saved places
 /// and their notes, the name a room is joined under, the pointer to the room
-/// that can still be resumed, a discovery link kept for a retry, swipes not
-/// yet delivered, and the anonymous credential the device signs in with. Each
+/// that can still be resumed, a discovery link kept for a retry, the last area
+/// searched in Got time, swipes not yet delivered, and the anonymous credential
+/// the device signs in with. Each
 /// store knows how to forget its own part; nothing knew how to forget all of
 /// it.
 class DeviceDataRepository {
@@ -56,6 +58,7 @@ class DeviceDataRepository {
     await outbox.clear();
     await _forget(SessionRepository.activeSessionKey);
     await _forget(SecurePendingDiscoveryLinkStore.storageKey);
+    await _forget(SecureDiscoveryAreaStore.storageKey);
     await signOut();
   }
 

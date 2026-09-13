@@ -8,6 +8,7 @@ import 'package:hayer_app/app/router.dart';
 import 'package:hayer_app/app/theme.dart';
 import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/features/discover/discover_screen.dart';
+import 'package:hayer_app/features/discover/discover_view.dart';
 import 'package:hayer_app/features/discover/discovery_config_controller.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 import 'package:hayer_app/l10n/localization_delegates.dart';
@@ -15,7 +16,12 @@ import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'discovery_fakes.dart';
+import 'discovery_results_fakes.dart';
 
+const _riyadh = '24.6,46.6,24.8,46.8';
+
+/// An area, so an opened link is not given the starting area as well.
+const _bbox = 'bbox=$_riyadh';
 const _kept = 'Your Got time link is saved';
 const _unavailable = 'Got time isn’t available right now. Try again later.';
 const _retry = ValueKey('pending-discovery-link-retry');
@@ -25,6 +31,7 @@ void main() {
 
   setUp(() {
     FlutterSecureStorage.setMockInitialValues({});
+    useFakeMapPlatform();
     fixture = _Fixture();
   });
 
@@ -97,15 +104,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, '/discover');
-    expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.widgetWithText(AppBar, 'Got time'), findsOneWidget);
+    expect(find.byType(DiscoverView), findsOneWidget);
     expect(fixture.links.location, isNull);
   });
 
   testWidgets('Retry keeps a link while discovery stays off, then opens and '
       'forgets it', (tester) async {
     // A link kept before the app last closed.
-    fixture.links.location = '/discover?v=1&sort=top_rated';
+    fixture.links.location = '/discover?v=1&$_bbox&sort=top_rated';
     fixture.bootstrap.config = testDiscoveryConfig(enabled: false);
 
     final router = await _pumpApp(tester, fixture, '/');
@@ -122,17 +128,20 @@ void main() {
       findsOneWidget,
     );
     expect(router.routeInformationProvider.value.uri.path, '/');
-    expect(fixture.links.location, '/discover?v=1&sort=top_rated');
+    expect(fixture.links.location, '/discover?v=1&$_bbox&sort=top_rated');
 
     fixture.bootstrap.config = testDiscoveryConfig();
     await tester.tap(find.byKey(_retry));
     await tester.pumpAndSettle();
 
-    // Retry pushes the link over home, and a push leaves the reflected URL
-    // alone, so read the link the opened screen was given.
+    // Retry opens the link over home, so Back returns there.
     final uri = tester.widget<DiscoverScreen>(find.byType(DiscoverScreen)).uri;
     expect(uri.path, '/discover');
-    expect(uri.queryParameters, {'v': '1', 'sort': 'top_rated'});
+    expect(uri.queryParameters, {
+      'v': '1',
+      'bbox': _riyadh,
+      'sort': 'top_rated',
+    });
     expect(fixture.links.location, isNull);
   });
 
@@ -153,7 +162,7 @@ void main() {
     final router = await _pumpApp(
       tester,
       fixture,
-      '/discover?v=1&sort=top_rated',
+      '/discover?v=1&$_bbox&sort=top_rated',
     );
     expect(find.byType(DiscoverScreen), findsOneWidget);
 
@@ -165,7 +174,7 @@ void main() {
 
     expect(router.routeInformationProvider.value.uri.path, '/');
     expect(find.text(_kept), findsOneWidget);
-    expect(fixture.links.location, '/discover?v=1&sort=top_rated');
+    expect(fixture.links.location, '/discover?v=1&$_bbox&sort=top_rated');
   });
 
   testWidgets('a mounted web discovery link keeps its query when normalized', (
@@ -174,13 +183,14 @@ void main() {
     final router = await _pumpApp(
       tester,
       fixture,
-      '/app/discover?v=1&sort=top_rated&cat=cafes',
+      '/app/discover?v=1&$_bbox&sort=top_rated&cat=cafes',
     );
 
     final uri = router.routeInformationProvider.value.uri;
     expect(uri.path, '/discover');
     expect(uri.queryParameters, {
       'v': '1',
+      'bbox': _riyadh,
       'sort': 'top_rated',
       'cat': 'cafes',
     });
@@ -208,6 +218,14 @@ Future<GoRouter> _pumpApp(
         clientProvider.overrideWithValue(DiscoveryClient(fixture.bootstrap)),
         pendingDiscoveryLinkStoreProvider.overrideWithValue(fixture.links),
         discoveryClockProvider.overrideWithValue(fixture.clock.call),
+        discoveryRepositoryProvider.overrideWithValue(
+          FakeDiscoveryRepository(),
+        ),
+        discoveryAreaStoreProvider.overrideWithValue(
+          MemoryDiscoveryAreaStore(),
+        ),
+        locationWarmupProvider.overrideWithValue(FakeLocationWarmup()),
+        locationRepositoryProvider.overrideWithValue(FakeLocationRepository()),
       ],
       child: MaterialApp.router(
         routerConfig: router,

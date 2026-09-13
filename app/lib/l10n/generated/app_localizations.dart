@@ -1885,6 +1885,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Got time still isn’t available. Your link is kept.'**
   String get discoveryStillUnavailable;
+
+  /// No description provided for @discoveryThisArea.
+  ///
+  /// In en, this message translates to:
+  /// **'This area'**
+  String get discoveryThisArea;
+
+  /// No description provided for @discoveryAreaThisView.
+  ///
+  /// In en, this message translates to:
+  /// **'{area} · this view'**
+  String discoveryAreaThisView(String area);
+
+  /// No description provided for @discoveryPreviousArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous area · {area}'**
+  String discoveryPreviousArea(String area);
+
+  /// No description provided for @discoveryPlacesInView.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No places in view} =1{1 place in view} other{{count} places in view}}'**
+  String discoveryPlacesInView(int count);
+
+  /// No description provided for @discoveryPlacesInPreviousArea.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No places in the previous area} =1{1 place in the previous area} other{{count} places in the previous area}}'**
+  String discoveryPlacesInPreviousArea(int count);
+
+  /// No description provided for @discoveryLoadingPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading places'**
+  String get discoveryLoadingPlaces;
+
+  /// No description provided for @discoverySearchThisArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Search this area'**
+  String get discoverySearchThisArea;
+
+  /// No description provided for @discoveryShowMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Show my location'**
+  String get discoveryShowMyLocation;
+
+  /// No description provided for @discoverySortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort places'**
+  String get discoverySortTitle;
+
+  /// No description provided for @discoverySortBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best'**
+  String get discoverySortBest;
+
+  /// No description provided for @discoverySortTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top rated'**
+  String get discoverySortTopRated;
+
+  /// No description provided for @discoverySortMostReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Most reviewed'**
+  String get discoverySortMostReviewed;
+
+  /// No description provided for @discoverySortHiddenGems.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden gems'**
+  String get discoverySortHiddenGems;
+
+  /// No description provided for @discoverySortWorstRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Worst rated'**
+  String get discoverySortWorstRated;
+
+  /// No description provided for @discoverySortRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently discovered'**
+  String get discoverySortRecent;
+
+  /// No description provided for @discoveryExplainBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating weighted by how many people rated it'**
+  String get discoveryExplainBest;
+
+  /// No description provided for @discoveryExplainTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest rating first, any review count'**
+  String get discoveryExplainTopRated;
+
+  /// No description provided for @discoveryExplainTopRatedMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest rating first, with at least {count} reviews'**
+  String discoveryExplainTopRatedMinimum(String count);
+
+  /// No description provided for @discoveryExplainMostReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'The busiest places in this view'**
+  String get discoveryExplainMostReviewed;
+
+  /// No description provided for @discoveryExplainHiddenGems.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating}+ on fewer than {reviews} reviews'**
+  String discoveryExplainHiddenGems(String rating, String reviews);
+
+  /// No description provided for @discoveryExplainWorstRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowest rating first — useful for ruling out'**
+  String get discoveryExplainWorstRated;
+
+  /// No description provided for @discoveryExplainWorstRatedMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowest rating first, with at least {count} reviews — useful for ruling out'**
+  String discoveryExplainWorstRatedMinimum(String count);
+
+  /// No description provided for @discoveryExplainRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest to our catalog'**
+  String get discoveryExplainRecent;
+
+  /// No description provided for @discoveryTagHiddenGem.
+  ///
+  /// In en, this message translates to:
+  /// **'💎 Hidden gem · only {count} reviews'**
+  String discoveryTagHiddenGem(String count);
+
+  /// No description provided for @discoveryTagHiddenGemPlain.
+  ///
+  /// In en, this message translates to:
+  /// **'💎 Hidden gem'**
+  String get discoveryTagHiddenGemPlain;
+
+  /// No description provided for @discoveryTagAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{🆕 Added today} =1{🆕 Added yesterday} other{🆕 Added {days} days ago}}'**
+  String discoveryTagAdded(int days);
+
+  /// No description provided for @discoveryTagRatedBelow.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Rated below {rating}'**
+  String discoveryTagRatedBelow(String rating);
+
+  /// No description provided for @discoveryTagManyReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'🔥 {count} reviews'**
+  String discoveryTagManyReviews(String count);
+
+  /// No description provided for @discoveryReviewsCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reviews'**
+  String discoveryReviewsCompact(String count);
+
+  /// No description provided for @discoveryNoRating.
+  ///
+  /// In en, this message translates to:
+  /// **'No rating'**
+  String get discoveryNoRating;
+
+  /// No description provided for @discoveryDistanceAway.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} away'**
+  String discoveryDistanceAway(String distance);
+
+  /// No description provided for @discoveryStraightLineNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Distances are in a straight line from your location.'**
+  String get discoveryStraightLineNote;
+
+  /// No description provided for @discoveryCountedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted at {time}'**
+  String discoveryCountedAt(String time);
+
+  /// No description provided for @discoveryFullList.
+  ///
+  /// In en, this message translates to:
+  /// **'Full list'**
+  String get discoveryFullList;
+
+  /// No description provided for @discoveryShowMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Show map'**
+  String get discoveryShowMap;
+
+  /// No description provided for @discoveryRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh results'**
+  String get discoveryRefresh;
+
+  /// No description provided for @discoveryEmptyFiltered.
+  ///
+  /// In en, this message translates to:
+  /// **'No places in this view match your filters.'**
+  String get discoveryEmptyFiltered;
+
+  /// No description provided for @discoveryClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get discoveryClearFilters;
+
+  /// No description provided for @discoveryEmptyUnexplored.
+  ///
+  /// In en, this message translates to:
+  /// **'We haven’t explored this area yet.'**
+  String get discoveryEmptyUnexplored;
+
+  /// No description provided for @discoveryEmptyUnexploredHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Places will show up here once we have. Try a nearby area in the meantime.'**
+  String get discoveryEmptyUnexploredHint;
+
+  /// No description provided for @discoveryEmptySort.
+  ///
+  /// In en, this message translates to:
+  /// **'No places in this view qualify for {sort}.'**
+  String discoveryEmptySort(String sort);
+
+  /// No description provided for @discoveryShowBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Best instead'**
+  String get discoveryShowBest;
+
+  /// No description provided for @discoveryLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load places. Check your connection and try again.'**
+  String get discoveryLoadFailed;
+
+  /// No description provided for @discoveryRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =1{Too many searches. Try again in 1 second.} other{Too many searches. Try again in {seconds} seconds.}}'**
+  String discoveryRateLimited(int seconds);
+
+  /// No description provided for @discoveryRateLimitedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many searches right now. Try again shortly.'**
+  String get discoveryRateLimitedShort;
+
+  /// No description provided for @discoveryInvalidArea.
+  ///
+  /// In en, this message translates to:
+  /// **'This area can’t be searched. Zoom in and search again.'**
+  String get discoveryInvalidArea;
+
+  /// No description provided for @discoveryUnsupportedArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Got time covers the Gulf countries only. Move the map there and search again.'**
+  String get discoveryUnsupportedArea;
+
+  /// No description provided for @discoveryBadQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of this search can’t be used. Clear the filters and try again.'**
+  String get discoveryBadQuery;
+
+  /// No description provided for @discoveryShowingPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the previous results.'**
+  String get discoveryShowingPrevious;
+
+  /// No description provided for @discoveryMoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load more places.'**
+  String get discoveryMoreFailed;
+
+  /// No description provided for @discoveryResultsChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Results changed, so the list started over.'**
+  String get discoveryResultsChanged;
+
+  /// No description provided for @discoveryLinkPartlyApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of this link couldn’t be used, so it was left out.'**
+  String get discoveryLinkPartlyApplied;
 }
 
 class _AppLocalizationsDelegate

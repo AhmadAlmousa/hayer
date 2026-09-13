@@ -25,12 +25,20 @@ GoRouter createAppRouter({String? initialLocation}) => GoRouter(
     return null;
   },
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-    GoRoute(path: '/setup', builder: (context, state) => const SetupScreen()),
     GoRoute(
-      path: '/discover',
-      builder: (context, state) => DiscoverScreen(uri: state.uri),
+      path: '/',
+      builder: (context, state) => const HomeScreen(),
+      routes: [
+        // Under home, so that `go` to a Discover link always leaves home
+        // beneath it, and so that every committed query change keeps the same
+        // page, map and results rather than stacking a new screen.
+        GoRoute(
+          path: 'discover',
+          builder: (context, state) => DiscoverScreen(uri: state.uri),
+        ),
+      ],
     ),
+    GoRoute(path: '/setup', builder: (context, state) => const SetupScreen()),
     GoRoute(path: '/scan', builder: (context, state) => const ScanScreen()),
     GoRoute(
       path: '/data',

@@ -7,6 +7,8 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import '../data/local/app_database.dart';
 import '../data/device_data_repository.dart';
+import '../data/discovery_area_store.dart';
+import '../data/discovery_repository.dart';
 import '../data/display_name_store.dart';
 import '../data/location_warmup.dart';
 import '../data/location_repository.dart';
@@ -86,4 +88,12 @@ final routeEstimateRepositoryProvider = Provider<RouteEstimateRepository>(
 
 final pendingDiscoveryLinkStoreProvider = Provider<PendingDiscoveryLinkStore>(
   (ref) => const SecurePendingDiscoveryLinkStore(),
+);
+
+final discoveryRepositoryProvider = Provider<DiscoveryRepository>(
+  (ref) => DiscoveryRepository(client: ref.watch(clientProvider)),
+);
+
+final discoveryAreaStoreProvider = Provider<DiscoveryAreaStore>(
+  (ref) => const SecureDiscoveryAreaStore(),
 );

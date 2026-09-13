@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../core/page_title.dart';
 import '../../domain/discovery_url_query.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'discover_view.dart';
 import 'discovery_config_controller.dart';
 import 'pending_discovery_link_controller.dart';
 
@@ -71,8 +72,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     }
     _markOpened();
     setBrowserPageTitle('${strings.gotTime} — ${strings.appName}');
-    // The map, results sheet and filters arrive with M9-G.
-    return Scaffold(appBar: AppBar(title: Text(strings.gotTime)));
+    return DiscoverView(uri: widget.uri);
   }
 
   void _leaveUnavailable() {
