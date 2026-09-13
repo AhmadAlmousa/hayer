@@ -24,13 +24,19 @@ Last updated: 2026-09-13
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The integration suite is fully green: 36/36 against real PostGIS, twice.
+- The latest integration suite is fully green: 38/38 against real PostGIS,
+  including the two legacy-calibration regressions added on 2026-09-13.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
-  additive deck-free server progress contract is ready for client integration.
+  additive deck-free server progress contract is wired into the merged client.
+  Two-device acceptance remains open.
+- The owner confirmed the deployed Start swiping calibration repair works.
+  The incident is closed; the remaining beta gates are summarized in
+  `PROJECT.md` under the 2026-09-13 beta acceptance review. Next backend work
+  is F08/F09 provider/geocoder bounds, followed by F10/F21 source resilience.
 
 ## Checkpoints
 
-### Legacy calibration runtime repair — deployment pending (2026-09-13)
+### Legacy calibration runtime repair — owner verified in production (2026-09-13)
 
 The September 12 production logs identify the Start swiping failure as
 `FormatException: Calibration field directionsEndpoint is missing` during
@@ -57,15 +63,12 @@ warnings remain. `scripts/build-release-apk.sh` produced signed `0.2.1+7` and
 its alias; APK Signature Scheme v2 verifies, with SHA-256
 `ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`.
 
-Deployment handoff: the source is shared with Unraid at
-`/mnt/user/coding/places_swiper/hayer`. SSH authentication failed, so production
-has not been rebuilt or verified after this fix. From that directory, run
-`scripts/build-server-image.sh` followed by
-`docker compose -f backend/deploy/docker-compose.yml up -d server gateway`.
-Retain the normal source-canary/migration gates. Then run the authenticated
-`backend/hayer_client/tool/create_deck_canary.dart` and retry Start swiping;
-bootstrap health alone does not exercise the active calibration. The existing
-APK needs no reinstall for this backend repair.
+Production follow-up: after the Unraid rebuild/recreate handoff, the owner
+reported "resolved" on 2026-09-13. This closes the Start swiping incident in
+`39ab02a` using the owner's successful retry. SSH authentication was unavailable
+and the authenticated canary was not independently rerun. The existing APK
+needs no reinstall for this backend repair. Full solo/offline/multiplayer,
+gateway, recovery and release acceptance remain open in `PROJECT.md`.
 
 ### The first real run's four failures are closed (2026-09-11)
 

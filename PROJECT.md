@@ -4,9 +4,36 @@ Last updated: 2026-09-13
 
 Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7-A/M7-E/M7-F — physical-device and live safety acceptance;
-M7-H structured POI issue reporting is complete; both F17 halves are merged
-and their client/server integration is the open follow-up
+Current focus: M7-C — bounded provider admission and a shared geocoder budget
+(F08/F09), then source-outage readiness and truthful refresh outcomes
+(F10/F21). M7-A/M7-E/M7-F device and live safety acceptance remain open.
+
+## Beta acceptance review — 2026-09-13
+
+The owner confirmed that Start swiping works after the legacy-calibration
+repair in `39ab02a`; that production incident is closed. This is owner-reported
+journey evidence, not an independently rerun authenticated canary or complete
+solo/multiplayer acceptance. Invited-beta closure remains blocked.
+
+The latest recorded automated run passed 130 server, 165 app and 51 admin
+tests, plus all 38 tests against dedicated remote PostGIS. The signed
+`0.2.1+7` APK built and its v2 signature verified. Both F17 halves are merged.
+Those results supersede older statements below that PostGIS tests could not
+run; they do not establish gateway, restore, device or CI acceptance.
+
+| Remaining gate | Evidence required to close it |
+| --- | --- |
+| Core journeys — M7-A/M7-E/M7-G | Signed-APK solo create → force-stop → resume → results; two-device majority/unanimous, editable choices and late joins; final offline swipe, lost acknowledgement and reconnect converge without lost or duplicate votes. Complete the remaining failure/race matrix. |
+| Provider and catalog — M7-C | Implement F08/F09 bounded shared admission/cancellation and geocoder cache/budget, then F10/F21 cached operation during source outage and truthful refresh outcomes. Record representative spatial query plans and response-fixture coverage. |
+| Security and governance — M7-B | Real-gateway quota/forged-header/direct-origin checks; connector trust decision; supervised private-host passkey/revocation checks; owner-reviewed bilingual privacy notice, contact, source inventory, retention and identity cleanup decisions. |
+| Release and recovery — M7-D/M7-F | Locked native image and enforced green CI; current migrations and gateway policies; isolated data/secret restore and rollback; least-privilege roles, resource limits and tested operational alerts. |
+| Device quality and analytics — M7-E | TalkBack/focus, large native text, RTL, reduced motion, denied/approximate location, background recovery and release-profile performance. Complete bounded analytics query/aggregation work (F22); F23's actual-match attribution regression already passes. |
+| Final release — M7-F | Reconcile the planned safety build 6 with the current build 7 artifact; verify the chosen APK/checksum, previous-client compatibility and rollback through production, then deliberately update the minimum build and create the beta tag. |
+
+Next backend implementation: F08/F09, followed by F10/F21. Physical-device
+acceptance can proceed alongside it. This review does not change the locked
+release/build policy or waive any gate. Discovery expansion remains separate
+from closure of the current swipe beta.
 
 Live handoff (2026-09-09): G02 is complete in commit `2d4b81d`; P05 is complete
 in commit `da8e7ca`; P06 is complete in commit `a17567b`. Pinned full preflight
@@ -399,11 +426,12 @@ drift fails safely, and spatial queries use their indexes.
 - [ ] Add the authenticated consumer-web photo proxy before enabling consumer
   web; this is deferred to M8 and does not block the Android beta. Native
   Android currently loads only allowlisted HTTPS source photos.
-- [!] A generated Serverpod/PostGIS integration suite now covers concurrent
+- [~] A generated Serverpod/PostGIS integration suite now covers concurrent
   create retries, immutable decks, late joins, private aggregate results,
   duplicate swipes, majority/unanimous convergence, and authoritative expiry.
-  Its isolated database runner is wired into CI; a green containerized run is
-  still required before this gate is verified.
+  All 38 tests passed against dedicated remote PostGIS on 2026-09-13. Its
+  isolated database runner is wired into CI; a green containerized CI run is
+  still required before this gate is fully verified.
 
 Exit: integration tests prove identical decks, private votes, correct
 consensus, late joins, retry safety, and expiry.
@@ -695,11 +723,15 @@ production rollout.
   paused, with a manual refresh. What remains is two-device certification on
   real hardware and the server-side fold of `results` into one response, which
   belongs to M7-A.
-- [ ] Fix F22/F23 by using bounded SQL aggregation/query paths and attributing
-  matches to the actual matched place under versioned metric definitions.
-- [ ] Fix F24–F27 as one adaptive presentation pass: support at least 200%
-  text where required, semantics/reduced motion, lazy variable-height results,
-  and localized distance language that does not invent travel-time precision.
+- [ ] Fix F22 by using bounded SQL aggregation/query paths.
+- [x] Fix F23's last-swiped-place attribution: completion records the actual
+  consensus-matched places and distinguishes no-match completion. The remote
+  PostGIS regression likes only the first card, finishes on a different card,
+  and verifies `place_matched` credits the first card. It passed on 2026-09-13;
+  versioned analytics semantics were implemented with G02.
+- [~] Certify the implemented F24–F27 adaptive presentation pass on physical
+  devices using the acceptance matrix above. Automated presentation coverage
+  is complete; device conformance remains open.
 
 Exit: two-device state converges after stream/network failures; setup remains
 recoverable; core journeys work at large text/RTL/reduced motion; analytics
@@ -738,9 +770,11 @@ build 5 is rejected only after build 6 and rollback evidence are verified.
   revisions, no-op same-choice retries, transactional snapshots/mutations,
   bilingual controls, and old-server compatibility via an optional bundle
   field. Likes and deck completion remain separate from destination ballots.
-- [ ] Execute the new real-PostGIS concurrent choice/retry/heartbeat,
-  authorization, expiry, and late-join regressions; certify two-device
-  reconnect behavior before server-first deployment.
+- [x] Execute the real-PostGIS choice retry/edit, simultaneous group choice,
+  membership/candidate/expiry and late-join regressions. They pass in the
+  38-test remote suite recorded on 2026-09-13.
+- [ ] Certify two-device choice/reconnect behavior and compatibility through
+  the deployed gateway before accepting the decision flow for beta.
 - P04 runoff/new-round recovery is explicitly deferred by the owner
   (2026-09-08): keep finding a place short and fun. Do not add it implicitly.
 
@@ -887,6 +921,16 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-13: the owner confirmed the deployed calibration repair resolved
+  Start swiping. Closed that incident using owner-reported production
+  evidence; no independent authenticated canary was rerun. Reviewed current
+  acceptance against `astra-audit.md` and both lane logs, reconciled the
+  PostGIS/choice-test status, confirmed F23's implemented actual-match
+  attribution against source and its passing regression, and recorded the
+  remaining beta gates above.
+  The previous full preflight, 38-test PostGIS run and signed APK remain the
+  validation baseline; this follow-up changes documentation only. Invited-
+  beta acceptance, minimum-build changes and beta tagging remain open.
 - 2026-09-13: fixed the Start swiping server failure reported on September 12.
   Older active database calibrations can omit both directions fields; runtime
   loading now inherits only that pair from the bundled calibration, retaining
@@ -899,11 +943,10 @@ measurements and rollback paths.
   `scripts/build-release-apk.sh` produced signed `0.2.1+7`, with v2 signature
   verification and SHA-256
   `ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`.
-  Production deployment and authenticated deck verification remain pending:
-  SSH authentication to Unraid is unavailable. Rebuild/recreate the server
-  from the shared checkout as documented in `backend/deploy/README.md`;
-  existing APKs can use the backend repair without reinstalling. No database
-  rewrite or catalog reset is required. Details are in `lane-backend.md`.
+  Deployment initially required an owner handoff because SSH authentication
+  to Unraid was unavailable; the owner subsequently confirmed Start swiping
+  was resolved. No database rewrite or catalog reset was required. Details
+  are in `lane-backend.md`.
 - 2026-09-10: aligned the toolchain resolver in `044617b`, closing the
   front-end lane's standing report. `hayer_resolve_dart` now prefers an explicit
   `DART_BIN`, then the resolved Flutter's sibling `dart`, then `PATH`, then the

@@ -1,5 +1,14 @@
 # Hayer production-readiness audit
 
+Acceptance update, 13 September 2026: the owner confirmed the deployed legacy-
+calibration repair resolves Start swiping. The latest recorded preflight passes
+130 server, 165 consumer and 51 admin tests; all 38 remote PostGIS integration
+tests pass, including destination-choice and calibration regressions. A signed
+`0.2.1+7` APK is built and verified. This closes that incident, not invited-beta
+acceptance. The current remaining gates and next F08/F09 work are recorded in
+[`PROJECT.md`](PROJECT.md#beta-acceptance-review--2026-09-13). Findings below
+retain their historical audit wording rather than being a current defect list.
+
 Product decision update, 8 September 2026: the owner approved P01 shared
 details before swiping and revised P03 to an inline multiplayer election.
 Each participant gets one editable My choice ballot; every result shows its
