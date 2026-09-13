@@ -13,6 +13,8 @@ import '../../app/locale_controller.dart';
 import '../../app/theme_controller.dart';
 import '../../core/widgets/version_indicator.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../discover/discovery_config_controller.dart';
+import '../discover/pending_discovery_link_notice.dart';
 import 'mode_hero_button.dart';
 import 'resume_session_button.dart';
 
@@ -124,6 +126,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ],
                         ),
+                        const PendingDiscoveryLinkNotice(),
                         if (discoveryEnabled)
                           ..._modeChoice(strings)
                         else

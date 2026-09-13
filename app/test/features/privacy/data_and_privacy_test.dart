@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/data/device_data_repository.dart';
 import 'package:hayer_app/data/display_name_store.dart';
+import 'package:hayer_app/data/pending_discovery_link_store.dart';
 import 'package:hayer_app/data/pending_swipe_store.dart';
 import 'package:hayer_app/data/saved_place_store.dart';
 import 'package:hayer_app/data/session_repository.dart';
@@ -241,6 +242,8 @@ class _Fixture {
       ),
     );
     storage.values[SessionRepository.activeSessionKey] = 'session';
+    storage.values[SecurePendingDiscoveryLinkStore.storageKey] =
+        '/discover?v=1';
   }
 }
 

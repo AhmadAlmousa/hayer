@@ -1849,6 +1849,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Got time isn’t available right now. Try again later.'**
   String get discoveryUnavailable;
+
+  /// No description provided for @discoveryChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking whether Got time is available'**
+  String get discoveryChecking;
+
+  /// No description provided for @discoveryLinkSavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Got time link is saved'**
+  String get discoveryLinkSavedTitle;
+
+  /// No description provided for @discoveryLinkReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Got time is available now.'**
+  String get discoveryLinkReady;
+
+  /// No description provided for @openDiscoveryLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Open link'**
+  String get openDiscoveryLink;
+
+  /// No description provided for @dismissDiscoveryLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismissDiscoveryLink;
+
+  /// No description provided for @discoveryStillUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Got time still isn’t available. Your link is kept.'**
+  String get discoveryStillUnavailable;
 }
 
 class _AppLocalizationsDelegate

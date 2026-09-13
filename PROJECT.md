@@ -896,8 +896,9 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [~] M9-E — Harvesting and coverage (back end, after F21). Consumer coverage
   contracts and web path rewrites delivered; workers, coverage storage and
   admin manifest/job/growth contracts remain open. Hosting deployment pending.
-- [~] M9-F — Entry, configuration and links (front end). Contract-free prework
-  landed in `bb212d7`; configuration and disabled-link retention are unblocked.
+- [x] M9-F — Entry, configuration and links (front end). Prework in `bb212d7`;
+  the configuration read and kept disabled links landed on 2026-09-13. Device
+  App Link checks belong to M9-K.
 - [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
   `017e17c`; G2–G4 are unblocked against generated contracts and mocks.
 - [ ] M9-H — Place detail, save, share and report (front end).
@@ -994,6 +995,16 @@ implementation work after this owner-requested contract delivery.
   verifies under APK Signature Scheme v2 with the existing signer.
   Discovery stays disabled, and M9-F and M9-G stay open. Details are in
   `lane-frontend.md`.
+- 2026-09-13: closed M9-F in the front-end lane on the `4014037` contract.
+  The app reads `bootstrap.discoveryConfig` after startup, caches it for the
+  server's lifetime capped at five minutes, and treats errors, older servers,
+  other contract versions and unrefreshable expired configurations as
+  disabled. A discovery link that cannot open is kept on the device, with
+  Try again and Dismiss on home. Pinned full preflight passed 151 server, 207
+  app and 51 admin tests with clean analyses. Signed `0.2.1+7` built at
+  SHA-256 `4bb1f8986178a0e579baed9c899a6308b335035d03e713b6eaef0cf55461b2e4`
+  and verifies under APK Signature Scheme v2 with the existing signer.
+  Discovery stays disabled. Details are in `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

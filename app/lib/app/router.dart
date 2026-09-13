@@ -29,7 +29,7 @@ GoRouter createAppRouter({String? initialLocation}) => GoRouter(
     GoRoute(path: '/setup', builder: (context, state) => const SetupScreen()),
     GoRoute(
       path: '/discover',
-      builder: (context, state) => const DiscoverScreen(),
+      builder: (context, state) => DiscoverScreen(uri: state.uri),
     ),
     GoRoute(path: '/scan', builder: (context, state) => const ScanScreen()),
     GoRoute(

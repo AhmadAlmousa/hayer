@@ -5,6 +5,7 @@ import '../../core/page_title.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../discover/pending_discovery_link_controller.dart';
 
 /// What Hayer sends, keeps, and shows other people — and the way to erase what
 /// this device holds.
@@ -154,6 +155,8 @@ class _DataAndPrivacyScreenState extends ConsumerState<DataAndPrivacyScreen> {
     try {
       await repository.eraseDeviceData();
       if (!mounted) return;
+      // The kept link is also held in memory for home's notice.
+      ref.invalidate(pendingDiscoveryLinkProvider);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(strings.dataErased)));

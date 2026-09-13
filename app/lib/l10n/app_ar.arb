@@ -326,5 +326,11 @@
   "gotTimeSortAndFilter": "ترتيب وتصفية",
   "gotTimeHiddenGems": "جواهر مخفية",
   "gotTimeFullMap": "الخريطة كاملة",
-  "discoveryUnavailable": "«عندي وقت» غير متاح حالياً. حاول لاحقاً."
+  "discoveryUnavailable": "«عندي وقت» غير متاح حالياً. حاول لاحقاً.",
+  "discoveryChecking": "جارٍ التحقق من توفر «عندي وقت»",
+  "discoveryLinkSavedTitle": "رابط «عندي وقت» محفوظ",
+  "discoveryLinkReady": "«عندي وقت» متاح الآن.",
+  "openDiscoveryLink": "افتح الرابط",
+  "dismissDiscoveryLink": "تجاهل",
+  "discoveryStillUnavailable": "«عندي وقت» لا يزال غير متاح. احتفظنا برابطك."
 }

@@ -329,5 +329,11 @@
   "gotTimeSortAndFilter": "Sort & filter",
   "gotTimeHiddenGems": "Hidden gems",
   "gotTimeFullMap": "Full map",
-  "discoveryUnavailable": "Got time isn’t available right now. Try again later."
+  "discoveryUnavailable": "Got time isn’t available right now. Try again later.",
+  "discoveryChecking": "Checking whether Got time is available",
+  "discoveryLinkSavedTitle": "Your Got time link is saved",
+  "discoveryLinkReady": "Got time is available now.",
+  "openDiscoveryLink": "Open link",
+  "dismissDiscoveryLink": "Dismiss",
+  "discoveryStillUnavailable": "Got time still isn’t available. Your link is kept."
 }

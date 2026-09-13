@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'display_name_store.dart';
+import 'pending_discovery_link_store.dart';
 import 'pending_swipe_store.dart';
 import 'saved_place_store.dart';
 import 'session_repository.dart';
@@ -8,11 +9,12 @@ import 'session_repository.dart';
 /// Erases everything Hayer keeps on this device.
 ///
 /// The audit's F29 found no in-product way to remove what the app has stored,
-/// and what it stores is spread across three keys and a queue: saved places
+/// and what it stores is spread across four keys and a queue: saved places
 /// and their notes, the name a room is joined under, the pointer to the room
-/// that can still be resumed, swipes not yet delivered, and the anonymous
-/// credential the device signs in with. Each store knows how to forget its own
-/// part; nothing knew how to forget all of it.
+/// that can still be resumed, a discovery link kept for a retry, swipes not
+/// yet delivered, and the anonymous credential the device signs in with. Each
+/// store knows how to forget its own part; nothing knew how to forget all of
+/// it.
 class DeviceDataRepository {
   const DeviceDataRepository({
     required this.signOut,
@@ -52,13 +54,14 @@ class DeviceDataRepository {
     await savedPlaces.write(const []);
     await displayNames.clear();
     await outbox.clear();
-    await _forgetActiveSession();
+    await _forget(SessionRepository.activeSessionKey);
+    await _forget(SecurePendingDiscoveryLinkStore.storageKey);
     await signOut();
   }
 
-  Future<void> _forgetActiveSession() async {
+  Future<void> _forget(String key) async {
     try {
-      await secureStorage.delete(key: SessionRepository.activeSessionKey);
+      await secureStorage.delete(key: key);
     } catch (_) {
       // A missing key is the state this asks for.
     }

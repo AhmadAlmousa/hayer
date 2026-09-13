@@ -19,9 +19,12 @@ Last updated: 2026-09-13
 ## Current state
 
 - M9, "Got time" discovery, opened on 2026-09-13 and runs alongside M7.
-  G1 and M9-F's contract-free prework landed in `017e17c` and `bb212d7`.
-  The rest of this lane's M9 work waits for back-end contracts (M9-B to
-  M9-E). See the checkpoint below and `discovery_upgrade.md`
+  G1 landed in `017e17c`. M9-F is complete: its prework in `bb212d7`, and
+  the configuration read and kept links on the back-end lane's contract
+  commit `4014037`. The M9-B/C/D and consumer M9-E contracts are on `main`
+  (`backend/discovery-contracts.md`), so G2–G4, H and J can build against
+  the generated types and fakes; every discovery data RPC still answers
+  `feature_disabled`. See the checkpoints below and `discovery_upgrade.md`
   §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
@@ -48,6 +51,74 @@ Last updated: 2026-09-13
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-F configuration and kept links — landed (2026-09-13)
+
+The second half of M9-F, built on the configuration contract in `4014037`.
+The server still answers `enabled: false`, so discovery stays dark. What
+changed is that the app now asks, and no longer loses a link it cannot open.
+
+**The configuration read.** `DiscoveryConfigController`
+(`app/lib/features/discover/discovery_config_controller.dart`) reads
+`bootstrap.discoveryConfig` the first time home or `/discover` needs it,
+never inside `_initialize`, so Swipe startup neither waits on it nor fails
+with it. Its state is unknown, enabled or disabled, and
+`discoveryEnabledProvider` now derives from it instead of being a constant.
+
+- A configuration is trusted for `expiresAt - serverTime`, capped at five
+  minutes and counted from receipt on the device. Neither end is compared
+  with the device clock, so a phone set to the wrong time neither stretches
+  nor shortens the lifetime.
+- It is read again when it expires in the foreground, on resume once it has
+  expired, and before `/discover` opens without a fresh one. Reads in flight
+  are shared, and an expiry-driven refresh waits at least 30 seconds, so a
+  configuration that arrives already expired cannot become a request loop.
+- A failed read, an older server without the method, and a contract version
+  other than 1 all mean disabled. A failed refresh keeps a configuration
+  still within its lifetime; an expired one that cannot be refreshed becomes
+  disabled, as the contract requires.
+
+**Kept links.** This replaces the prework's `go('/')`, which dropped the link.
+
+- `/discover` shows a progress indicator until the configuration has been
+  revalidated, so "not known yet" is no longer treated as off.
+- When discovery is off, or turns off while the screen is open, the link's
+  canonical location is written to secure storage through
+  `PendingDiscoveryLinkStore` before the screen returns home. A stored value
+  is read back through the codec, and anything that is not a `/discover`
+  link is ignored.
+- Home shows a notice with Try again and Dismiss. Try again reads the
+  configuration again whatever the cache says, and opens the link only if
+  discovery is on; otherwise it says the link is still kept. The link
+  survives restarts and is forgotten when `/discover` opens that same link,
+  on Dismiss, or when the device's data is erased.
+- English and Arabic strings for the notice and the progress label.
+
+Tests: `discovery_config_controller_test.dart` covers the lifetime cap, the
+server-clock lifetime, expiry, resume, shared reads and each disabled cause.
+`discover_route_test.dart` covers `/discover` with discovery off, missing,
+on a newer contract and unknown, and `/app/discover` off and on; Retry while
+still off and then on; Dismiss; and discovery turning off at foreground
+expiry while the screen is open. `home_modes_test.dart` now drives home
+through the configuration for on, off and unknown, each also in Arabic at
+200% text on a 320x640 screen with a kept link showing.
+`pending_discovery_link_store_test.dart` covers canonical read-back, and the
+erase test now seeds a kept link. `widget_test.dart` and the setup and swipe
+coverage in `consumer_ux_test.dart` are unmodified.
+
+Verification: pinned full preflight passes generation, formatting, fatal-info
+analyses, 151 server, 207 app (up from 184) and 51 admin tests, shell checks,
+and diff checks. `scripts/build-release-apk.sh` produced signed `0.2.1+7` at
+105,794,923 bytes with SHA-256
+`4bb1f8986178a0e579baed9c899a6308b335035d03e713b6eaef0cf55461b2e4`. It
+declares `sa.almou.hayer` versionCode 7 / versionName 0.2.1 with target SDK
+36, verifies under APK Signature Scheme v2 with the same signing certificate
+(`426f3bf4…77a6`) as previous releases, and its compiled manifest still
+carries both discovery App Link paths.
+
+Not verified here: App Link verification and cold and warm links on a
+device, and direct `/discover` URLs on the web host. Both belong to M9-K and
+to the back-end lane's pending gateway deployment.
 
 ### M9-G1 and M9-F prework — landed (2026-09-13, commits `017e17c`, `bb212d7`)
 
@@ -637,6 +708,22 @@ run from here.
 
 ## Lane decisions
 
+- 2026-09-13: Count a discovery configuration's lifetime as the server's
+  `expiresAt - serverTime` from the moment it arrives, rather than comparing
+  `expiresAt` with the device clock. A phone set a few minutes wrong would
+  otherwise see every configuration as already expired, or trust one far
+  longer than five minutes.
+- 2026-09-13: Revalidate on resume only once the configuration has expired.
+  The five-minute cap already bounds staleness, and resumes also follow
+  permission dialogs and the share sheet, so a read on every resume would
+  add requests without a fresher answer.
+- 2026-09-13: Keep one link, the most recent. A second link that cannot open
+  replaces the first, because the newer one is what the user just asked for.
+- 2026-09-13: Retry pushes the kept link over home, as the Got time hero
+  already does. go_router does not reflect a push in the browser URL by
+  default, so on the web the address bar stays at `/` after either. G2
+  derives its committed query from the router and has to settle URL
+  reflection there.
 - 2026-09-13: Gate discovery on a local `discoveryEnabledProvider` that is
   always false instead of waiting for M9-B. The entry, route and links can
   land and be tested now through an override, and the configuration
@@ -645,6 +732,7 @@ run from here.
   through `go('/')`, which drops the link. Requirement 15 asks to keep the
   URL for a later retry when discovery is disabled live; that belongs with
   the configuration provider, which can tell "not known yet" from "off".
+  Done with that provider; see "M9-F configuration and kept links".
 - 2026-09-13: Keep the link codec in `domain/` as pure Dart with its own
   validation mirroring the planned server limits. The server stays
   authoritative; the codec exists for canonical, readable links and an

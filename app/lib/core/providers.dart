@@ -10,6 +10,7 @@ import '../data/device_data_repository.dart';
 import '../data/display_name_store.dart';
 import '../data/location_warmup.dart';
 import '../data/location_repository.dart';
+import '../data/pending_discovery_link_store.dart';
 import '../data/pending_swipe_store.dart';
 import '../data/poi_issue_repository.dart';
 import '../data/session_repository.dart';
@@ -83,9 +84,6 @@ final routeEstimateRepositoryProvider = Provider<RouteEstimateRepository>(
   ),
 );
 
-/// Whether the "Got time" discovery mode is available.
-///
-/// Discovery ships dark. This stays false until the server's discovery
-/// configuration read exists (M9-B) and replaces it; tests override it to
-/// exercise the enabled presentation.
-final discoveryEnabledProvider = Provider<bool>((ref) => false);
+final pendingDiscoveryLinkStoreProvider = Provider<PendingDiscoveryLinkStore>(
+  (ref) => const SecurePendingDiscoveryLinkStore(),
+);

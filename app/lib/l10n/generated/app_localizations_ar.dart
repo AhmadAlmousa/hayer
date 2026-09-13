@@ -1002,4 +1002,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get discoveryUnavailable => '«عندي وقت» غير متاح حالياً. حاول لاحقاً.';
+
+  @override
+  String get discoveryChecking => 'جارٍ التحقق من توفر «عندي وقت»';
+
+  @override
+  String get discoveryLinkSavedTitle => 'رابط «عندي وقت» محفوظ';
+
+  @override
+  String get discoveryLinkReady => '«عندي وقت» متاح الآن.';
+
+  @override
+  String get openDiscoveryLink => 'افتح الرابط';
+
+  @override
+  String get dismissDiscoveryLink => 'تجاهل';
+
+  @override
+  String get discoveryStillUnavailable =>
+      '«عندي وقت» لا يزال غير متاح. احتفظنا برابطك.';
 }

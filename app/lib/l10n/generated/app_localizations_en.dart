@@ -1014,4 +1014,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get discoveryUnavailable =>
       'Got time isn’t available right now. Try again later.';
+
+  @override
+  String get discoveryChecking => 'Checking whether Got time is available';
+
+  @override
+  String get discoveryLinkSavedTitle => 'Your Got time link is saved';
+
+  @override
+  String get discoveryLinkReady => 'Got time is available now.';
+
+  @override
+  String get openDiscoveryLink => 'Open link';
+
+  @override
+  String get dismissDiscoveryLink => 'Dismiss';
+
+  @override
+  String get discoveryStillUnavailable =>
+      'Got time still isn’t available. Your link is kept.';
 }
