@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:hayer_server/src/places/calibration.dart';
 import 'package:hayer_server/src/places/google_web_session.dart';
+import 'package:hayer_server/src/places/provider_admission.dart';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 
@@ -28,6 +29,24 @@ void main() {
     allowedImageHosts: const {'lh3.googleusercontent.com'},
   );
 
+  test(
+    'all default calibration sessions use the process-wide Google budget',
+    () {
+      final first = GoogleWebSession(calibration: calibration);
+      final second = GoogleWebSession(calibration: calibration);
+      expect(
+        identical(first.transport.admission, second.transport.admission),
+        isTrue,
+      );
+      expect(
+        identical(first.transport.admission, ProviderAdmission.google),
+        isTrue,
+      );
+      first.close();
+      second.close();
+    },
+  );
+
   test('retries warm-up after a transient request failure', () async {
     var requests = 0;
     final client = _FakeClient((request) async {
@@ -35,7 +54,11 @@ void main() {
       if (requests == 1) throw const SocketException('temporarily offline');
       return _response(request);
     });
-    final session = GoogleWebSession(calibration: calibration, client: client);
+    final session = GoogleWebSession(
+      calibration: calibration,
+      client: client,
+      admission: ProviderAdmission(),
+    );
 
     await expectLater(session.warm(), throwsA(isA<SocketException>()));
     await session.warm();
@@ -53,7 +76,11 @@ void main() {
       await release.future;
       return _response(request);
     });
-    final session = GoogleWebSession(calibration: calibration, client: client);
+    final session = GoogleWebSession(
+      calibration: calibration,
+      client: client,
+      admission: ProviderAdmission(),
+    );
 
     final first = session.warm();
     final second = session.warm();
@@ -72,7 +99,11 @@ void main() {
       requests++;
       return _response(request, statusCode: requests == 1 ? 503 : 200);
     });
-    final session = GoogleWebSession(calibration: calibration, client: client);
+    final session = GoogleWebSession(
+      calibration: calibration,
+      client: client,
+      admission: ProviderAdmission(),
+    );
 
     await expectLater(session.warm(), throwsA(isA<HttpException>()));
     await session.warm();

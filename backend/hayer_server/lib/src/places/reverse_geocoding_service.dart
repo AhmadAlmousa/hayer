@@ -1,7 +1,14 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
+
+import 'bounded_provider_http.dart';
+import 'place_source.dart';
+import 'provider_admission.dart';
+import 'provider_operation.dart';
 
 class ReverseGeocodingException implements Exception {
   const ReverseGeocodingException(this.message);
@@ -22,22 +29,44 @@ class ReverseGeocodingService {
     http.Client? client,
     this.minimumInterval = const Duration(seconds: 1),
     this.cacheDuration = const Duration(minutes: 30),
+    this.maximumCacheEntries = 2000,
+    this.lookupTimeout = const Duration(seconds: 8),
     Uri? endpoint,
     DateTime Function()? clock,
-  }) : _client = client ?? http.Client(),
+  }) : _transport = BoundedProviderHttp(
+         client: client,
+         admission: ProviderAdmission(
+           maximumConcurrent: 1,
+           maximumQueued: 8,
+           maximumConcurrentPerOperation: 1,
+           requestsPerMinute: 60,
+           burst: 1,
+           minimumInterval: minimumInterval,
+         ),
+       ),
        endpoint =
            endpoint ?? Uri.https('nominatim.openstreetmap.org', '/reverse'),
        _clock = clock ?? DateTime.now;
 
-  final http.Client _client;
+  static final shared = ReverseGeocodingService(
+    endpoint: Uri.parse(
+      Platform.environment['HAYER_GEOCODER_ENDPOINT'] ??
+          'https://nominatim.openstreetmap.org/reverse',
+    ),
+  );
+
+  final BoundedProviderHttp _transport;
+  final int maximumCacheEntries;
+  final Duration lookupTimeout;
   final Duration minimumInterval;
   final Duration cacheDuration;
   final Uri endpoint;
   final DateTime Function() _clock;
-  final Map<String, _CachedLocation> _cache = {};
+  final LinkedHashMap<String, _CachedLocation> _cache = LinkedHashMap();
   final Map<String, Future<ResolvedLocation>> _inFlight = {};
-  Future<void> _requestQueue = Future.value();
-  DateTime? _nextRequestAt;
+  int get cachedLocations => _cache.length;
+  int get pendingLookups => _inFlight.length;
+  ProviderAdmission get admission => _transport.admission;
 
   Future<String> reverse({
     required double latitude,
@@ -57,54 +86,50 @@ class ReverseGeocodingService {
     final key =
         '${latitude.toStringAsFixed(4)}:'
         '${longitude.toStringAsFixed(4)}:$languageCode';
-    final cached = _cache[key];
+    _cache.removeWhere((_, value) => !value.expiresAt.isAfter(_clock()));
+    final cached = _cache.remove(key);
     if (cached != null && cached.expiresAt.isAfter(_clock())) {
+      _cache[key] = cached;
       return Future.value(cached.location);
+    }
+    final existing = _inFlight[key];
+    if (existing != null) return existing;
+    if (_inFlight.length >= 9) {
+      return Future.error(
+        const ReverseGeocodingException(
+          'The address service is busy. Please try again shortly.',
+        ),
+      );
     }
     return _inFlight.putIfAbsent(key, () async {
       try {
-        final location = await _enqueueRequest(
-          latitude: latitude,
-          longitude: longitude,
-          languageCode: languageCode,
+        final location = await ProviderOperation.run(
+          () => _request(
+            latitude: latitude,
+            longitude: longitude,
+            languageCode: languageCode,
+          ),
+          timeout: lookupTimeout,
+          maximumRequests: 4,
         );
         _cache[key] = _CachedLocation(
           location: location,
           expiresAt: _clock().add(cacheDuration),
         );
+        while (_cache.length > maximumCacheEntries) {
+          _cache.remove(_cache.keys.first);
+        }
         return location;
+      } on PlaceSourceException catch (error) {
+        throw ReverseGeocodingException(
+          error.code == 'rate_limited'
+              ? 'The address service is busy. Please try again shortly.'
+              : 'The address lookup timed out or exceeded its limits.',
+        );
       } finally {
         unawaited(_inFlight.remove(key));
       }
     });
-  }
-
-  Future<ResolvedLocation> _enqueueRequest({
-    required double latitude,
-    required double longitude,
-    required String languageCode,
-  }) {
-    final completer = Completer<ResolvedLocation>();
-    _requestQueue = _requestQueue.then((_) async {
-      final next = _nextRequestAt;
-      if (next != null) {
-        final delay = next.difference(_clock());
-        if (delay > Duration.zero) await Future<void>.delayed(delay);
-      }
-      _nextRequestAt = _clock().add(minimumInterval);
-      try {
-        completer.complete(
-          await _request(
-            latitude: latitude,
-            longitude: longitude,
-            languageCode: languageCode,
-          ),
-        );
-      } catch (error, stackTrace) {
-        completer.completeError(error, stackTrace);
-      }
-    });
-    return completer.future;
   }
 
   Future<ResolvedLocation> _request({
@@ -114,6 +139,7 @@ class ReverseGeocodingService {
   }) async {
     final uri = endpoint.replace(
       queryParameters: {
+        ...endpoint.queryParameters,
         'lat': latitude.toString(),
         'lon': longitude.toString(),
         'format': 'jsonv2',
@@ -124,17 +150,25 @@ class ReverseGeocodingService {
     );
     late final http.Response response;
     try {
-      response = await _client
-          .get(
-            uri,
-            headers: const {
-              'Accept': 'application/json',
-              'User-Agent':
-                  'Hayer/0.1 (+https://hayer.almou.sa; support@almou.sa)',
-              'Referer': 'https://hayer.almou.sa/',
-            },
-          )
-          .timeout(const Duration(seconds: 8));
+      response = await _transport.get(
+        uri,
+        maximumBytes: 128 * 1024,
+        timeout: lookupTimeout,
+        validate: (target) {
+          if (target.scheme != 'https' ||
+              target.userInfo.isNotEmpty ||
+              target.origin != endpoint.origin) {
+            throw const ReverseGeocodingException(
+              'The address service endpoint or redirect is invalid.',
+            );
+          }
+        },
+        headers: const {
+          'Accept': 'application/json',
+          'User-Agent': 'Hayer/0.1 (+https://hayer.almou.sa; support@almou.sa)',
+          'Referer': 'https://hayer.almou.sa/',
+        },
+      );
     } on TimeoutException {
       throw const ReverseGeocodingException('The address lookup timed out.');
     } on http.ClientException {
@@ -223,6 +257,8 @@ class ReverseGeocodingService {
       'No readable address was found for this location.',
     );
   }
+
+  void close() => _transport.close();
 
   String? _first(Map<String, dynamic> values, List<String> keys) {
     for (final key in keys) {

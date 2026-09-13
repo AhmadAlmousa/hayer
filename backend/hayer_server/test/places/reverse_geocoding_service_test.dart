@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:hayer_server/src/places/reverse_geocoding_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -88,6 +90,137 @@ void main() {
       expect(second, first);
       expect(requestCount, 1);
     });
+
+    test(
+      'deduplicates simultaneous lookups before spending admission',
+      () async {
+        final release = Completer<void>();
+        var requests = 0;
+        final service = ReverseGeocodingService(
+          client: MockClient((_) async {
+            requests++;
+            await release.future;
+            return http.Response('{"display_name":"Riyadh"}', 200);
+          }),
+        );
+        addTearDown(service.close);
+        final first = service.reverseDetails(
+          latitude: 24.7,
+          longitude: 46.6,
+          languageCode: 'en',
+        );
+        final second = service.reverseDetails(
+          latitude: 24.7,
+          longitude: 46.6,
+          languageCode: 'en',
+        );
+        expect(identical(first, second), isTrue);
+        await Future<void>.delayed(Duration.zero);
+        expect(requests, 1);
+        release.complete();
+        await Future.wait([first, second]);
+        expect(service.pendingLookups, 0);
+        expect(service.admission.admitted, 1);
+      },
+    );
+
+    test('evicts least recently used and expired coordinate entries', () async {
+      var now = DateTime.utc(2026, 9, 13);
+      var requests = 0;
+      final service = ReverseGeocodingService(
+        maximumCacheEntries: 2,
+        cacheDuration: const Duration(minutes: 1),
+        clock: () => now,
+        client: MockClient((_) async {
+          requests++;
+          return http.Response('{"display_name":"Riyadh"}', 200);
+        }),
+      );
+      addTearDown(service.close);
+      Future<String> lookup(double latitude) => service.reverse(
+        latitude: latitude,
+        longitude: 46.6,
+        languageCode: 'en',
+      );
+      await lookup(24.1);
+      await lookup(24.2);
+      await lookup(24.1); // The first key is now most recently used.
+      await lookup(24.3);
+      expect(service.cachedLocations, 2);
+      await lookup(24.1);
+      expect(requests, 3);
+      await lookup(24.2);
+      expect(requests, 4);
+      now = now.add(const Duration(minutes: 2));
+      await lookup(24.4);
+      expect(service.cachedLocations, 1);
+    });
+
+    test(
+      'combined distinct requests start at least one second apart',
+      () async {
+        final starts = <DateTime>[];
+        final service = ReverseGeocodingService(
+          client: MockClient((_) async {
+            starts.add(DateTime.now());
+            return http.Response('{"display_name":"Riyadh"}', 200);
+          }),
+        );
+        addTearDown(service.close);
+        await Future.wait([
+          service.reverse(latitude: 24.1, longitude: 46.6, languageCode: 'en'),
+          service.reverse(latitude: 24.2, longitude: 46.6, languageCode: 'ar'),
+          service.reverseDetails(
+            latitude: 24.3,
+            longitude: 46.6,
+            languageCode: 'en',
+          ),
+        ]);
+        for (var i = 1; i < starts.length; i++) {
+          expect(
+            starts[i].difference(starts[i - 1]).inMilliseconds,
+            greaterThanOrEqualTo(990),
+          );
+        }
+      },
+    );
+
+    test(
+      'bounds pending lookups and never sends expired queued work',
+      () async {
+        final release = Completer<void>();
+        var requests = 0;
+        final service = ReverseGeocodingService(
+          lookupTimeout: const Duration(milliseconds: 80),
+          client: MockClient((_) async {
+            requests++;
+            await release.future;
+            return http.Response('{"display_name":"Riyadh"}', 200);
+          }),
+        );
+        addTearDown(service.close);
+        final results = [
+          for (var i = 0; i < 12; i++)
+            expectLater(
+              service.reverse(
+                latitude: 24 + i / 100,
+                longitude: 46.6,
+                languageCode: 'en',
+              ),
+              throwsA(isA<ReverseGeocodingException>()),
+            ),
+        ];
+        expect(service.pendingLookups, lessThanOrEqualTo(9));
+        await Future.wait(results);
+        release.complete();
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        expect(service.pendingLookups, 0);
+        expect(service.admission.queued, 0);
+        expect(service.admission.running, 0);
+        expect(requests, 1);
+        expect(service.cachedLocations, 0);
+      },
+    );
 
     test('rejects unsuccessful responses', () async {
       final service = ReverseGeocodingService(

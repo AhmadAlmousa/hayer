@@ -3,14 +3,24 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
+import 'bounded_provider_http.dart';
 import 'calibration.dart';
+import 'provider_admission.dart';
+import 'provider_operation.dart';
 
 class GoogleWebSession {
-  GoogleWebSession({required this.calibration, http.Client? client})
-    : _client = client ?? http.Client();
+  GoogleWebSession({
+    required this.calibration,
+    http.Client? client,
+    ProviderAdmission? admission,
+  }) : transport = BoundedProviderHttp(
+         admission: admission ?? ProviderAdmission.google,
+         client: client,
+       );
+
+  final BoundedProviderHttp transport;
 
   final PlaceCalibration calibration;
-  final http.Client _client;
   final Map<String, String> _cookies = {};
   Future<void>? _warming;
   bool _warmed = false;
@@ -19,7 +29,15 @@ class GoogleWebSession {
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
-  Future<void> warm({String language = 'en', String region = 'sa'}) async {
+  Future<void> warm({String language = 'en', String region = 'sa'}) =>
+      ProviderOperation.run(
+        () => _warmOnce(language: language, region: region),
+      );
+
+  Future<void> _warmOnce({
+    required String language,
+    required String region,
+  }) async {
     if (_warmed) return;
     final inProgress = _warming;
     if (inProgress != null) return inProgress;
@@ -39,7 +57,7 @@ class GoogleWebSession {
     required String pb,
     String language = 'en',
     String region = 'sa',
-  }) async {
+  }) => ProviderOperation.run(() async {
     await warm(language: language, region: region);
     final endpoint = calibration.searchEndpoint.replace(
       queryParameters: {
@@ -53,18 +71,20 @@ class GoogleWebSession {
       },
     );
     _ensureAllowed(endpoint);
-    final response = await _client
-        .get(endpoint, headers: _headers(language, region))
-        .timeout(const Duration(seconds: 15));
+    final response = await transport.get(
+      endpoint,
+      headers: _headers(language, region),
+      validate: _ensureAllowed,
+    );
     _captureCookies(response.headers['set-cookie']);
     return response;
-  }
+  });
 
   Future<http.Response> directions({
     required String pb,
     String language = 'en',
     String region = 'sa',
-  }) async {
+  }) => ProviderOperation.run(() async {
     await warm(language: language, region: region);
     final endpoint = calibration.directionsEndpoint.replace(
       queryParameters: {
@@ -76,12 +96,14 @@ class GoogleWebSession {
       },
     );
     _ensureAllowed(endpoint);
-    final response = await _client
-        .get(endpoint, headers: _headers(language, region))
-        .timeout(const Duration(seconds: 15));
+    final response = await transport.get(
+      endpoint,
+      headers: _headers(language, region),
+      validate: _ensureAllowed,
+    );
     _captureCookies(response.headers['set-cookie']);
     return response;
-  }
+  });
 
   Future<void> _warm({required String language, required String region}) async {
     final uri = calibration.sessionWarmUrl.replace(
@@ -92,9 +114,12 @@ class GoogleWebSession {
       },
     );
     _ensureAllowed(uri);
-    final response = await _client
-        .get(uri, headers: _headers(language, region))
-        .timeout(const Duration(seconds: 10));
+    final response = await transport.get(
+      uri,
+      headers: _headers(language, region),
+      validate: _ensureAllowed,
+      timeout: const Duration(seconds: 10),
+    );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw HttpException(
         'Place session warm-up returned HTTP ${response.statusCode}.',
@@ -127,10 +152,13 @@ class GoogleWebSession {
 
   void _ensureAllowed(Uri uri) {
     if (uri.scheme != 'https' ||
+        uri.userInfo.isNotEmpty ||
+        uri.port != 443 ||
+        uri.path.toLowerCase().contains('consent') ||
         !calibration.allowedRequestHosts.contains(uri.host.toLowerCase())) {
       throw StateError('Blocked non-allowlisted place source endpoint.');
     }
   }
 
-  void close() => _client.close();
+  void close() => transport.close();
 }

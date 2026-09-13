@@ -50,7 +50,16 @@ class PlaceServices {
       },
     );
     try {
-      return await loading;
+      final services = await loading;
+      // Retain the current and two recent versions, without retaining old
+      // route caches forever. In-flight callers still own their service.
+      while (_activeVersions.length > 3) {
+        final oldest = _activeVersions.keys.firstWhere(
+          (version) => version != active.version,
+        );
+        unawaited(_activeVersions.remove(oldest));
+      }
+      return services;
     } catch (_) {
       // A failed load must not poison this version after an operator repairs it.
       if (identical(_activeVersions[active.version], loading)) {

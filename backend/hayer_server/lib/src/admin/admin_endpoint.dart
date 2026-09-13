@@ -45,7 +45,7 @@ class AdminEndpoint extends Endpoint {
   Set<Scope> get requiredScopes => {AdminGatewayAccess.adminScope};
 
   static const _uuid = Uuid();
-  static final _geocoder = ReverseGeocodingService();
+  static final _geocoder = ReverseGeocodingService.shared;
 
   Future<AdminLiveUsage> liveUsage(Session session) async {
     await _authorize(session);

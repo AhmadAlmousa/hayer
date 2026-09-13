@@ -4,9 +4,10 @@ Last updated: 2026-09-13
 
 Status: audit remediation active; invited-beta release remains blocked
 
-Current focus: M7-C — bounded provider admission and a shared geocoder budget
-(F08/F09), then source-outage readiness and truthful refresh outcomes
-(F10/F21). M7-A/M7-E/M7-F device and live safety acceptance remain open.
+Current focus: M7-C — source-outage readiness and truthful refresh outcomes
+(F10/F21). F08/F09 provider/geocoder bounds are implemented and locally
+verified; production deployment remains pending. M7-A/M7-E/M7-F device and
+live safety acceptance remain open.
 
 ## Beta acceptance review — 2026-09-13
 
@@ -15,8 +16,8 @@ repair in `39ab02a`; that production incident is closed. This is owner-reported
 journey evidence, not an independently rerun authenticated canary or complete
 solo/multiplayer acceptance. Invited-beta closure remains blocked.
 
-The latest recorded automated run passed 130 server, 165 app and 51 admin
-tests, plus all 38 tests against dedicated remote PostGIS. The signed
+The latest recorded automated run passed 147 server, 165 app and 51 admin
+tests, plus all 39 tests against dedicated remote PostGIS. The signed
 `0.2.1+7` APK built and its v2 signature verified. Both F17 halves are merged.
 Those results supersede older statements below that PostGIS tests could not
 run; they do not establish gateway, restore, device or CI acceptance.
@@ -24,13 +25,13 @@ run; they do not establish gateway, restore, device or CI acceptance.
 | Remaining gate | Evidence required to close it |
 | --- | --- |
 | Core journeys — M7-A/M7-E/M7-G | Signed-APK solo create → force-stop → resume → results; two-device majority/unanimous, editable choices and late joins; final offline swipe, lost acknowledgement and reconnect converge without lost or duplicate votes. Complete the remaining failure/race matrix. |
-| Provider and catalog — M7-C | Implement F08/F09 bounded shared admission/cancellation and geocoder cache/budget, then F10/F21 cached operation during source outage and truthful refresh outcomes. Record representative spatial query plans and response-fixture coverage. |
+| Provider and catalog — M7-C | Deploy the verified F08/F09 provider/geocoder bounds, implement F10/F21 cached operation during source outage and truthful refresh outcomes, and record representative spatial query plans and response-fixture coverage. |
 | Security and governance — M7-B | Real-gateway quota/forged-header/direct-origin checks; connector trust decision; supervised private-host passkey/revocation checks; owner-reviewed bilingual privacy notice, contact, source inventory, retention and identity cleanup decisions. |
 | Release and recovery — M7-D/M7-F | Locked native image and enforced green CI; current migrations and gateway policies; isolated data/secret restore and rollback; least-privilege roles, resource limits and tested operational alerts. |
 | Device quality and analytics — M7-E | TalkBack/focus, large native text, RTL, reduced motion, denied/approximate location, background recovery and release-profile performance. Complete bounded analytics query/aggregation work (F22); F23's actual-match attribution regression already passes. |
 | Final release — M7-F | Reconcile the planned safety build 6 with the current build 7 artifact; verify the chosen APK/checksum, previous-client compatibility and rollback through production, then deliberately update the minimum build and create the beta tag. |
 
-Next backend implementation: F08/F09, followed by F10/F21. Physical-device
+Next backend implementation: F10/F21. Physical-device
 acceptance can proceed alongside it. This review does not change the locked
 release/build policy or waive any gate. Discovery expansion remains separate
 from closure of the current swipe beta.
@@ -656,8 +657,16 @@ privacy and provider assumptions have accountable acceptance evidence.
   place the provider returned beyond one caller's `deckSize` or price ceiling
   was dropped from the shared catalog instead of being remembered. See
   [`lane-backend.md`](lane-backend.md).
-- [ ] Fix F08/F09 with bounded cancellation-aware provider admission, request/
-  byte/time/concurrency ceilings, and one shared geocoder cache/rate budget.
+- [x] Fix F08/F09 with one process-wide Google admission pool, bounded
+  operation/page/retry deadlines, HTTP cancellation, streamed byte ceilings,
+  validated redirect hops and bounded calibration retention. Consumer, admin
+  and city resolution now share one geocoder, one-second admission spacing,
+  an eight-second queue-inclusive deadline and a 2,000-entry TTL/LRU cache.
+  The endpoint is switchable via `HAYER_GEOCODER_ENDPOINT`. Focused deadline,
+  overload, real-socket cancellation and geocoder regressions pass; the live
+  Riyadh source canary returns 10 places and remote PostGIS passes 39 tests.
+  Production rollout and release-load measurements remain pending; retain the
+  single-replica constraint. See `lane-backend.md` and `backend/deploy/README.md`.
 - [ ] Fix F10/F21 by separating core readiness from optional source canaries
   and reporting live refresh, stale fallback, partial, failed, and cancelled
   outcomes truthfully.
@@ -921,6 +930,24 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-13: implemented F08/F09 provider/geocoder limits. Google operations
+  share bounded process-wide admission, a cancellable deadline across pages
+  and retries, request/streamed-byte limits and validated redirect hops.
+  Completed observations still persist to the shared catalog in an awaited
+  transaction outside provider cancellation. Consumer/admin/city lookups share
+  one bounded geocoder/cache and a configurable HTTPS endpoint. Active
+  calibration retention is bounded and rollback reload is tested. Full pinned
+  preflight passed generation, formatting, all analyses, 147 server tests,
+  165 app tests and 51 admin tests. Final server analysis/tests also passed
+  after the persistence-scope adjustment. All 39 remote PostGIS tests passed
+  on the final isolated rerun; an intervening calibration-test timeout and
+  cascading transaction errors under concurrent load are recorded in
+  `lane-backend.md`. The live Riyadh source canary returned 10 places.
+  `scripts/build-release-apk.sh` produced signed `0.2.1+7`; APK Signature
+  Scheme v2 verifies, with SHA-256
+  `ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`.
+  Deployment and release-load measurements remain pending on Unraid. No
+  schema migration or POI catalog reset is introduced. Next work is F10/F21.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

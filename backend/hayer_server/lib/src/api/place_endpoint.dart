@@ -15,7 +15,7 @@ class PlaceEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
-  static final _geocoder = ReverseGeocodingService();
+  static final _geocoder = ReverseGeocodingService.shared;
   static const _uuid = Uuid();
 
   Future<List<LocationSuggestion>> suggest(

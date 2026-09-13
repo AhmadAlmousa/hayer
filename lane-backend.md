@@ -24,17 +24,78 @@ Last updated: 2026-09-13
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 38/38 against real PostGIS,
-  including the two legacy-calibration regressions added on 2026-09-13.
+- The latest integration suite is fully green: 39/39 against real PostGIS,
+  including legacy-calibration repair and bounded version-retention/rollback.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is wired into the merged client.
   Two-device acceptance remains open.
 - The owner confirmed the deployed Start swiping calibration repair works.
   The incident is closed; the remaining beta gates are summarized in
   `PROJECT.md` under the 2026-09-13 beta acceptance review. Next backend work
-  is F08/F09 provider/geocoder bounds, followed by F10/F21 source resilience.
+  is F10/F21 source resilience; F08/F09 provider/geocoder bounds are implemented
+  and locally verified, with production deployment pending.
 
 ## Checkpoints
+
+### F08/F09 provider admission and shared geocoder — implemented (2026-09-13)
+
+`ProviderOperation` carries one deadline and request/byte budget through generic
+source calls using a zone. Catalog retries, category batches and Google pages
+share that operation, so returning a timeout also removes pending admission
+and aborts the HTTP work. Expired operations cannot start another batch. Busy
+admission returns the existing retryable `rate_limited` error; catalog stale
+fallback and partial-category results keep their existing behavior. A completed
+search's observations persist outside the provider cancellation scope: the
+request continues awaiting an already-started catalog transaction.
+
+All Google sessions use the same admission pool, including warm-up, search,
+suggestions, directions and in-process calibration validation. It has three
+active HTTP slots and 24 queue slots; one operation can hold two active and
+six queued requests. Existing cache-policy rate/burst settings configure the
+shared token bucket without replenishing consumed tokens. One operation gets
+30 seconds, 36 HTTP hops and 20 MiB; each response is streamed with a 5 MiB
+ceiling. Each hop validates HTTPS/host/port, allows at most three redirects and
+drops cookies/authorization on origin changes. Each production HTTP client is
+closed after its request, including cancellation during connection setup.
+Three active calibration versions plus the bundled fallback are retained;
+eviction does not invalidate service references held by in-flight requests,
+and a rollback can reload an evicted version.
+
+The consumer, admin and city lookup paths now share
+`ReverseGeocodingService.shared`. Its single active request and eight queued
+requests share at least one-second admission spacing and an eight-second
+whole-lookup deadline. Repeated lookups coalesce; cache hits update recency,
+expired keys are removed on access and at most 2,000 entries remain. Responses
+are limited to 128 KiB. `HAYER_GEOCODER_ENDPOINT` can switch the HTTPS
+Nominatim-compatible service by recreating the container, with no app rebuild.
+City attribution no longer wraps the lookup in a timeout that leaves work
+running. Its coordinate precision/identity lifecycle remains F29 follow-up.
+
+Verification: 28 focused tests passed. The strengthened real-socket regression
+initially assumed a connection would start within 150 ms and failed under full
+build load; it now waits for the peer to receive the request, cancels, and
+observes the peer disconnect. All 11 provider-limit tests then passed. Separate
+tests cover automatic deadline expiry, queue cleanup, late category work,
+redirect rejection, chunked-body limits, coalescing, LRU/TTL eviction and
+combined geocoder pacing. All 39 real-PostGIS tests passed, including a new
+calibration rotation/rollback case. One rerun during concurrent build work hit
+the rotation test's 30-second timeout and then cascading savepoint/transaction
+errors. The final isolated run passed all 39 tests in 24 seconds without
+widening the timeout. Existing custom-PostGIS schema metadata warnings remain.
+The live source canary returned 10 Riyadh places on calibration
+`hayer-google-web-18`. Pinned full preflight passed generation/formatting, all
+analyses, 147 server tests, 165 app tests and 51 admin tests. Final server
+analysis and all 147 server tests passed again after moving persistence
+outside the provider cancellation scope. The signed `0.2.1+7` APK built successfully, its
+v2 signature verifies, and its SHA-256 is
+`ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`.
+
+Deployment remains pending on Unraid. Rebuild the server image and recreate
+the server/gateway using the existing deployment commands; no schema migration
+or catalog reset is introduced. This is single-process admission, not a
+multi-replica quota. Per-request connections trade connection reuse for
+cancellation isolation; release-load latency and capacity still need measured
+acceptance. F10/F21 startup/job semantics and F32 alert delivery remain open.
 
 ### Legacy calibration runtime repair — owner verified in production (2026-09-13)
 

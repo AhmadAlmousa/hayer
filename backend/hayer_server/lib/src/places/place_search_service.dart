@@ -2,6 +2,7 @@ import '../generated/protocol.dart';
 import 'place_candidate.dart';
 import 'place_search_policy.dart';
 import 'place_source.dart';
+import 'provider_operation.dart';
 import 'taxonomy.dart';
 
 /// A completed search: the deck this caller asked for, plus every eligible
@@ -54,13 +55,14 @@ class PlaceSearchService {
     int? maximumPriceLevel,
     required String countryCode,
     List<PlaceQuery>? queries,
-  }) async {
+  }) => ProviderOperation.run(() async {
     final resolvedQueries =
         queries ?? PlaceTaxonomy.resolve(categoryId, subcategoryIds);
     final candidates = <PlaceCandidate>[];
     PlaceSourceException? sourceFailure;
     var selected = <PlaceSnapshot>[];
     for (var start = 0; start < resolvedQueries.length; start += concurrency) {
+      ProviderOperation.current!.check();
       final batch = resolvedQueries.skip(start).take(concurrency).toList();
       final results = await Future.wait(
         batch.map(
@@ -144,7 +146,7 @@ class PlaceSearchService {
       deckSize: candidates.length,
     );
     return (deck: selected, observed: observed);
-  }
+  });
 
   List<PlaceCandidate> _withEvidence(
     List<PlaceCandidate> places,

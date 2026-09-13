@@ -6,6 +6,7 @@ import 'place_candidate.dart';
 import 'place_source.dart';
 import 'search_parser.dart';
 import 'search_pb.dart';
+import 'provider_operation.dart';
 
 class GoogleWebPlaceSource implements PlaceSource {
   GoogleWebPlaceSource({
@@ -19,12 +20,11 @@ class GoogleWebPlaceSource implements PlaceSource {
   final GoogleWebSession _session;
   final SearchParser _parser;
   final SearchPb _pb;
-  final _RequestRateGate _rateGate = _RequestRateGate();
 
   void configureRateLimit({
     required int requestsPerMinute,
     required int burst,
-  }) => _rateGate.configure(
+  }) => _session.transport.admission.configure(
     requestsPerMinute: requestsPerMinute,
     burst: burst,
   );
@@ -39,7 +39,7 @@ class GoogleWebPlaceSource implements PlaceSource {
     required int desiredCount,
     required String language,
     required String countryCode,
-  }) async {
+  }) => ProviderOperation.run(() async {
     try {
       final first = await _page(
         query: query,
@@ -103,7 +103,7 @@ class GoogleWebPlaceSource implements PlaceSource {
         cause: error,
       );
     }
-  }
+  });
 
   Future<List<PlaceCandidate>> _page({
     required String query,
@@ -122,7 +122,6 @@ class GoogleWebPlaceSource implements PlaceSource {
       radiusMeters: radiusMeters,
       offset: offset,
     );
-    await _rateGate.acquire();
     final response = await _session.search(
       query: query,
       pb: pb,
@@ -179,49 +178,4 @@ class GoogleWebPlaceSource implements PlaceSource {
   }
 
   void close() => _session.close();
-}
-
-class _RequestRateGate {
-  int _requestsPerMinute = 30;
-  int _burst = 6;
-  double _tokens = 6;
-  DateTime _lastRefill = DateTime.now();
-  Future<void> _tail = Future<void>.value();
-
-  void configure({required int requestsPerMinute, required int burst}) {
-    _refill();
-    _requestsPerMinute = requestsPerMinute.clamp(1, 300);
-    _burst = burst.clamp(1, 30);
-    _tokens = _tokens.clamp(0, _burst.toDouble());
-  }
-
-  Future<void> acquire() {
-    final turn = _tail.then((_) => _acquireOne());
-    _tail = turn.catchError((_) {});
-    return turn;
-  }
-
-  Future<void> _acquireOne() async {
-    while (true) {
-      _refill();
-      if (_tokens >= 1) {
-        _tokens -= 1;
-        return;
-      }
-      final seconds = (1 - _tokens) * 60 / _requestsPerMinute;
-      await Future<void>.delayed(
-        Duration(milliseconds: (seconds * 1000).ceil().clamp(10, 60000)),
-      );
-    }
-  }
-
-  void _refill() {
-    final now = DateTime.now();
-    final elapsedSeconds = now.difference(_lastRefill).inMicroseconds / 1000000;
-    _lastRefill = now;
-    _tokens = (_tokens + elapsedSeconds * _requestsPerMinute / 60).clamp(
-      0,
-      _burst.toDouble(),
-    );
-  }
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
@@ -24,7 +22,7 @@ class CityResolution {
 
 /// Resolves only coarse city metadata and stores it separately from analytics.
 abstract final class CityResolutionService {
-  static final _geocoder = ReverseGeocodingService();
+  static final _geocoder = ReverseGeocodingService.shared;
   static const cacheDuration = Duration(days: 30);
 
   static Future<CityResolution> resolve(
@@ -48,13 +46,11 @@ abstract final class CityResolutionService {
     }
 
     try {
-      final location = await _geocoder
-          .reverseDetails(
-            latitude: latitude,
-            longitude: longitude,
-            languageCode: 'en',
-          )
-          .timeout(const Duration(seconds: 8));
+      final location = await _geocoder.reverseDetails(
+        latitude: latitude,
+        longitude: longitude,
+        languageCode: 'en',
+      );
       final cityName = location.city?.trim();
       if (cityName == null || cityName.isEmpty) {
         return _unknown(countryCode);

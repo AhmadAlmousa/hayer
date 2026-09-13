@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:hayer_server/src/places/provider_operation.dart';
 import 'package:hayer_server/src/places/place_candidate.dart';
 import 'package:hayer_server/src/places/place_search_service.dart';
 import 'package:hayer_server/src/places/place_source.dart';
@@ -79,6 +82,29 @@ void main() {
     expect(source.queries, isNot(contains('Thai restaurants')));
   });
 
+  test('an expired operation cannot start another query batch', () async {
+    final source = _DelayedPlaceSource();
+    final service = PlaceSearchService(source: source, concurrency: 1);
+    await expectLater(
+      ProviderOperation.run(
+        () => service.buildDeck(
+          categoryId: 'restaurant',
+          subcategoryIds: ['pizza', 'sushi'],
+          latitude: 24.7136,
+          longitude: 46.6753,
+          radiusMeters: 5000,
+          deckSize: 10,
+          countryCode: 'SA',
+        ),
+        timeout: const Duration(milliseconds: 30),
+      ),
+      throwsA(isA<PlaceSourceException>()),
+    );
+    source.release.complete();
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(source.requests, 1);
+  });
+
   test('records the specific query category even for a bare source', () async {
     final deck = await _service(_BarePlaceSource()).buildDeck(
       categoryId: 'restaurant',
@@ -157,4 +183,25 @@ class _BarePlaceSource implements PlaceSource {
       sourceCheckedAt: DateTime.utc(2026, 9),
     ),
   ];
+}
+
+class _DelayedPlaceSource implements PlaceSource {
+  final release = Completer<void>();
+  int requests = 0;
+
+  @override
+  Future<List<PlaceCandidate>> search({
+    required String query,
+    required String categoryId,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int desiredCount,
+    required String language,
+    required String countryCode,
+  }) async {
+    requests++;
+    await release.future;
+    return [];
+  }
 }

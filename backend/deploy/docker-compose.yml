@@ -61,6 +61,7 @@ services:
     restart: unless-stopped
     environment:
       HAYER_ADMIN_ENROLLMENT_ENABLED: "${HAYER_ADMIN_ENROLLMENT_ENABLED:-false}"
+      HAYER_GEOCODER_ENDPOINT: "${HAYER_GEOCODER_ENDPOINT:-https://nominatim.openstreetmap.org/reverse}"
     depends_on:
       runtime-init:
         condition: service_completed_successfully

@@ -83,6 +83,49 @@ The unauthenticated bootstrap canary alone does not exercise the active
 database calibration. Keep the normal source-canary/migration gates; this fix
 does not authorize replacing a failed source calibration with arbitrary data.
 
+## Provider limits and geocoder configuration
+
+The server uses one Google admission budget across active calibrations, search,
+suggestions, directions, warm-up and in-process calibration canaries. The cache
+policy's existing request-rate/burst settings configure that budget without
+resetting spent tokens. These limits are process-wide: keep one server replica
+until admission is coordinated across replicas.
+
+| Bound | Google place operations | Reverse geocoding |
+| --- | --- | --- |
+| Active HTTP requests | 3 globally, at most 2 per operation | 1 |
+| Queued HTTP requests | 24 globally, at most 6 per operation | 8 |
+| Whole-operation deadline | 30 seconds across pages, category batches and retries | 8 seconds including queue time |
+| HTTP hops per operation | 36 including warm-up and redirects | 4 |
+| Streamed response ceiling | 5 MiB per response, 20 MiB per operation | 128 KiB per response |
+| Redirects | At most 3, validated before following; credentials removed across origins | At most 3, same configured HTTPS origin only |
+| Geocoder cache | Not applicable | 2,000 TTL/LRU entries, 30-minute TTL, identical lookups coalesced |
+
+Overload fails with a retryable source error instead of retaining an unlimited
+queue. Deadline cancellation removes queued requests and aborts active HTTP;
+requests also have a 15-second transport timeout (10 seconds for Google
+warm-up). Catalog reads and stale fallback retain their existing behavior.
+Old calibration service caches are evicted beyond three retained active
+versions; a bundled fallback remains available and rollback versions can be
+loaded again. Production HTTP clients live for one request, allowing a stalled
+connection to be closed without affecting unrelated operations. This trades
+connection reuse for isolation; measure source latency under release load.
+
+Consumer address lookup, admin reverse lookup and city resolution share the
+same geocoder and enforce at least one second between request starts. This
+matches the application's existing [Nominatim service policy](https://operations.osmfoundation.org/policies/nominatim/),
+whose rate limit covers the sum of application traffic. Autocomplete remains
+on the place-search source.
+
+To switch to a compatible reverse-geocoding endpoint, set
+`HAYER_GEOCODER_ENDPOINT` in the Docker host's Compose environment and recreate
+the server. It defaults to `https://nominatim.openstreetmap.org/reverse`; the
+override must use HTTPS and return Nominatim-compatible JSON. No APK update or
+server-image rebuild is needed to change this setting. The F08/F09 code itself
+requires the usual server-image rebuild before deployment. Source-independent
+startup and refresh-job outcome/cancellation changes remain F10/F21 follow-up
+work; this change does not remove the existing deployment canary gates.
+
 ## Network topology
 
 Cloudflare Tunnel publishes only `hayer.almou.sa` and targets

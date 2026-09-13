@@ -12,6 +12,7 @@ import 'place_candidate.dart';
 import 'place_search_policy.dart';
 import 'place_search_service.dart';
 import 'place_source.dart';
+import 'provider_operation.dart';
 import 'taxonomy.dart';
 import 'taxonomy_service.dart';
 
@@ -217,54 +218,56 @@ class CatalogPlaceService {
       source: source,
       concurrency: settings.perCreationConcurrency,
     );
-    final deadline = DateTime.now().add(const Duration(seconds: 30));
-    PlaceSourceException? failure;
-    for (var attempt = 0; attempt < settings.extractorAttempts; attempt++) {
-      final remaining = deadline.difference(DateTime.now());
-      if (remaining <= Duration.zero) break;
-      try {
-        final live = await liveSearch
-            .buildDeckWithObservations(
-              categoryId: categoryId,
-              subcategoryIds: subcategoryIds,
-              latitude: latitude,
-              longitude: longitude,
-              radiusMeters: radiusMeters,
-              deckSize: deckSize,
-              maximumPriceLevel: maximumPriceLevel,
-              countryCode: countryCode,
-              queries: queries,
-            )
-            .timeout(remaining);
-        await _persist(
-          session,
-          live.observed,
-          parentCategoryId: categoryId,
-          queries: queries,
-          countryCode: countryCode,
-          latitude: latitude,
-          longitude: longitude,
-          radiusMeters: radiusMeters,
-          now: now,
-          freshHours: settings.freshHours,
-        );
-        return live.deck;
-      } on PlaceSourceException catch (error) {
-        failure = error;
-      } on TimeoutException catch (error) {
-        failure = PlaceSourceException(
-          'place_source_unavailable',
-          'Place search exceeded the 30-second deadline.',
-          cause: error,
-        );
-        break;
+    final live = await ProviderOperation.run(() async {
+      final operation = ProviderOperation.current!;
+      PlaceSourceException? failure;
+      for (var attempt = 0; attempt < settings.extractorAttempts; attempt++) {
+        operation.check();
+        try {
+          return await liveSearch.buildDeckWithObservations(
+            categoryId: categoryId,
+            subcategoryIds: subcategoryIds,
+            latitude: latitude,
+            longitude: longitude,
+            radiusMeters: radiusMeters,
+            deckSize: deckSize,
+            maximumPriceLevel: maximumPriceLevel,
+            countryCode: countryCode,
+            queries: queries,
+          );
+        } on PlaceSourceException catch (error) {
+          failure = error;
+          if (error.code == 'rate_limited') break;
+        } on TimeoutException catch (error) {
+          failure = PlaceSourceException(
+            'place_source_unavailable',
+            'Place search exceeded the 30-second deadline.',
+            cause: error,
+          );
+          break;
+        }
       }
-    }
-    throw failure ??
-        const PlaceSourceException(
-          'place_source_unavailable',
-          'Place search exceeded the 30-second deadline.',
-        );
+      throw failure ??
+          const PlaceSourceException(
+            'place_source_unavailable',
+            'Place search exceeded the 30-second deadline.',
+          );
+    });
+    // A completed source operation is persisted outside its cancellation
+    // scope, so the request keeps awaiting an already-started DB transaction.
+    await _persist(
+      session,
+      live.observed,
+      parentCategoryId: categoryId,
+      queries: queries,
+      countryCode: countryCode,
+      latitude: latitude,
+      longitude: longitude,
+      radiusMeters: radiusMeters,
+      now: now,
+      freshHours: settings.freshHours,
+    );
+    return live.deck;
   }
 
   Future<List<PlaceCandidate>> _nearbyCatalog(

@@ -51,6 +51,41 @@ void main() {
       },
     );
 
+    test(
+      'retires old calibration caches and can reload a rollback version',
+      () async {
+        final session = sessionBuilder.build();
+        final rows = <CalibrationRow>[];
+        final services = <PlaceServices>[];
+        final now = DateTime.now().toUtc();
+        try {
+          for (var i = 0; i < 4; i++) {
+            final version = 'rotated-${const Uuid().v7()}';
+            final row = _activeRow(version, {...bundled, 'version': version})
+              ..activatedAt = now.add(Duration(seconds: i));
+            rows.add(await CalibrationRow.db.insertRow(session, row));
+            final current = await PlaceServices.forSession(session);
+            expect(current.calibration.version, version);
+            services.add(current);
+          }
+          expect(
+            identical(await PlaceServices.forSession(session), services.last),
+            isTrue,
+          );
+          rows.first.activatedAt = now.add(const Duration(seconds: 10));
+          await CalibrationRow.db.updateRow(session, rows.first);
+          final rollback = await PlaceServices.forSession(session);
+          expect(rollback.calibration.version, rows.first.version);
+          expect(identical(rollback, services.first), isFalse);
+        } finally {
+          for (final row in rows) {
+            await CalibrationRow.db.deleteRow(session, row);
+          }
+          await session.close();
+        }
+      },
+    );
+
     test('retries a repaired active document after a load failure', () async {
       final session = sessionBuilder.build();
       final version = 'repaired-${const Uuid().v7()}';
