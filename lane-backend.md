@@ -9,7 +9,7 @@ over on 2026-09-11 and continues this log rather than starting a new one.
 acceptance gates. Detailed back-end checkpoints and front-end handoffs live
 here so the two lanes do not repeatedly edit the same evidence paragraphs.
 
-Last updated: 2026-09-11
+Last updated: 2026-09-13
 
 ## Current state
 
@@ -29,6 +29,43 @@ Last updated: 2026-09-11
   additive deck-free server progress contract is ready for client integration.
 
 ## Checkpoints
+
+### Legacy calibration runtime repair — deployment pending (2026-09-13)
+
+The September 12 production logs identify the Start swiping failure as
+`FormatException: Calibration field directionsEndpoint is missing` during
+`PlaceServices.forSession`, before provider search starts. A persisted active
+calibration predates the routing fields now required by the strict decoder.
+
+`PlaceCalibration.fromStoredJson` supplies the bundled directions endpoint and
+template only when both keys are absent. It preserves the active calibration's
+search fields, version, parser paths and host allowlists, keeping the shared
+crowd-sourced POI catalog and its calibration-scoped evidence intact. Modern
+records retain their own directions settings; partial or explicitly malformed
+settings remain errors. `PlaceServices` also evicts failed initialization
+futures so an operator's repair of the same version can recover on the next
+request. There is no database rewrite or cache reset.
+
+Verification: the two new real-PostGIS cases reproduced the failures against
+the original implementation and pass with the repair, including same-version
+recovery and preservation of stored JSON. All 28 focused calibration/parser/
+session tests passed. Pinned `scripts/preflight.sh` passed generation,
+formatting, all analyses, 130 server tests, 165 app tests, 51 admin tests and
+repository checks. `scripts/test-integration-remote.sh` passed all 38 tests on
+the dedicated `hayer_test` database; existing custom-PostGIS schema metadata
+warnings remain. `scripts/build-release-apk.sh` produced signed `0.2.1+7` and
+its alias; APK Signature Scheme v2 verifies, with SHA-256
+`ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`.
+
+Deployment handoff: the source is shared with Unraid at
+`/mnt/user/coding/places_swiper/hayer`. SSH authentication failed, so production
+has not been rebuilt or verified after this fix. From that directory, run
+`scripts/build-server-image.sh` followed by
+`docker compose -f backend/deploy/docker-compose.yml up -d server gateway`.
+Retain the normal source-canary/migration gates. Then run the authenticated
+`backend/hayer_client/tool/create_deck_canary.dart` and retry Start swiping;
+bootstrap health alone does not exercise the active calibration. The existing
+APK needs no reinstall for this backend repair.
 
 ### The first real run's four failures are closed (2026-09-11)
 

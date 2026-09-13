@@ -57,6 +57,32 @@ unauthenticated public bootstrap RPC canary after the gateway is healthy. Set
 `HAYER_PUBLIC_API_URL` only when verifying a hostname other than
 `https://hayer.almou.sa/api/`.
 
+## Legacy calibration compatibility repair (2026-09-12)
+
+If session creation logs `Calibration field directionsEndpoint is missing`,
+the active database calibration predates the directions fields required by
+the newer server. The compatibility fix supplies the bundled directions pair
+only when both keys are absent, preserving the active search version, parser
+paths, host allowlists and catalog evidence. Explicit malformed or partial
+directions settings still fail validation. Failed runtime loads are no longer
+cached permanently. No catalog deletion or database calibration rewrite is
+required.
+
+Rebuild the server image from the corrected checkout before recreating the
+container. Restarting the old executable or reinstalling the APK cannot apply
+this code change. On the Docker host, from the repository root:
+
+```bash
+scripts/build-server-image.sh &&
+docker compose -f backend/deploy/docker-compose.yml up -d server gateway
+```
+
+Then run the authenticated `backend/hayer_client/tool/create_deck_canary.dart`
+from the development checkout, and retry Start swiping in the existing APK.
+The unauthenticated bootstrap canary alone does not exercise the active
+database calibration. Keep the normal source-canary/migration gates; this fix
+does not authorize replacing a failed source calibration with arbitrary data.
+
 ## Network topology
 
 Cloudflare Tunnel publishes only `hayer.almou.sa` and targets

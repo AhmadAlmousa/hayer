@@ -1,6 +1,6 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-11
+Last updated: 2026-09-13
 
 Status: audit remediation active; invited-beta release remains blocked
 
@@ -887,6 +887,23 @@ measurements and rollback paths.
 
 ## Evidence log
 
+- 2026-09-13: fixed the Start swiping server failure reported on September 12.
+  Older active database calibrations can omit both directions fields; runtime
+  loading now inherits only that pair from the bundled calibration, retaining
+  active search settings, version, allowlists and shared POI catalog evidence.
+  Partial or malformed directions still fail strict validation. Failed loads
+  are evicted so a repaired active record can be retried. Regression tests
+  reproduced the production exception before the fix. Pinned full preflight
+  passed generation, formatting, analysis and 130 server, 165 app and 51 admin
+  tests; the dedicated remote PostGIS suite passed all 38 integration tests.
+  `scripts/build-release-apk.sh` produced signed `0.2.1+7`, with v2 signature
+  verification and SHA-256
+  `ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`.
+  Production deployment and authenticated deck verification remain pending:
+  SSH authentication to Unraid is unavailable. Rebuild/recreate the server
+  from the shared checkout as documented in `backend/deploy/README.md`;
+  existing APKs can use the backend repair without reinstalling. No database
+  rewrite or catalog reset is required. Details are in `lane-backend.md`.
 - 2026-09-10: aligned the toolchain resolver in `044617b`, closing the
   front-end lane's standing report. `hayer_resolve_dart` now prefers an explicit
   `DART_BIN`, then the resolved Flutter's sibling `dart`, then `PATH`, then the

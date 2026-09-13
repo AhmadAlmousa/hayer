@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
@@ -33,7 +34,7 @@ class PlaceServices {
     );
     final document = active?.document['json'];
     if (active == null || document == null) return instance();
-    return _activeVersions.putIfAbsent(
+    final loading = _activeVersions.putIfAbsent(
       active.version,
       () async {
         final decoded = jsonDecode(document);
@@ -42,9 +43,21 @@ class PlaceServices {
             'The active calibration document is invalid.',
           );
         }
-        return _fromCalibration(PlaceCalibration.fromJson(decoded));
+        final bundled = (await instance()).calibration;
+        return _fromCalibration(
+          PlaceCalibration.fromStoredJson(decoded, bundled: bundled),
+        );
       },
     );
+    try {
+      return await loading;
+    } catch (_) {
+      // A failed load must not poison this version after an operator repairs it.
+      if (identical(_activeVersions[active.version], loading)) {
+        unawaited(_activeVersions.remove(active.version));
+      }
+      rethrow;
+    }
   }
 
   static Future<PlaceServices> _create() async {

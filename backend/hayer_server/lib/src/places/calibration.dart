@@ -82,6 +82,24 @@ class PlaceCalibration {
   final Set<String> allowedImageHosts;
   final int pageSize;
 
+  // Search-only records activated before routing was added remain usable.
+  // Only an entirely absent directions pair can inherit bundled defaults.
+  factory PlaceCalibration.fromStoredJson(
+    Map<String, Object?> json, {
+    required PlaceCalibration bundled,
+  }) {
+    final legacy =
+        !json.containsKey('directionsEndpoint') &&
+        !json.containsKey('directionsPb');
+    return PlaceCalibration.fromJson({
+      if (legacy) ...{
+        'directionsEndpoint': bundled.directionsEndpoint.toString(),
+        'directionsPb': bundled.directionsPb,
+      },
+      ...json,
+    });
+  }
+
   factory PlaceCalibration.fromJson(Map<String, Object?> json) {
     final pathsJson = json['paths'];
     if (pathsJson is! Map<String, Object?>) {
