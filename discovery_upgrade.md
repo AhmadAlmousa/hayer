@@ -434,11 +434,22 @@ This section was added on 13 September 2026, after Codex resumed the back-end la
 ### Ownership and working rules
 
 - The role split in `PROJECT.md` ("Agent worktrees and role split") applies again. Codex works the back-end lane from the primary worktree on `main`: everything under `backend/`, including models, migrations, endpoints, the generated `backend/hayer_client/`, harvesting and server tests, plus `scripts/` and deployment. Claude works the front-end lane from `.claude/worktrees/claude-lane` on `worktree-claude-lane`: `app/` and `admin/` screens, state, routing, Android app-link configuration, localisation and their tests. Neither lane edits the other's files.
-- `worktree-claude-lane` sits at `f8e18fd`, behind `main`. Fast-forward it onto `main` before any front-end checkpoint starts.
+- Fast-forward `worktree-claude-lane` onto `main` before each front-end checkpoint starts, so it builds on the back-end lane's latest commits and contracts.
 - Contracts land first. Every back-end checkpoint opens with a contract commit: the `.spy.yaml` models, the endpoint method signatures and the regenerated client. Until a method is implemented it rejects with `feature_disabled`, which is also what the default-off flag returns, so an early contract exposes nothing. The front end builds against those generated types and tests with `Fake implements Client` doubles, the existing pattern at `app/test/features/consumer_ux_test.dart:518`. A missing or insufficient contract is recorded as a handoff in `lane-frontend.md`, never fixed across the boundary.
 - Each checkpoint closes through `PROJECT.md`'s required completion workflow: `scripts/preflight.sh`; `scripts/test-integration-remote.sh` for any checkpoint touching the server; a signed release APK from `scripts/build-release-apk.sh`; a commit; an entry in the owning lane log; and its M9 checkbox. A checkpoint whose gate cannot run stays open with the blocker named.
 - Every server checkpoint carries the Swipe regression gate: the existing session endpoint, catalog, catalog-persistence and PostGIS suites pass without modification.
 - `discoveryEnabled` stays false in production until M9-K closes.
+
+
+### Dependencies on the back-end lane's M7-C work
+
+`PROJECT.md`'s beta acceptance review of 13 September 2026 makes F08/F09 and then F10/F21 from `astra-audit.md` the back-end lane's next implementation, and M9 does not displace that queue. Three of those fixes are foundations the discovery checkpoints build on rather than duplicate:
+
+- **F08, bounded provider admission.** Its shared admission controller — queue cap, deadlines, cancellation, fair operation budgets and one budget across calibration instances — is the shared upstream limiter that requirement 12's harvest budgets and requirement 10's detail-refresh limits consume. Discovery adds no limiter of its own. F08 also changes `google_web_place_source.dart` and `catalog_place_service.dart`, the files M9-A refactors, so M9-A follows F08.
+- **F09, one application-wide geocoder budget.** Discover's area label in requirement 2 uses the existing reverse-geocoding path. Enable it only on F09's shared budget and bounded cache; otherwise every newly searched area adds calls against the public geocoder's application-wide limit through a per-service queue.
+- **F21, truthful refresh-job outcomes.** Its atomic leased claims and succeeded, degraded or failed outcomes in `refresh_job_service.dart` are the base for M9-E's worker lease, per-query outcomes and partial completion. M9-E extends that worker rather than forking it.
+
+F10, which stops the live place canary being a process-start dependency, is independent of discovery. None of these fixes blocks the M9-B and M9-C contract commits, which touch no provider code.
 
 ### Contract surface
 
@@ -462,7 +473,7 @@ Covers architecture items 1 to 3, the extraction in requirement 12 and the first
 - Move the automatic evidence tagging in `GoogleWebPlaceSource._page` (`google_web_place_source.dart:108`) into a Swipe-only query adapter, and expose bounded single-page retrieval for the harvest orchestrator.
 - Land it as its own commit, ahead of any discovery work that depends on it.
 - Gate: the Swipe regression gate; the fixture from requirement 12's acceptance, in which an unevidenced observation reaches `hayer_poi_catalog` while `hayer_poi_category` and `hayer_poi_coverage` receive exactly their previous rows; a stubbed transport counting upstream requests.
-- Blocks M9-D and M9-E. It blocks nothing in the front-end lane.
+- Starts after F08, which changes the same source and catalog service files. Blocks M9-D and M9-E. It blocks nothing in the front-end lane.
 
 #### M9-B — Flag, configuration and Discover taxonomy
 
@@ -484,19 +495,19 @@ Covers requirements 3, 4, 6, 7 and 8, the map payload in requirement 9 and the s
 
 #### M9-D — Shared detail resolver and sessionless reporting
 
-Covers architecture item 5 and the server side of requirement 10. Depends on M9-A.
+Covers architecture item 5 and the server side of requirement 10. Depends on M9-A, and therefore on F08.
 
 - Contract commit: `PlaceEndpoint.details`, the catalog reporting method, and `PoiIssueReportRow` with a nullable `sessionId` and a source discriminator.
-- Then the refresh-attempt metadata, database-backed per-place lease and cooldown; the focused search through M9-A's adapter and writer; catalog reporting that reuses issue validation, reporter hashing, quotas, idempotency and deduplication.
+- Then the refresh-attempt metadata, database-backed per-place lease and cooldown; the focused search through M9-A's adapter and writer, admitted through F08's shared controller; catalog reporting that reuses issue validation, reporter hashing, quotas, idempotency and deduplication.
 - Gate: requirement 10's detail and reporting acceptance, including cross-user and cross-mode deduplication, with the existing session reporting authorisation tests unmodified.
 - Unblocks M9-H and the issues part of M9-J.
 
 #### M9-E — Harvesting and coverage
 
-Covers requirements 12 and 13 and the server side of requirement 16. Depends on M9-A and M9-C.
+Covers requirements 12 and 13 and the server side of requirement 16. Depends on M9-A, M9-C and F21.
 
 - Contract commit: `ensureArea`, `deepen`, `harvestStatus`, the coverage descriptor on `browse`, and the admin reads for jobs, the manifest, unmapped types and metrics.
-- Then `planJson` on `hayer_refresh_job` and the worker's plan selection; canonical cell snapping and advisory-lock deduplication with a unique active-job key; the versioned bilingual broad-query manifest and the compatibility pass; `hayer_discovery_coverage`; the per-user quota through `RateLimiter.check` and the global limiter enforced across workers; lease, heartbeat and cancellation when the flag is turned off; aggregate growth and reuse metrics.
+- Then `planJson` on `hayer_refresh_job` and the worker's plan selection; canonical cell snapping and advisory-lock deduplication with a unique active-job key; the versioned bilingual broad-query manifest and the compatibility pass; `hayer_discovery_coverage`; the per-user quota through `RateLimiter.check`, with every provider call admitted through F08's shared controller; F21's leased claims extended with a heartbeat and with cancellation when the flag is turned off; aggregate growth and reuse metrics.
 - Deployment: the public web host serves the Flutter application for direct `/discover` and `/app/discover` URLs, including query strings.
 - Gate: the acceptance in requirements 12 and 13, including one job for simultaneous users and partial provider failure, with queue delay and swipe latency measured under harvest load.
 - Unblocks the coverage strip in M9-G4 and the jobs, manifest and metrics parts of M9-J.
@@ -516,7 +527,7 @@ Covers requirement 1, the URL, history and app-link parts of requirement 11, the
 Covers requirements 2, the client roll-up in 4, 6 to 9, the state and history parts of 11, 13, 14 and their strings. Lands as four commits.
 
 - **G1, no contract needed.** Extract the style, camera and gesture plumbing of `SearchAreaMap` (`app/lib/core/widgets/search_area_map.dart:22`) into a shared base. Gate: `app/test/core/widgets/search_area_map_test.dart` and the setup and lobby tests pass unmodified.
-- **G2, after the M9-C contract.** A discovery `NotifierProvider` that derives the committed query from the router, numbers query generations and drops late responses, pages by keyset with id deduplication, resets on `query_changed` and offers Refresh; the draggable sheet with the area header, sort chips and explainers driven by configuration thresholds, ranked rows and tag lines, straight-line distance from the permitted device location, and empty and error states; the pending viewport with "Search this area" and "Previous area".
+- **G2, after the M9-C contract.** A discovery `NotifierProvider` that derives the committed query from the router, numbers query generations and drops late responses, pages by keyset with id deduplication, resets on `query_changed` and offers Refresh; the draggable sheet with the area header, whose reverse-geocoded label is enabled only once F09 lands, sort chips and explainers driven by configuration thresholds, ranked rows and tag lines, straight-line distance from the permitted device location, and empty and error states; the pending viewport with "Search this area" and "Previous area".
 - **G3, after the M9-B and M9-C contracts.** The filter sheet as a local draft applied as one history entry, with a debounced facets preview; review bands, exact price, minimum rating, hours windows, text and completeness; the disabled amenity chips from requirement 14; the category tree screen as a pure function of the facet payload and the published tree, rolling counts up through interior nodes' own mappings and rendering `labelAr` in Arabic, with the hidden-branch footer and removable zero-count selections.
 - **G4, after the M9-C contract, with coverage after M9-E's.** `DiscoveryMap` on the G1 base, with a clustered GeoJSON source and a separate aggregate source above 2,000 matches; rating labels, gem styling and selection synchronised between pin and row; the unloaded-pin preview through `placeContext`; the coverage strip, Deepen, harvest progress and the `rate_limited` wait.
 - Gate: the app widget tests listed in requirement 18, including draft versus applied state, out-of-order responses, revision mismatches, failed partial loads, null and stale data, unloaded pins, Arabic and large text; no leaked sources or controllers across repeated filter changes.
@@ -550,18 +561,18 @@ Covers architecture item 7 and requirement 18.
 
 ### Order and parallelism
 
-Codex opens with M9-A, then lands the M9-B and M9-C contract commits before implementing either, so the front end never waits on an implementation it does not need. Claude opens with the work that needs no contract.
+The back-end lane continues F08/F09 and then F10/F21. The M9-B and M9-C contract commits touch no provider code, so they can land alongside that work whenever the lane schedules them; they unblock most of the front end, so earlier is better. Implementations follow the dependencies above: M9-A after F08, M9-D after M9-A, and M9-E after M9-A, M9-C and F21. Claude opens with the work that needs no contract.
 
 | Checkpoint | Lane | Needs before it starts |
 | --- | --- | --- |
-| M9-A | Back end | Nothing |
-| M9-B | Back end | Nothing; scheduled after M9-A, contract first |
-| M9-C | Back end | Nothing; contract immediately after M9-B's |
+| M9-A | Back end | F08 |
+| M9-B | Back end | Nothing; contract first |
+| M9-C | Back end | Nothing; contract right after M9-B's |
 | M9-D | Back end | M9-A |
-| M9-E | Back end | M9-A, M9-C |
+| M9-E | Back end | M9-A, M9-C, F21 |
 | M9-F prework, M9-G1 | Front end | Nothing |
 | M9-F configuration | Front end | M9-B contract |
-| M9-G2 | Front end | M9-C contract |
+| M9-G2 | Front end | M9-C contract; F09 before the area label is enabled |
 | M9-G3 | Front end | M9-B and M9-C contracts |
 | M9-G4 | Front end | M9-C contract; M9-E contract for coverage |
 | M9-H | Front end | M9-C and M9-D contracts |
@@ -571,8 +582,8 @@ Codex opens with M9-A, then lands the M9-B and M9-C contract commits before impl
 First moves:
 
 1. Open M9 in `PROJECT.md` with checkpoints M9-A to M9-K and the note that it runs alongside M7 by owner decision. The first commit made against M9, in either lane, carries this short addition.
-2. Codex starts M9-A, followed by the M9-B and M9-C contracts.
-3. Claude fast-forwards `worktree-claude-lane` onto `main`, then starts the M9-F prework and M9-G1.
+2. Codex continues F08/F09 and F10/F21, schedules the M9-B and M9-C contract commits, and starts M9-A once F08 lands.
+3. Claude starts the M9-F prework and M9-G1 from an up-to-date `worktree-claude-lane`.
 
 ## Out of scope, recorded deliberately
 
@@ -590,6 +601,6 @@ First moves:
 
 - Extracting the shared observation writer is the highest-risk change in this plan, and it is the one place where Discover genuinely modifies code Swipe executes. Requirement 12 requires separating unconditional valid-POI upserts from optional query-evidence and coverage writes in `CatalogPlaceService`, and moving `GoogleWebPlaceSource._page`'s automatic evidence tagging into a Swipe-only query adapter. This is unavoidable: `_persist` at `backend/hayer_server/lib/src/places/catalog_place_service.dart:388` currently executes `if (directlyObserved.isEmpty) continue;`, so broad discovery observations would be silently discarded and the shared-catalog contract in this document would not hold. Read every "Swipe is untouched" statement in this ledger as a promise about observable behavior — ranking, evidence semantics, eligibility, coverage writes and deck composition over identical fixtures — not as a promise that no shared code is refactored. Land this refactor as its own change, before any discovery surface depends on it, with the existing swipe and catalog-persistence suites passing unmodified as the gate.
 - `primary_type` is provider free text, unversioned and language-sensitive. Mapping needs operator upkeep, which is why the unmapped-types report in requirement 16 is part of the feature rather than an optional extra.
-- Discover invites users to trigger scrapes. The per-user limit, the existing global budget and the single-cell harvest bound are all load-bearing, and should be reviewed against real usage before the flag is turned on broadly.
+- Discover invites users to trigger scrapes. The per-user limit, the global budget from F08's shared admission controller and the single-cell harvest bound are all load-bearing, and should be reviewed against real usage before the flag is turned on broadly.
 - Worst rated publishes negative information about real businesses. Requirement 10 extends the existing reporting UI/moderation workflow with a catalog-based endpoint; the current session-only `PlaceEndpoint.reportIssue` cannot be used unchanged. The correction action must be reachable from result cards.
 - Coverage remains the honest limit of the feature. Over a cold area Discover shows little, and no amount of UI work changes that; only the crowd-sourcing loop does.
