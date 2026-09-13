@@ -880,9 +880,9 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [ ] M9-D — Shared detail resolver and sessionless reporting (back end).
 - [ ] M9-E — Harvesting and coverage (back end, after F21).
 - [~] M9-F — Entry, configuration and links (front end). Contract-free prework
-  is in progress; configuration waits for the M9-B contract.
-- [~] M9-G — Discover surface (front end). G1, the shared map base, is in
-  progress; G2–G4 wait for contracts.
+  landed in `bb212d7`; configuration waits for the M9-B contract.
+- [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
+  `017e17c`; G2–G4 wait for contracts.
 - [ ] M9-H — Place detail, save, share and report (front end).
 - [ ] M9-J — Admin (front end).
 - [ ] M9-K — Cross-mode verification and dark release (both lanes).
@@ -943,6 +943,16 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 
 ## Evidence log
 
+- 2026-09-13: opened M9 alongside M7 by owner decision. The front-end lane
+  landed M9-G1, the shared `HayerMap` base, in `017e17c`, and M9-F's
+  contract-free prework in `bb212d7`: the dark Got time entry, the
+  `/discover` gate and App Links, the link codec and bilingual strings.
+  Pinned full preflight passed 130 server, 184 app and 51 admin tests with
+  clean analyses. Signed `0.2.1+7` built at SHA-256
+  `4a15d6c0bb4b0b1371b643b75df8eadac8799f924f71139978ef9ddd74d8c97a` and
+  verifies under APK Signature Scheme v2 with the existing signer.
+  Discovery stays disabled, and M9-F and M9-G stay open. Details are in
+  `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current
