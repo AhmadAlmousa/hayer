@@ -24,8 +24,9 @@ Last updated: 2026-09-13
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 39/39 against real PostGIS,
-  including legacy-calibration repair and bounded version-retention/rollback.
+- The latest integration suite is fully green: 44/44 against real PostGIS,
+  including legacy-calibration repair, bounded version-retention/rollback and
+  dark discovery contract checks.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is wired into the merged client.
   Two-device acceptance remains open.
@@ -34,8 +35,61 @@ Last updated: 2026-09-13
   `PROJECT.md` under the 2026-09-13 beta acceptance review. Next backend work
   is F10/F21 source resilience; F08/F09 provider/geocoder bounds are implemented
   and locally verified, with production deployment pending.
+- The owner prioritized contracts to unblock Claude's discovery work. Frontend
+  prework is merged in `d4b58b7`; M9-B/C/D and consumer M9-E generated contracts
+  are delivered. The exact calls, mock semantics and retained-link flow are in
+  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). Persistent
+  implementations and production activation remain open.
 
 ## Checkpoints
+
+### M9 frontend unblock — contract delivery (2026-09-13)
+
+Merged `worktree-claude-lane` through `dc8f12b` into main in `d4b58b7`, preserving
+both lanes' PROJECT evidence when resolving the only conflict. The shared map,
+dark Got Time entry and URL codec are now on main. Frontend source and the
+frontend lane log were not changed by the backend contract work.
+
+Added 30 DTOs and 11 by-name enums, generated server/client bindings and test
+tools, and authenticated `discover` methods for taxonomy, browse, facets,
+placeContext and consumer harvesting/coverage. Public discoveryConfig supplies
+availability, revisions, expiry, supported countries and display settings;
+revision 0 is explicitly provisional and disabled. Shared `place.details` and
+sessionless catalog-report signatures unblock the common detail sheet. All
+new data/mutation methods return `feature_disabled` after authorization, with
+no provider or database work. This follows the plan's contract-first rollout.
+
+Admin gets discovery taxonomy lifecycle signatures and optional discovery/
+detail policy sections. Non-null new policy sections reject before writes
+until persistence exists; older policy payloads still work. Admin issue DTOs
+carry optional source/session context, while reporter hashes stay private.
+The old migration-file test prohibited session context altogether; its
+assertion now reflects M9's nullable navigation contract and keeps the
+reporter-identity restriction. No storage schema or migration was changed.
+
+Public nginx rewrites `/discover` and `/app/discover` to `/app/index.html`
+without removing the query string. Server/web image rebuild and gateway
+recreation are still needed on Unraid; no live gateway proof is claimed.
+Claude owns retaining a disabled canonical URL locally, showing availability
+and retrying after fresh enabled config. The handoff describes that flow and
+the query/facet generation rules so frontend work can proceed with mocks.
+
+Verification: pinned `scripts/preflight.sh` passed generation, formatting,
+all analyses, 151 server tests, 184 app tests and 51 admin tests. All 44 tests
+in `scripts/test-integration-remote.sh` passed against the guarded disposable
+PostGIS database, including existing session/catalog persistence regressions
+and five new discovery contract cases. Four new unit tests cover wire enums,
+Unicode filters, recursive taxonomy, disabled config and both web rewrites.
+Existing custom-PostGIS schema metadata warnings remain. Graft was rebuilt.
+The signed `0.2.1+7` APK built successfully, verifies with APK Signature
+Scheme v2 and has SHA-256
+`84d10c9ab9120fc42c15a881930b2cdd62e745c0c7dc740c7fa8969e4e23ef61`.
+
+M9-B/C/D/E implementation gates remain open. The shared Vela-derived non-API
+adapter and crowd-sourced catalog remain requirements for both modes; no
+alternative search/detail provider was introduced. F10/F21 are still the next
+backend implementation work. M9-E admin manifest/job/growth contracts have
+not been delivered by this consumer-focused handoff.
 
 ### F08/F09 provider admission and shared geocoder — implemented (2026-09-13)
 

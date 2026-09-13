@@ -9,6 +9,7 @@ import 'admin_authorization.dart';
 import 'admin_gateway_access.dart';
 import 'poi_issue_moderation_service.dart';
 import '../generated/protocol.dart';
+import '../discovery/discovery_contract.dart';
 import '../places/calibration.dart';
 import '../places/google_web_place_source.dart';
 import '../places/place_services.dart';
@@ -130,6 +131,61 @@ class AdminEndpoint extends Endpoint {
     } on ReverseGeocodingException catch (error) {
       throw ApiException(code: 'location_unavailable', message: error.message);
     }
+  }
+
+  Future<AdminDiscoveryTaxonomyVersion> discoveryTaxonomyDraft(
+    Session session,
+  ) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<List<AdminDiscoveryTaxonomyVersion>> discoveryTaxonomyHistory(
+    Session session,
+  ) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryTaxonomyVersion> saveDiscoveryTaxonomyDraft(
+    Session session, {
+    required String reason,
+    required String version,
+    required int revision,
+    required List<DiscoveryTaxonomyNode> roots,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<DiscoveryTaxonomyValidation> validateDiscoveryTaxonomyDraft(
+    Session session, {
+    required String reason,
+    required String version,
+    required int revision,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryTaxonomyVersion> publishDiscoveryTaxonomy(
+    Session session, {
+    required String reason,
+    required String version,
+    required int revision,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryTaxonomyVersion> rollbackDiscoveryTaxonomy(
+    Session session, {
+    required String reason,
+    required String version,
+    required int expectedActiveRevision,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
   }
 
   Future<AdminTaxonomyVersion> taxonomyDraft(Session session) async {
@@ -814,6 +870,10 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
+    if (policy.discovery != null || policy.detailRefresh != null) {
+      // Contract-only fields must not be silently acknowledged and discarded.
+      DiscoveryContract.unavailable();
+    }
     _validatePolicy(policy);
     return session.db.transaction((transaction) async {
       final before = await CacheSettingsRow.db.findFirstRow(

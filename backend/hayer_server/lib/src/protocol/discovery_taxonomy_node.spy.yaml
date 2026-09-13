@@ -1,0 +1,8 @@
+class: DiscoveryTaxonomyNode
+fields:
+  id: String
+  labelEn: String
+  labelAr: String
+  emoji: String
+  typeAliases: List<String>
+  children: List<DiscoveryTaxonomyNode>

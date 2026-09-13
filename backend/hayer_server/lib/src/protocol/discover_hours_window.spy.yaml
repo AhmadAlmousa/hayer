@@ -1,0 +1,7 @@
+enum: DiscoverHoursWindow
+serialized: byName
+values:
+  - openNow
+  - openLate
+  - breakfast
+  - openFriday

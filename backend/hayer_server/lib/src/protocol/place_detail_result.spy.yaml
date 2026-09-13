@@ -1,0 +1,11 @@
+class: PlaceDetailResult
+fields:
+  identity: PoiIdentity
+  place: PlaceSnapshot
+  stale: bool
+  refreshState: PlaceDetailRefreshState
+  missingFields: List<PlaceDetailField>
+  lastAttemptAt: DateTime?
+  lastSuccessAt: DateTime?
+  retryAfter: DateTime?
+  fetchedAt: DateTime

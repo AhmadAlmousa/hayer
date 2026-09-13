@@ -1,0 +1,6 @@
+class: DiscoveryTaxonomyValidation
+fields:
+  passed: bool
+  errors: List<String>
+  revision: int
+  validatedAt: DateTime

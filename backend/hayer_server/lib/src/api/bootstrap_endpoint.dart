@@ -1,11 +1,16 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../discovery/discovery_contract.dart';
+
 import '../generated/protocol.dart';
 import '../places/taxonomy_service.dart';
 
 class BootstrapEndpoint extends Endpoint {
   @override
   bool get requireLogin => false;
+
+  Future<DiscoveryConfig> discoveryConfig(Session session) async =>
+      DiscoveryContract.configuration();
 
   Future<BootstrapInfo> getInfo(Session session, {required int build}) async {
     const minimumBuild = 5;

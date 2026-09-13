@@ -1,0 +1,5 @@
+class: DiscoveryCoverage
+fields:
+  eligibleCatalogCount: int
+  footprints: List<DiscoveryCoverageFootprint>
+  pendingJobs: List<DiscoveryHarvestStatus>

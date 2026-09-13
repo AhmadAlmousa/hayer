@@ -1,0 +1,8 @@
+class: DiscoveryClientLimits
+fields:
+  defaultPageSize: int
+  maximumPageSize: int
+  maximumCategoryIds: int
+  maximumTextCodePoints: int
+  maximumMapPoints: int
+  otherCategoryId: String

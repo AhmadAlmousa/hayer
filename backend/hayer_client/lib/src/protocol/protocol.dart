@@ -15,80 +15,126 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'admin_analytics_overview.dart' as _i2;
 import 'admin_audit_entry.dart' as _i3;
 import 'admin_audit_page.dart' as _i4;
-import 'admin_live_usage.dart' as _i5;
-import 'admin_map_location.dart' as _i6;
-import 'admin_place_analytics.dart' as _i7;
-import 'admin_poi_issue.dart' as _i8;
-import 'admin_poi_issue_page.dart' as _i9;
-import 'admin_taxonomy_item.dart' as _i10;
-import 'admin_taxonomy_version.dart' as _i11;
-import 'admin_usage_analytics.dart' as _i12;
-import 'analytics_breakdown.dart' as _i13;
-import 'analytics_filter.dart' as _i14;
-import 'analytics_granularity.dart' as _i15;
-import 'analytics_heat_cell.dart' as _i16;
-import 'analytics_kpi.dart' as _i17;
-import 'analytics_point.dart' as _i18;
-import 'api_exception.dart' as _i19;
-import 'bootstrap_info.dart' as _i20;
-import 'cache_dashboard_summary.dart' as _i21;
-import 'cache_policy.dart' as _i22;
-import 'calibration_status.dart' as _i23;
-import 'calibration_validation.dart' as _i24;
-import 'catalog_place_page.dart' as _i25;
-import 'catalog_prune_preview.dart' as _i26;
-import 'client_analytics_context.dart' as _i27;
-import 'client_analytics_event.dart' as _i28;
-import 'consensus_rule.dart' as _i29;
-import 'coverage_page.dart' as _i30;
-import 'coverage_record.dart' as _i31;
-import 'create_session_request.dart' as _i32;
-import 'destination_choice_state.dart' as _i33;
-import 'job_status.dart' as _i34;
-import 'location_suggestion.dart' as _i35;
-import 'matching_timing.dart' as _i36;
-import 'metric_point.dart' as _i37;
-import 'opening_period.dart' as _i38;
-import 'participant_view.dart' as _i39;
-import 'place_insight.dart' as _i40;
-import 'place_ranking.dart' as _i41;
-import 'place_snapshot.dart' as _i42;
-import 'poi_issue_status.dart' as _i43;
-import 'poi_issue_type.dart' as _i44;
-import 'refresh_job_page.dart' as _i45;
-import 'refresh_job_view.dart' as _i46;
-import 'route_estimate.dart' as _i47;
-import 'route_estimate_policy.dart' as _i48;
-import 'route_origin_mode.dart' as _i49;
-import 'session_bundle.dart' as _i50;
-import 'session_event.dart' as _i51;
-import 'session_event_type.dart' as _i52;
-import 'session_mode.dart' as _i53;
-import 'session_progress.dart' as _i54;
-import 'session_result.dart' as _i55;
-import 'session_result_tally.dart' as _i56;
-import 'session_status.dart' as _i57;
-import 'session_view.dart' as _i58;
-import 'swipe_command.dart' as _i59;
-import 'taxonomy_canary_sample.dart' as _i60;
-import 'taxonomy_item.dart' as _i61;
-import 'taxonomy_kind.dart' as _i62;
-import 'taxonomy_snapshot.dart' as _i63;
-import 'taxonomy_status.dart' as _i64;
-import 'taxonomy_validation.dart' as _i65;
-import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i66;
-import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i67;
-import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i68;
-import 'package:hayer_client/src/protocol/metric_point.dart' as _i69;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i70;
+import 'admin_discovery_taxonomy_version.dart' as _i5;
+import 'admin_live_usage.dart' as _i6;
+import 'admin_map_location.dart' as _i7;
+import 'admin_place_analytics.dart' as _i8;
+import 'admin_poi_issue.dart' as _i9;
+import 'admin_poi_issue_page.dart' as _i10;
+import 'admin_taxonomy_item.dart' as _i11;
+import 'admin_taxonomy_version.dart' as _i12;
+import 'admin_usage_analytics.dart' as _i13;
+import 'analytics_breakdown.dart' as _i14;
+import 'analytics_filter.dart' as _i15;
+import 'analytics_granularity.dart' as _i16;
+import 'analytics_heat_cell.dart' as _i17;
+import 'analytics_kpi.dart' as _i18;
+import 'analytics_point.dart' as _i19;
+import 'api_exception.dart' as _i20;
+import 'bootstrap_info.dart' as _i21;
+import 'cache_dashboard_summary.dart' as _i22;
+import 'cache_policy.dart' as _i23;
+import 'calibration_status.dart' as _i24;
+import 'calibration_validation.dart' as _i25;
+import 'catalog_place_page.dart' as _i26;
+import 'catalog_prune_preview.dart' as _i27;
+import 'client_analytics_context.dart' as _i28;
+import 'client_analytics_event.dart' as _i29;
+import 'consensus_rule.dart' as _i30;
+import 'coverage_page.dart' as _i31;
+import 'coverage_record.dart' as _i32;
+import 'create_session_request.dart' as _i33;
+import 'destination_choice_state.dart' as _i34;
+import 'discover_browse_page.dart' as _i35;
+import 'discover_completeness.dart' as _i36;
+import 'discover_facets.dart' as _i37;
+import 'discover_hours_window.dart' as _i38;
+import 'discover_place.dart' as _i39;
+import 'discover_place_context.dart' as _i40;
+import 'discover_query.dart' as _i41;
+import 'discover_query_context.dart' as _i42;
+import 'discover_review_band.dart' as _i43;
+import 'discover_sort.dart' as _i44;
+import 'discover_viewport.dart' as _i45;
+import 'discovery_area_receipt.dart' as _i46;
+import 'discovery_best_formula.dart' as _i47;
+import 'discovery_client_limits.dart' as _i48;
+import 'discovery_config.dart' as _i49;
+import 'discovery_coverage.dart' as _i50;
+import 'discovery_coverage_footprint.dart' as _i51;
+import 'discovery_harvest_state.dart' as _i52;
+import 'discovery_harvest_status.dart' as _i53;
+import 'discovery_harvest_trigger.dart' as _i54;
+import 'discovery_map_aggregate.dart' as _i55;
+import 'discovery_map_mode.dart' as _i56;
+import 'discovery_map_payload.dart' as _i57;
+import 'discovery_map_point.dart' as _i58;
+import 'discovery_minimum_rating_count.dart' as _i59;
+import 'discovery_policy.dart' as _i60;
+import 'discovery_price_count.dart' as _i61;
+import 'discovery_rating_bucket.dart' as _i62;
+import 'discovery_review_band_count.dart' as _i63;
+import 'discovery_scoring.dart' as _i64;
+import 'discovery_taxonomy_node.dart' as _i65;
+import 'discovery_taxonomy_snapshot.dart' as _i66;
+import 'discovery_taxonomy_validation.dart' as _i67;
+import 'discovery_type_count.dart' as _i68;
+import 'job_status.dart' as _i69;
+import 'location_suggestion.dart' as _i70;
+import 'matching_timing.dart' as _i71;
+import 'metric_point.dart' as _i72;
+import 'opening_period.dart' as _i73;
+import 'participant_view.dart' as _i74;
+import 'place_detail_field.dart' as _i75;
+import 'place_detail_policy.dart' as _i76;
+import 'place_detail_refresh_state.dart' as _i77;
+import 'place_detail_result.dart' as _i78;
+import 'place_insight.dart' as _i79;
+import 'place_ranking.dart' as _i80;
+import 'place_snapshot.dart' as _i81;
+import 'poi_identity.dart' as _i82;
+import 'poi_issue_source.dart' as _i83;
+import 'poi_issue_status.dart' as _i84;
+import 'poi_issue_type.dart' as _i85;
+import 'refresh_job_page.dart' as _i86;
+import 'refresh_job_view.dart' as _i87;
+import 'route_estimate.dart' as _i88;
+import 'route_estimate_policy.dart' as _i89;
+import 'route_origin_mode.dart' as _i90;
+import 'session_bundle.dart' as _i91;
+import 'session_event.dart' as _i92;
+import 'session_event_type.dart' as _i93;
+import 'session_mode.dart' as _i94;
+import 'session_progress.dart' as _i95;
+import 'session_result.dart' as _i96;
+import 'session_result_tally.dart' as _i97;
+import 'session_status.dart' as _i98;
+import 'session_view.dart' as _i99;
+import 'swipe_command.dart' as _i100;
+import 'taxonomy_canary_sample.dart' as _i101;
+import 'taxonomy_item.dart' as _i102;
+import 'taxonomy_kind.dart' as _i103;
+import 'taxonomy_snapshot.dart' as _i104;
+import 'taxonomy_status.dart' as _i105;
+import 'taxonomy_validation.dart' as _i106;
+import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i107;
+import 'package:hayer_client/src/protocol/admin_discovery_taxonomy_version.dart'
+    as _i108;
+import 'package:hayer_client/src/protocol/discovery_taxonomy_node.dart'
+    as _i109;
+import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i110;
+import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i111;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i112;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i113;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i71;
-import 'dart:typed_data' as _i72;
+    as _i114;
+import 'dart:typed_data' as _i115;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i73;
+    as _i116;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
+export 'admin_discovery_taxonomy_version.dart';
 export 'admin_live_usage.dart';
 export 'admin_map_location.dart';
 export 'admin_place_analytics.dart';
@@ -118,15 +164,55 @@ export 'coverage_page.dart';
 export 'coverage_record.dart';
 export 'create_session_request.dart';
 export 'destination_choice_state.dart';
+export 'discover_browse_page.dart';
+export 'discover_completeness.dart';
+export 'discover_facets.dart';
+export 'discover_hours_window.dart';
+export 'discover_place.dart';
+export 'discover_place_context.dart';
+export 'discover_query.dart';
+export 'discover_query_context.dart';
+export 'discover_review_band.dart';
+export 'discover_sort.dart';
+export 'discover_viewport.dart';
+export 'discovery_area_receipt.dart';
+export 'discovery_best_formula.dart';
+export 'discovery_client_limits.dart';
+export 'discovery_config.dart';
+export 'discovery_coverage.dart';
+export 'discovery_coverage_footprint.dart';
+export 'discovery_harvest_state.dart';
+export 'discovery_harvest_status.dart';
+export 'discovery_harvest_trigger.dart';
+export 'discovery_map_aggregate.dart';
+export 'discovery_map_mode.dart';
+export 'discovery_map_payload.dart';
+export 'discovery_map_point.dart';
+export 'discovery_minimum_rating_count.dart';
+export 'discovery_policy.dart';
+export 'discovery_price_count.dart';
+export 'discovery_rating_bucket.dart';
+export 'discovery_review_band_count.dart';
+export 'discovery_scoring.dart';
+export 'discovery_taxonomy_node.dart';
+export 'discovery_taxonomy_snapshot.dart';
+export 'discovery_taxonomy_validation.dart';
+export 'discovery_type_count.dart';
 export 'job_status.dart';
 export 'location_suggestion.dart';
 export 'matching_timing.dart';
 export 'metric_point.dart';
 export 'opening_period.dart';
 export 'participant_view.dart';
+export 'place_detail_field.dart';
+export 'place_detail_policy.dart';
+export 'place_detail_refresh_state.dart';
+export 'place_detail_result.dart';
 export 'place_insight.dart';
 export 'place_ranking.dart';
 export 'place_snapshot.dart';
+export 'poi_identity.dart';
+export 'poi_issue_source.dart';
 export 'poi_issue_status.dart';
 export 'poi_issue_type.dart';
 export 'refresh_job_page.dart';
@@ -195,188 +281,311 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i4.AdminAuditPage) {
       return _i4.AdminAuditPage.fromJson(data) as T;
     }
-    if (t == _i5.AdminLiveUsage) {
-      return _i5.AdminLiveUsage.fromJson(data) as T;
+    if (t == _i5.AdminDiscoveryTaxonomyVersion) {
+      return _i5.AdminDiscoveryTaxonomyVersion.fromJson(data) as T;
     }
-    if (t == _i6.AdminMapLocation) {
-      return _i6.AdminMapLocation.fromJson(data) as T;
+    if (t == _i6.AdminLiveUsage) {
+      return _i6.AdminLiveUsage.fromJson(data) as T;
     }
-    if (t == _i7.AdminPlaceAnalytics) {
-      return _i7.AdminPlaceAnalytics.fromJson(data) as T;
+    if (t == _i7.AdminMapLocation) {
+      return _i7.AdminMapLocation.fromJson(data) as T;
     }
-    if (t == _i8.AdminPoiIssue) {
-      return _i8.AdminPoiIssue.fromJson(data) as T;
+    if (t == _i8.AdminPlaceAnalytics) {
+      return _i8.AdminPlaceAnalytics.fromJson(data) as T;
     }
-    if (t == _i9.AdminPoiIssuePage) {
-      return _i9.AdminPoiIssuePage.fromJson(data) as T;
+    if (t == _i9.AdminPoiIssue) {
+      return _i9.AdminPoiIssue.fromJson(data) as T;
     }
-    if (t == _i10.AdminTaxonomyItem) {
-      return _i10.AdminTaxonomyItem.fromJson(data) as T;
+    if (t == _i10.AdminPoiIssuePage) {
+      return _i10.AdminPoiIssuePage.fromJson(data) as T;
     }
-    if (t == _i11.AdminTaxonomyVersion) {
-      return _i11.AdminTaxonomyVersion.fromJson(data) as T;
+    if (t == _i11.AdminTaxonomyItem) {
+      return _i11.AdminTaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i12.AdminUsageAnalytics) {
-      return _i12.AdminUsageAnalytics.fromJson(data) as T;
+    if (t == _i12.AdminTaxonomyVersion) {
+      return _i12.AdminTaxonomyVersion.fromJson(data) as T;
     }
-    if (t == _i13.AnalyticsBreakdown) {
-      return _i13.AnalyticsBreakdown.fromJson(data) as T;
+    if (t == _i13.AdminUsageAnalytics) {
+      return _i13.AdminUsageAnalytics.fromJson(data) as T;
     }
-    if (t == _i14.AnalyticsFilter) {
-      return _i14.AnalyticsFilter.fromJson(data) as T;
+    if (t == _i14.AnalyticsBreakdown) {
+      return _i14.AnalyticsBreakdown.fromJson(data) as T;
     }
-    if (t == _i15.AnalyticsGranularity) {
-      return _i15.AnalyticsGranularity.fromJson(data) as T;
+    if (t == _i15.AnalyticsFilter) {
+      return _i15.AnalyticsFilter.fromJson(data) as T;
     }
-    if (t == _i16.AnalyticsHeatCell) {
-      return _i16.AnalyticsHeatCell.fromJson(data) as T;
+    if (t == _i16.AnalyticsGranularity) {
+      return _i16.AnalyticsGranularity.fromJson(data) as T;
     }
-    if (t == _i17.AnalyticsKpi) {
-      return _i17.AnalyticsKpi.fromJson(data) as T;
+    if (t == _i17.AnalyticsHeatCell) {
+      return _i17.AnalyticsHeatCell.fromJson(data) as T;
     }
-    if (t == _i18.AnalyticsPoint) {
-      return _i18.AnalyticsPoint.fromJson(data) as T;
+    if (t == _i18.AnalyticsKpi) {
+      return _i18.AnalyticsKpi.fromJson(data) as T;
     }
-    if (t == _i19.ApiException) {
-      return _i19.ApiException.fromJson(data) as T;
+    if (t == _i19.AnalyticsPoint) {
+      return _i19.AnalyticsPoint.fromJson(data) as T;
     }
-    if (t == _i20.BootstrapInfo) {
-      return _i20.BootstrapInfo.fromJson(data) as T;
+    if (t == _i20.ApiException) {
+      return _i20.ApiException.fromJson(data) as T;
     }
-    if (t == _i21.CacheDashboardSummary) {
-      return _i21.CacheDashboardSummary.fromJson(data) as T;
+    if (t == _i21.BootstrapInfo) {
+      return _i21.BootstrapInfo.fromJson(data) as T;
     }
-    if (t == _i22.CachePolicy) {
-      return _i22.CachePolicy.fromJson(data) as T;
+    if (t == _i22.CacheDashboardSummary) {
+      return _i22.CacheDashboardSummary.fromJson(data) as T;
     }
-    if (t == _i23.CalibrationStatus) {
-      return _i23.CalibrationStatus.fromJson(data) as T;
+    if (t == _i23.CachePolicy) {
+      return _i23.CachePolicy.fromJson(data) as T;
     }
-    if (t == _i24.CalibrationValidation) {
-      return _i24.CalibrationValidation.fromJson(data) as T;
+    if (t == _i24.CalibrationStatus) {
+      return _i24.CalibrationStatus.fromJson(data) as T;
     }
-    if (t == _i25.CatalogPlacePage) {
-      return _i25.CatalogPlacePage.fromJson(data) as T;
+    if (t == _i25.CalibrationValidation) {
+      return _i25.CalibrationValidation.fromJson(data) as T;
     }
-    if (t == _i26.CatalogPrunePreview) {
-      return _i26.CatalogPrunePreview.fromJson(data) as T;
+    if (t == _i26.CatalogPlacePage) {
+      return _i26.CatalogPlacePage.fromJson(data) as T;
     }
-    if (t == _i27.ClientAnalyticsContext) {
-      return _i27.ClientAnalyticsContext.fromJson(data) as T;
+    if (t == _i27.CatalogPrunePreview) {
+      return _i27.CatalogPrunePreview.fromJson(data) as T;
     }
-    if (t == _i28.ClientAnalyticsEvent) {
-      return _i28.ClientAnalyticsEvent.fromJson(data) as T;
+    if (t == _i28.ClientAnalyticsContext) {
+      return _i28.ClientAnalyticsContext.fromJson(data) as T;
     }
-    if (t == _i29.ConsensusRule) {
-      return _i29.ConsensusRule.fromJson(data) as T;
+    if (t == _i29.ClientAnalyticsEvent) {
+      return _i29.ClientAnalyticsEvent.fromJson(data) as T;
     }
-    if (t == _i30.CoveragePage) {
-      return _i30.CoveragePage.fromJson(data) as T;
+    if (t == _i30.ConsensusRule) {
+      return _i30.ConsensusRule.fromJson(data) as T;
     }
-    if (t == _i31.CoverageRecord) {
-      return _i31.CoverageRecord.fromJson(data) as T;
+    if (t == _i31.CoveragePage) {
+      return _i31.CoveragePage.fromJson(data) as T;
     }
-    if (t == _i32.CreateSessionRequest) {
-      return _i32.CreateSessionRequest.fromJson(data) as T;
+    if (t == _i32.CoverageRecord) {
+      return _i32.CoverageRecord.fromJson(data) as T;
     }
-    if (t == _i33.DestinationChoiceState) {
-      return _i33.DestinationChoiceState.fromJson(data) as T;
+    if (t == _i33.CreateSessionRequest) {
+      return _i33.CreateSessionRequest.fromJson(data) as T;
     }
-    if (t == _i34.JobStatus) {
-      return _i34.JobStatus.fromJson(data) as T;
+    if (t == _i34.DestinationChoiceState) {
+      return _i34.DestinationChoiceState.fromJson(data) as T;
     }
-    if (t == _i35.LocationSuggestion) {
-      return _i35.LocationSuggestion.fromJson(data) as T;
+    if (t == _i35.DiscoverBrowsePage) {
+      return _i35.DiscoverBrowsePage.fromJson(data) as T;
     }
-    if (t == _i36.MatchingTiming) {
-      return _i36.MatchingTiming.fromJson(data) as T;
+    if (t == _i36.DiscoverCompleteness) {
+      return _i36.DiscoverCompleteness.fromJson(data) as T;
     }
-    if (t == _i37.MetricPoint) {
-      return _i37.MetricPoint.fromJson(data) as T;
+    if (t == _i37.DiscoverFacets) {
+      return _i37.DiscoverFacets.fromJson(data) as T;
     }
-    if (t == _i38.OpeningPeriod) {
-      return _i38.OpeningPeriod.fromJson(data) as T;
+    if (t == _i38.DiscoverHoursWindow) {
+      return _i38.DiscoverHoursWindow.fromJson(data) as T;
     }
-    if (t == _i39.ParticipantView) {
-      return _i39.ParticipantView.fromJson(data) as T;
+    if (t == _i39.DiscoverPlace) {
+      return _i39.DiscoverPlace.fromJson(data) as T;
     }
-    if (t == _i40.PlaceInsight) {
-      return _i40.PlaceInsight.fromJson(data) as T;
+    if (t == _i40.DiscoverPlaceContext) {
+      return _i40.DiscoverPlaceContext.fromJson(data) as T;
     }
-    if (t == _i41.PlaceRanking) {
-      return _i41.PlaceRanking.fromJson(data) as T;
+    if (t == _i41.DiscoverQuery) {
+      return _i41.DiscoverQuery.fromJson(data) as T;
     }
-    if (t == _i42.PlaceSnapshot) {
-      return _i42.PlaceSnapshot.fromJson(data) as T;
+    if (t == _i42.DiscoverQueryContext) {
+      return _i42.DiscoverQueryContext.fromJson(data) as T;
     }
-    if (t == _i43.PoiIssueStatus) {
-      return _i43.PoiIssueStatus.fromJson(data) as T;
+    if (t == _i43.DiscoverReviewBand) {
+      return _i43.DiscoverReviewBand.fromJson(data) as T;
     }
-    if (t == _i44.PoiIssueType) {
-      return _i44.PoiIssueType.fromJson(data) as T;
+    if (t == _i44.DiscoverSort) {
+      return _i44.DiscoverSort.fromJson(data) as T;
     }
-    if (t == _i45.RefreshJobPage) {
-      return _i45.RefreshJobPage.fromJson(data) as T;
+    if (t == _i45.DiscoverViewport) {
+      return _i45.DiscoverViewport.fromJson(data) as T;
     }
-    if (t == _i46.RefreshJobView) {
-      return _i46.RefreshJobView.fromJson(data) as T;
+    if (t == _i46.DiscoveryAreaReceipt) {
+      return _i46.DiscoveryAreaReceipt.fromJson(data) as T;
     }
-    if (t == _i47.RouteEstimate) {
-      return _i47.RouteEstimate.fromJson(data) as T;
+    if (t == _i47.DiscoveryBestFormula) {
+      return _i47.DiscoveryBestFormula.fromJson(data) as T;
     }
-    if (t == _i48.RouteEstimatePolicy) {
-      return _i48.RouteEstimatePolicy.fromJson(data) as T;
+    if (t == _i48.DiscoveryClientLimits) {
+      return _i48.DiscoveryClientLimits.fromJson(data) as T;
     }
-    if (t == _i49.RouteOriginMode) {
-      return _i49.RouteOriginMode.fromJson(data) as T;
+    if (t == _i49.DiscoveryConfig) {
+      return _i49.DiscoveryConfig.fromJson(data) as T;
     }
-    if (t == _i50.SessionBundle) {
-      return _i50.SessionBundle.fromJson(data) as T;
+    if (t == _i50.DiscoveryCoverage) {
+      return _i50.DiscoveryCoverage.fromJson(data) as T;
     }
-    if (t == _i51.SessionEvent) {
-      return _i51.SessionEvent.fromJson(data) as T;
+    if (t == _i51.DiscoveryCoverageFootprint) {
+      return _i51.DiscoveryCoverageFootprint.fromJson(data) as T;
     }
-    if (t == _i52.SessionEventType) {
-      return _i52.SessionEventType.fromJson(data) as T;
+    if (t == _i52.DiscoveryHarvestState) {
+      return _i52.DiscoveryHarvestState.fromJson(data) as T;
     }
-    if (t == _i53.SessionMode) {
-      return _i53.SessionMode.fromJson(data) as T;
+    if (t == _i53.DiscoveryHarvestStatus) {
+      return _i53.DiscoveryHarvestStatus.fromJson(data) as T;
     }
-    if (t == _i54.SessionProgress) {
-      return _i54.SessionProgress.fromJson(data) as T;
+    if (t == _i54.DiscoveryHarvestTrigger) {
+      return _i54.DiscoveryHarvestTrigger.fromJson(data) as T;
     }
-    if (t == _i55.SessionResult) {
-      return _i55.SessionResult.fromJson(data) as T;
+    if (t == _i55.DiscoveryMapAggregate) {
+      return _i55.DiscoveryMapAggregate.fromJson(data) as T;
     }
-    if (t == _i56.SessionResultTally) {
-      return _i56.SessionResultTally.fromJson(data) as T;
+    if (t == _i56.DiscoveryMapMode) {
+      return _i56.DiscoveryMapMode.fromJson(data) as T;
     }
-    if (t == _i57.SessionStatus) {
-      return _i57.SessionStatus.fromJson(data) as T;
+    if (t == _i57.DiscoveryMapPayload) {
+      return _i57.DiscoveryMapPayload.fromJson(data) as T;
     }
-    if (t == _i58.SessionView) {
-      return _i58.SessionView.fromJson(data) as T;
+    if (t == _i58.DiscoveryMapPoint) {
+      return _i58.DiscoveryMapPoint.fromJson(data) as T;
     }
-    if (t == _i59.SwipeCommand) {
-      return _i59.SwipeCommand.fromJson(data) as T;
+    if (t == _i59.DiscoveryMinimumRatingCount) {
+      return _i59.DiscoveryMinimumRatingCount.fromJson(data) as T;
     }
-    if (t == _i60.TaxonomyCanarySample) {
-      return _i60.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _i60.DiscoveryPolicy) {
+      return _i60.DiscoveryPolicy.fromJson(data) as T;
     }
-    if (t == _i61.TaxonomyItem) {
-      return _i61.TaxonomyItem.fromJson(data) as T;
+    if (t == _i61.DiscoveryPriceCount) {
+      return _i61.DiscoveryPriceCount.fromJson(data) as T;
     }
-    if (t == _i62.TaxonomyKind) {
-      return _i62.TaxonomyKind.fromJson(data) as T;
+    if (t == _i62.DiscoveryRatingBucket) {
+      return _i62.DiscoveryRatingBucket.fromJson(data) as T;
     }
-    if (t == _i63.TaxonomySnapshot) {
-      return _i63.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i63.DiscoveryReviewBandCount) {
+      return _i63.DiscoveryReviewBandCount.fromJson(data) as T;
     }
-    if (t == _i64.TaxonomyStatus) {
-      return _i64.TaxonomyStatus.fromJson(data) as T;
+    if (t == _i64.DiscoveryScoring) {
+      return _i64.DiscoveryScoring.fromJson(data) as T;
     }
-    if (t == _i65.TaxonomyValidation) {
-      return _i65.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i65.DiscoveryTaxonomyNode) {
+      return _i65.DiscoveryTaxonomyNode.fromJson(data) as T;
+    }
+    if (t == _i66.DiscoveryTaxonomySnapshot) {
+      return _i66.DiscoveryTaxonomySnapshot.fromJson(data) as T;
+    }
+    if (t == _i67.DiscoveryTaxonomyValidation) {
+      return _i67.DiscoveryTaxonomyValidation.fromJson(data) as T;
+    }
+    if (t == _i68.DiscoveryTypeCount) {
+      return _i68.DiscoveryTypeCount.fromJson(data) as T;
+    }
+    if (t == _i69.JobStatus) {
+      return _i69.JobStatus.fromJson(data) as T;
+    }
+    if (t == _i70.LocationSuggestion) {
+      return _i70.LocationSuggestion.fromJson(data) as T;
+    }
+    if (t == _i71.MatchingTiming) {
+      return _i71.MatchingTiming.fromJson(data) as T;
+    }
+    if (t == _i72.MetricPoint) {
+      return _i72.MetricPoint.fromJson(data) as T;
+    }
+    if (t == _i73.OpeningPeriod) {
+      return _i73.OpeningPeriod.fromJson(data) as T;
+    }
+    if (t == _i74.ParticipantView) {
+      return _i74.ParticipantView.fromJson(data) as T;
+    }
+    if (t == _i75.PlaceDetailField) {
+      return _i75.PlaceDetailField.fromJson(data) as T;
+    }
+    if (t == _i76.PlaceDetailPolicy) {
+      return _i76.PlaceDetailPolicy.fromJson(data) as T;
+    }
+    if (t == _i77.PlaceDetailRefreshState) {
+      return _i77.PlaceDetailRefreshState.fromJson(data) as T;
+    }
+    if (t == _i78.PlaceDetailResult) {
+      return _i78.PlaceDetailResult.fromJson(data) as T;
+    }
+    if (t == _i79.PlaceInsight) {
+      return _i79.PlaceInsight.fromJson(data) as T;
+    }
+    if (t == _i80.PlaceRanking) {
+      return _i80.PlaceRanking.fromJson(data) as T;
+    }
+    if (t == _i81.PlaceSnapshot) {
+      return _i81.PlaceSnapshot.fromJson(data) as T;
+    }
+    if (t == _i82.PoiIdentity) {
+      return _i82.PoiIdentity.fromJson(data) as T;
+    }
+    if (t == _i83.PoiIssueSource) {
+      return _i83.PoiIssueSource.fromJson(data) as T;
+    }
+    if (t == _i84.PoiIssueStatus) {
+      return _i84.PoiIssueStatus.fromJson(data) as T;
+    }
+    if (t == _i85.PoiIssueType) {
+      return _i85.PoiIssueType.fromJson(data) as T;
+    }
+    if (t == _i86.RefreshJobPage) {
+      return _i86.RefreshJobPage.fromJson(data) as T;
+    }
+    if (t == _i87.RefreshJobView) {
+      return _i87.RefreshJobView.fromJson(data) as T;
+    }
+    if (t == _i88.RouteEstimate) {
+      return _i88.RouteEstimate.fromJson(data) as T;
+    }
+    if (t == _i89.RouteEstimatePolicy) {
+      return _i89.RouteEstimatePolicy.fromJson(data) as T;
+    }
+    if (t == _i90.RouteOriginMode) {
+      return _i90.RouteOriginMode.fromJson(data) as T;
+    }
+    if (t == _i91.SessionBundle) {
+      return _i91.SessionBundle.fromJson(data) as T;
+    }
+    if (t == _i92.SessionEvent) {
+      return _i92.SessionEvent.fromJson(data) as T;
+    }
+    if (t == _i93.SessionEventType) {
+      return _i93.SessionEventType.fromJson(data) as T;
+    }
+    if (t == _i94.SessionMode) {
+      return _i94.SessionMode.fromJson(data) as T;
+    }
+    if (t == _i95.SessionProgress) {
+      return _i95.SessionProgress.fromJson(data) as T;
+    }
+    if (t == _i96.SessionResult) {
+      return _i96.SessionResult.fromJson(data) as T;
+    }
+    if (t == _i97.SessionResultTally) {
+      return _i97.SessionResultTally.fromJson(data) as T;
+    }
+    if (t == _i98.SessionStatus) {
+      return _i98.SessionStatus.fromJson(data) as T;
+    }
+    if (t == _i99.SessionView) {
+      return _i99.SessionView.fromJson(data) as T;
+    }
+    if (t == _i100.SwipeCommand) {
+      return _i100.SwipeCommand.fromJson(data) as T;
+    }
+    if (t == _i101.TaxonomyCanarySample) {
+      return _i101.TaxonomyCanarySample.fromJson(data) as T;
+    }
+    if (t == _i102.TaxonomyItem) {
+      return _i102.TaxonomyItem.fromJson(data) as T;
+    }
+    if (t == _i103.TaxonomyKind) {
+      return _i103.TaxonomyKind.fromJson(data) as T;
+    }
+    if (t == _i104.TaxonomySnapshot) {
+      return _i104.TaxonomySnapshot.fromJson(data) as T;
+    }
+    if (t == _i105.TaxonomyStatus) {
+      return _i105.TaxonomyStatus.fromJson(data) as T;
+    }
+    if (t == _i106.TaxonomyValidation) {
+      return _i106.TaxonomyValidation.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AdminAnalyticsOverview?>()) {
       return (data != null ? _i2.AdminAnalyticsOverview.fromJson(data) : null)
@@ -388,221 +597,381 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i4.AdminAuditPage?>()) {
       return (data != null ? _i4.AdminAuditPage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.AdminLiveUsage?>()) {
-      return (data != null ? _i5.AdminLiveUsage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i6.AdminMapLocation?>()) {
-      return (data != null ? _i6.AdminMapLocation.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.AdminPlaceAnalytics?>()) {
-      return (data != null ? _i7.AdminPlaceAnalytics.fromJson(data) : null)
+    if (t == _i1.getType<_i5.AdminDiscoveryTaxonomyVersion?>()) {
+      return (data != null
+              ? _i5.AdminDiscoveryTaxonomyVersion.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i8.AdminPoiIssue?>()) {
-      return (data != null ? _i8.AdminPoiIssue.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.AdminLiveUsage?>()) {
+      return (data != null ? _i6.AdminLiveUsage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.AdminPoiIssuePage?>()) {
-      return (data != null ? _i9.AdminPoiIssuePage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.AdminMapLocation?>()) {
+      return (data != null ? _i7.AdminMapLocation.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.AdminTaxonomyItem?>()) {
-      return (data != null ? _i10.AdminTaxonomyItem.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.AdminTaxonomyVersion?>()) {
-      return (data != null ? _i11.AdminTaxonomyVersion.fromJson(data) : null)
+    if (t == _i1.getType<_i8.AdminPlaceAnalytics?>()) {
+      return (data != null ? _i8.AdminPlaceAnalytics.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i12.AdminUsageAnalytics?>()) {
-      return (data != null ? _i12.AdminUsageAnalytics.fromJson(data) : null)
+    if (t == _i1.getType<_i9.AdminPoiIssue?>()) {
+      return (data != null ? _i9.AdminPoiIssue.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.AdminPoiIssuePage?>()) {
+      return (data != null ? _i10.AdminPoiIssuePage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.AdminTaxonomyItem?>()) {
+      return (data != null ? _i11.AdminTaxonomyItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.AdminTaxonomyVersion?>()) {
+      return (data != null ? _i12.AdminTaxonomyVersion.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i13.AnalyticsBreakdown?>()) {
-      return (data != null ? _i13.AnalyticsBreakdown.fromJson(data) : null)
+    if (t == _i1.getType<_i13.AdminUsageAnalytics?>()) {
+      return (data != null ? _i13.AdminUsageAnalytics.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i14.AnalyticsFilter?>()) {
-      return (data != null ? _i14.AnalyticsFilter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i15.AnalyticsGranularity?>()) {
-      return (data != null ? _i15.AnalyticsGranularity.fromJson(data) : null)
+    if (t == _i1.getType<_i14.AnalyticsBreakdown?>()) {
+      return (data != null ? _i14.AnalyticsBreakdown.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.AnalyticsHeatCell?>()) {
-      return (data != null ? _i16.AnalyticsHeatCell.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.AnalyticsFilter?>()) {
+      return (data != null ? _i15.AnalyticsFilter.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.AnalyticsKpi?>()) {
-      return (data != null ? _i17.AnalyticsKpi.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.AnalyticsPoint?>()) {
-      return (data != null ? _i18.AnalyticsPoint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.ApiException?>()) {
-      return (data != null ? _i19.ApiException.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.BootstrapInfo?>()) {
-      return (data != null ? _i20.BootstrapInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.CacheDashboardSummary?>()) {
-      return (data != null ? _i21.CacheDashboardSummary.fromJson(data) : null)
+    if (t == _i1.getType<_i16.AnalyticsGranularity?>()) {
+      return (data != null ? _i16.AnalyticsGranularity.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i22.CachePolicy?>()) {
-      return (data != null ? _i22.CachePolicy.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.AnalyticsHeatCell?>()) {
+      return (data != null ? _i17.AnalyticsHeatCell.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i23.CalibrationStatus?>()) {
-      return (data != null ? _i23.CalibrationStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.AnalyticsKpi?>()) {
+      return (data != null ? _i18.AnalyticsKpi.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.CalibrationValidation?>()) {
-      return (data != null ? _i24.CalibrationValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i19.AnalyticsPoint?>()) {
+      return (data != null ? _i19.AnalyticsPoint.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i20.ApiException?>()) {
+      return (data != null ? _i20.ApiException.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.BootstrapInfo?>()) {
+      return (data != null ? _i21.BootstrapInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i22.CacheDashboardSummary?>()) {
+      return (data != null ? _i22.CacheDashboardSummary.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i25.CatalogPlacePage?>()) {
-      return (data != null ? _i25.CatalogPlacePage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i23.CachePolicy?>()) {
+      return (data != null ? _i23.CachePolicy.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.CatalogPrunePreview?>()) {
-      return (data != null ? _i26.CatalogPrunePreview.fromJson(data) : null)
+    if (t == _i1.getType<_i24.CalibrationStatus?>()) {
+      return (data != null ? _i24.CalibrationStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i25.CalibrationValidation?>()) {
+      return (data != null ? _i25.CalibrationValidation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i27.ClientAnalyticsContext?>()) {
-      return (data != null ? _i27.ClientAnalyticsContext.fromJson(data) : null)
+    if (t == _i1.getType<_i26.CatalogPlacePage?>()) {
+      return (data != null ? _i26.CatalogPlacePage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i27.CatalogPrunePreview?>()) {
+      return (data != null ? _i27.CatalogPrunePreview.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i28.ClientAnalyticsEvent?>()) {
-      return (data != null ? _i28.ClientAnalyticsEvent.fromJson(data) : null)
+    if (t == _i1.getType<_i28.ClientAnalyticsContext?>()) {
+      return (data != null ? _i28.ClientAnalyticsContext.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i29.ConsensusRule?>()) {
-      return (data != null ? _i29.ConsensusRule.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i30.CoveragePage?>()) {
-      return (data != null ? _i30.CoveragePage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i31.CoverageRecord?>()) {
-      return (data != null ? _i31.CoverageRecord.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i32.CreateSessionRequest?>()) {
-      return (data != null ? _i32.CreateSessionRequest.fromJson(data) : null)
+    if (t == _i1.getType<_i29.ClientAnalyticsEvent?>()) {
+      return (data != null ? _i29.ClientAnalyticsEvent.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i33.DestinationChoiceState?>()) {
-      return (data != null ? _i33.DestinationChoiceState.fromJson(data) : null)
+    if (t == _i1.getType<_i30.ConsensusRule?>()) {
+      return (data != null ? _i30.ConsensusRule.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.CoveragePage?>()) {
+      return (data != null ? _i31.CoveragePage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.CoverageRecord?>()) {
+      return (data != null ? _i32.CoverageRecord.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i33.CreateSessionRequest?>()) {
+      return (data != null ? _i33.CreateSessionRequest.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i34.JobStatus?>()) {
-      return (data != null ? _i34.JobStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i35.LocationSuggestion?>()) {
-      return (data != null ? _i35.LocationSuggestion.fromJson(data) : null)
+    if (t == _i1.getType<_i34.DestinationChoiceState?>()) {
+      return (data != null ? _i34.DestinationChoiceState.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i36.MatchingTiming?>()) {
-      return (data != null ? _i36.MatchingTiming.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i37.MetricPoint?>()) {
-      return (data != null ? _i37.MetricPoint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i38.OpeningPeriod?>()) {
-      return (data != null ? _i38.OpeningPeriod.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i39.ParticipantView?>()) {
-      return (data != null ? _i39.ParticipantView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i40.PlaceInsight?>()) {
-      return (data != null ? _i40.PlaceInsight.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i41.PlaceRanking?>()) {
-      return (data != null ? _i41.PlaceRanking.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i42.PlaceSnapshot?>()) {
-      return (data != null ? _i42.PlaceSnapshot.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i43.PoiIssueStatus?>()) {
-      return (data != null ? _i43.PoiIssueStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i44.PoiIssueType?>()) {
-      return (data != null ? _i44.PoiIssueType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i45.RefreshJobPage?>()) {
-      return (data != null ? _i45.RefreshJobPage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i46.RefreshJobView?>()) {
-      return (data != null ? _i46.RefreshJobView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i47.RouteEstimate?>()) {
-      return (data != null ? _i47.RouteEstimate.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i48.RouteEstimatePolicy?>()) {
-      return (data != null ? _i48.RouteEstimatePolicy.fromJson(data) : null)
+    if (t == _i1.getType<_i35.DiscoverBrowsePage?>()) {
+      return (data != null ? _i35.DiscoverBrowsePage.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i49.RouteOriginMode?>()) {
-      return (data != null ? _i49.RouteOriginMode.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i50.SessionBundle?>()) {
-      return (data != null ? _i50.SessionBundle.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i51.SessionEvent?>()) {
-      return (data != null ? _i51.SessionEvent.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i52.SessionEventType?>()) {
-      return (data != null ? _i52.SessionEventType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i53.SessionMode?>()) {
-      return (data != null ? _i53.SessionMode.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i54.SessionProgress?>()) {
-      return (data != null ? _i54.SessionProgress.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i55.SessionResult?>()) {
-      return (data != null ? _i55.SessionResult.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i56.SessionResultTally?>()) {
-      return (data != null ? _i56.SessionResultTally.fromJson(data) : null)
+    if (t == _i1.getType<_i36.DiscoverCompleteness?>()) {
+      return (data != null ? _i36.DiscoverCompleteness.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i57.SessionStatus?>()) {
-      return (data != null ? _i57.SessionStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i37.DiscoverFacets?>()) {
+      return (data != null ? _i37.DiscoverFacets.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i58.SessionView?>()) {
-      return (data != null ? _i58.SessionView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i59.SwipeCommand?>()) {
-      return (data != null ? _i59.SwipeCommand.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i60.TaxonomyCanarySample?>()) {
-      return (data != null ? _i60.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _i1.getType<_i38.DiscoverHoursWindow?>()) {
+      return (data != null ? _i38.DiscoverHoursWindow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i61.TaxonomyItem?>()) {
-      return (data != null ? _i61.TaxonomyItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i39.DiscoverPlace?>()) {
+      return (data != null ? _i39.DiscoverPlace.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i62.TaxonomyKind?>()) {
-      return (data != null ? _i62.TaxonomyKind.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i63.TaxonomySnapshot?>()) {
-      return (data != null ? _i63.TaxonomySnapshot.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i64.TaxonomyStatus?>()) {
-      return (data != null ? _i64.TaxonomyStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i65.TaxonomyValidation?>()) {
-      return (data != null ? _i65.TaxonomyValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i40.DiscoverPlaceContext?>()) {
+      return (data != null ? _i40.DiscoverPlaceContext.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i17.AnalyticsKpi>) {
+    if (t == _i1.getType<_i41.DiscoverQuery?>()) {
+      return (data != null ? _i41.DiscoverQuery.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i42.DiscoverQueryContext?>()) {
+      return (data != null ? _i42.DiscoverQueryContext.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i43.DiscoverReviewBand?>()) {
+      return (data != null ? _i43.DiscoverReviewBand.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i44.DiscoverSort?>()) {
+      return (data != null ? _i44.DiscoverSort.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i45.DiscoverViewport?>()) {
+      return (data != null ? _i45.DiscoverViewport.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i46.DiscoveryAreaReceipt?>()) {
+      return (data != null ? _i46.DiscoveryAreaReceipt.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i47.DiscoveryBestFormula?>()) {
+      return (data != null ? _i47.DiscoveryBestFormula.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i48.DiscoveryClientLimits?>()) {
+      return (data != null ? _i48.DiscoveryClientLimits.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i49.DiscoveryConfig?>()) {
+      return (data != null ? _i49.DiscoveryConfig.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i50.DiscoveryCoverage?>()) {
+      return (data != null ? _i50.DiscoveryCoverage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i51.DiscoveryCoverageFootprint?>()) {
+      return (data != null
+              ? _i51.DiscoveryCoverageFootprint.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i52.DiscoveryHarvestState?>()) {
+      return (data != null ? _i52.DiscoveryHarvestState.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i53.DiscoveryHarvestStatus?>()) {
+      return (data != null ? _i53.DiscoveryHarvestStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i54.DiscoveryHarvestTrigger?>()) {
+      return (data != null ? _i54.DiscoveryHarvestTrigger.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i55.DiscoveryMapAggregate?>()) {
+      return (data != null ? _i55.DiscoveryMapAggregate.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i56.DiscoveryMapMode?>()) {
+      return (data != null ? _i56.DiscoveryMapMode.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i57.DiscoveryMapPayload?>()) {
+      return (data != null ? _i57.DiscoveryMapPayload.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i58.DiscoveryMapPoint?>()) {
+      return (data != null ? _i58.DiscoveryMapPoint.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i59.DiscoveryMinimumRatingCount?>()) {
+      return (data != null
+              ? _i59.DiscoveryMinimumRatingCount.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i60.DiscoveryPolicy?>()) {
+      return (data != null ? _i60.DiscoveryPolicy.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i61.DiscoveryPriceCount?>()) {
+      return (data != null ? _i61.DiscoveryPriceCount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i62.DiscoveryRatingBucket?>()) {
+      return (data != null ? _i62.DiscoveryRatingBucket.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i63.DiscoveryReviewBandCount?>()) {
+      return (data != null
+              ? _i63.DiscoveryReviewBandCount.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i64.DiscoveryScoring?>()) {
+      return (data != null ? _i64.DiscoveryScoring.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i65.DiscoveryTaxonomyNode?>()) {
+      return (data != null ? _i65.DiscoveryTaxonomyNode.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i66.DiscoveryTaxonomySnapshot?>()) {
+      return (data != null
+              ? _i66.DiscoveryTaxonomySnapshot.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i67.DiscoveryTaxonomyValidation?>()) {
+      return (data != null
+              ? _i67.DiscoveryTaxonomyValidation.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i68.DiscoveryTypeCount?>()) {
+      return (data != null ? _i68.DiscoveryTypeCount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i69.JobStatus?>()) {
+      return (data != null ? _i69.JobStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i70.LocationSuggestion?>()) {
+      return (data != null ? _i70.LocationSuggestion.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i71.MatchingTiming?>()) {
+      return (data != null ? _i71.MatchingTiming.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i72.MetricPoint?>()) {
+      return (data != null ? _i72.MetricPoint.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i73.OpeningPeriod?>()) {
+      return (data != null ? _i73.OpeningPeriod.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i74.ParticipantView?>()) {
+      return (data != null ? _i74.ParticipantView.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i75.PlaceDetailField?>()) {
+      return (data != null ? _i75.PlaceDetailField.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i76.PlaceDetailPolicy?>()) {
+      return (data != null ? _i76.PlaceDetailPolicy.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i77.PlaceDetailRefreshState?>()) {
+      return (data != null ? _i77.PlaceDetailRefreshState.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i78.PlaceDetailResult?>()) {
+      return (data != null ? _i78.PlaceDetailResult.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i79.PlaceInsight?>()) {
+      return (data != null ? _i79.PlaceInsight.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i80.PlaceRanking?>()) {
+      return (data != null ? _i80.PlaceRanking.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i81.PlaceSnapshot?>()) {
+      return (data != null ? _i81.PlaceSnapshot.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i82.PoiIdentity?>()) {
+      return (data != null ? _i82.PoiIdentity.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i83.PoiIssueSource?>()) {
+      return (data != null ? _i83.PoiIssueSource.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i84.PoiIssueStatus?>()) {
+      return (data != null ? _i84.PoiIssueStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i85.PoiIssueType?>()) {
+      return (data != null ? _i85.PoiIssueType.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i86.RefreshJobPage?>()) {
+      return (data != null ? _i86.RefreshJobPage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i87.RefreshJobView?>()) {
+      return (data != null ? _i87.RefreshJobView.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i88.RouteEstimate?>()) {
+      return (data != null ? _i88.RouteEstimate.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i89.RouteEstimatePolicy?>()) {
+      return (data != null ? _i89.RouteEstimatePolicy.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i90.RouteOriginMode?>()) {
+      return (data != null ? _i90.RouteOriginMode.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i91.SessionBundle?>()) {
+      return (data != null ? _i91.SessionBundle.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i92.SessionEvent?>()) {
+      return (data != null ? _i92.SessionEvent.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i93.SessionEventType?>()) {
+      return (data != null ? _i93.SessionEventType.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i94.SessionMode?>()) {
+      return (data != null ? _i94.SessionMode.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i95.SessionProgress?>()) {
+      return (data != null ? _i95.SessionProgress.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i96.SessionResult?>()) {
+      return (data != null ? _i96.SessionResult.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i97.SessionResultTally?>()) {
+      return (data != null ? _i97.SessionResultTally.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i98.SessionStatus?>()) {
+      return (data != null ? _i98.SessionStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i99.SessionView?>()) {
+      return (data != null ? _i99.SessionView.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i100.SwipeCommand?>()) {
+      return (data != null ? _i100.SwipeCommand.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i101.TaxonomyCanarySample?>()) {
+      return (data != null ? _i101.TaxonomyCanarySample.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i102.TaxonomyItem?>()) {
+      return (data != null ? _i102.TaxonomyItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i103.TaxonomyKind?>()) {
+      return (data != null ? _i103.TaxonomyKind.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i104.TaxonomySnapshot?>()) {
+      return (data != null ? _i104.TaxonomySnapshot.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i105.TaxonomyStatus?>()) {
+      return (data != null ? _i105.TaxonomyStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i106.TaxonomyValidation?>()) {
+      return (data != null ? _i106.TaxonomyValidation.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_i18.AnalyticsKpi>) {
       return (data as List)
-              .map((e) => deserialize<_i17.AnalyticsKpi>(e))
+              .map((e) => deserialize<_i18.AnalyticsKpi>(e))
               .toList()
           as T;
     }
-    if (t == List<_i18.AnalyticsPoint>) {
+    if (t == List<_i19.AnalyticsPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i18.AnalyticsPoint>(e))
+              .map((e) => deserialize<_i19.AnalyticsPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i13.AnalyticsBreakdown>) {
+    if (t == List<_i14.AnalyticsBreakdown>) {
       return (data as List)
-              .map((e) => deserialize<_i13.AnalyticsBreakdown>(e))
+              .map((e) => deserialize<_i14.AnalyticsBreakdown>(e))
               .toList()
           as T;
     }
@@ -627,42 +996,48 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i40.PlaceInsight>) {
+    if (t == List<_i65.DiscoveryTaxonomyNode>) {
       return (data as List)
-              .map((e) => deserialize<_i40.PlaceInsight>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i8.AdminPoiIssue>) {
-      return (data as List)
-              .map((e) => deserialize<_i8.AdminPoiIssue>(e))
+              .map((e) => deserialize<_i65.DiscoveryTaxonomyNode>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i10.AdminTaxonomyItem>) {
+    if (t == List<_i79.PlaceInsight>) {
       return (data as List)
-              .map((e) => deserialize<_i10.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i79.PlaceInsight>(e))
               .toList()
           as T;
     }
-    if (t == List<_i16.AnalyticsHeatCell>) {
+    if (t == List<_i9.AdminPoiIssue>) {
       return (data as List)
-              .map((e) => deserialize<_i16.AnalyticsHeatCell>(e))
+              .map((e) => deserialize<_i9.AdminPoiIssue>(e))
               .toList()
           as T;
     }
-    if (t == List<_i42.PlaceSnapshot>) {
+    if (t == List<_i11.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i42.PlaceSnapshot>(e))
+              .map((e) => deserialize<_i11.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i31.CoverageRecord>) {
+    if (t == List<_i17.AnalyticsHeatCell>) {
       return (data as List)
-              .map((e) => deserialize<_i31.CoverageRecord>(e))
+              .map((e) => deserialize<_i17.AnalyticsHeatCell>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i81.PlaceSnapshot>) {
+      return (data as List)
+              .map((e) => deserialize<_i81.PlaceSnapshot>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i32.CoverageRecord>) {
+      return (data as List)
+              .map((e) => deserialize<_i32.CoverageRecord>(e))
               .toList()
           as T;
     }
@@ -678,84 +1053,180 @@ class Protocol extends _i1.SerializationManager {
           )
           as T;
     }
-    if (t == List<_i38.OpeningPeriod>) {
+    if (t == List<_i39.DiscoverPlace>) {
       return (data as List)
-              .map((e) => deserialize<_i38.OpeningPeriod>(e))
+              .map((e) => deserialize<_i39.DiscoverPlace>(e))
               .toList()
           as T;
     }
-    if (t == List<_i46.RefreshJobView>) {
+    if (t == List<_i68.DiscoveryTypeCount>) {
       return (data as List)
-              .map((e) => deserialize<_i46.RefreshJobView>(e))
+              .map((e) => deserialize<_i68.DiscoveryTypeCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i39.ParticipantView>) {
+    if (t == List<_i63.DiscoveryReviewBandCount>) {
       return (data as List)
-              .map((e) => deserialize<_i39.ParticipantView>(e))
+              .map((e) => deserialize<_i63.DiscoveryReviewBandCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i56.SessionResultTally>) {
+    if (t == List<_i61.DiscoveryPriceCount>) {
       return (data as List)
-              .map((e) => deserialize<_i56.SessionResultTally>(e))
+              .map((e) => deserialize<_i61.DiscoveryPriceCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i61.TaxonomyItem>) {
+    if (t == List<_i62.DiscoveryRatingBucket>) {
       return (data as List)
-              .map((e) => deserialize<_i61.TaxonomyItem>(e))
+              .map((e) => deserialize<_i62.DiscoveryRatingBucket>(e))
               .toList()
           as T;
     }
-    if (t == List<_i60.TaxonomyCanarySample>) {
+    if (t == List<_i59.DiscoveryMinimumRatingCount>) {
       return (data as List)
-              .map((e) => deserialize<_i60.TaxonomyCanarySample>(e))
+              .map((e) => deserialize<_i59.DiscoveryMinimumRatingCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i66.LocationSuggestion>) {
+    if (t == List<_i43.DiscoverReviewBand>) {
       return (data as List)
-              .map((e) => deserialize<_i66.LocationSuggestion>(e))
+              .map((e) => deserialize<_i43.DiscoverReviewBand>(e))
               .toList()
           as T;
     }
-    if (t == List<_i67.AdminTaxonomyVersion>) {
+    if (t == List<_i38.DiscoverHoursWindow>) {
       return (data as List)
-              .map((e) => deserialize<_i67.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_i38.DiscoverHoursWindow>(e))
               .toList()
           as T;
     }
-    if (t == List<_i68.AdminTaxonomyItem>) {
+    if (t == List<_i36.DiscoverCompleteness>) {
       return (data as List)
-              .map((e) => deserialize<_i68.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i36.DiscoverCompleteness>(e))
               .toList()
           as T;
     }
-    if (t == List<_i69.MetricPoint>) {
+    if (t == List<_i51.DiscoveryCoverageFootprint>) {
       return (data as List)
-              .map((e) => deserialize<_i69.MetricPoint>(e))
+              .map((e) => deserialize<_i51.DiscoveryCoverageFootprint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i70.SessionResult>) {
+    if (t == List<_i53.DiscoveryHarvestStatus>) {
       return (data as List)
-              .map((e) => deserialize<_i70.SessionResult>(e))
+              .map((e) => deserialize<_i53.DiscoveryHarvestStatus>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<({_i71.AuthSuccess auth, String operator})>()) {
+    if (t == List<_i58.DiscoveryMapPoint>) {
+      return (data as List)
+              .map((e) => deserialize<_i58.DiscoveryMapPoint>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i55.DiscoveryMapAggregate>) {
+      return (data as List)
+              .map((e) => deserialize<_i55.DiscoveryMapAggregate>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i75.PlaceDetailField>) {
+      return (data as List)
+              .map((e) => deserialize<_i75.PlaceDetailField>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i73.OpeningPeriod>) {
+      return (data as List)
+              .map((e) => deserialize<_i73.OpeningPeriod>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i87.RefreshJobView>) {
+      return (data as List)
+              .map((e) => deserialize<_i87.RefreshJobView>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i74.ParticipantView>) {
+      return (data as List)
+              .map((e) => deserialize<_i74.ParticipantView>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i97.SessionResultTally>) {
+      return (data as List)
+              .map((e) => deserialize<_i97.SessionResultTally>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i102.TaxonomyItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i102.TaxonomyItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i101.TaxonomyCanarySample>) {
+      return (data as List)
+              .map((e) => deserialize<_i101.TaxonomyCanarySample>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i107.LocationSuggestion>) {
+      return (data as List)
+              .map((e) => deserialize<_i107.LocationSuggestion>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i108.AdminDiscoveryTaxonomyVersion>) {
+      return (data as List)
+              .map((e) => deserialize<_i108.AdminDiscoveryTaxonomyVersion>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i109.DiscoveryTaxonomyNode>) {
+      return (data as List)
+              .map((e) => deserialize<_i109.DiscoveryTaxonomyNode>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i110.AdminTaxonomyVersion>) {
+      return (data as List)
+              .map((e) => deserialize<_i110.AdminTaxonomyVersion>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i111.AdminTaxonomyItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i111.AdminTaxonomyItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i112.MetricPoint>) {
+      return (data as List)
+              .map((e) => deserialize<_i112.MetricPoint>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i113.SessionResult>) {
+      return (data as List)
+              .map((e) => deserialize<_i113.SessionResult>(e))
+              .toList()
+          as T;
+    }
+    if (t == _i1.getType<({_i114.AuthSuccess auth, String operator})>()) {
       return (
-            auth: deserialize<_i71.AuthSuccess>(
+            auth: deserialize<_i114.AuthSuccess>(
               ((data as Map)['n'] as Map)['auth'],
             ),
             operator: deserialize<String>(data['n']['operator']),
           )
           as T;
     }
-    if (t == _i1.getType<({_i72.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i115.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i72.ByteData>(
+            challenge: deserialize<_i115.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -763,10 +1234,10 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     try {
-      return _i73.Protocol().deserialize<T>(data, t);
+      return _i116.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i71.Protocol().deserialize<T>(data, t);
+      return _i114.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -776,67 +1247,108 @@ class Protocol extends _i1.SerializationManager {
       _i2.AdminAnalyticsOverview => 'AdminAnalyticsOverview',
       _i3.AdminAuditEntry => 'AdminAuditEntry',
       _i4.AdminAuditPage => 'AdminAuditPage',
-      _i5.AdminLiveUsage => 'AdminLiveUsage',
-      _i6.AdminMapLocation => 'AdminMapLocation',
-      _i7.AdminPlaceAnalytics => 'AdminPlaceAnalytics',
-      _i8.AdminPoiIssue => 'AdminPoiIssue',
-      _i9.AdminPoiIssuePage => 'AdminPoiIssuePage',
-      _i10.AdminTaxonomyItem => 'AdminTaxonomyItem',
-      _i11.AdminTaxonomyVersion => 'AdminTaxonomyVersion',
-      _i12.AdminUsageAnalytics => 'AdminUsageAnalytics',
-      _i13.AnalyticsBreakdown => 'AnalyticsBreakdown',
-      _i14.AnalyticsFilter => 'AnalyticsFilter',
-      _i15.AnalyticsGranularity => 'AnalyticsGranularity',
-      _i16.AnalyticsHeatCell => 'AnalyticsHeatCell',
-      _i17.AnalyticsKpi => 'AnalyticsKpi',
-      _i18.AnalyticsPoint => 'AnalyticsPoint',
-      _i19.ApiException => 'ApiException',
-      _i20.BootstrapInfo => 'BootstrapInfo',
-      _i21.CacheDashboardSummary => 'CacheDashboardSummary',
-      _i22.CachePolicy => 'CachePolicy',
-      _i23.CalibrationStatus => 'CalibrationStatus',
-      _i24.CalibrationValidation => 'CalibrationValidation',
-      _i25.CatalogPlacePage => 'CatalogPlacePage',
-      _i26.CatalogPrunePreview => 'CatalogPrunePreview',
-      _i27.ClientAnalyticsContext => 'ClientAnalyticsContext',
-      _i28.ClientAnalyticsEvent => 'ClientAnalyticsEvent',
-      _i29.ConsensusRule => 'ConsensusRule',
-      _i30.CoveragePage => 'CoveragePage',
-      _i31.CoverageRecord => 'CoverageRecord',
-      _i32.CreateSessionRequest => 'CreateSessionRequest',
-      _i33.DestinationChoiceState => 'DestinationChoiceState',
-      _i34.JobStatus => 'JobStatus',
-      _i35.LocationSuggestion => 'LocationSuggestion',
-      _i36.MatchingTiming => 'MatchingTiming',
-      _i37.MetricPoint => 'MetricPoint',
-      _i38.OpeningPeriod => 'OpeningPeriod',
-      _i39.ParticipantView => 'ParticipantView',
-      _i40.PlaceInsight => 'PlaceInsight',
-      _i41.PlaceRanking => 'PlaceRanking',
-      _i42.PlaceSnapshot => 'PlaceSnapshot',
-      _i43.PoiIssueStatus => 'PoiIssueStatus',
-      _i44.PoiIssueType => 'PoiIssueType',
-      _i45.RefreshJobPage => 'RefreshJobPage',
-      _i46.RefreshJobView => 'RefreshJobView',
-      _i47.RouteEstimate => 'RouteEstimate',
-      _i48.RouteEstimatePolicy => 'RouteEstimatePolicy',
-      _i49.RouteOriginMode => 'RouteOriginMode',
-      _i50.SessionBundle => 'SessionBundle',
-      _i51.SessionEvent => 'SessionEvent',
-      _i52.SessionEventType => 'SessionEventType',
-      _i53.SessionMode => 'SessionMode',
-      _i54.SessionProgress => 'SessionProgress',
-      _i55.SessionResult => 'SessionResult',
-      _i56.SessionResultTally => 'SessionResultTally',
-      _i57.SessionStatus => 'SessionStatus',
-      _i58.SessionView => 'SessionView',
-      _i59.SwipeCommand => 'SwipeCommand',
-      _i60.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i61.TaxonomyItem => 'TaxonomyItem',
-      _i62.TaxonomyKind => 'TaxonomyKind',
-      _i63.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i64.TaxonomyStatus => 'TaxonomyStatus',
-      _i65.TaxonomyValidation => 'TaxonomyValidation',
+      _i5.AdminDiscoveryTaxonomyVersion => 'AdminDiscoveryTaxonomyVersion',
+      _i6.AdminLiveUsage => 'AdminLiveUsage',
+      _i7.AdminMapLocation => 'AdminMapLocation',
+      _i8.AdminPlaceAnalytics => 'AdminPlaceAnalytics',
+      _i9.AdminPoiIssue => 'AdminPoiIssue',
+      _i10.AdminPoiIssuePage => 'AdminPoiIssuePage',
+      _i11.AdminTaxonomyItem => 'AdminTaxonomyItem',
+      _i12.AdminTaxonomyVersion => 'AdminTaxonomyVersion',
+      _i13.AdminUsageAnalytics => 'AdminUsageAnalytics',
+      _i14.AnalyticsBreakdown => 'AnalyticsBreakdown',
+      _i15.AnalyticsFilter => 'AnalyticsFilter',
+      _i16.AnalyticsGranularity => 'AnalyticsGranularity',
+      _i17.AnalyticsHeatCell => 'AnalyticsHeatCell',
+      _i18.AnalyticsKpi => 'AnalyticsKpi',
+      _i19.AnalyticsPoint => 'AnalyticsPoint',
+      _i20.ApiException => 'ApiException',
+      _i21.BootstrapInfo => 'BootstrapInfo',
+      _i22.CacheDashboardSummary => 'CacheDashboardSummary',
+      _i23.CachePolicy => 'CachePolicy',
+      _i24.CalibrationStatus => 'CalibrationStatus',
+      _i25.CalibrationValidation => 'CalibrationValidation',
+      _i26.CatalogPlacePage => 'CatalogPlacePage',
+      _i27.CatalogPrunePreview => 'CatalogPrunePreview',
+      _i28.ClientAnalyticsContext => 'ClientAnalyticsContext',
+      _i29.ClientAnalyticsEvent => 'ClientAnalyticsEvent',
+      _i30.ConsensusRule => 'ConsensusRule',
+      _i31.CoveragePage => 'CoveragePage',
+      _i32.CoverageRecord => 'CoverageRecord',
+      _i33.CreateSessionRequest => 'CreateSessionRequest',
+      _i34.DestinationChoiceState => 'DestinationChoiceState',
+      _i35.DiscoverBrowsePage => 'DiscoverBrowsePage',
+      _i36.DiscoverCompleteness => 'DiscoverCompleteness',
+      _i37.DiscoverFacets => 'DiscoverFacets',
+      _i38.DiscoverHoursWindow => 'DiscoverHoursWindow',
+      _i39.DiscoverPlace => 'DiscoverPlace',
+      _i40.DiscoverPlaceContext => 'DiscoverPlaceContext',
+      _i41.DiscoverQuery => 'DiscoverQuery',
+      _i42.DiscoverQueryContext => 'DiscoverQueryContext',
+      _i43.DiscoverReviewBand => 'DiscoverReviewBand',
+      _i44.DiscoverSort => 'DiscoverSort',
+      _i45.DiscoverViewport => 'DiscoverViewport',
+      _i46.DiscoveryAreaReceipt => 'DiscoveryAreaReceipt',
+      _i47.DiscoveryBestFormula => 'DiscoveryBestFormula',
+      _i48.DiscoveryClientLimits => 'DiscoveryClientLimits',
+      _i49.DiscoveryConfig => 'DiscoveryConfig',
+      _i50.DiscoveryCoverage => 'DiscoveryCoverage',
+      _i51.DiscoveryCoverageFootprint => 'DiscoveryCoverageFootprint',
+      _i52.DiscoveryHarvestState => 'DiscoveryHarvestState',
+      _i53.DiscoveryHarvestStatus => 'DiscoveryHarvestStatus',
+      _i54.DiscoveryHarvestTrigger => 'DiscoveryHarvestTrigger',
+      _i55.DiscoveryMapAggregate => 'DiscoveryMapAggregate',
+      _i56.DiscoveryMapMode => 'DiscoveryMapMode',
+      _i57.DiscoveryMapPayload => 'DiscoveryMapPayload',
+      _i58.DiscoveryMapPoint => 'DiscoveryMapPoint',
+      _i59.DiscoveryMinimumRatingCount => 'DiscoveryMinimumRatingCount',
+      _i60.DiscoveryPolicy => 'DiscoveryPolicy',
+      _i61.DiscoveryPriceCount => 'DiscoveryPriceCount',
+      _i62.DiscoveryRatingBucket => 'DiscoveryRatingBucket',
+      _i63.DiscoveryReviewBandCount => 'DiscoveryReviewBandCount',
+      _i64.DiscoveryScoring => 'DiscoveryScoring',
+      _i65.DiscoveryTaxonomyNode => 'DiscoveryTaxonomyNode',
+      _i66.DiscoveryTaxonomySnapshot => 'DiscoveryTaxonomySnapshot',
+      _i67.DiscoveryTaxonomyValidation => 'DiscoveryTaxonomyValidation',
+      _i68.DiscoveryTypeCount => 'DiscoveryTypeCount',
+      _i69.JobStatus => 'JobStatus',
+      _i70.LocationSuggestion => 'LocationSuggestion',
+      _i71.MatchingTiming => 'MatchingTiming',
+      _i72.MetricPoint => 'MetricPoint',
+      _i73.OpeningPeriod => 'OpeningPeriod',
+      _i74.ParticipantView => 'ParticipantView',
+      _i75.PlaceDetailField => 'PlaceDetailField',
+      _i76.PlaceDetailPolicy => 'PlaceDetailPolicy',
+      _i77.PlaceDetailRefreshState => 'PlaceDetailRefreshState',
+      _i78.PlaceDetailResult => 'PlaceDetailResult',
+      _i79.PlaceInsight => 'PlaceInsight',
+      _i80.PlaceRanking => 'PlaceRanking',
+      _i81.PlaceSnapshot => 'PlaceSnapshot',
+      _i82.PoiIdentity => 'PoiIdentity',
+      _i83.PoiIssueSource => 'PoiIssueSource',
+      _i84.PoiIssueStatus => 'PoiIssueStatus',
+      _i85.PoiIssueType => 'PoiIssueType',
+      _i86.RefreshJobPage => 'RefreshJobPage',
+      _i87.RefreshJobView => 'RefreshJobView',
+      _i88.RouteEstimate => 'RouteEstimate',
+      _i89.RouteEstimatePolicy => 'RouteEstimatePolicy',
+      _i90.RouteOriginMode => 'RouteOriginMode',
+      _i91.SessionBundle => 'SessionBundle',
+      _i92.SessionEvent => 'SessionEvent',
+      _i93.SessionEventType => 'SessionEventType',
+      _i94.SessionMode => 'SessionMode',
+      _i95.SessionProgress => 'SessionProgress',
+      _i96.SessionResult => 'SessionResult',
+      _i97.SessionResultTally => 'SessionResultTally',
+      _i98.SessionStatus => 'SessionStatus',
+      _i99.SessionView => 'SessionView',
+      _i100.SwipeCommand => 'SwipeCommand',
+      _i101.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _i102.TaxonomyItem => 'TaxonomyItem',
+      _i103.TaxonomyKind => 'TaxonomyKind',
+      _i104.TaxonomySnapshot => 'TaxonomySnapshot',
+      _i105.TaxonomyStatus => 'TaxonomyStatus',
+      _i106.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -857,134 +1369,216 @@ class Protocol extends _i1.SerializationManager {
         return 'AdminAuditEntry';
       case _i4.AdminAuditPage():
         return 'AdminAuditPage';
-      case _i5.AdminLiveUsage():
+      case _i5.AdminDiscoveryTaxonomyVersion():
+        return 'AdminDiscoveryTaxonomyVersion';
+      case _i6.AdminLiveUsage():
         return 'AdminLiveUsage';
-      case _i6.AdminMapLocation():
+      case _i7.AdminMapLocation():
         return 'AdminMapLocation';
-      case _i7.AdminPlaceAnalytics():
+      case _i8.AdminPlaceAnalytics():
         return 'AdminPlaceAnalytics';
-      case _i8.AdminPoiIssue():
+      case _i9.AdminPoiIssue():
         return 'AdminPoiIssue';
-      case _i9.AdminPoiIssuePage():
+      case _i10.AdminPoiIssuePage():
         return 'AdminPoiIssuePage';
-      case _i10.AdminTaxonomyItem():
+      case _i11.AdminTaxonomyItem():
         return 'AdminTaxonomyItem';
-      case _i11.AdminTaxonomyVersion():
+      case _i12.AdminTaxonomyVersion():
         return 'AdminTaxonomyVersion';
-      case _i12.AdminUsageAnalytics():
+      case _i13.AdminUsageAnalytics():
         return 'AdminUsageAnalytics';
-      case _i13.AnalyticsBreakdown():
+      case _i14.AnalyticsBreakdown():
         return 'AnalyticsBreakdown';
-      case _i14.AnalyticsFilter():
+      case _i15.AnalyticsFilter():
         return 'AnalyticsFilter';
-      case _i15.AnalyticsGranularity():
+      case _i16.AnalyticsGranularity():
         return 'AnalyticsGranularity';
-      case _i16.AnalyticsHeatCell():
+      case _i17.AnalyticsHeatCell():
         return 'AnalyticsHeatCell';
-      case _i17.AnalyticsKpi():
+      case _i18.AnalyticsKpi():
         return 'AnalyticsKpi';
-      case _i18.AnalyticsPoint():
+      case _i19.AnalyticsPoint():
         return 'AnalyticsPoint';
-      case _i19.ApiException():
+      case _i20.ApiException():
         return 'ApiException';
-      case _i20.BootstrapInfo():
+      case _i21.BootstrapInfo():
         return 'BootstrapInfo';
-      case _i21.CacheDashboardSummary():
+      case _i22.CacheDashboardSummary():
         return 'CacheDashboardSummary';
-      case _i22.CachePolicy():
+      case _i23.CachePolicy():
         return 'CachePolicy';
-      case _i23.CalibrationStatus():
+      case _i24.CalibrationStatus():
         return 'CalibrationStatus';
-      case _i24.CalibrationValidation():
+      case _i25.CalibrationValidation():
         return 'CalibrationValidation';
-      case _i25.CatalogPlacePage():
+      case _i26.CatalogPlacePage():
         return 'CatalogPlacePage';
-      case _i26.CatalogPrunePreview():
+      case _i27.CatalogPrunePreview():
         return 'CatalogPrunePreview';
-      case _i27.ClientAnalyticsContext():
+      case _i28.ClientAnalyticsContext():
         return 'ClientAnalyticsContext';
-      case _i28.ClientAnalyticsEvent():
+      case _i29.ClientAnalyticsEvent():
         return 'ClientAnalyticsEvent';
-      case _i29.ConsensusRule():
+      case _i30.ConsensusRule():
         return 'ConsensusRule';
-      case _i30.CoveragePage():
+      case _i31.CoveragePage():
         return 'CoveragePage';
-      case _i31.CoverageRecord():
+      case _i32.CoverageRecord():
         return 'CoverageRecord';
-      case _i32.CreateSessionRequest():
+      case _i33.CreateSessionRequest():
         return 'CreateSessionRequest';
-      case _i33.DestinationChoiceState():
+      case _i34.DestinationChoiceState():
         return 'DestinationChoiceState';
-      case _i34.JobStatus():
+      case _i35.DiscoverBrowsePage():
+        return 'DiscoverBrowsePage';
+      case _i36.DiscoverCompleteness():
+        return 'DiscoverCompleteness';
+      case _i37.DiscoverFacets():
+        return 'DiscoverFacets';
+      case _i38.DiscoverHoursWindow():
+        return 'DiscoverHoursWindow';
+      case _i39.DiscoverPlace():
+        return 'DiscoverPlace';
+      case _i40.DiscoverPlaceContext():
+        return 'DiscoverPlaceContext';
+      case _i41.DiscoverQuery():
+        return 'DiscoverQuery';
+      case _i42.DiscoverQueryContext():
+        return 'DiscoverQueryContext';
+      case _i43.DiscoverReviewBand():
+        return 'DiscoverReviewBand';
+      case _i44.DiscoverSort():
+        return 'DiscoverSort';
+      case _i45.DiscoverViewport():
+        return 'DiscoverViewport';
+      case _i46.DiscoveryAreaReceipt():
+        return 'DiscoveryAreaReceipt';
+      case _i47.DiscoveryBestFormula():
+        return 'DiscoveryBestFormula';
+      case _i48.DiscoveryClientLimits():
+        return 'DiscoveryClientLimits';
+      case _i49.DiscoveryConfig():
+        return 'DiscoveryConfig';
+      case _i50.DiscoveryCoverage():
+        return 'DiscoveryCoverage';
+      case _i51.DiscoveryCoverageFootprint():
+        return 'DiscoveryCoverageFootprint';
+      case _i52.DiscoveryHarvestState():
+        return 'DiscoveryHarvestState';
+      case _i53.DiscoveryHarvestStatus():
+        return 'DiscoveryHarvestStatus';
+      case _i54.DiscoveryHarvestTrigger():
+        return 'DiscoveryHarvestTrigger';
+      case _i55.DiscoveryMapAggregate():
+        return 'DiscoveryMapAggregate';
+      case _i56.DiscoveryMapMode():
+        return 'DiscoveryMapMode';
+      case _i57.DiscoveryMapPayload():
+        return 'DiscoveryMapPayload';
+      case _i58.DiscoveryMapPoint():
+        return 'DiscoveryMapPoint';
+      case _i59.DiscoveryMinimumRatingCount():
+        return 'DiscoveryMinimumRatingCount';
+      case _i60.DiscoveryPolicy():
+        return 'DiscoveryPolicy';
+      case _i61.DiscoveryPriceCount():
+        return 'DiscoveryPriceCount';
+      case _i62.DiscoveryRatingBucket():
+        return 'DiscoveryRatingBucket';
+      case _i63.DiscoveryReviewBandCount():
+        return 'DiscoveryReviewBandCount';
+      case _i64.DiscoveryScoring():
+        return 'DiscoveryScoring';
+      case _i65.DiscoveryTaxonomyNode():
+        return 'DiscoveryTaxonomyNode';
+      case _i66.DiscoveryTaxonomySnapshot():
+        return 'DiscoveryTaxonomySnapshot';
+      case _i67.DiscoveryTaxonomyValidation():
+        return 'DiscoveryTaxonomyValidation';
+      case _i68.DiscoveryTypeCount():
+        return 'DiscoveryTypeCount';
+      case _i69.JobStatus():
         return 'JobStatus';
-      case _i35.LocationSuggestion():
+      case _i70.LocationSuggestion():
         return 'LocationSuggestion';
-      case _i36.MatchingTiming():
+      case _i71.MatchingTiming():
         return 'MatchingTiming';
-      case _i37.MetricPoint():
+      case _i72.MetricPoint():
         return 'MetricPoint';
-      case _i38.OpeningPeriod():
+      case _i73.OpeningPeriod():
         return 'OpeningPeriod';
-      case _i39.ParticipantView():
+      case _i74.ParticipantView():
         return 'ParticipantView';
-      case _i40.PlaceInsight():
+      case _i75.PlaceDetailField():
+        return 'PlaceDetailField';
+      case _i76.PlaceDetailPolicy():
+        return 'PlaceDetailPolicy';
+      case _i77.PlaceDetailRefreshState():
+        return 'PlaceDetailRefreshState';
+      case _i78.PlaceDetailResult():
+        return 'PlaceDetailResult';
+      case _i79.PlaceInsight():
         return 'PlaceInsight';
-      case _i41.PlaceRanking():
+      case _i80.PlaceRanking():
         return 'PlaceRanking';
-      case _i42.PlaceSnapshot():
+      case _i81.PlaceSnapshot():
         return 'PlaceSnapshot';
-      case _i43.PoiIssueStatus():
+      case _i82.PoiIdentity():
+        return 'PoiIdentity';
+      case _i83.PoiIssueSource():
+        return 'PoiIssueSource';
+      case _i84.PoiIssueStatus():
         return 'PoiIssueStatus';
-      case _i44.PoiIssueType():
+      case _i85.PoiIssueType():
         return 'PoiIssueType';
-      case _i45.RefreshJobPage():
+      case _i86.RefreshJobPage():
         return 'RefreshJobPage';
-      case _i46.RefreshJobView():
+      case _i87.RefreshJobView():
         return 'RefreshJobView';
-      case _i47.RouteEstimate():
+      case _i88.RouteEstimate():
         return 'RouteEstimate';
-      case _i48.RouteEstimatePolicy():
+      case _i89.RouteEstimatePolicy():
         return 'RouteEstimatePolicy';
-      case _i49.RouteOriginMode():
+      case _i90.RouteOriginMode():
         return 'RouteOriginMode';
-      case _i50.SessionBundle():
+      case _i91.SessionBundle():
         return 'SessionBundle';
-      case _i51.SessionEvent():
+      case _i92.SessionEvent():
         return 'SessionEvent';
-      case _i52.SessionEventType():
+      case _i93.SessionEventType():
         return 'SessionEventType';
-      case _i53.SessionMode():
+      case _i94.SessionMode():
         return 'SessionMode';
-      case _i54.SessionProgress():
+      case _i95.SessionProgress():
         return 'SessionProgress';
-      case _i55.SessionResult():
+      case _i96.SessionResult():
         return 'SessionResult';
-      case _i56.SessionResultTally():
+      case _i97.SessionResultTally():
         return 'SessionResultTally';
-      case _i57.SessionStatus():
+      case _i98.SessionStatus():
         return 'SessionStatus';
-      case _i58.SessionView():
+      case _i99.SessionView():
         return 'SessionView';
-      case _i59.SwipeCommand():
+      case _i100.SwipeCommand():
         return 'SwipeCommand';
-      case _i60.TaxonomyCanarySample():
+      case _i101.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i61.TaxonomyItem():
+      case _i102.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i62.TaxonomyKind():
+      case _i103.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i63.TaxonomySnapshot():
+      case _i104.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i64.TaxonomyStatus():
+      case _i105.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i65.TaxonomyValidation():
+      case _i106.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
-    className = _i73.Protocol().getClassNameForObject(data);
+    className = _i116.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i71.Protocol().getClassNameForObject(data);
+    className = _i114.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -1006,196 +1600,319 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'AdminAuditPage') {
       return deserialize<_i4.AdminAuditPage>(data['data']);
     }
+    if (dataClassName == 'AdminDiscoveryTaxonomyVersion') {
+      return deserialize<_i5.AdminDiscoveryTaxonomyVersion>(data['data']);
+    }
     if (dataClassName == 'AdminLiveUsage') {
-      return deserialize<_i5.AdminLiveUsage>(data['data']);
+      return deserialize<_i6.AdminLiveUsage>(data['data']);
     }
     if (dataClassName == 'AdminMapLocation') {
-      return deserialize<_i6.AdminMapLocation>(data['data']);
+      return deserialize<_i7.AdminMapLocation>(data['data']);
     }
     if (dataClassName == 'AdminPlaceAnalytics') {
-      return deserialize<_i7.AdminPlaceAnalytics>(data['data']);
+      return deserialize<_i8.AdminPlaceAnalytics>(data['data']);
     }
     if (dataClassName == 'AdminPoiIssue') {
-      return deserialize<_i8.AdminPoiIssue>(data['data']);
+      return deserialize<_i9.AdminPoiIssue>(data['data']);
     }
     if (dataClassName == 'AdminPoiIssuePage') {
-      return deserialize<_i9.AdminPoiIssuePage>(data['data']);
+      return deserialize<_i10.AdminPoiIssuePage>(data['data']);
     }
     if (dataClassName == 'AdminTaxonomyItem') {
-      return deserialize<_i10.AdminTaxonomyItem>(data['data']);
+      return deserialize<_i11.AdminTaxonomyItem>(data['data']);
     }
     if (dataClassName == 'AdminTaxonomyVersion') {
-      return deserialize<_i11.AdminTaxonomyVersion>(data['data']);
+      return deserialize<_i12.AdminTaxonomyVersion>(data['data']);
     }
     if (dataClassName == 'AdminUsageAnalytics') {
-      return deserialize<_i12.AdminUsageAnalytics>(data['data']);
+      return deserialize<_i13.AdminUsageAnalytics>(data['data']);
     }
     if (dataClassName == 'AnalyticsBreakdown') {
-      return deserialize<_i13.AnalyticsBreakdown>(data['data']);
+      return deserialize<_i14.AnalyticsBreakdown>(data['data']);
     }
     if (dataClassName == 'AnalyticsFilter') {
-      return deserialize<_i14.AnalyticsFilter>(data['data']);
+      return deserialize<_i15.AnalyticsFilter>(data['data']);
     }
     if (dataClassName == 'AnalyticsGranularity') {
-      return deserialize<_i15.AnalyticsGranularity>(data['data']);
+      return deserialize<_i16.AnalyticsGranularity>(data['data']);
     }
     if (dataClassName == 'AnalyticsHeatCell') {
-      return deserialize<_i16.AnalyticsHeatCell>(data['data']);
+      return deserialize<_i17.AnalyticsHeatCell>(data['data']);
     }
     if (dataClassName == 'AnalyticsKpi') {
-      return deserialize<_i17.AnalyticsKpi>(data['data']);
+      return deserialize<_i18.AnalyticsKpi>(data['data']);
     }
     if (dataClassName == 'AnalyticsPoint') {
-      return deserialize<_i18.AnalyticsPoint>(data['data']);
+      return deserialize<_i19.AnalyticsPoint>(data['data']);
     }
     if (dataClassName == 'ApiException') {
-      return deserialize<_i19.ApiException>(data['data']);
+      return deserialize<_i20.ApiException>(data['data']);
     }
     if (dataClassName == 'BootstrapInfo') {
-      return deserialize<_i20.BootstrapInfo>(data['data']);
+      return deserialize<_i21.BootstrapInfo>(data['data']);
     }
     if (dataClassName == 'CacheDashboardSummary') {
-      return deserialize<_i21.CacheDashboardSummary>(data['data']);
+      return deserialize<_i22.CacheDashboardSummary>(data['data']);
     }
     if (dataClassName == 'CachePolicy') {
-      return deserialize<_i22.CachePolicy>(data['data']);
+      return deserialize<_i23.CachePolicy>(data['data']);
     }
     if (dataClassName == 'CalibrationStatus') {
-      return deserialize<_i23.CalibrationStatus>(data['data']);
+      return deserialize<_i24.CalibrationStatus>(data['data']);
     }
     if (dataClassName == 'CalibrationValidation') {
-      return deserialize<_i24.CalibrationValidation>(data['data']);
+      return deserialize<_i25.CalibrationValidation>(data['data']);
     }
     if (dataClassName == 'CatalogPlacePage') {
-      return deserialize<_i25.CatalogPlacePage>(data['data']);
+      return deserialize<_i26.CatalogPlacePage>(data['data']);
     }
     if (dataClassName == 'CatalogPrunePreview') {
-      return deserialize<_i26.CatalogPrunePreview>(data['data']);
+      return deserialize<_i27.CatalogPrunePreview>(data['data']);
     }
     if (dataClassName == 'ClientAnalyticsContext') {
-      return deserialize<_i27.ClientAnalyticsContext>(data['data']);
+      return deserialize<_i28.ClientAnalyticsContext>(data['data']);
     }
     if (dataClassName == 'ClientAnalyticsEvent') {
-      return deserialize<_i28.ClientAnalyticsEvent>(data['data']);
+      return deserialize<_i29.ClientAnalyticsEvent>(data['data']);
     }
     if (dataClassName == 'ConsensusRule') {
-      return deserialize<_i29.ConsensusRule>(data['data']);
+      return deserialize<_i30.ConsensusRule>(data['data']);
     }
     if (dataClassName == 'CoveragePage') {
-      return deserialize<_i30.CoveragePage>(data['data']);
+      return deserialize<_i31.CoveragePage>(data['data']);
     }
     if (dataClassName == 'CoverageRecord') {
-      return deserialize<_i31.CoverageRecord>(data['data']);
+      return deserialize<_i32.CoverageRecord>(data['data']);
     }
     if (dataClassName == 'CreateSessionRequest') {
-      return deserialize<_i32.CreateSessionRequest>(data['data']);
+      return deserialize<_i33.CreateSessionRequest>(data['data']);
     }
     if (dataClassName == 'DestinationChoiceState') {
-      return deserialize<_i33.DestinationChoiceState>(data['data']);
+      return deserialize<_i34.DestinationChoiceState>(data['data']);
+    }
+    if (dataClassName == 'DiscoverBrowsePage') {
+      return deserialize<_i35.DiscoverBrowsePage>(data['data']);
+    }
+    if (dataClassName == 'DiscoverCompleteness') {
+      return deserialize<_i36.DiscoverCompleteness>(data['data']);
+    }
+    if (dataClassName == 'DiscoverFacets') {
+      return deserialize<_i37.DiscoverFacets>(data['data']);
+    }
+    if (dataClassName == 'DiscoverHoursWindow') {
+      return deserialize<_i38.DiscoverHoursWindow>(data['data']);
+    }
+    if (dataClassName == 'DiscoverPlace') {
+      return deserialize<_i39.DiscoverPlace>(data['data']);
+    }
+    if (dataClassName == 'DiscoverPlaceContext') {
+      return deserialize<_i40.DiscoverPlaceContext>(data['data']);
+    }
+    if (dataClassName == 'DiscoverQuery') {
+      return deserialize<_i41.DiscoverQuery>(data['data']);
+    }
+    if (dataClassName == 'DiscoverQueryContext') {
+      return deserialize<_i42.DiscoverQueryContext>(data['data']);
+    }
+    if (dataClassName == 'DiscoverReviewBand') {
+      return deserialize<_i43.DiscoverReviewBand>(data['data']);
+    }
+    if (dataClassName == 'DiscoverSort') {
+      return deserialize<_i44.DiscoverSort>(data['data']);
+    }
+    if (dataClassName == 'DiscoverViewport') {
+      return deserialize<_i45.DiscoverViewport>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryAreaReceipt') {
+      return deserialize<_i46.DiscoveryAreaReceipt>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryBestFormula') {
+      return deserialize<_i47.DiscoveryBestFormula>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryClientLimits') {
+      return deserialize<_i48.DiscoveryClientLimits>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryConfig') {
+      return deserialize<_i49.DiscoveryConfig>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryCoverage') {
+      return deserialize<_i50.DiscoveryCoverage>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryCoverageFootprint') {
+      return deserialize<_i51.DiscoveryCoverageFootprint>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryHarvestState') {
+      return deserialize<_i52.DiscoveryHarvestState>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryHarvestStatus') {
+      return deserialize<_i53.DiscoveryHarvestStatus>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryHarvestTrigger') {
+      return deserialize<_i54.DiscoveryHarvestTrigger>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryMapAggregate') {
+      return deserialize<_i55.DiscoveryMapAggregate>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryMapMode') {
+      return deserialize<_i56.DiscoveryMapMode>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryMapPayload') {
+      return deserialize<_i57.DiscoveryMapPayload>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryMapPoint') {
+      return deserialize<_i58.DiscoveryMapPoint>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryMinimumRatingCount') {
+      return deserialize<_i59.DiscoveryMinimumRatingCount>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryPolicy') {
+      return deserialize<_i60.DiscoveryPolicy>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryPriceCount') {
+      return deserialize<_i61.DiscoveryPriceCount>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryRatingBucket') {
+      return deserialize<_i62.DiscoveryRatingBucket>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryReviewBandCount') {
+      return deserialize<_i63.DiscoveryReviewBandCount>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryScoring') {
+      return deserialize<_i64.DiscoveryScoring>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryTaxonomyNode') {
+      return deserialize<_i65.DiscoveryTaxonomyNode>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryTaxonomySnapshot') {
+      return deserialize<_i66.DiscoveryTaxonomySnapshot>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryTaxonomyValidation') {
+      return deserialize<_i67.DiscoveryTaxonomyValidation>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryTypeCount') {
+      return deserialize<_i68.DiscoveryTypeCount>(data['data']);
     }
     if (dataClassName == 'JobStatus') {
-      return deserialize<_i34.JobStatus>(data['data']);
+      return deserialize<_i69.JobStatus>(data['data']);
     }
     if (dataClassName == 'LocationSuggestion') {
-      return deserialize<_i35.LocationSuggestion>(data['data']);
+      return deserialize<_i70.LocationSuggestion>(data['data']);
     }
     if (dataClassName == 'MatchingTiming') {
-      return deserialize<_i36.MatchingTiming>(data['data']);
+      return deserialize<_i71.MatchingTiming>(data['data']);
     }
     if (dataClassName == 'MetricPoint') {
-      return deserialize<_i37.MetricPoint>(data['data']);
+      return deserialize<_i72.MetricPoint>(data['data']);
     }
     if (dataClassName == 'OpeningPeriod') {
-      return deserialize<_i38.OpeningPeriod>(data['data']);
+      return deserialize<_i73.OpeningPeriod>(data['data']);
     }
     if (dataClassName == 'ParticipantView') {
-      return deserialize<_i39.ParticipantView>(data['data']);
+      return deserialize<_i74.ParticipantView>(data['data']);
+    }
+    if (dataClassName == 'PlaceDetailField') {
+      return deserialize<_i75.PlaceDetailField>(data['data']);
+    }
+    if (dataClassName == 'PlaceDetailPolicy') {
+      return deserialize<_i76.PlaceDetailPolicy>(data['data']);
+    }
+    if (dataClassName == 'PlaceDetailRefreshState') {
+      return deserialize<_i77.PlaceDetailRefreshState>(data['data']);
+    }
+    if (dataClassName == 'PlaceDetailResult') {
+      return deserialize<_i78.PlaceDetailResult>(data['data']);
     }
     if (dataClassName == 'PlaceInsight') {
-      return deserialize<_i40.PlaceInsight>(data['data']);
+      return deserialize<_i79.PlaceInsight>(data['data']);
     }
     if (dataClassName == 'PlaceRanking') {
-      return deserialize<_i41.PlaceRanking>(data['data']);
+      return deserialize<_i80.PlaceRanking>(data['data']);
     }
     if (dataClassName == 'PlaceSnapshot') {
-      return deserialize<_i42.PlaceSnapshot>(data['data']);
+      return deserialize<_i81.PlaceSnapshot>(data['data']);
+    }
+    if (dataClassName == 'PoiIdentity') {
+      return deserialize<_i82.PoiIdentity>(data['data']);
+    }
+    if (dataClassName == 'PoiIssueSource') {
+      return deserialize<_i83.PoiIssueSource>(data['data']);
     }
     if (dataClassName == 'PoiIssueStatus') {
-      return deserialize<_i43.PoiIssueStatus>(data['data']);
+      return deserialize<_i84.PoiIssueStatus>(data['data']);
     }
     if (dataClassName == 'PoiIssueType') {
-      return deserialize<_i44.PoiIssueType>(data['data']);
+      return deserialize<_i85.PoiIssueType>(data['data']);
     }
     if (dataClassName == 'RefreshJobPage') {
-      return deserialize<_i45.RefreshJobPage>(data['data']);
+      return deserialize<_i86.RefreshJobPage>(data['data']);
     }
     if (dataClassName == 'RefreshJobView') {
-      return deserialize<_i46.RefreshJobView>(data['data']);
+      return deserialize<_i87.RefreshJobView>(data['data']);
     }
     if (dataClassName == 'RouteEstimate') {
-      return deserialize<_i47.RouteEstimate>(data['data']);
+      return deserialize<_i88.RouteEstimate>(data['data']);
     }
     if (dataClassName == 'RouteEstimatePolicy') {
-      return deserialize<_i48.RouteEstimatePolicy>(data['data']);
+      return deserialize<_i89.RouteEstimatePolicy>(data['data']);
     }
     if (dataClassName == 'RouteOriginMode') {
-      return deserialize<_i49.RouteOriginMode>(data['data']);
+      return deserialize<_i90.RouteOriginMode>(data['data']);
     }
     if (dataClassName == 'SessionBundle') {
-      return deserialize<_i50.SessionBundle>(data['data']);
+      return deserialize<_i91.SessionBundle>(data['data']);
     }
     if (dataClassName == 'SessionEvent') {
-      return deserialize<_i51.SessionEvent>(data['data']);
+      return deserialize<_i92.SessionEvent>(data['data']);
     }
     if (dataClassName == 'SessionEventType') {
-      return deserialize<_i52.SessionEventType>(data['data']);
+      return deserialize<_i93.SessionEventType>(data['data']);
     }
     if (dataClassName == 'SessionMode') {
-      return deserialize<_i53.SessionMode>(data['data']);
+      return deserialize<_i94.SessionMode>(data['data']);
     }
     if (dataClassName == 'SessionProgress') {
-      return deserialize<_i54.SessionProgress>(data['data']);
+      return deserialize<_i95.SessionProgress>(data['data']);
     }
     if (dataClassName == 'SessionResult') {
-      return deserialize<_i55.SessionResult>(data['data']);
+      return deserialize<_i96.SessionResult>(data['data']);
     }
     if (dataClassName == 'SessionResultTally') {
-      return deserialize<_i56.SessionResultTally>(data['data']);
+      return deserialize<_i97.SessionResultTally>(data['data']);
     }
     if (dataClassName == 'SessionStatus') {
-      return deserialize<_i57.SessionStatus>(data['data']);
+      return deserialize<_i98.SessionStatus>(data['data']);
     }
     if (dataClassName == 'SessionView') {
-      return deserialize<_i58.SessionView>(data['data']);
+      return deserialize<_i99.SessionView>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i59.SwipeCommand>(data['data']);
+      return deserialize<_i100.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i60.TaxonomyCanarySample>(data['data']);
+      return deserialize<_i101.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i61.TaxonomyItem>(data['data']);
+      return deserialize<_i102.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i62.TaxonomyKind>(data['data']);
+      return deserialize<_i103.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i63.TaxonomySnapshot>(data['data']);
+      return deserialize<_i104.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i64.TaxonomyStatus>(data['data']);
+      return deserialize<_i105.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i65.TaxonomyValidation>(data['data']);
+      return deserialize<_i106.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i73.Protocol().deserializeByClassName(data);
+      return _i116.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i71.Protocol().deserializeByClassName(data);
+      return _i114.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -1209,7 +1926,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i71.AuthSuccess auth, String operator})) {
+    if (record is ({_i114.AuthSuccess auth, String operator})) {
       return {
         "n": {
           "auth": record.auth.toJson(),
@@ -1217,7 +1934,7 @@ class Protocol extends _i1.SerializationManager {
         },
       };
     }
-    if (record is ({_i72.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i115.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -1226,10 +1943,10 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i73.Protocol().mapRecordToJson(record);
+      return _i116.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i71.Protocol().mapRecordToJson(record);
+      return _i114.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

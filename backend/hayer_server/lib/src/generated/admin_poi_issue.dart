@@ -15,7 +15,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'poi_issue_type.dart' as _i2;
 import 'poi_issue_status.dart' as _i3;
 import 'place_snapshot.dart' as _i4;
-import 'package:hayer_server/src/generated/protocol.dart' as _i5;
+import 'poi_issue_source.dart' as _i5;
+import 'package:hayer_server/src/generated/protocol.dart' as _i6;
 
 abstract class AdminPoiIssue
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -38,6 +39,8 @@ abstract class AdminPoiIssue
     required this.createdAt,
     required this.updatedAt,
     this.resolvedAt,
+    this.source,
+    this.sessionId,
   });
 
   factory AdminPoiIssue({
@@ -59,6 +62,8 @@ abstract class AdminPoiIssue
     required DateTime createdAt,
     required DateTime updatedAt,
     DateTime? resolvedAt,
+    _i5.PoiIssueSource? source,
+    String? sessionId,
   }) = _AdminPoiIssueImpl;
 
   factory AdminPoiIssue.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -76,12 +81,12 @@ abstract class AdminPoiIssue
       ownerName: jsonSerialization['ownerName'] as String?,
       resolution: jsonSerialization['resolution'] as String?,
       sourceEvidence: jsonSerialization['sourceEvidence'] as String?,
-      reportedSnapshot: _i5.Protocol().deserialize<_i4.PlaceSnapshot>(
+      reportedSnapshot: _i6.Protocol().deserialize<_i4.PlaceSnapshot>(
         jsonSerialization['reportedSnapshot'],
       ),
       currentSnapshot: jsonSerialization['currentSnapshot'] == null
           ? null
-          : _i5.Protocol().deserialize<_i4.PlaceSnapshot>(
+          : _i6.Protocol().deserialize<_i4.PlaceSnapshot>(
               jsonSerialization['currentSnapshot'],
             ),
       quarantinedAt: jsonSerialization['quarantinedAt'] == null
@@ -101,6 +106,12 @@ abstract class AdminPoiIssue
       resolvedAt: jsonSerialization['resolvedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['resolvedAt']),
+      source: jsonSerialization['source'] == null
+          ? null
+          : _i5.PoiIssueSource.fromJson(
+              (jsonSerialization['source'] as String),
+            ),
+      sessionId: jsonSerialization['sessionId'] as String?,
     );
   }
 
@@ -140,6 +151,10 @@ abstract class AdminPoiIssue
 
   DateTime? resolvedAt;
 
+  _i5.PoiIssueSource? source;
+
+  String? sessionId;
+
   /// Returns a shallow copy of this [AdminPoiIssue]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -162,6 +177,8 @@ abstract class AdminPoiIssue
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? resolvedAt,
+    _i5.PoiIssueSource? source,
+    String? sessionId,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -185,6 +202,8 @@ abstract class AdminPoiIssue
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
       if (resolvedAt != null) 'resolvedAt': resolvedAt?.toJson(),
+      if (source != null) 'source': source?.toJson(),
+      if (sessionId != null) 'sessionId': sessionId,
     };
   }
 
@@ -211,6 +230,8 @@ abstract class AdminPoiIssue
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
       if (resolvedAt != null) 'resolvedAt': resolvedAt?.toJson(),
+      if (source != null) 'source': source?.toJson(),
+      if (sessionId != null) 'sessionId': sessionId,
     };
   }
 
@@ -242,6 +263,8 @@ class _AdminPoiIssueImpl extends AdminPoiIssue {
     required DateTime createdAt,
     required DateTime updatedAt,
     DateTime? resolvedAt,
+    _i5.PoiIssueSource? source,
+    String? sessionId,
   }) : super._(
          reportId: reportId,
          placeId: placeId,
@@ -261,6 +284,8 @@ class _AdminPoiIssueImpl extends AdminPoiIssue {
          createdAt: createdAt,
          updatedAt: updatedAt,
          resolvedAt: resolvedAt,
+         source: source,
+         sessionId: sessionId,
        );
 
   /// Returns a shallow copy of this [AdminPoiIssue]
@@ -286,6 +311,8 @@ class _AdminPoiIssueImpl extends AdminPoiIssue {
     DateTime? createdAt,
     DateTime? updatedAt,
     Object? resolvedAt = _Undefined,
+    Object? source = _Undefined,
+    Object? sessionId = _Undefined,
   }) {
     return AdminPoiIssue(
       reportId: reportId ?? this.reportId,
@@ -314,6 +341,8 @@ class _AdminPoiIssueImpl extends AdminPoiIssue {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       resolvedAt: resolvedAt is DateTime? ? resolvedAt : this.resolvedAt,
+      source: source is _i5.PoiIssueSource? ? source : this.source,
+      sessionId: sessionId is String? ? sessionId : this.sessionId,
     );
   }
 }

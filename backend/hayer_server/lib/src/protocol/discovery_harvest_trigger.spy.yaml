@@ -1,0 +1,5 @@
+enum: DiscoveryHarvestTrigger
+serialized: byName
+values:
+  - committedSearch
+  - deepen

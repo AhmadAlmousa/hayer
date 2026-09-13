@@ -429,7 +429,7 @@ Acceptance:
 
 ## Implementation plan
 
-This section was added on 13 September 2026, after Codex resumed the back-end lane. It sets ownership, sequencing and checkpoint gates for the requirements above, which remain the specification. It is a plan, not evidence: no checkpoint below has started, and this document revision claims no new APK or passing feature tests.
+This section was added on 13 September 2026, after Codex resumed the back-end lane. It sets ownership, sequencing and checkpoint gates for the requirements above, which remain the specification. Current progress and verification are recorded in `PROJECT.md` and the lane logs. Frontend prework has merged, and the M9-B/C/D plus consumer M9-E contracts are available in [`backend/discovery-contracts.md`](backend/discovery-contracts.md); their implementations and acceptance gates remain open.
 
 ### Ownership and working rules
 
@@ -479,8 +479,8 @@ Covers architecture items 1 to 3, the extraction in requirement 12 and the first
 
 Covers requirements 5 and 15 and the server side of requirement 16's policy knobs.
 
-- Contract commit: policy fields in `cache_policy.spy.yaml` and `cache_settings_row.spy.yaml`, the discovery configuration model and method, the Discover taxonomy models and read, and the admin lifecycle methods.
-- Then the migration, admin policy mappings and validation; `hayer_discovery_taxonomy` with the nine-domain seed, tree validation and the single alias-normalisation function that M9-C's type matching reuses; one shared flag guard used by every discovery data and mutation method.
+- Contract commit: policy fields in `cache_policy.spy.yaml`, the discovery configuration model and method, the Discover taxonomy models and read, and the admin lifecycle methods. Reject non-null new policy sections until they can be persisted; never silently discard them.
+- Then the `cache_settings_row.spy.yaml` fields together with their migration, admin policy mappings and validation; `hayer_discovery_taxonomy` with the nine-domain seed, tree validation and the single alias-normalisation function that M9-C's type matching reuses; one shared flag guard used by every discovery data and mutation method. Internal storage definitions travel with their migrations so a contract-only rollout does not require missing database columns.
 - Gate: flag-off rejection for every discovery method while the configuration read stays callable; audit rows for publish and rollback; old clients still decode responses and cannot overwrite new settings.
 - Unblocks the configuration half of M9-F and the policy and taxonomy parts of M9-J.
 
@@ -497,8 +497,8 @@ Covers requirements 3, 4, 6, 7 and 8, the map payload in requirement 9 and the s
 
 Covers architecture item 5 and the server side of requirement 10. Depends on M9-A, and therefore on F08.
 
-- Contract commit: `PlaceEndpoint.details`, the catalog reporting method, and `PoiIssueReportRow` with a nullable `sessionId` and a source discriminator.
-- Then the refresh-attempt metadata, database-backed per-place lease and cooldown; the focused search through M9-A's adapter and writer, admitted through F08's shared controller; catalog reporting that reuses issue validation, reporter hashing, quotas, idempotency and deduplication.
+- Contract commit: `PlaceEndpoint.details`, the catalog reporting method and optional source/session context on `AdminPoiIssue`.
+- Then `PoiIssueReportRow` with a nullable `sessionId` and a source discriminator together with its migration/backfill; the refresh-attempt metadata, database-backed per-place lease and cooldown; the focused search through M9-A's adapter and writer, admitted through F08's shared controller; catalog reporting that reuses issue validation, reporter hashing, quotas, idempotency and deduplication.
 - Gate: requirement 10's detail and reporting acceptance, including cross-user and cross-mode deduplication, with the existing session reporting authorisation tests unmodified.
 - Unblocks M9-H and the issues part of M9-J.
 

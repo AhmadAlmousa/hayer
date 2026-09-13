@@ -1,0 +1,5 @@
+class: DiscoveryTaxonomySnapshot
+fields:
+  revision: int
+  roots: List<DiscoveryTaxonomyNode>
+  fetchedAt: DateTime

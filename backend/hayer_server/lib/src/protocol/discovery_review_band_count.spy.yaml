@@ -1,0 +1,4 @@
+class: DiscoveryReviewBandCount
+fields:
+  band: DiscoverReviewBand
+  count: int

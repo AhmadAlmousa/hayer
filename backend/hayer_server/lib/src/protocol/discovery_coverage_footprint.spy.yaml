@@ -1,0 +1,10 @@
+class: DiscoveryCoverageFootprint
+fields:
+  cellId: String
+  bounds: DiscoverViewport
+  manifestRevision: int
+  completedQueryGroups: List<String>
+  incompleteQueryGroups: List<String>
+  lastAttemptAt: DateTime?
+  lastSuccessAt: DateTime?
+  retryAfter: DateTime?

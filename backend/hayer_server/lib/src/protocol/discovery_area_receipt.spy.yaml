@@ -1,0 +1,6 @@
+class: DiscoveryAreaReceipt
+fields:
+  coverage: DiscoveryCoverage
+  job: DiscoveryHarvestStatus?
+  retryAfter: DateTime?
+  fetchedAt: DateTime

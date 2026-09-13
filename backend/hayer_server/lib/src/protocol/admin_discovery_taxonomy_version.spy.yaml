@@ -1,0 +1,12 @@
+class: AdminDiscoveryTaxonomyVersion
+fields:
+  version: String
+  revision: int
+  status: TaxonomyStatus
+  roots: List<DiscoveryTaxonomyNode>
+  validationPassed: bool
+  validationErrors: List<String>
+  createdBy: String
+  createdAt: DateTime
+  validatedAt: DateTime?
+  publishedAt: DateTime?

@@ -23,41 +23,61 @@ import 'package:hayer_server/src/generated/admin_place_analytics.dart' as _i8;
 import 'package:hayer_server/src/generated/place_ranking.dart' as _i9;
 import 'package:hayer_server/src/generated/location_suggestion.dart' as _i10;
 import 'package:hayer_server/src/generated/admin_map_location.dart' as _i11;
-import 'package:hayer_server/src/generated/admin_taxonomy_version.dart' as _i12;
-import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i13;
-import 'package:hayer_server/src/generated/taxonomy_validation.dart' as _i14;
+import 'package:hayer_server/src/generated/admin_discovery_taxonomy_version.dart'
+    as _i12;
+import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
+    as _i13;
+import 'package:hayer_server/src/generated/discovery_taxonomy_validation.dart'
+    as _i14;
+import 'package:hayer_server/src/generated/admin_taxonomy_version.dart' as _i15;
+import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i16;
+import 'package:hayer_server/src/generated/taxonomy_validation.dart' as _i17;
 import 'package:hayer_server/src/generated/cache_dashboard_summary.dart'
-    as _i15;
-import 'package:hayer_server/src/generated/catalog_place_page.dart' as _i16;
-import 'package:hayer_server/src/generated/coverage_page.dart' as _i17;
-import 'package:hayer_server/src/generated/refresh_job_page.dart' as _i18;
-import 'package:hayer_server/src/generated/job_status.dart' as _i19;
-import 'package:hayer_server/src/generated/admin_poi_issue_page.dart' as _i20;
-import 'package:hayer_server/src/generated/poi_issue_status.dart' as _i21;
-import 'package:hayer_server/src/generated/admin_audit_page.dart' as _i22;
-import 'package:hayer_server/src/generated/metric_point.dart' as _i23;
-import 'package:hayer_server/src/generated/catalog_prune_preview.dart' as _i24;
-import 'package:hayer_server/src/generated/cache_policy.dart' as _i25;
-import 'package:hayer_server/src/generated/calibration_validation.dart' as _i26;
-import 'package:hayer_server/src/generated/bootstrap_info.dart' as _i27;
-import 'package:hayer_server/src/generated/session_bundle.dart' as _i28;
-import 'package:hayer_server/src/generated/create_session_request.dart' as _i29;
+    as _i18;
+import 'package:hayer_server/src/generated/catalog_place_page.dart' as _i19;
+import 'package:hayer_server/src/generated/coverage_page.dart' as _i20;
+import 'package:hayer_server/src/generated/refresh_job_page.dart' as _i21;
+import 'package:hayer_server/src/generated/job_status.dart' as _i22;
+import 'package:hayer_server/src/generated/admin_poi_issue_page.dart' as _i23;
+import 'package:hayer_server/src/generated/poi_issue_status.dart' as _i24;
+import 'package:hayer_server/src/generated/admin_audit_page.dart' as _i25;
+import 'package:hayer_server/src/generated/metric_point.dart' as _i26;
+import 'package:hayer_server/src/generated/catalog_prune_preview.dart' as _i27;
+import 'package:hayer_server/src/generated/cache_policy.dart' as _i28;
+import 'package:hayer_server/src/generated/calibration_validation.dart' as _i29;
+import 'package:hayer_server/src/generated/discovery_config.dart' as _i30;
+import 'package:hayer_server/src/generated/bootstrap_info.dart' as _i31;
+import 'package:hayer_server/src/generated/discovery_taxonomy_snapshot.dart'
+    as _i32;
+import 'package:hayer_server/src/generated/discover_browse_page.dart' as _i33;
+import 'package:hayer_server/src/generated/discover_query.dart' as _i34;
+import 'package:hayer_server/src/generated/discover_query_context.dart' as _i35;
+import 'package:hayer_server/src/generated/discover_facets.dart' as _i36;
+import 'package:hayer_server/src/generated/discover_place_context.dart' as _i37;
+import 'package:hayer_server/src/generated/poi_identity.dart' as _i38;
+import 'package:hayer_server/src/generated/discovery_area_receipt.dart' as _i39;
+import 'package:hayer_server/src/generated/discover_viewport.dart' as _i40;
+import 'package:hayer_server/src/generated/discovery_harvest_status.dart'
+    as _i41;
+import 'package:hayer_server/src/generated/session_bundle.dart' as _i42;
+import 'package:hayer_server/src/generated/create_session_request.dart' as _i43;
 import 'package:hayer_server/src/generated/client_analytics_context.dart'
-    as _i30;
-import 'package:hayer_server/src/generated/session_progress.dart' as _i31;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i32;
-import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i33;
-import 'package:hayer_server/src/generated/session_result.dart' as _i34;
-import 'package:hayer_server/src/generated/session_event.dart' as _i35;
-import 'package:hayer_server/src/generated/route_estimate.dart' as _i36;
-import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i37;
-import 'package:hayer_server/src/generated/taxonomy_snapshot.dart' as _i38;
+    as _i44;
+import 'package:hayer_server/src/generated/session_progress.dart' as _i45;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i46;
+import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i47;
+import 'package:hayer_server/src/generated/session_result.dart' as _i48;
+import 'package:hayer_server/src/generated/session_event.dart' as _i49;
+import 'package:hayer_server/src/generated/place_detail_result.dart' as _i50;
+import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i51;
+import 'package:hayer_server/src/generated/route_estimate.dart' as _i52;
+import 'package:hayer_server/src/generated/taxonomy_snapshot.dart' as _i53;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i39;
-import 'package:hayer_server/src/generated/protocol.dart' as _i40;
-import 'dart:typed_data' as _i41;
+    as _i54;
+import 'package:hayer_server/src/generated/protocol.dart' as _i55;
+import 'dart:typed_data' as _i56;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i42;
+    as _i57;
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:hayer_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -176,6 +196,8 @@ class TestEndpoints {
 
   late final _BootstrapEndpoint bootstrap;
 
+  late final _DiscoverEndpoint discover;
+
   late final _HayerSessionEndpoint hayerSession;
 
   late final _PlaceEndpoint place;
@@ -205,6 +227,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     bootstrap = _BootstrapEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    discover = _DiscoverEndpoint(
       endpoints,
       serializationManager,
     );
@@ -454,7 +480,217 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminTaxonomyVersion> taxonomyDraft(
+  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> discoveryTaxonomyDraft(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'discoveryTaxonomyDraft',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'discoveryTaxonomyDraft',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i12.AdminDiscoveryTaxonomyVersion>> discoveryTaxonomyHistory(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'discoveryTaxonomyHistory',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'discoveryTaxonomyHistory',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i12.AdminDiscoveryTaxonomyVersion>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> saveDiscoveryTaxonomyDraft(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String reason,
+    required String version,
+    required int revision,
+    required List<_i13.DiscoveryTaxonomyNode> roots,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'saveDiscoveryTaxonomyDraft',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'saveDiscoveryTaxonomyDraft',
+          parameters: _i1.testObjectToJson({
+            'reason': reason,
+            'version': version,
+            'revision': revision,
+            'roots': roots,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i14.DiscoveryTaxonomyValidation> validateDiscoveryTaxonomyDraft(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String reason,
+    required String version,
+    required int revision,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'validateDiscoveryTaxonomyDraft',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'validateDiscoveryTaxonomyDraft',
+          parameters: _i1.testObjectToJson({
+            'reason': reason,
+            'version': version,
+            'revision': revision,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i14.DiscoveryTaxonomyValidation>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> publishDiscoveryTaxonomy(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String reason,
+    required String version,
+    required int revision,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'publishDiscoveryTaxonomy',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'publishDiscoveryTaxonomy',
+          parameters: _i1.testObjectToJson({
+            'reason': reason,
+            'version': version,
+            'revision': revision,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> rollbackDiscoveryTaxonomy(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String reason,
+    required String version,
+    required int expectedActiveRevision,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'rollbackDiscoveryTaxonomy',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'rollbackDiscoveryTaxonomy',
+          parameters: _i1.testObjectToJson({
+            'reason': reason,
+            'version': version,
+            'expectedActiveRevision': expectedActiveRevision,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i15.AdminTaxonomyVersion> taxonomyDraft(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -476,7 +712,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminTaxonomyVersion>);
+                as _i3.Future<_i15.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -484,7 +720,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<List<_i12.AdminTaxonomyVersion>> taxonomyHistory(
+  _i3.Future<List<_i15.AdminTaxonomyVersion>> taxonomyHistory(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -506,7 +742,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i12.AdminTaxonomyVersion>>);
+                as _i3.Future<List<_i15.AdminTaxonomyVersion>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -514,12 +750,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminTaxonomyVersion> saveTaxonomyDraft(
+  _i3.Future<_i15.AdminTaxonomyVersion> saveTaxonomyDraft(
     _i1.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
-    required List<_i13.AdminTaxonomyItem> items,
+    required List<_i16.AdminTaxonomyItem> items,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -545,7 +781,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminTaxonomyVersion>);
+                as _i3.Future<_i15.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -553,7 +789,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i14.TaxonomyValidation> validateTaxonomyDraft(
+  _i3.Future<_i17.TaxonomyValidation> validateTaxonomyDraft(
     _i1.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
@@ -586,7 +822,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.TaxonomyValidation>);
+                as _i3.Future<_i17.TaxonomyValidation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -594,7 +830,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminTaxonomyVersion> publishTaxonomy(
+  _i3.Future<_i15.AdminTaxonomyVersion> publishTaxonomy(
     _i1.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
@@ -623,7 +859,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminTaxonomyVersion>);
+                as _i3.Future<_i15.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -631,7 +867,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminTaxonomyVersion> rollbackTaxonomy(
+  _i3.Future<_i15.AdminTaxonomyVersion> rollbackTaxonomy(
     _i1.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
@@ -658,7 +894,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminTaxonomyVersion>);
+                as _i3.Future<_i15.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -666,7 +902,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i15.CacheDashboardSummary> summary(
+  _i3.Future<_i18.CacheDashboardSummary> summary(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -688,7 +924,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.CacheDashboardSummary>);
+                as _i3.Future<_i18.CacheDashboardSummary>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -696,7 +932,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i16.CatalogPlacePage> catalog(
+  _i3.Future<_i19.CatalogPlacePage> catalog(
     _i1.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
@@ -727,7 +963,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i16.CatalogPlacePage>);
+                as _i3.Future<_i19.CatalogPlacePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -735,7 +971,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i17.CoveragePage> coverage(
+  _i3.Future<_i20.CoveragePage> coverage(
     _i1.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
@@ -764,7 +1000,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i17.CoveragePage>);
+                as _i3.Future<_i20.CoveragePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -772,12 +1008,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i18.RefreshJobPage> refreshJobs(
+  _i3.Future<_i21.RefreshJobPage> refreshJobs(
     _i1.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
-    _i19.JobStatus? status,
+    _i22.JobStatus? status,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -803,7 +1039,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i18.RefreshJobPage>);
+                as _i3.Future<_i21.RefreshJobPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -811,12 +1047,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i20.AdminPoiIssuePage> poiIssues(
+  _i3.Future<_i23.AdminPoiIssuePage> poiIssues(
     _i1.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
-    _i21.PoiIssueStatus? status,
+    _i24.PoiIssueStatus? status,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -842,7 +1078,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i20.AdminPoiIssuePage>);
+                as _i3.Future<_i23.AdminPoiIssuePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1025,7 +1261,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i22.AdminAuditPage> auditLog(
+  _i3.Future<_i25.AdminAuditPage> auditLog(
     _i1.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
@@ -1054,7 +1290,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.AdminAuditPage>);
+                as _i3.Future<_i25.AdminAuditPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1062,7 +1298,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<List<_i23.MetricPoint>> metricTrend(
+  _i3.Future<List<_i26.MetricPoint>> metricTrend(
     _i1.TestSessionBuilder sessionBuilder, {
     required int hours,
   }) async {
@@ -1085,7 +1321,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i23.MetricPoint>>);
+                as _i3.Future<List<_i26.MetricPoint>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1093,7 +1329,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i24.CatalogPrunePreview> prunePreview(
+  _i3.Future<_i27.CatalogPrunePreview> prunePreview(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1115,7 +1351,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i24.CatalogPrunePreview>);
+                as _i3.Future<_i27.CatalogPrunePreview>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1154,7 +1390,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i25.CachePolicy> policy(
+  _i3.Future<_i28.CachePolicy> policy(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1176,7 +1412,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i25.CachePolicy>);
+                as _i3.Future<_i28.CachePolicy>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1184,10 +1420,10 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i25.CachePolicy> updatePolicy(
+  _i3.Future<_i28.CachePolicy> updatePolicy(
     _i1.TestSessionBuilder sessionBuilder, {
     required String reason,
-    required _i25.CachePolicy policy,
+    required _i28.CachePolicy policy,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1211,7 +1447,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i25.CachePolicy>);
+                as _i3.Future<_i28.CachePolicy>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1394,7 +1630,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i26.CalibrationValidation> validateCalibration(
+  _i3.Future<_i29.CalibrationValidation> validateCalibration(
     _i1.TestSessionBuilder sessionBuilder, {
     required String version,
     required String documentJson,
@@ -1421,7 +1657,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i26.CalibrationValidation>);
+                as _i3.Future<_i29.CalibrationValidation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1510,7 +1746,37 @@ class _BootstrapEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i27.BootstrapInfo> getInfo(
+  _i3.Future<_i30.DiscoveryConfig> discoveryConfig(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'bootstrap',
+            method: 'discoveryConfig',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'bootstrap',
+          methodName: 'discoveryConfig',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i30.DiscoveryConfig>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i31.BootstrapInfo> getInfo(
     _i1.TestSessionBuilder sessionBuilder, {
     required int build,
   }) async {
@@ -1533,7 +1799,264 @@ class _BootstrapEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i27.BootstrapInfo>);
+                as _i3.Future<_i31.BootstrapInfo>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _DiscoverEndpoint {
+  _DiscoverEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i32.DiscoveryTaxonomySnapshot> taxonomy(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'discover',
+            method: 'taxonomy',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'discover',
+          methodName: 'taxonomy',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i32.DiscoveryTaxonomySnapshot>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i33.DiscoverBrowsePage> browse(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i34.DiscoverQuery query,
+    _i35.DiscoverQueryContext? context,
+    String? cursor,
+    required int pageSize,
+    required bool includeMap,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'discover',
+            method: 'browse',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'discover',
+          methodName: 'browse',
+          parameters: _i1.testObjectToJson({
+            'query': query,
+            'context': context,
+            'cursor': cursor,
+            'pageSize': pageSize,
+            'includeMap': includeMap,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i33.DiscoverBrowsePage>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i36.DiscoverFacets> facets(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i34.DiscoverQuery query,
+    required _i35.DiscoverQueryContext context,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'discover',
+            method: 'facets',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'discover',
+          methodName: 'facets',
+          parameters: _i1.testObjectToJson({
+            'query': query,
+            'context': context,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i36.DiscoverFacets>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i37.DiscoverPlaceContext> placeContext(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i38.PoiIdentity identity,
+    required _i34.DiscoverQuery query,
+    required _i35.DiscoverQueryContext context,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'discover',
+            method: 'placeContext',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'discover',
+          methodName: 'placeContext',
+          parameters: _i1.testObjectToJson({
+            'identity': identity,
+            'query': query,
+            'context': context,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i37.DiscoverPlaceContext>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i39.DiscoveryAreaReceipt> ensureArea(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i40.DiscoverViewport viewport,
+    required String countryCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'discover',
+            method: 'ensureArea',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'discover',
+          methodName: 'ensureArea',
+          parameters: _i1.testObjectToJson({
+            'viewport': viewport,
+            'countryCode': countryCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i39.DiscoveryAreaReceipt>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i39.DiscoveryAreaReceipt> deepen(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i40.DiscoverViewport viewport,
+    required String countryCode,
+    required String idempotencyKey,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'discover',
+            method: 'deepen',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'discover',
+          methodName: 'deepen',
+          parameters: _i1.testObjectToJson({
+            'viewport': viewport,
+            'countryCode': countryCode,
+            'idempotencyKey': idempotencyKey,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i39.DiscoveryAreaReceipt>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i41.DiscoveryHarvestStatus> harvestStatus(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String jobId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'discover',
+            method: 'harvestStatus',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'discover',
+          methodName: 'harvestStatus',
+          parameters: _i1.testObjectToJson({'jobId': jobId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i41.DiscoveryHarvestStatus>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1552,9 +2075,9 @@ class _HayerSessionEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i28.SessionBundle> create(
+  _i3.Future<_i42.SessionBundle> create(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i29.CreateSessionRequest request,
+    required _i43.CreateSessionRequest request,
     required String idempotencyKey,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1579,7 +2102,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i28.SessionBundle>);
+                as _i3.Future<_i42.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1587,11 +2110,11 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i28.SessionBundle> join(
+  _i3.Future<_i42.SessionBundle> join(
     _i1.TestSessionBuilder sessionBuilder, {
     required String code,
     required String displayName,
-    _i30.ClientAnalyticsContext? analyticsContext,
+    _i44.ClientAnalyticsContext? analyticsContext,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1616,7 +2139,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i28.SessionBundle>);
+                as _i3.Future<_i42.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1624,7 +2147,7 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i28.SessionBundle> load(
+  _i3.Future<_i42.SessionBundle> load(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
@@ -1647,7 +2170,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i28.SessionBundle>);
+                as _i3.Future<_i42.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1655,7 +2178,7 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i31.SessionProgress> progress(
+  _i3.Future<_i45.SessionProgress> progress(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
@@ -1678,7 +2201,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i31.SessionProgress>);
+                as _i3.Future<_i45.SessionProgress>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1717,9 +2240,9 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i28.SessionBundle> swipe(
+  _i3.Future<_i42.SessionBundle> swipe(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i32.SwipeCommand command,
+    required _i46.SwipeCommand command,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1740,7 +2263,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i28.SessionBundle>);
+                as _i3.Future<_i42.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1748,12 +2271,12 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i28.SessionBundle> chooseDestination(
+  _i3.Future<_i42.SessionBundle> chooseDestination(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
     required int expectedRevision,
-    _i30.ClientAnalyticsContext? analyticsContext,
+    _i44.ClientAnalyticsContext? analyticsContext,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1779,7 +2302,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i28.SessionBundle>);
+                as _i3.Future<_i42.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1789,7 +2312,7 @@ class _HayerSessionEndpoint {
 
   _i3.Future<void> recordClientAnalytics(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i33.ClientAnalyticsEvent event,
+    required _i47.ClientAnalyticsEvent event,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1818,7 +2341,7 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<List<_i34.SessionResult>> results(
+  _i3.Future<List<_i48.SessionResult>> results(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
@@ -1841,7 +2364,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i34.SessionResult>>);
+                as _i3.Future<List<_i48.SessionResult>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1849,11 +2372,11 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Stream<_i35.SessionEvent> watch(
+  _i3.Stream<_i49.SessionEvent> watch(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i35.SessionEvent>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i49.SessionEvent>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -1891,6 +2414,80 @@ class _PlaceEndpoint {
   final _i2.EndpointDispatch _endpointDispatch;
 
   final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i50.PlaceDetailResult> details(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i38.PoiIdentity identity,
+    String? sessionId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'place',
+            method: 'details',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'place',
+          methodName: 'details',
+          parameters: _i1.testObjectToJson({
+            'identity': identity,
+            'sessionId': sessionId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i50.PlaceDetailResult>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> reportCatalogIssue(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int catalogId,
+    required _i51.PoiIssueType issueType,
+    String? details,
+    required String idempotencyKey,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'place',
+            method: 'reportCatalogIssue',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'place',
+          methodName: 'reportCatalogIssue',
+          parameters: _i1.testObjectToJson({
+            'catalogId': catalogId,
+            'issueType': issueType,
+            'details': details,
+            'idempotencyKey': idempotencyKey,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 
   _i3.Future<List<_i10.LocationSuggestion>> suggest(
     _i1.TestSessionBuilder sessionBuilder, {
@@ -1968,7 +2565,7 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<_i36.RouteEstimate> routeEstimate(
+  _i3.Future<_i52.RouteEstimate> routeEstimate(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
@@ -1999,7 +2596,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i36.RouteEstimate>);
+                as _i3.Future<_i52.RouteEstimate>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2011,7 +2608,7 @@ class _PlaceEndpoint {
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
-    required _i37.PoiIssueType issueType,
+    required _i51.PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
   }) async {
@@ -2059,7 +2656,7 @@ class _TaxonomyEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i38.TaxonomySnapshot> current(
+  _i3.Future<_i53.TaxonomySnapshot> current(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2081,7 +2678,7 @@ class _TaxonomyEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.TaxonomySnapshot>);
+                as _i3.Future<_i53.TaxonomySnapshot>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2169,7 +2766,7 @@ class _AdminEnrollmentEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<({_i39.AuthSuccess auth, String operator})> begin(
+  _i3.Future<({_i54.AuthSuccess auth, String operator})> begin(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2192,8 +2789,8 @@ class _AdminEnrollmentEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i40.Protocol()
-                  .deserialize<({_i39.AuthSuccess auth, String operator})>(
+              (record) => _i55.Protocol()
+                  .deserialize<({_i54.AuthSuccess auth, String operator})>(
                     record,
                   ),
             );
@@ -2215,7 +2812,7 @@ class _AnonymousIdpEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i39.AuthSuccess> login(
+  _i3.Future<_i54.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     String? token,
   }) async {
@@ -2238,7 +2835,7 @@ class _AnonymousIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i39.AuthSuccess>);
+                as _i3.Future<_i54.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2257,7 +2854,7 @@ class _JwtRefreshEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i39.AuthSuccess> refreshAccessToken(
+  _i3.Future<_i54.AuthSuccess> refreshAccessToken(
     _i1.TestSessionBuilder sessionBuilder, {
     required String refreshToken,
   }) async {
@@ -2280,7 +2877,7 @@ class _JwtRefreshEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i39.AuthSuccess>);
+                as _i3.Future<_i54.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2299,7 +2896,7 @@ class _PasskeyIdpEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<({_i41.ByteData challenge, _i2.UuidValue id})> createChallenge(
+  _i3.Future<({_i56.ByteData challenge, _i2.UuidValue id})> createChallenge(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2322,8 +2919,8 @@ class _PasskeyIdpEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i40.Protocol()
-                  .deserialize<({_i41.ByteData challenge, _i2.UuidValue id})>(
+              (record) => _i55.Protocol()
+                  .deserialize<({_i56.ByteData challenge, _i2.UuidValue id})>(
                     record,
                   ),
             );
@@ -2336,7 +2933,7 @@ class _PasskeyIdpEndpoint {
 
   _i3.Future<void> register(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i42.PasskeyRegistrationRequest registrationRequest,
+    required _i57.PasskeyRegistrationRequest registrationRequest,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2367,9 +2964,9 @@ class _PasskeyIdpEndpoint {
     });
   }
 
-  _i3.Future<_i39.AuthSuccess> login(
+  _i3.Future<_i54.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i42.PasskeyLoginRequest loginRequest,
+    required _i57.PasskeyLoginRequest loginRequest,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2390,7 +2987,7 @@ class _PasskeyIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i39.AuthSuccess>);
+                as _i3.Future<_i54.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

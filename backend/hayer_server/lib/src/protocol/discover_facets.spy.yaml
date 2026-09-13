@@ -1,0 +1,11 @@
+class: DiscoverFacets
+fields:
+  total: int
+  context: DiscoverQueryContext
+  fetchedAt: DateTime
+  typeCounts: List<DiscoveryTypeCount>
+  reviewBandCounts: List<DiscoveryReviewBandCount>
+  priceCounts: List<DiscoveryPriceCount>
+  ratingDistribution: List<DiscoveryRatingBucket>
+  minimumRatingCounts: List<DiscoveryMinimumRatingCount>
+  unknownRatingCount: int

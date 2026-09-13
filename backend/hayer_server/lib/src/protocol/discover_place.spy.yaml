@@ -1,0 +1,9 @@
+class: DiscoverPlace
+fields:
+  catalogId: int
+  provider: String
+  place: PlaceSnapshot
+  ordinal: int
+  firstSeenAt: DateTime
+  hiddenGem: bool
+  openNow: bool?

@@ -1,0 +1,5 @@
+enum: PoiIssueSource
+serialized: byName
+values:
+  - session
+  - discovery

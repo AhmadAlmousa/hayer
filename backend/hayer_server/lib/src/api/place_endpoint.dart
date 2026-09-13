@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import '../discovery/discovery_contract.dart';
 import '../places/poi_issue_policy.dart';
 import '../places/place_services.dart';
 import '../places/place_source.dart';
@@ -17,6 +18,20 @@ class PlaceEndpoint extends Endpoint {
 
   static final _geocoder = ReverseGeocodingService.shared;
   static const _uuid = Uuid();
+
+  Future<PlaceDetailResult> details(
+    Session session, {
+    required PoiIdentity identity,
+    String? sessionId,
+  }) async => DiscoveryContract.unavailable();
+
+  Future<String> reportCatalogIssue(
+    Session session, {
+    required int catalogId,
+    required PoiIssueType issueType,
+    String? details,
+    required String idempotencyKey,
+  }) async => DiscoveryContract.unavailable();
 
   Future<List<LocationSuggestion>> suggest(
     Session session, {

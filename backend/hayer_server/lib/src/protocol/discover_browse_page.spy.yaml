@@ -1,0 +1,9 @@
+class: DiscoverBrowsePage
+fields:
+  items: List<DiscoverPlace>
+  total: int
+  context: DiscoverQueryContext
+  fetchedAt: DateTime
+  nextCursor: String?
+  map: DiscoveryMapPayload?
+  coverage: DiscoveryCoverage

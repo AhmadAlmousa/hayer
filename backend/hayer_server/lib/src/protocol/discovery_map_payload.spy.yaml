@@ -1,0 +1,5 @@
+class: DiscoveryMapPayload
+fields:
+  mode: DiscoveryMapMode
+  points: List<DiscoveryMapPoint>
+  aggregates: List<DiscoveryMapAggregate>

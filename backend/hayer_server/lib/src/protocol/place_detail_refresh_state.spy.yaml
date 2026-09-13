@@ -1,0 +1,9 @@
+enum: PlaceDetailRefreshState
+serialized: byName
+values:
+  - notNeeded
+  - refreshing
+  - succeeded
+  - noMatch
+  - failed
+  - budgetExceeded

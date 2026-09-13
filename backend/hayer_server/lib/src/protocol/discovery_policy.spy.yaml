@@ -1,0 +1,14 @@
+class: DiscoveryPolicy
+fields:
+  enabled: bool
+  scoring: DiscoveryScoring
+  harvestMaximumRequests: int
+  harvestDesiredCandidatesPerQuery: int
+  harvestMaximumSeconds: int
+  harvestCooldownMinutes: int
+  userHarvestsPerHour: int
+  browseRequestsPerMinute: int
+  facetRequestsPerMinute: int
+  queryTimeoutMilliseconds: int
+  maximumPageSize: int
+  maximumMapPoints: int

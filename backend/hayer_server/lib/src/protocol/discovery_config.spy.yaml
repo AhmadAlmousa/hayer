@@ -1,0 +1,14 @@
+class: DiscoveryConfig
+fields:
+  contractVersion: int
+  enabled: bool
+  detailsAvailable: bool
+  policyRevision: int
+  taxonomyRevision: int
+  serverTime: DateTime
+  expiresAt: DateTime
+  supportedCountries: List<String>
+  scoring: DiscoveryScoring
+  limits: DiscoveryClientLimits
+  amenitiesAvailable: bool
+  reviewTextSearchAvailable: bool

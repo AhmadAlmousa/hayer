@@ -1,0 +1,9 @@
+enum: PlaceDetailField
+serialized: byName
+values:
+  - photos
+  - hours
+  - phone
+  - website
+  - price
+  - description

@@ -1,0 +1,4 @@
+class: DiscoveryMinimumRatingCount
+fields:
+  minimumRating: double
+  count: int

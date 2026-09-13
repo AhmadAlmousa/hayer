@@ -1,0 +1,5 @@
+enum: DiscoveryBestFormula
+serialized: byName
+values:
+  - popularityWeighted
+  - bayesian

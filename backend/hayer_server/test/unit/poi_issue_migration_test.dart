@@ -31,6 +31,9 @@ void main() {
       expect(sql, contains('"activeDedupeKey" IS NULL'));
     }
     expect(adminProtocol, isNot(contains('reporterHash')));
-    expect(adminProtocol, isNot(contains('sessionId')));
+    // Discovery adds optional navigation context; reporter correlation remains
+    // private and older responses need not include either new field.
+    expect(adminProtocol, contains('sessionId: String?'));
+    expect(adminProtocol, contains('source: PoiIssueSource?'));
   });
 }

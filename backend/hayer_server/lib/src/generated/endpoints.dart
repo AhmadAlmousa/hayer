@@ -14,32 +14,39 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../admin/admin_endpoint.dart' as _i2;
 import '../api/bootstrap_endpoint.dart' as _i3;
-import '../api/hayer_session_endpoint.dart' as _i4;
-import '../api/place_endpoint.dart' as _i5;
-import '../api/taxonomy_endpoint.dart' as _i6;
-import '../auth/admin_auth_endpoint.dart' as _i7;
-import '../auth/admin_enrollment_endpoint.dart' as _i8;
-import '../auth/anonymous_idp_endpoint.dart' as _i9;
-import '../auth/jwt_refresh_endpoint.dart' as _i10;
-import '../auth/passkey_idp_endpoint.dart' as _i11;
-import 'package:hayer_server/src/generated/analytics_filter.dart' as _i12;
-import 'package:hayer_server/src/generated/place_ranking.dart' as _i13;
-import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i14;
-import 'package:hayer_server/src/generated/admin_map_location.dart' as _i15;
-import 'package:hayer_server/src/generated/job_status.dart' as _i16;
-import 'package:hayer_server/src/generated/poi_issue_status.dart' as _i17;
-import 'package:hayer_server/src/generated/cache_policy.dart' as _i18;
-import 'package:hayer_server/src/generated/create_session_request.dart' as _i19;
+import '../api/discover_endpoint.dart' as _i4;
+import '../api/hayer_session_endpoint.dart' as _i5;
+import '../api/place_endpoint.dart' as _i6;
+import '../api/taxonomy_endpoint.dart' as _i7;
+import '../auth/admin_auth_endpoint.dart' as _i8;
+import '../auth/admin_enrollment_endpoint.dart' as _i9;
+import '../auth/anonymous_idp_endpoint.dart' as _i10;
+import '../auth/jwt_refresh_endpoint.dart' as _i11;
+import '../auth/passkey_idp_endpoint.dart' as _i12;
+import 'package:hayer_server/src/generated/analytics_filter.dart' as _i13;
+import 'package:hayer_server/src/generated/place_ranking.dart' as _i14;
+import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
+    as _i15;
+import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i16;
+import 'package:hayer_server/src/generated/admin_map_location.dart' as _i17;
+import 'package:hayer_server/src/generated/job_status.dart' as _i18;
+import 'package:hayer_server/src/generated/poi_issue_status.dart' as _i19;
+import 'package:hayer_server/src/generated/cache_policy.dart' as _i20;
+import 'package:hayer_server/src/generated/discover_query.dart' as _i21;
+import 'package:hayer_server/src/generated/discover_query_context.dart' as _i22;
+import 'package:hayer_server/src/generated/poi_identity.dart' as _i23;
+import 'package:hayer_server/src/generated/discover_viewport.dart' as _i24;
+import 'package:hayer_server/src/generated/create_session_request.dart' as _i25;
 import 'package:hayer_server/src/generated/client_analytics_context.dart'
-    as _i20;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i21;
-import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i22;
-import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i23;
-import 'package:hayer_server/src/generated/protocol.dart' as _i24;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i25;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i26;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i27;
+import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i28;
+import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i29;
+import 'package:hayer_server/src/generated/protocol.dart' as _i30;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i31;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i32;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -57,49 +64,55 @@ class Endpoints extends _i1.EndpointDispatch {
           'bootstrap',
           null,
         ),
-      'hayerSession': _i4.HayerSessionEndpoint()
+      'discover': _i4.DiscoverEndpoint()
+        ..initialize(
+          server,
+          'discover',
+          null,
+        ),
+      'hayerSession': _i5.HayerSessionEndpoint()
         ..initialize(
           server,
           'hayerSession',
           null,
         ),
-      'place': _i5.PlaceEndpoint()
+      'place': _i6.PlaceEndpoint()
         ..initialize(
           server,
           'place',
           null,
         ),
-      'taxonomy': _i6.TaxonomyEndpoint()
+      'taxonomy': _i7.TaxonomyEndpoint()
         ..initialize(
           server,
           'taxonomy',
           null,
         ),
-      'adminAuth': _i7.AdminAuthEndpoint()
+      'adminAuth': _i8.AdminAuthEndpoint()
         ..initialize(
           server,
           'adminAuth',
           null,
         ),
-      'adminEnrollment': _i8.AdminEnrollmentEndpoint()
+      'adminEnrollment': _i9.AdminEnrollmentEndpoint()
         ..initialize(
           server,
           'adminEnrollment',
           null,
         ),
-      'anonymousIdp': _i9.AnonymousIdpEndpoint()
+      'anonymousIdp': _i10.AnonymousIdpEndpoint()
         ..initialize(
           server,
           'anonymousIdp',
           null,
         ),
-      'jwtRefresh': _i10.JwtRefreshEndpoint()
+      'jwtRefresh': _i11.JwtRefreshEndpoint()
         ..initialize(
           server,
           'jwtRefresh',
           null,
         ),
-      'passkeyIdp': _i11.PasskeyIdpEndpoint()
+      'passkeyIdp': _i12.PasskeyIdpEndpoint()
         ..initialize(
           server,
           'passkeyIdp',
@@ -125,7 +138,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i12.AnalyticsFilter>(),
+              type: _i1.getType<_i13.AnalyticsFilter>(),
               nullable: false,
             ),
           },
@@ -144,7 +157,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i12.AnalyticsFilter>(),
+              type: _i1.getType<_i13.AnalyticsFilter>(),
               nullable: false,
             ),
           },
@@ -163,12 +176,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i12.AnalyticsFilter>(),
+              type: _i1.getType<_i13.AnalyticsFilter>(),
               nullable: false,
             ),
             'ranking': _i1.ParameterDescription(
               name: 'ranking',
-              type: _i1.getType<_i13.PlaceRanking>(),
+              type: _i1.getType<_i14.PlaceRanking>(),
               nullable: false,
             ),
             'minimumSamples': _i1.ParameterDescription(
@@ -245,6 +258,156 @@ class Endpoints extends _i1.EndpointDispatch {
                     countryCode: params['countryCode'],
                   ),
         ),
+        'discoveryTaxonomyDraft': _i1.MethodConnector(
+          name: 'discoveryTaxonomyDraft',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .discoveryTaxonomyDraft(session),
+        ),
+        'discoveryTaxonomyHistory': _i1.MethodConnector(
+          name: 'discoveryTaxonomyHistory',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .discoveryTaxonomyHistory(session),
+        ),
+        'saveDiscoveryTaxonomyDraft': _i1.MethodConnector(
+          name: 'saveDiscoveryTaxonomyDraft',
+          params: {
+            'reason': _i1.ParameterDescription(
+              name: 'reason',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'version': _i1.ParameterDescription(
+              name: 'version',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'revision': _i1.ParameterDescription(
+              name: 'revision',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'roots': _i1.ParameterDescription(
+              name: 'roots',
+              type: _i1.getType<List<_i15.DiscoveryTaxonomyNode>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .saveDiscoveryTaxonomyDraft(
+                    session,
+                    reason: params['reason'],
+                    version: params['version'],
+                    revision: params['revision'],
+                    roots: params['roots'],
+                  ),
+        ),
+        'validateDiscoveryTaxonomyDraft': _i1.MethodConnector(
+          name: 'validateDiscoveryTaxonomyDraft',
+          params: {
+            'reason': _i1.ParameterDescription(
+              name: 'reason',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'version': _i1.ParameterDescription(
+              name: 'version',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'revision': _i1.ParameterDescription(
+              name: 'revision',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .validateDiscoveryTaxonomyDraft(
+                    session,
+                    reason: params['reason'],
+                    version: params['version'],
+                    revision: params['revision'],
+                  ),
+        ),
+        'publishDiscoveryTaxonomy': _i1.MethodConnector(
+          name: 'publishDiscoveryTaxonomy',
+          params: {
+            'reason': _i1.ParameterDescription(
+              name: 'reason',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'version': _i1.ParameterDescription(
+              name: 'version',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'revision': _i1.ParameterDescription(
+              name: 'revision',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .publishDiscoveryTaxonomy(
+                    session,
+                    reason: params['reason'],
+                    version: params['version'],
+                    revision: params['revision'],
+                  ),
+        ),
+        'rollbackDiscoveryTaxonomy': _i1.MethodConnector(
+          name: 'rollbackDiscoveryTaxonomy',
+          params: {
+            'reason': _i1.ParameterDescription(
+              name: 'reason',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'version': _i1.ParameterDescription(
+              name: 'version',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'expectedActiveRevision': _i1.ParameterDescription(
+              name: 'expectedActiveRevision',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .rollbackDiscoveryTaxonomy(
+                    session,
+                    reason: params['reason'],
+                    version: params['version'],
+                    expectedActiveRevision: params['expectedActiveRevision'],
+                  ),
+        ),
         'taxonomyDraft': _i1.MethodConnector(
           name: 'taxonomyDraft',
           params: {},
@@ -285,7 +448,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'items': _i1.ParameterDescription(
               name: 'items',
-              type: _i1.getType<List<_i14.AdminTaxonomyItem>>(),
+              type: _i1.getType<List<_i16.AdminTaxonomyItem>>(),
               nullable: false,
             ),
           },
@@ -322,7 +485,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'location': _i1.ParameterDescription(
               name: 'location',
-              type: _i1.getType<_i15.AdminMapLocation>(),
+              type: _i1.getType<_i17.AdminMapLocation>(),
               nullable: false,
             ),
             'radiusMeters': _i1.ParameterDescription(
@@ -497,7 +660,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i16.JobStatus?>(),
+              type: _i1.getType<_i18.JobStatus?>(),
               nullable: true,
             ),
           },
@@ -533,7 +696,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i17.PoiIssueStatus?>(),
+              type: _i1.getType<_i19.PoiIssueStatus?>(),
               nullable: true,
             ),
           },
@@ -777,7 +940,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'policy': _i1.ParameterDescription(
               name: 'policy',
-              type: _i1.getType<_i18.CachePolicy>(),
+              type: _i1.getType<_i20.CachePolicy>(),
               nullable: false,
             ),
           },
@@ -995,6 +1158,16 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'bootstrap',
       endpoint: endpoints['bootstrap']!,
       methodConnectors: {
+        'discoveryConfig': _i1.MethodConnector(
+          name: 'discoveryConfig',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['bootstrap'] as _i3.BootstrapEndpoint)
+                  .discoveryConfig(session),
+        ),
         'getInfo': _i1.MethodConnector(
           name: 'getInfo',
           params: {
@@ -1016,16 +1189,153 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['hayerSession'] = _i1.EndpointConnector(
-      name: 'hayerSession',
-      endpoint: endpoints['hayerSession']!,
+    connectors['discover'] = _i1.EndpointConnector(
+      name: 'discover',
+      endpoint: endpoints['discover']!,
       methodConnectors: {
-        'create': _i1.MethodConnector(
-          name: 'create',
+        'taxonomy': _i1.MethodConnector(
+          name: 'taxonomy',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['discover'] as _i4.DiscoverEndpoint)
+                  .taxonomy(session),
+        ),
+        'browse': _i1.MethodConnector(
+          name: 'browse',
           params: {
-            'request': _i1.ParameterDescription(
-              name: 'request',
-              type: _i1.getType<_i19.CreateSessionRequest>(),
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<_i21.DiscoverQuery>(),
+              nullable: false,
+            ),
+            'context': _i1.ParameterDescription(
+              name: 'context',
+              type: _i1.getType<_i22.DiscoverQueryContext?>(),
+              nullable: true,
+            ),
+            'cursor': _i1.ParameterDescription(
+              name: 'cursor',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'pageSize': _i1.ParameterDescription(
+              name: 'pageSize',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'includeMap': _i1.ParameterDescription(
+              name: 'includeMap',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['discover'] as _i4.DiscoverEndpoint).browse(
+                session,
+                query: params['query'],
+                context: params['context'],
+                cursor: params['cursor'],
+                pageSize: params['pageSize'],
+                includeMap: params['includeMap'],
+              ),
+        ),
+        'facets': _i1.MethodConnector(
+          name: 'facets',
+          params: {
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<_i21.DiscoverQuery>(),
+              nullable: false,
+            ),
+            'context': _i1.ParameterDescription(
+              name: 'context',
+              type: _i1.getType<_i22.DiscoverQueryContext>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['discover'] as _i4.DiscoverEndpoint).facets(
+                session,
+                query: params['query'],
+                context: params['context'],
+              ),
+        ),
+        'placeContext': _i1.MethodConnector(
+          name: 'placeContext',
+          params: {
+            'identity': _i1.ParameterDescription(
+              name: 'identity',
+              type: _i1.getType<_i23.PoiIdentity>(),
+              nullable: false,
+            ),
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<_i21.DiscoverQuery>(),
+              nullable: false,
+            ),
+            'context': _i1.ParameterDescription(
+              name: 'context',
+              type: _i1.getType<_i22.DiscoverQueryContext>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['discover'] as _i4.DiscoverEndpoint).placeContext(
+                    session,
+                    identity: params['identity'],
+                    query: params['query'],
+                    context: params['context'],
+                  ),
+        ),
+        'ensureArea': _i1.MethodConnector(
+          name: 'ensureArea',
+          params: {
+            'viewport': _i1.ParameterDescription(
+              name: 'viewport',
+              type: _i1.getType<_i24.DiscoverViewport>(),
+              nullable: false,
+            ),
+            'countryCode': _i1.ParameterDescription(
+              name: 'countryCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['discover'] as _i4.DiscoverEndpoint).ensureArea(
+                    session,
+                    viewport: params['viewport'],
+                    countryCode: params['countryCode'],
+                  ),
+        ),
+        'deepen': _i1.MethodConnector(
+          name: 'deepen',
+          params: {
+            'viewport': _i1.ParameterDescription(
+              name: 'viewport',
+              type: _i1.getType<_i24.DiscoverViewport>(),
+              nullable: false,
+            ),
+            'countryCode': _i1.ParameterDescription(
+              name: 'countryCode',
+              type: _i1.getType<String>(),
               nullable: false,
             ),
             'idempotencyKey': _i1.ParameterDescription(
@@ -1038,7 +1348,57 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+              ) async => (endpoints['discover'] as _i4.DiscoverEndpoint).deepen(
+                session,
+                viewport: params['viewport'],
+                countryCode: params['countryCode'],
+                idempotencyKey: params['idempotencyKey'],
+              ),
+        ),
+        'harvestStatus': _i1.MethodConnector(
+          name: 'harvestStatus',
+          params: {
+            'jobId': _i1.ParameterDescription(
+              name: 'jobId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['discover'] as _i4.DiscoverEndpoint).harvestStatus(
+                    session,
+                    jobId: params['jobId'],
+                  ),
+        ),
+      },
+    );
+    connectors['hayerSession'] = _i1.EndpointConnector(
+      name: 'hayerSession',
+      endpoint: endpoints['hayerSession']!,
+      methodConnectors: {
+        'create': _i1.MethodConnector(
+          name: 'create',
+          params: {
+            'request': _i1.ParameterDescription(
+              name: 'request',
+              type: _i1.getType<_i25.CreateSessionRequest>(),
+              nullable: false,
+            ),
+            'idempotencyKey': _i1.ParameterDescription(
+              name: 'idempotencyKey',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
                   .create(
                     session,
                     request: params['request'],
@@ -1060,7 +1420,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'analyticsContext': _i1.ParameterDescription(
               name: 'analyticsContext',
-              type: _i1.getType<_i20.ClientAnalyticsContext?>(),
+              type: _i1.getType<_i26.ClientAnalyticsContext?>(),
               nullable: true,
             ),
           },
@@ -1069,7 +1429,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['hayerSession'] as _i4.HayerSessionEndpoint).join(
+                  (endpoints['hayerSession'] as _i5.HayerSessionEndpoint).join(
                     session,
                     code: params['code'],
                     displayName: params['displayName'],
@@ -1090,7 +1450,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['hayerSession'] as _i4.HayerSessionEndpoint).load(
+                  (endpoints['hayerSession'] as _i5.HayerSessionEndpoint).load(
                     session,
                     sessionId: params['sessionId'],
                   ),
@@ -1108,7 +1468,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
                   .progress(
                     session,
                     sessionId: params['sessionId'],
@@ -1127,7 +1487,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
                   .abandon(
                     session,
                     sessionId: params['sessionId'],
@@ -1138,7 +1498,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'command': _i1.ParameterDescription(
               name: 'command',
-              type: _i1.getType<_i21.SwipeCommand>(),
+              type: _i1.getType<_i27.SwipeCommand>(),
               nullable: false,
             ),
           },
@@ -1147,7 +1507,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['hayerSession'] as _i4.HayerSessionEndpoint).swipe(
+                  (endpoints['hayerSession'] as _i5.HayerSessionEndpoint).swipe(
                     session,
                     command: params['command'],
                   ),
@@ -1172,7 +1532,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'analyticsContext': _i1.ParameterDescription(
               name: 'analyticsContext',
-              type: _i1.getType<_i20.ClientAnalyticsContext?>(),
+              type: _i1.getType<_i26.ClientAnalyticsContext?>(),
               nullable: true,
             ),
           },
@@ -1180,7 +1540,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
                   .chooseDestination(
                     session,
                     sessionId: params['sessionId'],
@@ -1194,7 +1554,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'event': _i1.ParameterDescription(
               name: 'event',
-              type: _i1.getType<_i22.ClientAnalyticsEvent>(),
+              type: _i1.getType<_i28.ClientAnalyticsEvent>(),
               nullable: false,
             ),
           },
@@ -1202,7 +1562,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
                   .recordClientAnalytics(
                     session,
                     event: params['event'],
@@ -1221,7 +1581,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['hayerSession'] as _i4.HayerSessionEndpoint)
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
                   .results(
                     session,
                     sessionId: params['sessionId'],
@@ -1244,7 +1604,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
               ) =>
-                  (endpoints['hayerSession'] as _i4.HayerSessionEndpoint).watch(
+                  (endpoints['hayerSession'] as _i5.HayerSessionEndpoint).watch(
                     session,
                     sessionId: params['sessionId'],
                   ),
@@ -1255,6 +1615,67 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'place',
       endpoint: endpoints['place']!,
       methodConnectors: {
+        'details': _i1.MethodConnector(
+          name: 'details',
+          params: {
+            'identity': _i1.ParameterDescription(
+              name: 'identity',
+              type: _i1.getType<_i23.PoiIdentity>(),
+              nullable: false,
+            ),
+            'sessionId': _i1.ParameterDescription(
+              name: 'sessionId',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['place'] as _i6.PlaceEndpoint).details(
+                session,
+                identity: params['identity'],
+                sessionId: params['sessionId'],
+              ),
+        ),
+        'reportCatalogIssue': _i1.MethodConnector(
+          name: 'reportCatalogIssue',
+          params: {
+            'catalogId': _i1.ParameterDescription(
+              name: 'catalogId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'issueType': _i1.ParameterDescription(
+              name: 'issueType',
+              type: _i1.getType<_i29.PoiIssueType>(),
+              nullable: false,
+            ),
+            'details': _i1.ParameterDescription(
+              name: 'details',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'idempotencyKey': _i1.ParameterDescription(
+              name: 'idempotencyKey',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['place'] as _i6.PlaceEndpoint).reportCatalogIssue(
+                    session,
+                    catalogId: params['catalogId'],
+                    issueType: params['issueType'],
+                    details: params['details'],
+                    idempotencyKey: params['idempotencyKey'],
+                  ),
+        ),
         'suggest': _i1.MethodConnector(
           name: 'suggest',
           params: {
@@ -1283,7 +1704,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['place'] as _i5.PlaceEndpoint).suggest(
+              ) async => (endpoints['place'] as _i6.PlaceEndpoint).suggest(
                 session,
                 query: params['query'],
                 latitude: params['latitude'],
@@ -1315,7 +1736,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['place'] as _i5.PlaceEndpoint).reverseGeocode(
+                  (endpoints['place'] as _i6.PlaceEndpoint).reverseGeocode(
                     session,
                     latitude: params['latitude'],
                     longitude: params['longitude'],
@@ -1351,7 +1772,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['place'] as _i5.PlaceEndpoint).routeEstimate(
+                  (endpoints['place'] as _i6.PlaceEndpoint).routeEstimate(
                     session,
                     sessionId: params['sessionId'],
                     placeId: params['placeId'],
@@ -1374,7 +1795,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'issueType': _i1.ParameterDescription(
               name: 'issueType',
-              type: _i1.getType<_i23.PoiIssueType>(),
+              type: _i1.getType<_i29.PoiIssueType>(),
               nullable: false,
             ),
             'details': _i1.ParameterDescription(
@@ -1392,7 +1813,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['place'] as _i5.PlaceEndpoint).reportIssue(
+              ) async => (endpoints['place'] as _i6.PlaceEndpoint).reportIssue(
                 session,
                 sessionId: params['sessionId'],
                 placeId: params['placeId'],
@@ -1414,7 +1835,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['taxonomy'] as _i6.TaxonomyEndpoint)
+              ) async => (endpoints['taxonomy'] as _i7.TaxonomyEndpoint)
                   .current(session),
         ),
       },
@@ -1430,7 +1851,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['adminAuth'] as _i7.AdminAuthEndpoint)
+              ) async => (endpoints['adminAuth'] as _i8.AdminAuthEndpoint)
                   .currentOperator(session),
         ),
         'logout': _i1.MethodConnector(
@@ -1440,7 +1861,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['adminAuth'] as _i7.AdminAuthEndpoint)
+              ) async => (endpoints['adminAuth'] as _i8.AdminAuthEndpoint)
                   .logout(session),
         ),
       },
@@ -1457,10 +1878,10 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['adminEnrollment'] as _i8.AdminEnrollmentEndpoint)
+                  (endpoints['adminEnrollment'] as _i9.AdminEnrollmentEndpoint)
                       .begin(session)
                       .then(
-                        (record) => _i24.Protocol().mapRecordToJson(record),
+                        (record) => _i30.Protocol().mapRecordToJson(record),
                       ),
         ),
       },
@@ -1483,10 +1904,11 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['anonymousIdp'] as _i9.AnonymousIdpEndpoint).login(
-                    session,
-                    token: params['token'],
-                  ),
+                  (endpoints['anonymousIdp'] as _i10.AnonymousIdpEndpoint)
+                      .login(
+                        session,
+                        token: params['token'],
+                      ),
         ),
       },
     );
@@ -1507,7 +1929,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['jwtRefresh'] as _i10.JwtRefreshEndpoint)
+              ) async => (endpoints['jwtRefresh'] as _i11.JwtRefreshEndpoint)
                   .refreshAccessToken(
                     session,
                     refreshToken: params['refreshToken'],
@@ -1526,16 +1948,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint)
+              ) async => (endpoints['passkeyIdp'] as _i12.PasskeyIdpEndpoint)
                   .createChallenge(session)
-                  .then((record) => _i24.Protocol().mapRecordToJson(record)),
+                  .then((record) => _i30.Protocol().mapRecordToJson(record)),
         ),
         'register': _i1.MethodConnector(
           name: 'register',
           params: {
             'registrationRequest': _i1.ParameterDescription(
               name: 'registrationRequest',
-              type: _i1.getType<_i25.PasskeyRegistrationRequest>(),
+              type: _i1.getType<_i31.PasskeyRegistrationRequest>(),
               nullable: false,
             ),
           },
@@ -1544,7 +1966,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint).register(
+                  (endpoints['passkeyIdp'] as _i12.PasskeyIdpEndpoint).register(
                     session,
                     registrationRequest: params['registrationRequest'],
                   ),
@@ -1554,7 +1976,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'loginRequest': _i1.ParameterDescription(
               name: 'loginRequest',
-              type: _i1.getType<_i25.PasskeyLoginRequest>(),
+              type: _i1.getType<_i31.PasskeyLoginRequest>(),
               nullable: false,
             ),
           },
@@ -1563,7 +1985,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint).login(
+                  (endpoints['passkeyIdp'] as _i12.PasskeyIdpEndpoint).login(
                     session,
                     loginRequest: params['loginRequest'],
                   ),
@@ -1575,14 +1997,14 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['passkeyIdp'] as _i11.PasskeyIdpEndpoint)
+              ) async => (endpoints['passkeyIdp'] as _i12.PasskeyIdpEndpoint)
                   .hasAccount(session),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i25.Endpoints()
+    modules['serverpod_auth_idp'] = _i31.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i26.Endpoints()
+    modules['serverpod_auth_core'] = _i32.Endpoints()
       ..initializeEndpoints(server);
   }
 }

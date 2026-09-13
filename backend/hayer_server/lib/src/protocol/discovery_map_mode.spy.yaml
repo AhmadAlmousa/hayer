@@ -1,0 +1,5 @@
+enum: DiscoveryMapMode
+serialized: byName
+values:
+  - points
+  - aggregates

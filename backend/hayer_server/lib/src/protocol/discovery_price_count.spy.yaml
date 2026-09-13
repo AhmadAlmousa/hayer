@@ -1,0 +1,4 @@
+class: DiscoveryPriceCount
+fields:
+  priceLevel: int?
+  count: int

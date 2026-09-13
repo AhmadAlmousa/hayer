@@ -1,0 +1,6 @@
+class: DiscoverViewport
+fields:
+  south: double
+  west: double
+  north: double
+  east: double

@@ -5,6 +5,12 @@ admin:
   - placeAnalytics:
   - suggestAdminLocation:
   - reverseAdminLocation:
+  - discoveryTaxonomyDraft:
+  - discoveryTaxonomyHistory:
+  - saveDiscoveryTaxonomyDraft:
+  - validateDiscoveryTaxonomyDraft:
+  - publishDiscoveryTaxonomy:
+  - rollbackDiscoveryTaxonomy:
   - taxonomyDraft:
   - taxonomyHistory:
   - saveTaxonomyDraft:
@@ -36,7 +42,16 @@ admin:
   - activateCalibration:
   - rollbackCalibration:
 bootstrap:
+  - discoveryConfig:
   - getInfo:
+discover:
+  - taxonomy:
+  - browse:
+  - facets:
+  - placeContext:
+  - ensureArea:
+  - deepen:
+  - harvestStatus:
 hayerSession:
   - create:
   - join:
@@ -49,6 +64,8 @@ hayerSession:
   - results:
   - watch:
 place:
+  - details:
+  - reportCatalogIssue:
   - suggest:
   - reverseGeocode:
   - routeEstimate:

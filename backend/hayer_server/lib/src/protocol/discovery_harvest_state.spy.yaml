@@ -1,0 +1,9 @@
+enum: DiscoveryHarvestState
+serialized: byName
+values:
+  - pending
+  - running
+  - succeeded
+  - partial
+  - failed
+  - cancelled

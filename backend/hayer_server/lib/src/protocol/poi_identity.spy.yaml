@@ -1,0 +1,4 @@
+class: PoiIdentity
+fields:
+  provider: String
+  placeId: String

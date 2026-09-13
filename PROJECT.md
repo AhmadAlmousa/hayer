@@ -16,9 +16,11 @@ repair in `39ab02a`; that production incident is closed. This is owner-reported
 journey evidence, not an independently rerun authenticated canary or complete
 solo/multiplayer acceptance. Invited-beta closure remains blocked.
 
-The latest recorded automated run passed 147 server, 165 app and 51 admin
-tests, plus all 39 tests against dedicated remote PostGIS. The signed
-`0.2.1+7` APK built and its v2 signature verified. Both F17 halves are merged.
+The latest recorded automated run passed 151 server, 184 app and 51 admin
+tests, plus all 44 tests against dedicated remote PostGIS. The signed
+`0.2.1+7` APK built, its v2 signature verified, and its SHA-256 is
+`84d10c9ab9120fc42c15a881930b2cdd62e745c0c7dc740c7fa8969e4e23ef61`.
+Both F17 halves are merged.
 Those results supersede older statements below that PostGIS tests could not
 run; they do not establish gateway, restore, device or CI acceptance.
 
@@ -884,17 +886,29 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 §"Implementation plan"; each lane log holds its evidence.
 
 - [ ] M9-A — Shared source and observation writer (back end, after F08).
-- [ ] M9-B — Flag, configuration and Discover taxonomy (back end).
-- [ ] M9-C — Catalog columns and discovery query (back end).
-- [ ] M9-D — Shared detail resolver and sessionless reporting (back end).
-- [ ] M9-E — Harvesting and coverage (back end, after F21).
+- [~] M9-B — Flag, configuration and Discover taxonomy (back end). Public
+  disabled config and generated policy/tree contracts delivered; persistence,
+  seed, validation and lifecycle implementation remain open.
+- [~] M9-C — Catalog columns and discovery query (back end). Query, paging,
+  facet, map and place-context contracts delivered; SQL/migration remain open.
+- [~] M9-D — Shared detail resolver and sessionless reporting (back end).
+  Generated contracts delivered; shared resolver and report storage remain open.
+- [~] M9-E — Harvesting and coverage (back end, after F21). Consumer coverage
+  contracts and web path rewrites delivered; workers, coverage storage and
+  admin manifest/job/growth contracts remain open. Hosting deployment pending.
 - [~] M9-F — Entry, configuration and links (front end). Contract-free prework
-  landed in `bb212d7`; configuration waits for the M9-B contract.
+  landed in `bb212d7`; configuration and disabled-link retention are unblocked.
 - [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
-  `017e17c`; G2–G4 wait for contracts.
+  `017e17c`; G2–G4 are unblocked against generated contracts and mocks.
 - [ ] M9-H — Place detail, save, share and report (front end).
 - [ ] M9-J — Admin (front end).
 - [ ] M9-K — Cross-mode verification and dark release (both lanes).
+
+Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
+Frontend prework was merged into main in `d4b58b7`. All new discovery data,
+detail and mutation RPCs still return `feature_disabled`; no checkpoint above
+is complete from contract availability. F10/F21 remain the next backend
+implementation work after this owner-requested contract delivery.
 
 ## Verification gates
 

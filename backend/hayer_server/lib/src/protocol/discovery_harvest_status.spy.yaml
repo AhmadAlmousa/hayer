@@ -1,0 +1,13 @@
+class: DiscoveryHarvestStatus
+fields:
+  jobId: String
+  state: DiscoveryHarvestState
+  trigger: DiscoveryHarvestTrigger
+  bounds: DiscoverViewport
+  manifestRevision: int
+  completedQueries: int
+  totalQueries: int
+  observedPlaces: int
+  fetchedAt: DateTime
+  retryAfter: DateTime?
+  failureCode: String?

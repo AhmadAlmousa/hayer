@@ -1,0 +1,5 @@
+class: DiscoveryRatingBucket
+fields:
+  minimumInclusive: double
+  maximumExclusive: double
+  count: int

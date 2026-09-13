@@ -1,0 +1,9 @@
+enum: DiscoverSort
+serialized: byName
+values:
+  - best
+  - topRated
+  - mostReviewed
+  - hiddenGems
+  - worstRated
+  - recentlyDiscovered

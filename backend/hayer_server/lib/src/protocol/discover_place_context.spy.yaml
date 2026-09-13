@@ -1,0 +1,11 @@
+class: DiscoverPlaceContext
+fields:
+  eligible: bool
+  place: DiscoverPlace?
+  ordinal: int?
+  total: int
+  ratingPercentile: double?
+  populationCategoryId: String?
+  ratingDistribution: List<DiscoveryRatingBucket>
+  context: DiscoverQueryContext
+  fetchedAt: DateTime

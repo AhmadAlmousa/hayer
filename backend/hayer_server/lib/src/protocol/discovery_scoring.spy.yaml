@@ -1,0 +1,12 @@
+class: DiscoveryScoring
+fields:
+  bestFormula: DiscoveryBestFormula
+  gemMinimumRating: double
+  gemMinimumReviews: int
+  gemMaximumReviewsExclusive: int
+  bayesianPriorReviews: int
+  bayesianMeanRating: double
+  bestMinimumReviews: int
+  topRatedMinimumReviews: int
+  worstRatedMinimumReviews: int
+  recentlyAddedDays: int

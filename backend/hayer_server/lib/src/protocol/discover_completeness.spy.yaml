@@ -1,0 +1,7 @@
+enum: DiscoverCompleteness
+serialized: byName
+values:
+  - photos
+  - hours
+  - contact
+  - price

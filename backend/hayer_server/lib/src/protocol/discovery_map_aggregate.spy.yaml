@@ -1,0 +1,7 @@
+class: DiscoveryMapAggregate
+fields:
+  cellId: String
+  latitude: double
+  longitude: double
+  bounds: DiscoverViewport
+  count: int

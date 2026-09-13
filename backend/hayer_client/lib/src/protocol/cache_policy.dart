@@ -13,6 +13,9 @@
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'route_origin_mode.dart' as _i2;
+import 'discovery_policy.dart' as _i3;
+import 'place_detail_policy.dart' as _i4;
+import 'package:hayer_client/src/protocol/protocol.dart' as _i5;
 
 abstract class CachePolicy implements _i1.SerializableModel {
   CachePolicy._({
@@ -31,6 +34,8 @@ abstract class CachePolicy implements _i1.SerializableModel {
     required this.routeRequestsPerMinute,
     required this.routeBurst,
     required this.updatedAt,
+    this.discovery,
+    this.detailRefresh,
   });
 
   factory CachePolicy({
@@ -49,6 +54,8 @@ abstract class CachePolicy implements _i1.SerializableModel {
     required int routeRequestsPerMinute,
     required int routeBurst,
     required DateTime updatedAt,
+    _i3.DiscoveryPolicy? discovery,
+    _i4.PlaceDetailPolicy? detailRefresh,
   }) = _CachePolicyImpl;
 
   factory CachePolicy.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -80,6 +87,16 @@ abstract class CachePolicy implements _i1.SerializableModel {
       updatedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
       ),
+      discovery: jsonSerialization['discovery'] == null
+          ? null
+          : _i5.Protocol().deserialize<_i3.DiscoveryPolicy>(
+              jsonSerialization['discovery'],
+            ),
+      detailRefresh: jsonSerialization['detailRefresh'] == null
+          ? null
+          : _i5.Protocol().deserialize<_i4.PlaceDetailPolicy>(
+              jsonSerialization['detailRefresh'],
+            ),
     );
   }
 
@@ -113,6 +130,10 @@ abstract class CachePolicy implements _i1.SerializableModel {
 
   DateTime updatedAt;
 
+  _i3.DiscoveryPolicy? discovery;
+
+  _i4.PlaceDetailPolicy? detailRefresh;
+
   /// Returns a shallow copy of this [CachePolicy]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -132,6 +153,8 @@ abstract class CachePolicy implements _i1.SerializableModel {
     int? routeRequestsPerMinute,
     int? routeBurst,
     DateTime? updatedAt,
+    _i3.DiscoveryPolicy? discovery,
+    _i4.PlaceDetailPolicy? detailRefresh,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -152,6 +175,8 @@ abstract class CachePolicy implements _i1.SerializableModel {
       'routeRequestsPerMinute': routeRequestsPerMinute,
       'routeBurst': routeBurst,
       'updatedAt': updatedAt.toJson(),
+      if (discovery != null) 'discovery': discovery?.toJson(),
+      if (detailRefresh != null) 'detailRefresh': detailRefresh?.toJson(),
     };
   }
 
@@ -160,6 +185,8 @@ abstract class CachePolicy implements _i1.SerializableModel {
     return _i1.SerializationManager.encode(this);
   }
 }
+
+class _Undefined {}
 
 class _CachePolicyImpl extends CachePolicy {
   _CachePolicyImpl({
@@ -178,6 +205,8 @@ class _CachePolicyImpl extends CachePolicy {
     required int routeRequestsPerMinute,
     required int routeBurst,
     required DateTime updatedAt,
+    _i3.DiscoveryPolicy? discovery,
+    _i4.PlaceDetailPolicy? detailRefresh,
   }) : super._(
          version: version,
          freshHours: freshHours,
@@ -194,6 +223,8 @@ class _CachePolicyImpl extends CachePolicy {
          routeRequestsPerMinute: routeRequestsPerMinute,
          routeBurst: routeBurst,
          updatedAt: updatedAt,
+         discovery: discovery,
+         detailRefresh: detailRefresh,
        );
 
   /// Returns a shallow copy of this [CachePolicy]
@@ -216,6 +247,8 @@ class _CachePolicyImpl extends CachePolicy {
     int? routeRequestsPerMinute,
     int? routeBurst,
     DateTime? updatedAt,
+    Object? discovery = _Undefined,
+    Object? detailRefresh = _Undefined,
   }) {
     return CachePolicy(
       version: version ?? this.version,
@@ -239,6 +272,12 @@ class _CachePolicyImpl extends CachePolicy {
           routeRequestsPerMinute ?? this.routeRequestsPerMinute,
       routeBurst: routeBurst ?? this.routeBurst,
       updatedAt: updatedAt ?? this.updatedAt,
+      discovery: discovery is _i3.DiscoveryPolicy?
+          ? discovery
+          : this.discovery?.copyWith(),
+      detailRefresh: detailRefresh is _i4.PlaceDetailPolicy?
+          ? detailRefresh
+          : this.detailRefresh?.copyWith(),
     );
   }
 }

@@ -57,6 +57,24 @@ unauthenticated public bootstrap RPC canary after the gateway is healthy. Set
 `HAYER_PUBLIC_API_URL` only when verifying a hostname other than
 `https://hayer.almou.sa/api/`.
 
+## Discovery contracts and web paths (2026-09-13)
+
+The public gateway serves the Flutter entry document at `/discover` and
+`/app/discover`, preserving the browser path and query parameters. Rebuild the
+server image to include the merged Flutter bundle and generated contracts,
+then recreate the server and gateway using the deployment commands below.
+There is no database migration in this contract release.
+
+`bootstrap.discoveryConfig` returns a disabled configuration. All new discovery
+data, detail and mutation methods remain disabled stubs until their backend
+implementations land; restarting containers does not enable them. The frontend
+config integration must retain a disabled link locally so the user can retry
+later. See [the contract handoff](../discovery-contracts.md).
+
+Source-level route checks pass, but a live gateway test remains a deployment
+gate. Verify both discovery paths with a query string after deployment and
+confirm Flutter receives the original URL. This does not close M9-E or M9-K.
+
 ## Legacy calibration compatibility repair (2026-09-12)
 
 If session creation logs `Calibration field directionsEndpoint is missing`,

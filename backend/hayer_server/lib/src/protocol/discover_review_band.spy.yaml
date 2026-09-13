@@ -1,0 +1,9 @@
+enum: DiscoverReviewBand
+serialized: byName
+values:
+  - under50
+  - from50
+  - from100
+  - from250
+  - from500
+  - from1000

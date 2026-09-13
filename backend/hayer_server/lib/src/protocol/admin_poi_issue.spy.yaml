@@ -18,3 +18,6 @@ fields:
   createdAt: DateTime
   updatedAt: DateTime
   resolvedAt: DateTime?
+  # Missing source in an older server response means session.
+  source: PoiIssueSource?
+  sessionId: String?

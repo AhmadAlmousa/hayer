@@ -1,0 +1,10 @@
+class: DiscoveryMapPoint
+fields:
+  catalogId: int
+  provider: String
+  placeId: String
+  name: String
+  latitude: double
+  longitude: double
+  rating: double?
+  hiddenGem: bool
