@@ -97,7 +97,8 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 
 - `[ ]` is not started, `[~]` is active, `[x]` is verified, and `[!]` is
   blocked.
-- Keep exactly one milestone active.
+- Keep exactly one milestone active. Exception: M9 runs alongside M7 by owner
+  decision on 2026-09-13; M7 remains the invited-beta gate.
 - Update this file in the same change as completed work.
 - Check an item only after its exit condition passes, and add the relevant
   command, build, migration, or manual test to the evidence log.
@@ -874,6 +875,27 @@ measurements and rollback paths.
   stabilized behavior; replace the framework landing page under F34 when the
   public-web product and metadata strategy is ready.
 
+### M9 — "Got time" discovery `[~]`
+
+Runs alongside M7 by owner decision on 2026-09-13, as an explicit exception to
+the one-active-milestone rule. M7 remains the invited-beta gate, and discovery
+ships dark behind `discoveryEnabled`. Scope, ownership, contracts and
+dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
+§"Implementation plan"; each lane log holds its evidence.
+
+- [ ] M9-A — Shared source and observation writer (back end, after F08).
+- [ ] M9-B — Flag, configuration and Discover taxonomy (back end).
+- [ ] M9-C — Catalog columns and discovery query (back end).
+- [ ] M9-D — Shared detail resolver and sessionless reporting (back end).
+- [ ] M9-E — Harvesting and coverage (back end, after F21).
+- [~] M9-F — Entry, configuration and links (front end). Contract-free prework
+  landed in `bb212d7`; configuration waits for the M9-B contract.
+- [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
+  `017e17c`; G2–G4 wait for contracts.
+- [ ] M9-H — Place detail, save, share and report (front end).
+- [ ] M9-J — Admin (front end).
+- [ ] M9-K — Cross-mode verification and dark release (both lanes).
+
 ## Verification gates
 
 - Parser fixtures cover every calibrated field, XSSI, focused/list/empty,
@@ -948,6 +970,16 @@ measurements and rollback paths.
   `ef731e258e34f3d57e4692113db04de2850cdbb73effaf69f4c2def0591dc140`.
   Deployment and release-load measurements remain pending on Unraid. No
   schema migration or POI catalog reset is introduced. Next work is F10/F21.
+- 2026-09-13: opened M9 alongside M7 by owner decision. The front-end lane
+  landed M9-G1, the shared `HayerMap` base, in `017e17c`, and M9-F's
+  contract-free prework in `bb212d7`: the dark Got time entry, the
+  `/discover` gate and App Links, the link codec and bilingual strings.
+  Pinned full preflight passed 130 server, 184 app and 51 admin tests with
+  clean analyses. Signed `0.2.1+7` built at SHA-256
+  `4a15d6c0bb4b0b1371b643b75df8eadac8799f924f71139978ef9ddd74d8c97a` and
+  verifies under APK Signature Scheme v2 with the existing signer.
+  Discovery stays disabled, and M9-F and M9-G stay open. Details are in
+  `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

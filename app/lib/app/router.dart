@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
 
+import '../features/discover/discover_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/join/join_screen.dart';
 import '../features/lobby/lobby_screen.dart';
@@ -26,6 +27,10 @@ GoRouter createAppRouter({String? initialLocation}) => GoRouter(
   routes: [
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/setup', builder: (context, state) => const SetupScreen()),
+    GoRoute(
+      path: '/discover',
+      builder: (context, state) => const DiscoverScreen(),
+    ),
     GoRoute(path: '/scan', builder: (context, state) => const ScanScreen()),
     GoRoute(
       path: '/data',

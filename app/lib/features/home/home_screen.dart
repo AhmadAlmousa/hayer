@@ -13,6 +13,7 @@ import '../../app/locale_controller.dart';
 import '../../app/theme_controller.dart';
 import '../../core/widgets/version_indicator.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'mode_hero_button.dart';
 import 'resume_session_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -58,6 +59,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     setBrowserPageTitle(strings.appName);
+    final discoveryEnabled = ref.watch(discoveryEnabledProvider);
     return Scaffold(
       body: SafeArea(
         child: ContentShell(
@@ -122,44 +124,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ],
                         ),
-                        const Spacer(),
-                        Align(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(34),
-                            child: Image.asset(
-                              'assets/branding/hayer_icon.png',
-                              width: 112,
-                              height: 112,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        Text(
-                          strings.appName,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w900,
-                              ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          strings.tagline,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                              ),
-                        ),
-                        const Spacer(),
-                        FilledButton.icon(
-                          onPressed: () => context.push('/setup'),
-                          icon: const Icon(Icons.auto_awesome_rounded),
-                          label: Text(strings.newSearch),
-                        ),
-                        const SizedBox(height: 12),
+                        if (discoveryEnabled)
+                          ..._modeChoice(strings)
+                        else
+                          ..._singleSearch(strings),
                         OutlinedButton.icon(
                           onPressed: () => context.push('/saved'),
                           icon: const Icon(Icons.bookmarks_rounded),
@@ -200,6 +168,129 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     );
+  }
+
+  /// Home's original single entry, kept exactly while discovery is off.
+  List<Widget> _singleSearch(AppLocalizations strings) => [
+    const Spacer(),
+    Align(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(34),
+        child: Image.asset(
+          'assets/branding/hayer_icon.png',
+          width: 112,
+          height: 112,
+        ),
+      ),
+    ),
+    const SizedBox(height: 28),
+    Text(
+      strings.appName,
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+        fontWeight: FontWeight.w900,
+      ),
+    ),
+    const SizedBox(height: 8),
+    Text(
+      strings.tagline,
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+    ),
+    const Spacer(),
+    FilledButton.icon(
+      onPressed: () => context.push('/setup'),
+      icon: const Icon(Icons.auto_awesome_rounded),
+      label: Text(strings.newSearch),
+    ),
+    const SizedBox(height: 12),
+  ];
+
+  /// The two discovery modes, chosen by how much time the user has.
+  List<Widget> _modeChoice(AppLocalizations strings) {
+    final theme = Theme.of(context);
+    return [
+      const SizedBox(height: 18),
+      Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.asset(
+              'assets/branding/hayer_icon.png',
+              width: 64,
+              height: 64,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strings.appName,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  strings.tagline,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 26),
+      Semantics(
+        header: true,
+        label: strings.homeTimeQuestion,
+        child: ExcludeSemantics(
+          child: Text(
+            strings.homeTimeQuestion.toUpperCase(),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .6,
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+      ModeHeroButton(
+        key: const ValueKey('mode-in-a-hurry'),
+        emphasized: true,
+        icon: Icons.bolt_rounded,
+        title: strings.inAHurry,
+        description: strings.inAHurryDescription,
+        highlights: [
+          // Setup's default deck size.
+          strings.inAHurryCards(10),
+          strings.inAHurrySoloOrGroup,
+          strings.inAHurryDuration,
+        ],
+        onPressed: () => context.push('/setup'),
+      ),
+      const SizedBox(height: 14),
+      ModeHeroButton(
+        key: const ValueKey('mode-got-time'),
+        icon: Icons.explore_rounded,
+        title: strings.gotTime,
+        description: strings.gotTimeDescription,
+        highlights: [
+          strings.gotTimeSortAndFilter,
+          strings.gotTimeHiddenGems,
+          strings.gotTimeFullMap,
+        ],
+        onPressed: () => context.push('/discover'),
+      ),
+      const Spacer(),
+      const SizedBox(height: 20),
+    ];
   }
 
   Future<void> _resume() async {

@@ -14,10 +14,15 @@ itself. Check a milestone box in `PROJECT.md`; explain how it was earned here.
 The back-end lane keeps its own equivalent file. Neither agent edits the
 other's.
 
-Last updated: 2026-09-10
+Last updated: 2026-09-13
 
 ## Current state
 
+- M9, "Got time" discovery, opened on 2026-09-13 and runs alongside M7.
+  G1 and M9-F's contract-free prework landed in `017e17c` and `bb212d7`.
+  The rest of this lane's M9 work waits for back-end contracts (M9-B to
+  M9-E). See the checkpoint below and `discovery_upgrade.md`
+  §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
 - F17 is complete in this lane as of 2026-09-10: the client now refreshes
@@ -43,6 +48,70 @@ Last updated: 2026-09-10
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-G1 and M9-F prework — landed (2026-09-13, commits `017e17c`, `bb212d7`)
+
+The first discovery work that needs no server contract. Discovery ships dark:
+nothing here is reachable in production until M9-B's configuration read
+replaces the local flag, so neither M9 box closes with this checkpoint.
+
+**G1, the shared map base.** `HayerMap` (`app/lib/core/widgets/hayer_map.dart`)
+now owns the MapLibre setup every map shares: the OpenFreeMap style, the 3–18
+zoom range, north-up flat maps without compass or logo, and eager gesture
+claiming. `SearchAreaMap` keeps its frame, overlay, annotations and drag
+handling. `annotationOrder` is required, so the source-only Discover map can
+pass an empty list, which MapLibre renders faster on Android.
+
+`hayer_map_test.dart` pins the settings `SearchAreaMap` passed to MapLibre
+before the move, for both the editable and read-only variants.
+`search_area_map_test.dart` and the setup and lobby coverage in
+`consumer_ux_test.dart` pass unmodified. The test's first version compared
+`Factory.type`, which is the declared `OneSequenceGestureRecognizer` rather
+than the recognizer it builds; it now builds the recognizer and checks that it
+is an `EagerGestureRecognizer`.
+
+**M9-F prework.**
+
+- `DiscoveryUrlQuery` (`app/lib/domain/discovery_url_query.dart`) is the
+  versioned `/discover` link codec. A link carries the committed viewport,
+  sort, category selection and applied filters, and nothing about the device.
+  Equivalent links canonicalize to one location: lists are deduplicated and
+  ordered, text whitespace collapses, defaults are omitted, the viewport is
+  rounded to five decimal places, and commas stay literal so shared links stay
+  readable. Unusable values are dropped and reported as issues instead of
+  silently changing the query. Limits mirror the planned server bounds (50
+  category ids, 256 code points), and antimeridian-crossing boxes are rejected.
+- `discoveryEnabledProvider` in `core/providers.dart` is false until the
+  configuration read replaces it.
+- `DiscoverScreen` sends a discovery link home with an availability notice
+  while discovery is off. With the flag on it is an empty scaffold until G2.
+- Android App Links accept the exact paths `/discover` and `/app/discover`;
+  the router's existing `/app/` normalization keeps a mounted web link's query.
+- With discovery on, home follows artboard 1a: a compact brand row, "How much
+  time do you have?", and In a hurry and Got time as equal-width cards. With it
+  off, `_singleSearch` keeps the original widgets verbatim, and the existing
+  home, setup and swipe tests pass unmodified.
+- English and Arabic strings. The Arabic uses the colloquial register home
+  already uses: "كم عندك وقت؟", "مستعجل", "عندي وقت".
+
+The two-mode home was also rendered with the real Nunito and Material icon
+fonts in light and dark, and with discovery off, and compared against artboard
+1a. That render was a throwaway and is not committed.
+
+Verification: pinned full preflight passes generation, formatting, fatal-info
+analyses, 130 server, 184 app (19 new) and 51 admin tests, shell checks, and
+diff checks. `scripts/build-release-apk.sh` produced signed `0.2.1+7` at
+105,286,907 bytes with SHA-256
+`4a15d6c0bb4b0b1371b643b75df8eadac8799f924f71139978ef9ddd74d8c97a`. It declares
+`sa.almou.hayer` versionCode 7 / versionName 0.2.1 with target SDK 36, verifies
+under APK Signature Scheme v2 with the same signing certificate
+(`426f3bf4…77a6`) as previous releases, and its compiled manifest carries both
+discovery App Link paths.
+
+Not verified here: App Link verification and cold/warm links on a device, and
+web hosting of direct `/discover` URLs, which is M9-E deployment work in the
+back-end lane. Still open in M9-F: the configuration provider once the M9-B
+contract lands. Still open in M9-G: G2 to G4.
 
 ### F17 client convergence — complete (2026-09-09, commit `6277dcd`)
 
@@ -568,6 +637,20 @@ run from here.
 
 ## Lane decisions
 
+- 2026-09-13: Gate discovery on a local `discoveryEnabledProvider` that is
+  always false instead of waiting for M9-B. The entry, route and links can
+  land and be tested now through an override, and the configuration
+  provider has one place to replace.
+- 2026-09-13: While discovery is off, `/discover` goes home with a notice
+  through `go('/')`, which drops the link. Requirement 15 asks to keep the
+  URL for a later retry when discovery is disabled live; that belongs with
+  the configuration provider, which can tell "not known yet" from "off".
+- 2026-09-13: Keep the link codec in `domain/` as pure Dart with its own
+  validation mirroring the planned server limits. The server stays
+  authoritative; the codec exists for canonical, readable links and an
+  honest notice when part of a link is dropped. Category ids are checked
+  only for shape, because the Discover tree's id format is the back-end
+  lane's to define.
 - 2026-09-09: Fix F17 in two halves along the lane boundary rather than as one
   cross-lane change. The client half needs no protocol change and ships now,
   because the silent non-convergence it removes is a correctness defect, not a
