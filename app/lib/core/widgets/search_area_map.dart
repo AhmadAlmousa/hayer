@@ -1,15 +1,13 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../display_formatters.dart';
+import 'hayer_map.dart';
 
-const _mapStyle = 'https://tiles.openfreemap.org/styles/liberty';
 const _earthRadiusMeters = 6371000.0;
 const minSearchRadiusMeters = 500;
 const maxSearchRadiusMeters = 10000;
@@ -90,22 +88,11 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
           child: Stack(
             children: [
               Positioned.fill(
-                child: MapLibreMap(
-                  gestureRecognizers: {
-                    Factory<OneSequenceGestureRecognizer>(
-                      EagerGestureRecognizer.new,
-                    ),
-                  },
-                  styleString: _mapStyle,
+                child: HayerMap(
                   initialCameraPosition: CameraPosition(
                     target: LatLng(widget.latitude, widget.longitude),
                     zoom: _zoomForRadius(widget.radiusMeters),
                   ),
-                  minMaxZoomPreference: const MinMaxZoomPreference(3, 18),
-                  rotateGesturesEnabled: false,
-                  tiltGesturesEnabled: false,
-                  compassEnabled: false,
-                  logoEnabled: false,
                   annotationOrder: const [
                     AnnotationType.fill,
                     AnnotationType.circle,
@@ -114,7 +101,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
                   onMapCreated: _onMapCreated,
                   onCameraMove: widget.editable ? _trackCameraMove : null,
                   onCameraIdle: widget.editable ? _commitCameraCenter : null,
-                  onStyleLoadedCallback: () {
+                  onStyleLoaded: () {
                     _styleLoaded = true;
                     unawaited(_draw());
                   },

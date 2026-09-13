@@ -96,7 +96,8 @@ Git remote: `git@github.com:AhmadAlmousa/hayer.git`
 
 - `[ ]` is not started, `[~]` is active, `[x]` is verified, and `[!]` is
   blocked.
-- Keep exactly one milestone active.
+- Keep exactly one milestone active. Exception: M9 runs alongside M7 by owner
+  decision on 2026-09-13; M7 remains the invited-beta gate.
 - Update this file in the same change as completed work.
 - Check an item only after its exit condition passes, and add the relevant
   command, build, migration, or manual test to the evidence log.
@@ -864,6 +865,27 @@ measurements and rollback paths.
 - [ ] Perform only the targeted F33 ownership/module extractions justified by
   stabilized behavior; replace the framework landing page under F34 when the
   public-web product and metadata strategy is ready.
+
+### M9 — "Got time" discovery `[~]`
+
+Runs alongside M7 by owner decision on 2026-09-13, as an explicit exception to
+the one-active-milestone rule. M7 remains the invited-beta gate, and discovery
+ships dark behind `discoveryEnabled`. Scope, ownership, contracts and
+dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
+§"Implementation plan"; each lane log holds its evidence.
+
+- [ ] M9-A — Shared source and observation writer (back end, after F08).
+- [ ] M9-B — Flag, configuration and Discover taxonomy (back end).
+- [ ] M9-C — Catalog columns and discovery query (back end).
+- [ ] M9-D — Shared detail resolver and sessionless reporting (back end).
+- [ ] M9-E — Harvesting and coverage (back end, after F21).
+- [~] M9-F — Entry, configuration and links (front end). Contract-free prework
+  is in progress; configuration waits for the M9-B contract.
+- [~] M9-G — Discover surface (front end). G1, the shared map base, is in
+  progress; G2–G4 wait for contracts.
+- [ ] M9-H — Place detail, save, share and report (front end).
+- [ ] M9-J — Admin (front end).
+- [ ] M9-K — Cross-mode verification and dark release (both lanes).
 
 ## Verification gates
 
