@@ -316,5 +316,18 @@
   "dataEraseKeep": "Keep data",
   "dataEraseConfirm": "Erase",
   "dataErased": "Data on this device was erased.",
-  "dataEraseFailed": "Could not erase everything. Please try again."
+  "dataEraseFailed": "Could not erase everything. Please try again.",
+  "homeTimeQuestion": "How much time do you have?",
+  "inAHurry": "In a hurry",
+  "inAHurryDescription": "Pick a vibe, swipe a deck, decide in a minute",
+  "inAHurryCards": "{count, plural, one{1 card} other{{count} cards}}",
+  "@inAHurryCards": {"placeholders": {"count": {"type": "int"}}},
+  "inAHurrySoloOrGroup": "Solo or group",
+  "inAHurryDuration": "~60 sec",
+  "gotTime": "Got time",
+  "gotTimeDescription": "Dig through every place on the map, your way",
+  "gotTimeSortAndFilter": "Sort & filter",
+  "gotTimeHiddenGems": "Hidden gems",
+  "gotTimeFullMap": "Full map",
+  "discoveryUnavailable": "Got time isn’t available right now. Try again later."
 }

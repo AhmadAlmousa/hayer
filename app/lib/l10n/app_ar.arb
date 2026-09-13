@@ -314,5 +314,17 @@
   "dataEraseKeep": "احتفظ بالبيانات",
   "dataEraseConfirm": "امسح",
   "dataErased": "مُسحت بيانات هذا الجهاز.",
-  "dataEraseFailed": "تعذر مسح كل شيء. حاول مرة أخرى."
+  "dataEraseFailed": "تعذر مسح كل شيء. حاول مرة أخرى.",
+  "homeTimeQuestion": "كم عندك وقت؟",
+  "inAHurry": "مستعجل",
+  "inAHurryDescription": "اختر الجو، اسحب البطاقات، وقرّر خلال دقيقة",
+  "inAHurryCards": "{count, plural, one{بطاقة واحدة} two{بطاقتان} few{{count} بطاقات} many{{count} بطاقة} other{{count} بطاقة}}",
+  "inAHurrySoloOrGroup": "وحدك أو مع مجموعة",
+  "inAHurryDuration": "~60 ثانية",
+  "gotTime": "عندي وقت",
+  "gotTimeDescription": "تصفّح كل الأماكن على الخريطة على طريقتك",
+  "gotTimeSortAndFilter": "ترتيب وتصفية",
+  "gotTimeHiddenGems": "جواهر مخفية",
+  "gotTimeFullMap": "الخريطة كاملة",
+  "discoveryUnavailable": "«عندي وقت» غير متاح حالياً. حاول لاحقاً."
 }

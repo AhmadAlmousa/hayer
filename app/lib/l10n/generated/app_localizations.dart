@@ -1777,6 +1777,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not erase everything. Please try again.'**
   String get dataEraseFailed;
+
+  /// No description provided for @homeTimeQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How much time do you have?'**
+  String get homeTimeQuestion;
+
+  /// No description provided for @inAHurry.
+  ///
+  /// In en, this message translates to:
+  /// **'In a hurry'**
+  String get inAHurry;
+
+  /// No description provided for @inAHurryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a vibe, swipe a deck, decide in a minute'**
+  String get inAHurryDescription;
+
+  /// No description provided for @inAHurryCards.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 card} other{{count} cards}}'**
+  String inAHurryCards(int count);
+
+  /// No description provided for @inAHurrySoloOrGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Solo or group'**
+  String get inAHurrySoloOrGroup;
+
+  /// No description provided for @inAHurryDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'~60 sec'**
+  String get inAHurryDuration;
+
+  /// No description provided for @gotTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Got time'**
+  String get gotTime;
+
+  /// No description provided for @gotTimeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Dig through every place on the map, your way'**
+  String get gotTimeDescription;
+
+  /// No description provided for @gotTimeSortAndFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort & filter'**
+  String get gotTimeSortAndFilter;
+
+  /// No description provided for @gotTimeHiddenGems.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden gems'**
+  String get gotTimeHiddenGems;
+
+  /// No description provided for @gotTimeFullMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Full map'**
+  String get gotTimeFullMap;
+
+  /// No description provided for @discoveryUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Got time isn’t available right now. Try again later.'**
+  String get discoveryUnavailable;
 }
 
 class _AppLocalizationsDelegate

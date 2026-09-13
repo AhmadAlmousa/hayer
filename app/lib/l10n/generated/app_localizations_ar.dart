@@ -954,4 +954,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dataEraseFailed => 'تعذر مسح كل شيء. حاول مرة أخرى.';
+
+  @override
+  String get homeTimeQuestion => 'كم عندك وقت؟';
+
+  @override
+  String get inAHurry => 'مستعجل';
+
+  @override
+  String get inAHurryDescription =>
+      'اختر الجو، اسحب البطاقات، وقرّر خلال دقيقة';
+
+  @override
+  String inAHurryCards(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count بطاقة',
+      many: '$count بطاقة',
+      few: '$count بطاقات',
+      two: 'بطاقتان',
+      one: 'بطاقة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inAHurrySoloOrGroup => 'وحدك أو مع مجموعة';
+
+  @override
+  String get inAHurryDuration => '~60 ثانية';
+
+  @override
+  String get gotTime => 'عندي وقت';
+
+  @override
+  String get gotTimeDescription => 'تصفّح كل الأماكن على الخريطة على طريقتك';
+
+  @override
+  String get gotTimeSortAndFilter => 'ترتيب وتصفية';
+
+  @override
+  String get gotTimeHiddenGems => 'جواهر مخفية';
+
+  @override
+  String get gotTimeFullMap => 'الخريطة كاملة';
+
+  @override
+  String get discoveryUnavailable => '«عندي وقت» غير متاح حالياً. حاول لاحقاً.';
 }

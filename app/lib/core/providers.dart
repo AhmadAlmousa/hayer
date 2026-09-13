@@ -82,3 +82,10 @@ final routeEstimateRepositoryProvider = Provider<RouteEstimateRepository>(
     location: ref.watch(locationWarmupProvider),
   ),
 );
+
+/// Whether the "Got time" discovery mode is available.
+///
+/// Discovery ships dark. This stays false until the server's discovery
+/// configuration read exists (M9-B) and replaces it; tests override it to
+/// exercise the enabled presentation.
+final discoveryEnabledProvider = Provider<bool>((ref) => false);

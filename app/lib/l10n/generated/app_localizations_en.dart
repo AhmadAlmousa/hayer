@@ -967,4 +967,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataEraseFailed => 'Could not erase everything. Please try again.';
+
+  @override
+  String get homeTimeQuestion => 'How much time do you have?';
+
+  @override
+  String get inAHurry => 'In a hurry';
+
+  @override
+  String get inAHurryDescription =>
+      'Pick a vibe, swipe a deck, decide in a minute';
+
+  @override
+  String inAHurryCards(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards',
+      one: '1 card',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inAHurrySoloOrGroup => 'Solo or group';
+
+  @override
+  String get inAHurryDuration => '~60 sec';
+
+  @override
+  String get gotTime => 'Got time';
+
+  @override
+  String get gotTimeDescription =>
+      'Dig through every place on the map, your way';
+
+  @override
+  String get gotTimeSortAndFilter => 'Sort & filter';
+
+  @override
+  String get gotTimeHiddenGems => 'Hidden gems';
+
+  @override
+  String get gotTimeFullMap => 'Full map';
+
+  @override
+  String get discoveryUnavailable =>
+      'Got time isn’t available right now. Try again later.';
 }
