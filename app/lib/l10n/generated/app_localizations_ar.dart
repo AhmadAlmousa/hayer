@@ -1275,4 +1275,239 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get discoveryLinkPartlyApplied =>
       'تعذّر استخدام جزء من هذا الرابط، فتم تجاهله.';
+
+  @override
+  String get discoveryFilters => 'التصفية';
+
+  @override
+  String get discoveryFiltersTitle => 'تصفية متقدمة';
+
+  @override
+  String get discoveryFiltersReset => 'استعادة';
+
+  @override
+  String get discoveryFilterText => 'ابحث في الأسماء والأوصاف';
+
+  @override
+  String get discoveryFilterTextHint => 'مثلاً: سطح أو كنافة';
+
+  @override
+  String get discoveryFilterReviews => 'عدد المراجعات';
+
+  @override
+  String discoveryReviewBandRange(String from, String to) {
+    return '$from–$to';
+  }
+
+  @override
+  String discoveryReviewBandOpen(String from) {
+    return '$from+';
+  }
+
+  @override
+  String discoveryReviewBandSemantics(int count, String band) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$band مراجعة، $countString مكان',
+      many: '$band مراجعة، $countString مكاناً',
+      few: '$band مراجعة، $countString أماكن',
+      two: '$band مراجعة، مكانان',
+      one: '$band مراجعة، مكان واحد',
+      zero: '$band مراجعة، لا أماكن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryFilterPrice => 'السعر';
+
+  @override
+  String discoveryPriceLevelName(String level) {
+    return 'مستوى السعر $level';
+  }
+
+  @override
+  String get discoveryAny => 'الكل';
+
+  @override
+  String get discoveryFilterRating => 'أدنى تقييم';
+
+  @override
+  String discoveryRatingAtLeast(String rating) {
+    return '$rating+';
+  }
+
+  @override
+  String get discoveryFilterHours => 'ساعات العمل';
+
+  @override
+  String get discoveryHoursOpenNow => 'مفتوح الآن';
+
+  @override
+  String get discoveryHoursOpenLate => 'مفتوح لوقت متأخر (بعد 23:00)';
+
+  @override
+  String get discoveryHoursBreakfast => 'مفتوح وقت الفطور';
+
+  @override
+  String get discoveryHoursFriday => 'مفتوح يوم الجمعة';
+
+  @override
+  String get discoveryFilterCompleteness => 'البيانات المتوفرة';
+
+  @override
+  String get discoveryHasPhotos => 'فيه صور';
+
+  @override
+  String get discoveryHasHours => 'له ساعات عمل';
+
+  @override
+  String get discoveryHasContact => 'له بيانات تواصل';
+
+  @override
+  String get discoveryHasPrice => 'له مستوى سعر';
+
+  @override
+  String get discoveryFilterAmenities => 'المرافق';
+
+  @override
+  String get discoveryAmenityOutdoorSeating => 'جلسات خارجية';
+
+  @override
+  String get discoveryAmenityWifi => 'واي فاي';
+
+  @override
+  String get discoveryAmenityFamilySection => 'قسم للعائلات';
+
+  @override
+  String get discoveryAmenityReservations => 'يقبل الحجوزات';
+
+  @override
+  String get discoveryAmenityParking => 'مواقف سيارات';
+
+  @override
+  String get discoveryAmenitiesUnavailable => 'تصفية المرافق غير متاحة بعد.';
+
+  @override
+  String discoveryTextQuery(String text) {
+    return '«$text»';
+  }
+
+  @override
+  String discoveryFiltersInPlay(String filters) {
+    return 'التصفية: $filters';
+  }
+
+  @override
+  String get discoveryFiltersClear => 'مسح';
+
+  @override
+  String discoveryShowPlaces(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'اعرض $countString مكان',
+      many: 'اعرض $countString مكاناً',
+      few: 'اعرض $countString أماكن',
+      two: 'اعرض مكانين',
+      one: 'اعرض مكاناً واحداً',
+      zero: 'لا أماكن مطابقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryShowAllPlaces(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'اعرض كل الأماكن ($countString)',
+      many: 'اعرض كل الأماكن ($countString)',
+      few: 'اعرض كل الأماكن ($countString)',
+      two: 'اعرض المكانين',
+      one: 'اعرض مكاناً واحداً',
+      zero: 'لا أماكن في الخريطة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryShowResults => 'اعرض النتائج';
+
+  @override
+  String get discoveryCountingPlaces => 'جارٍ عدّ الأماكن';
+
+  @override
+  String get discoveryPreviewFailed => 'تعذّر عدّ الأماكن المطابقة.';
+
+  @override
+  String get discoveryCategories => 'الفئات';
+
+  @override
+  String get discoveryCategorySearch => 'ابحث عن فئة';
+
+  @override
+  String get discoveryCollapseAll => 'طيّ الكل';
+
+  @override
+  String discoveryCategoriesHidden(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString فئة لا شيء لها في الخريطة، فأُخفيت.',
+      many: '$countString فئة لا شيء لها في الخريطة، فأُخفيت.',
+      few: '$countString فئات لا شيء لها في الخريطة، فأُخفيت.',
+      two: 'فئتان لا شيء لهما في الخريطة، فأُخفيتا.',
+      one: 'فئة واحدة لا شيء لها في الخريطة، فأُخفيت.',
+      zero: 'لا فئات مخفية.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryCategoriesHiddenHint =>
+      'قد يعيدها تغيير المنطقة أو مسح التصفية.';
+
+  @override
+  String get discoveryCategoryOther => 'أخرى';
+
+  @override
+  String get discoveryCategoryFallback => 'فئة';
+
+  @override
+  String discoveryCategoryNoMatch(String text) {
+    return 'لا فئات في الخريطة تطابق «$text».';
+  }
+
+  @override
+  String get discoveryCategoriesNone => 'لا شيء في الخريطة له فئة بعد.';
+
+  @override
+  String get discoveryCategoriesFailed => 'تعذّر تحميل الفئات.';
+
+  @override
+  String get discoveryCategoriesRemoved =>
+      'بعض الفئات في هذا الرابط لم تعد موجودة، فأُزيلت.';
+
+  @override
+  String discoveryRemoveCategory(String category) {
+    return 'إزالة $category';
+  }
 }

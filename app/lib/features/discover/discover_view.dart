@@ -7,15 +7,20 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../core/providers.dart';
 import '../../domain/discovery_area.dart';
+import '../../domain/discovery_category_tree.dart';
 import '../../domain/discovery_url_query.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'discovery_area_labels.dart';
+import 'discovery_category_sheet.dart';
 import 'discovery_config_controller.dart';
+import 'discovery_filter_bar.dart';
+import 'discovery_filter_sheet.dart';
 import 'discovery_map.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
 import 'discovery_search.dart';
 import 'discovery_sort_text.dart';
+import 'discovery_taxonomy_provider.dart';
 
 /// How long entering Discover waits for an already permitted location before
 /// opening somewhere else.
@@ -131,6 +136,7 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
       Router.neglect(context, () => context.go(location));
       return;
     }
+    if (_normalizeCategories()) return;
     _labelArea(viewport);
     unawaited(ref.read(discoveryAreaStoreProvider).write(viewport));
     final country = _countryFor(viewport);
@@ -307,6 +313,51 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     if (chosen != null && mounted) _apply(_query.withSort(chosen));
   }
 
+  Future<void> _openFilters() async {
+    final viewport = _query.viewport;
+    if (viewport == null) return;
+    final applied = await showDiscoveryFilterSheet(
+      context,
+      committed: _query,
+      countryCode: _countryFor(viewport),
+    );
+    if (applied != null && mounted) _apply(applied);
+  }
+
+  Future<void> _openCategories() async {
+    final ids = await showDiscoveryCategorySheet(context, committed: _query);
+    if (ids != null && mounted) _apply(_query.withCategories(ids));
+  }
+
+  /// Takes out of the link any category the published tree no longer has,
+  /// with a notice, and any a selected parent already includes. Returns
+  /// whether the link was replaced.
+  bool _normalizeCategories() {
+    if (_query.categoryIds.isEmpty) return false;
+    final snapshot = ref.read(discoveryTaxonomyProvider).value;
+    final config = ref.read(discoveryConfigProvider).config;
+    // Only the tree the configuration names can say an id is gone.
+    if (snapshot == null ||
+        config == null ||
+        snapshot.roots.isEmpty ||
+        snapshot.revision != config.taxonomyRevision) {
+      return false;
+    }
+    final (:ids, :unknown) = DiscoveryCategoryTree(
+      roots: snapshot.roots,
+      otherId: config.limits.otherCategoryId,
+    ).normalize(_query.categoryIds);
+    if (ids.length == _query.categoryIds.length) return false;
+    if (unknown.isNotEmpty) {
+      _notify(AppLocalizations.of(context)!.discoveryCategoriesRemoved);
+    }
+    final location = _query.withCategories(ids).location;
+    _normalizedTo = location;
+    // Correcting a link is not a new search.
+    Router.neglect(context, () => context.go(location));
+    return true;
+  }
+
   void _notify(String message) => ScaffoldMessenger.of(
     context,
   ).showSnackBar(SnackBar(content: Text(message)));
@@ -330,6 +381,10 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
       next,
     ) {
       if (next > (previous ?? 0)) _notify(strings.discoveryResultsChanged);
+    });
+    // The link's categories can be checked once the tree is known.
+    ref.listen(discoveryTaxonomyProvider, (_, next) {
+      if (next.hasValue) _commit();
     });
     final viewport = _query.viewport;
     final pending = _pending;
@@ -371,25 +426,13 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                           locating: _locating,
                           onLocate: _locate,
                         ),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: FilledButton.icon(
-                            key: const ValueKey('discovery-sort'),
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size(0, 40),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                              ),
-                              visualDensity: VisualDensity.compact,
-                              elevation: 2,
-                            ),
-                            onPressed: _chooseSort,
-                            icon: const Icon(Icons.swap_vert_rounded),
-                            label: Text(
-                              discoverySortLabel(strings, _query.sort),
-                            ),
-                          ),
+                        const SizedBox(height: 4),
+                        DiscoveryFilterBar(
+                          query: _query,
+                          onSort: _chooseSort,
+                          onFilters: _openFilters,
+                          onCategories: _openCategories,
+                          onApply: _apply,
                         ),
                         if (pending)
                           Center(

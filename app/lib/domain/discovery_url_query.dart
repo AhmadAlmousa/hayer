@@ -10,6 +10,8 @@ const maxDiscoveryCategoryIds = 50;
 /// The longest text query, in Unicode code points. Mirrors the server limit.
 const maxDiscoveryTextLength = 256;
 
+const Object _keep = Object();
+
 /// A value with a fixed spelling in a Discover link.
 abstract interface class DiscoveryLinkValue {
   String get token;
@@ -358,29 +360,66 @@ final class DiscoveryUrlQuery {
       completeness.isNotEmpty ||
       text.isNotEmpty;
 
+  /// How many filters the filter sheet sets: everything except the area, the
+  /// sort and the categories, counting each selected value once.
+  int get sheetFilterCount =>
+      reviewBands.length +
+      (priceLevel == null ? 0 : 1) +
+      (minimumRating == null ? 0 : 1) +
+      hoursWindows.length +
+      completeness.length +
+      (text.isEmpty ? 0 : 1);
+
   /// This query over [viewport] instead.
   DiscoveryUrlQuery withViewport(DiscoveryViewport viewport) =>
-      _copy(viewport: viewport);
+      copyWith(viewport: viewport);
 
   /// This query ranked by [sort] instead.
-  DiscoveryUrlQuery withSort(DiscoverySort sort) => _copy(sort: sort);
+  DiscoveryUrlQuery withSort(DiscoverySort sort) => copyWith(sort: sort);
+
+  /// This query selecting [categoryIds] instead.
+  DiscoveryUrlQuery withCategories(Iterable<String> categoryIds) =>
+      copyWith(categoryIds: categoryIds);
 
   /// This query's area and sort, with every filter cleared.
   DiscoveryUrlQuery withoutFilters() =>
       DiscoveryUrlQuery(viewport: viewport, sort: sort);
 
-  DiscoveryUrlQuery _copy({DiscoveryViewport? viewport, DiscoverySort? sort}) =>
-      DiscoveryUrlQuery(
-        viewport: viewport ?? this.viewport,
-        sort: sort ?? this.sort,
-        categoryIds: categoryIds,
-        reviewBands: reviewBands,
-        priceLevel: priceLevel,
-        minimumRating: minimumRating,
-        hoursWindows: hoursWindows,
-        completeness: completeness,
-        text: text,
-      );
+  /// This query with everything the filter sheet sets cleared. The area, the
+  /// sort and the categories stay.
+  DiscoveryUrlQuery withoutSheetFilters() => DiscoveryUrlQuery(
+    viewport: viewport,
+    sort: sort,
+    categoryIds: categoryIds,
+  );
+
+  /// This query with the given parts replaced. [priceLevel] and
+  /// [minimumRating] take null to allow any.
+  DiscoveryUrlQuery copyWith({
+    DiscoveryViewport? viewport,
+    DiscoverySort? sort,
+    Iterable<String>? categoryIds,
+    Iterable<DiscoveryReviewBand>? reviewBands,
+    Object? priceLevel = _keep,
+    Object? minimumRating = _keep,
+    Iterable<DiscoveryHoursWindow>? hoursWindows,
+    Iterable<DiscoveryCompleteness>? completeness,
+    String? text,
+  }) => DiscoveryUrlQuery(
+    viewport: viewport ?? this.viewport,
+    sort: sort ?? this.sort,
+    categoryIds: categoryIds ?? this.categoryIds,
+    reviewBands: reviewBands ?? this.reviewBands,
+    priceLevel: identical(priceLevel, _keep)
+        ? this.priceLevel
+        : priceLevel as int?,
+    minimumRating: identical(minimumRating, _keep)
+        ? this.minimumRating
+        : minimumRating as DiscoveryMinimumRating?,
+    hoursWindows: hoursWindows ?? this.hoursWindows,
+    completeness: completeness ?? this.completeness,
+    text: text ?? this.text,
+  );
 
   /// The canonical parameters, in a fixed order and without defaults.
   Map<String, String> get parameters => {

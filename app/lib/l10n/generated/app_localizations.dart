@@ -2197,6 +2197,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Part of this link couldn’t be used, so it was left out.'**
   String get discoveryLinkPartlyApplied;
+
+  /// No description provided for @discoveryFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get discoveryFilters;
+
+  /// No description provided for @discoveryFiltersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced filters'**
+  String get discoveryFiltersTitle;
+
+  /// No description provided for @discoveryFiltersReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get discoveryFiltersReset;
+
+  /// No description provided for @discoveryFilterText.
+  ///
+  /// In en, this message translates to:
+  /// **'Search names and descriptions'**
+  String get discoveryFilterText;
+
+  /// No description provided for @discoveryFilterTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example, rooftop or kunafa'**
+  String get discoveryFilterTextHint;
+
+  /// No description provided for @discoveryFilterReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of reviews'**
+  String get discoveryFilterReviews;
+
+  /// No description provided for @discoveryReviewBandRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{from}–{to}'**
+  String discoveryReviewBandRange(String from, String to);
+
+  /// No description provided for @discoveryReviewBandOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'{from}+'**
+  String discoveryReviewBandOpen(String from);
+
+  /// No description provided for @discoveryReviewBandSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{{band} reviews, no places} =1{{band} reviews, 1 place} other{{band} reviews, {count} places}}'**
+  String discoveryReviewBandSemantics(int count, String band);
+
+  /// No description provided for @discoveryFilterPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get discoveryFilterPrice;
+
+  /// No description provided for @discoveryPriceLevelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Price level {level}'**
+  String discoveryPriceLevelName(String level);
+
+  /// No description provided for @discoveryAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get discoveryAny;
+
+  /// No description provided for @discoveryFilterRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum rating'**
+  String get discoveryFilterRating;
+
+  /// No description provided for @discoveryRatingAtLeast.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating}+'**
+  String discoveryRatingAtLeast(String rating);
+
+  /// No description provided for @discoveryFilterHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening hours'**
+  String get discoveryFilterHours;
+
+  /// No description provided for @discoveryHoursOpenNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Open now'**
+  String get discoveryHoursOpenNow;
+
+  /// No description provided for @discoveryHoursOpenLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Open late (after 23:00)'**
+  String get discoveryHoursOpenLate;
+
+  /// No description provided for @discoveryHoursBreakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'Open for breakfast'**
+  String get discoveryHoursBreakfast;
+
+  /// No description provided for @discoveryHoursFriday.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Friday'**
+  String get discoveryHoursFriday;
+
+  /// No description provided for @discoveryFilterCompleteness.
+  ///
+  /// In en, this message translates to:
+  /// **'Details on file'**
+  String get discoveryFilterCompleteness;
+
+  /// No description provided for @discoveryHasPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Has photos'**
+  String get discoveryHasPhotos;
+
+  /// No description provided for @discoveryHasHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Has opening hours'**
+  String get discoveryHasHours;
+
+  /// No description provided for @discoveryHasContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Has contact details'**
+  String get discoveryHasContact;
+
+  /// No description provided for @discoveryHasPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Has a price level'**
+  String get discoveryHasPrice;
+
+  /// No description provided for @discoveryFilterAmenities.
+  ///
+  /// In en, this message translates to:
+  /// **'Amenities'**
+  String get discoveryFilterAmenities;
+
+  /// No description provided for @discoveryAmenityOutdoorSeating.
+  ///
+  /// In en, this message translates to:
+  /// **'Outdoor seating'**
+  String get discoveryAmenityOutdoorSeating;
+
+  /// No description provided for @discoveryAmenityWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi'**
+  String get discoveryAmenityWifi;
+
+  /// No description provided for @discoveryAmenityFamilySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Family section'**
+  String get discoveryAmenityFamilySection;
+
+  /// No description provided for @discoveryAmenityReservations.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes reservations'**
+  String get discoveryAmenityReservations;
+
+  /// No description provided for @discoveryAmenityParking.
+  ///
+  /// In en, this message translates to:
+  /// **'Parking'**
+  String get discoveryAmenityParking;
+
+  /// No description provided for @discoveryAmenitiesUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Amenity filters are not available yet.'**
+  String get discoveryAmenitiesUnavailable;
+
+  /// No description provided for @discoveryTextQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'“{text}”'**
+  String discoveryTextQuery(String text);
+
+  /// No description provided for @discoveryFiltersInPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters: {filters}'**
+  String discoveryFiltersInPlay(String filters);
+
+  /// No description provided for @discoveryFiltersClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get discoveryFiltersClear;
+
+  /// No description provided for @discoveryShowPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No places match} =1{Show 1 place} other{Show {count} places}}'**
+  String discoveryShowPlaces(int count);
+
+  /// No description provided for @discoveryShowAllPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No places in view} =1{Show 1 place} other{Show all {count} places}}'**
+  String discoveryShowAllPlaces(int count);
+
+  /// No description provided for @discoveryShowResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Show results'**
+  String get discoveryShowResults;
+
+  /// No description provided for @discoveryCountingPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting places'**
+  String get discoveryCountingPlaces;
+
+  /// No description provided for @discoveryPreviewFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t count the places that match.'**
+  String get discoveryPreviewFailed;
+
+  /// No description provided for @discoveryCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get discoveryCategories;
+
+  /// No description provided for @discoveryCategorySearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a category'**
+  String get discoveryCategorySearch;
+
+  /// No description provided for @discoveryCollapseAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse all'**
+  String get discoveryCollapseAll;
+
+  /// No description provided for @discoveryCategoriesHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No categories are hidden.} =1{1 category has nothing in view and is hidden.} other{{count} categories have nothing in view and are hidden.}}'**
+  String discoveryCategoriesHidden(int count);
+
+  /// No description provided for @discoveryCategoriesHiddenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the area or clearing filters can bring them back.'**
+  String get discoveryCategoriesHiddenHint;
+
+  /// No description provided for @discoveryCategoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get discoveryCategoryOther;
+
+  /// No description provided for @discoveryCategoryFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get discoveryCategoryFallback;
+
+  /// No description provided for @discoveryCategoryNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories in view match “{text}”.'**
+  String discoveryCategoryNoMatch(String text);
+
+  /// No description provided for @discoveryCategoriesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in view has a category yet.'**
+  String get discoveryCategoriesNone;
+
+  /// No description provided for @discoveryCategoriesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load the categories.'**
+  String get discoveryCategoriesFailed;
+
+  /// No description provided for @discoveryCategoriesRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Some categories in this link no longer exist, so they were removed.'**
+  String get discoveryCategoriesRemoved;
+
+  /// No description provided for @discoveryRemoveCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {category}'**
+  String discoveryRemoveCategory(String category);
 }
 
 class _AppLocalizationsDelegate

@@ -1278,4 +1278,228 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get discoveryLinkPartlyApplied =>
       'Part of this link couldn’t be used, so it was left out.';
+
+  @override
+  String get discoveryFilters => 'Filters';
+
+  @override
+  String get discoveryFiltersTitle => 'Advanced filters';
+
+  @override
+  String get discoveryFiltersReset => 'Reset';
+
+  @override
+  String get discoveryFilterText => 'Search names and descriptions';
+
+  @override
+  String get discoveryFilterTextHint => 'For example, rooftop or kunafa';
+
+  @override
+  String get discoveryFilterReviews => 'Number of reviews';
+
+  @override
+  String discoveryReviewBandRange(String from, String to) {
+    return '$from–$to';
+  }
+
+  @override
+  String discoveryReviewBandOpen(String from) {
+    return '$from+';
+  }
+
+  @override
+  String discoveryReviewBandSemantics(int count, String band) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$band reviews, $countString places',
+      one: '$band reviews, 1 place',
+      zero: '$band reviews, no places',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryFilterPrice => 'Price';
+
+  @override
+  String discoveryPriceLevelName(String level) {
+    return 'Price level $level';
+  }
+
+  @override
+  String get discoveryAny => 'Any';
+
+  @override
+  String get discoveryFilterRating => 'Minimum rating';
+
+  @override
+  String discoveryRatingAtLeast(String rating) {
+    return '$rating+';
+  }
+
+  @override
+  String get discoveryFilterHours => 'Opening hours';
+
+  @override
+  String get discoveryHoursOpenNow => 'Open now';
+
+  @override
+  String get discoveryHoursOpenLate => 'Open late (after 23:00)';
+
+  @override
+  String get discoveryHoursBreakfast => 'Open for breakfast';
+
+  @override
+  String get discoveryHoursFriday => 'Open Friday';
+
+  @override
+  String get discoveryFilterCompleteness => 'Details on file';
+
+  @override
+  String get discoveryHasPhotos => 'Has photos';
+
+  @override
+  String get discoveryHasHours => 'Has opening hours';
+
+  @override
+  String get discoveryHasContact => 'Has contact details';
+
+  @override
+  String get discoveryHasPrice => 'Has a price level';
+
+  @override
+  String get discoveryFilterAmenities => 'Amenities';
+
+  @override
+  String get discoveryAmenityOutdoorSeating => 'Outdoor seating';
+
+  @override
+  String get discoveryAmenityWifi => 'Wi-Fi';
+
+  @override
+  String get discoveryAmenityFamilySection => 'Family section';
+
+  @override
+  String get discoveryAmenityReservations => 'Takes reservations';
+
+  @override
+  String get discoveryAmenityParking => 'Parking';
+
+  @override
+  String get discoveryAmenitiesUnavailable =>
+      'Amenity filters are not available yet.';
+
+  @override
+  String discoveryTextQuery(String text) {
+    return '“$text”';
+  }
+
+  @override
+  String discoveryFiltersInPlay(String filters) {
+    return 'Filters: $filters';
+  }
+
+  @override
+  String get discoveryFiltersClear => 'Clear';
+
+  @override
+  String discoveryShowPlaces(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Show $countString places',
+      one: 'Show 1 place',
+      zero: 'No places match',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryShowAllPlaces(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Show all $countString places',
+      one: 'Show 1 place',
+      zero: 'No places in view',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryShowResults => 'Show results';
+
+  @override
+  String get discoveryCountingPlaces => 'Counting places';
+
+  @override
+  String get discoveryPreviewFailed => 'Couldn’t count the places that match.';
+
+  @override
+  String get discoveryCategories => 'Categories';
+
+  @override
+  String get discoveryCategorySearch => 'Find a category';
+
+  @override
+  String get discoveryCollapseAll => 'Collapse all';
+
+  @override
+  String discoveryCategoriesHidden(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString categories have nothing in view and are hidden.',
+      one: '1 category has nothing in view and is hidden.',
+      zero: 'No categories are hidden.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryCategoriesHiddenHint =>
+      'Changing the area or clearing filters can bring them back.';
+
+  @override
+  String get discoveryCategoryOther => 'Other';
+
+  @override
+  String get discoveryCategoryFallback => 'Category';
+
+  @override
+  String discoveryCategoryNoMatch(String text) {
+    return 'No categories in view match “$text”.';
+  }
+
+  @override
+  String get discoveryCategoriesNone => 'Nothing in view has a category yet.';
+
+  @override
+  String get discoveryCategoriesFailed => 'Couldn’t load the categories.';
+
+  @override
+  String get discoveryCategoriesRemoved =>
+      'Some categories in this link no longer exist, so they were removed.';
+
+  @override
+  String discoveryRemoveCategory(String category) {
+    return 'Remove $category';
+  }
 }

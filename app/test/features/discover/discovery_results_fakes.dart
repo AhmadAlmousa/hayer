@@ -38,6 +38,8 @@ typedef BrowseRequest = ({
   bool includeMap,
 });
 
+typedef FacetsRequest = ({DiscoverQuery query, DiscoverQueryContext context});
+
 /// Answers browse with [onBrowse], or with three places by default, and
 /// records every request.
 class FakeDiscoveryRepository extends Fake implements DiscoveryRepository {
@@ -62,6 +64,35 @@ class FakeDiscoveryRepository extends Fake implements DiscoveryRepository {
     );
     requests.add(request);
     return (onBrowse ?? (_) async => testBrowsePage())(request);
+  }
+
+  final facetsRequests = <FacetsRequest>[];
+
+  /// Answers facets instead of [testFacets] in the request's context.
+  Future<DiscoverFacets> Function(FacetsRequest request)? onFacets;
+
+  @override
+  Future<DiscoverFacets> facets({
+    required DiscoverQuery query,
+    required DiscoverQueryContext context,
+  }) async {
+    final request = (query: query, context: context);
+    facetsRequests.add(request);
+    return (onFacets ??
+        (request) async => testFacets(context: request.context))(
+      request,
+    );
+  }
+
+  int taxonomyCalls = 0;
+
+  /// Answers the taxonomy read instead of [testTaxonomy].
+  Future<DiscoveryTaxonomySnapshot> Function()? onTaxonomy;
+
+  @override
+  Future<DiscoveryTaxonomySnapshot> taxonomy() async {
+    taxonomyCalls++;
+    return (onTaxonomy ?? () async => testTaxonomy())();
   }
 }
 
@@ -228,3 +259,161 @@ void useFakeMapPlatform() {
   MapLibrePlatform.createInstance = FakeMapPlatform.new;
   addTearDown(() => MapLibrePlatform.createInstance = original);
 }
+
+DiscoveryTaxonomyNode testCategory(
+  String id,
+  String labelEn,
+  String labelAr, {
+  String emoji = '',
+  List<String> aliases = const [],
+  List<DiscoveryTaxonomyNode> children = const [],
+}) => DiscoveryTaxonomyNode(
+  id: id,
+  labelEn: labelEn,
+  labelAr: labelAr,
+  emoji: emoji,
+  typeAliases: aliases,
+  children: children,
+);
+
+/// Food and Drinks, with cafes and a Japanese branch; Things to do; Wellness.
+List<DiscoveryTaxonomyNode> testCategoryRoots() => [
+  testCategory(
+    'food',
+    'Food & Drinks',
+    'الطعام والمشروبات',
+    emoji: '🍹',
+    children: [
+      testCategory(
+        'cafes',
+        'Cafes',
+        'المقاهي',
+        emoji: '☕',
+        aliases: ['Cafe'],
+        children: [
+          testCategory(
+            'coffee',
+            'Coffee shop',
+            'مقهى قهوة مختصة',
+            aliases: ['Coffee shop'],
+          ),
+          testCategory('tea', 'Tea house', 'بيت شاي', aliases: ['Tea house']),
+        ],
+      ),
+      testCategory(
+        'restaurants',
+        'Restaurants',
+        'المطاعم',
+        emoji: '🍽️',
+        children: [
+          testCategory(
+            'japanese',
+            'Japanese',
+            'ياباني',
+            emoji: '🍱',
+            aliases: ['Japanese restaurant'],
+            children: [
+              testCategory(
+                'sushi',
+                'Sushi',
+                'سوشي',
+                emoji: '🍣',
+                aliases: ['Sushi restaurant'],
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  testCategory(
+    'things',
+    'Things to do',
+    'أنشطة',
+    emoji: '🎯',
+    children: [
+      testCategory('museum', 'Museum', 'متحف', aliases: ['Museum']),
+    ],
+  ),
+  testCategory(
+    'wellness',
+    'Wellness',
+    'العافية',
+    emoji: '💆',
+    children: [
+      testCategory('spa', 'Spa', 'منتجع صحي', aliases: ['Spa']),
+    ],
+  ),
+];
+
+/// Cafes hold 2 places of their own and coffee shops 10; Japanese holds 3 of
+/// its own and sushi 4; 5 places map to nothing. That makes Food and Drinks
+/// 19 and the view 24, with tea, Things to do and Wellness empty.
+List<DiscoveryTypeCount> testTypeCounts() => [
+  DiscoveryTypeCount(primaryType: 'Cafe', taxonomyNodeId: 'cafes', count: 2),
+  DiscoveryTypeCount(
+    primaryType: 'Coffee shop',
+    taxonomyNodeId: 'coffee',
+    count: 10,
+  ),
+  DiscoveryTypeCount(
+    primaryType: 'Japanese restaurant',
+    taxonomyNodeId: 'japanese',
+    count: 3,
+  ),
+  DiscoveryTypeCount(
+    primaryType: 'Sushi restaurant',
+    taxonomyNodeId: 'sushi',
+    count: 4,
+  ),
+  DiscoveryTypeCount(
+    primaryType: 'Car wash',
+    taxonomyNodeId: 'other',
+    count: 3,
+  ),
+  DiscoveryTypeCount(primaryType: null, taxonomyNodeId: 'other', count: 2),
+];
+
+DiscoveryTaxonomySnapshot testTaxonomy({
+  int revision = 1,
+  List<DiscoveryTaxonomyNode>? roots,
+}) => DiscoveryTaxonomySnapshot(
+  revision: revision,
+  roots: roots ?? testCategoryRoots(),
+  fetchedAt: testEvaluatedAt,
+);
+
+/// Facets over [testTypeCounts]. Review bands hold 2, 4, 6, 8, 10 and 12
+/// places from the lowest up.
+DiscoverFacets testFacets({
+  int total = 24,
+  DiscoverQueryContext? context,
+  List<DiscoveryTypeCount>? typeCounts,
+  List<DiscoveryPriceCount>? priceCounts,
+  List<DiscoveryMinimumRatingCount>? minimumRatingCounts,
+}) => DiscoverFacets(
+  total: total,
+  context: context ?? testQueryContext(),
+  fetchedAt: testEvaluatedAt,
+  typeCounts: typeCounts ?? testTypeCounts(),
+  reviewBandCounts: [
+    for (final (index, band) in DiscoverReviewBand.values.indexed)
+      DiscoveryReviewBandCount(band: band, count: (index + 1) * 2),
+  ],
+  priceCounts:
+      priceCounts ??
+      [
+        DiscoveryPriceCount(priceLevel: 1, count: 4),
+        DiscoveryPriceCount(priceLevel: 2, count: 6),
+        DiscoveryPriceCount(priceLevel: null, count: 14),
+      ],
+  ratingDistribution: const [],
+  minimumRatingCounts:
+      minimumRatingCounts ??
+      [
+        DiscoveryMinimumRatingCount(minimumRating: 3.5, count: 20),
+        DiscoveryMinimumRatingCount(minimumRating: 4, count: 12),
+        DiscoveryMinimumRatingCount(minimumRating: 4.5, count: 5),
+      ],
+  unknownRatingCount: 1,
+);

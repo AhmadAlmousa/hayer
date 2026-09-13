@@ -351,4 +351,56 @@ void main() {
       );
     }
   });
+
+  test('an open-now search is checked again at the next minute, and starts '
+      'over only when the places that match changed', () async {
+    final clock = TestClock()..now = DateTime.utc(2026, 9, 13, 12, 0, 59, 950);
+    final checks = FakeDiscoveryRepository();
+    final timed = ProviderContainer(
+      overrides: [
+        clientProvider.overrideWithValue(DiscoveryClient(FakeBootstrap())),
+        discoveryRepositoryProvider.overrideWithValue(checks),
+        discoveryClockProvider.overrideWithValue(clock.call),
+      ],
+    );
+    addTearDown(timed.dispose);
+    timed.listen(discoveryResultsProvider, (_, _) {});
+    await timed.read(discoveryConfigProvider.notifier).ensureFresh();
+    final controller = timed.read(discoveryResultsProvider.notifier);
+
+    // Nothing else is ever checked again on its own.
+    controller.show(testSearch());
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    expect(checks.requests, hasLength(1));
+
+    var open = [1, 2, 3];
+    checks.onBrowse = (_) async =>
+        testBrowsePage(items: [for (final id in open) testPlace(id)]);
+    controller.show(
+      DiscoverySearch(
+        query: DiscoveryUrlQuery(
+          viewport: testViewport,
+          hoursWindows: const [DiscoveryHoursWindow.openNow],
+        ),
+        countryCode: 'SA',
+      ),
+    );
+    await pumpEventQueue();
+    final shown = timed.read(discoveryResultsProvider).context;
+    expect(checks.requests, hasLength(2));
+
+    // Each check lands 50ms before the next minute on this clock.
+    clock.now = DateTime.utc(2026, 9, 13, 12, 1, 59, 950);
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    expect(checks.requests.length, greaterThan(2));
+    expect(timed.read(discoveryResultsProvider).context, same(shown));
+
+    open = [1, 3];
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    final changed = timed.read(discoveryResultsProvider);
+    expect([for (final item in changed.items) item.catalogId], [1, 3]);
+    expect(changed.context, isNot(same(shown)));
+
+    clock.now = DateTime.utc(2026, 9, 13, 12, 2);
+  });
 }

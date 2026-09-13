@@ -14,18 +14,18 @@ itself. Check a milestone box in `PROJECT.md`; explain how it was earned here.
 The back-end lane keeps its own equivalent file. Neither agent edits the
 other's.
 
-Last updated: 2026-09-13
+Last updated: 2026-09-14
 
 ## Current state
 
 - M9, "Got time" discovery, opened on 2026-09-13 and runs alongside M7.
   G1 landed in `017e17c`. M9-F is complete: its prework in `bb212d7`, and
   the configuration read and kept links on the back-end lane's contract
-  commit `4014037`. G2, the results screen, landed on 2026-09-13; G3 and G4,
-  then H and J, build on the same generated types and fakes
-  (`backend/discovery-contracts.md`). Every discovery data RPC still answers
-  `feature_disabled`. See the checkpoints below and `discovery_upgrade.md`
-  §"Implementation plan".
+  commit `4014037`. G2, the results screen, landed on 2026-09-13, and G3,
+  filters and categories, on 2026-09-14. G4, then H and J, build on the same
+  generated types and fakes (`backend/discovery-contracts.md`). Every
+  discovery data RPC still answers `feature_disabled`. See the checkpoints
+  below and `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
 - F17 is complete in this lane as of 2026-09-10: the client now refreshes
@@ -51,6 +51,130 @@ Last updated: 2026-09-13
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-G3 Discover filters and categories — landed (2026-09-14)
+
+The filter sheet, the category tree and the controls that open them, built
+on the `discover.facets` and `discover.taxonomy` contracts from `4014037`
+with test doubles. Discovery stays dark: the server still answers
+`enabled: false`, and every facets and taxonomy read `feature_disabled`.
+
+**Counts.** `DiscoveryFacetsController`
+(`app/lib/features/discover/discovery_facets_controller.dart`) follows the
+results, not the link. Each first page the results controller applies
+carries a new server context, and that search is counted once in that
+context, so opening a view costs one browse and one facets call, and later
+pages ask for no counts.
+
+- An answer for an earlier generation is dropped. A failure keeps the
+  earlier counts and offers a retry.
+- `query_changed`, or counts made under another tree or policy revision,
+  reload the results once and read the configuration again.
+- The published tree (`discoveryTaxonomyProvider`) is read again whenever the
+  configuration names a new revision. It is combined with counts only when
+  both describe the same revision.
+
+**The category tree.** `DiscoveryCategoryTree`
+(`app/lib/domain/discovery_category_tree.dart`) is a pure function of the
+published tree and one facets answer.
+
+- A node's total is its own mapped count plus its children's totals.
+  Unmapped types count under the configuration's Other id, beside the roots.
+- Branches with nothing in view are hidden unless they hold a selection, and
+  the footer counts each hidden branch once, at its top.
+- Selecting a node drops its selected descendants and shows them as
+  included. Search matches English or Arabic labels and mapped types,
+  ignoring case and Arabic diacritics, and shows matches under their
+  ancestors.
+- The sheet follows artboard 2b and is a draft. Its counts leave the
+  category selection out, so nothing is asked of the server until Show
+  applies the selection as one search. Labels are `labelAr` in Arabic.
+
+**The filter sheet.** A local draft over the committed query:
+
+- text, labelled as searching names and descriptions;
+- the six disjoint review bands as a histogram with counts;
+- an exact price level in the area's currency, with counts;
+- a minimum rating, counted from `minimumRatingCounts`;
+- the four opening-hours windows;
+- the four completeness requirements.
+
+Each edit waits 400 ms, then counts the draft through facets in the committed
+generation's context. The apply button shows a count only when it is for the
+current draft. Show applies the whole draft as one history entry; Back or
+dismissing discards it; Clear clears the sheet's filters and keeps the
+categories; Reset returns to the applied filters. The five amenity chips are
+visible, disabled, announced as unavailable, and explained.
+
+**The bar and the link.**
+
+- Sort, Filters and Categories sit in a horizontally scrolling bar over the
+  map. Filters and Categories show how many values they apply.
+- A removable chip with its count follows for each selected category.
+  Removing one applies at once.
+- Once the tree the configuration names is loaded, categories a link names
+  that no longer exist are removed with a notice, and ones a selected parent
+  already includes are removed silently. Either correction replaces the link
+  rather than adding history.
+- An empty result under filters now names the filters in play.
+
+**Open now.** A committed search for places open now is checked again at
+each minute boundary and on return to the foreground. The pages start over
+only when the matching places or their count changed, so a scroll is not
+thrown back every minute. Checks stop while the app is in the background.
+
+**Large text.** At twice the text size the sheets' secondary header actions
+move under their titles, and tree rows put the emoji and count under the
+label. Before that, a 320-pixel phone squeezed the filter title to one letter
+per line and a tree row to a word per line.
+
+Tests:
+
+- `discovery_category_tree_test.dart` proves every branch equals its own
+  count plus its children's over a fixture tree. It also covers hiding and
+  the hidden count, including a coffee-only view, kept selections, parent
+  selection, link normalization, search in both languages, and counts from
+  another revision.
+- `discovery_facets_controller_test.dart` covers one count per first page in
+  its context, dropped late answers, kept counts with retry, and the single
+  reload for `query_changed` and revision mismatches.
+- `discover_filters_test.dart` drives the screen through the real router:
+  - one browse and one facets call on opening;
+  - the draft preview and its single history entry, dismissal, and an
+    out-of-order preview;
+  - Clear keeping categories, disabled amenities, and no review-text claim;
+  - exact price and counted ratings;
+  - the tree's counts, hiding, inclusion and apply;
+  - a zero-count selection kept removable, and immediate chip removal;
+  - a removed link category with no extra history;
+  - the empty state naming its filters;
+  - Arabic at 200% on a 320×640 screen.
+- `discovery_results_controller_test.dart` gained the open-now minute check,
+  and `discovery_url_query_test.dart` the query edits.
+- The Discover widget harness moved to `discover_harness.dart`, shared by
+  both screen test files.
+
+Verification: pinned full preflight passes generation, formatting, fatal-info
+analyses, 154 server, 281 app (up from 254) and 51 admin
+tests, shell checks, and diff checks. `scripts/build-release-apk.sh` produced
+signed `0.2.1+7` at 107,007,727 bytes with SHA-256 `a10ebfca4ba9ee7ac43bb8cafccfbe5e2a37be99f5d9084f453e0232b0fc7a5b`. It
+declares `sa.almou.hayer` versionCode 7 / versionName 0.2.1, verifies under
+APK Signature Scheme v2 with the same signing certificate (`426f3bf4…77a6`) as
+previous releases, and its compiled manifest still carries both discovery App
+Link paths.
+
+Not verified here: sheet gestures, the keyboard over the filter sheet, and
+screen-reader announcements on a device; and real counts, which the server
+still refuses. The first three belong to M9-K; real counts wait on M9-C's
+implementation.
+
+Not in G3:
+
+- Pins, selection, `ensureArea` and the coverage strip are G4.
+- Facets carry no counts for hours windows or completeness, so those chips
+  show none.
+- `GccPriceLevel` announces price levels in English in either language; that
+  shared widget predates Discover.
 
 ### M9-G2 Discover results — landed (2026-09-13)
 

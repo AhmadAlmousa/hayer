@@ -5,12 +5,15 @@ import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../domain/discovery_area.dart';
+import '../../domain/discovery_category_tree.dart';
 import '../../domain/discovery_url_query.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'discovery_config_controller.dart';
+import 'discovery_filter_text.dart';
 import 'discovery_place_row.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_sort_text.dart';
+import 'discovery_taxonomy_provider.dart';
 
 /// The sheet heights, as parts of the space below the status bar, that the
 /// results rest at over the map.
@@ -109,7 +112,14 @@ class DiscoveryResultsSheet extends ConsumerWidget {
               child: _failure(strings, notifier, error, stale: !current),
             ),
           if (current && results.items.isEmpty)
-            SliverToBoxAdapter(child: _empty(strings, results)),
+            SliverToBoxAdapter(
+              child: _empty(
+                context,
+                strings,
+                results,
+                ref.watch(discoveryCategoryNamesProvider),
+              ),
+            ),
           SliverList.builder(
             itemCount: results.items.length,
             itemBuilder: (context, index) => Opacity(
@@ -162,11 +172,23 @@ class DiscoveryResultsSheet extends ConsumerWidget {
     );
   }
 
-  Widget _empty(AppLocalizations strings, DiscoveryResults results) {
+  Widget _empty(
+    BuildContext context,
+    AppLocalizations strings,
+    DiscoveryResults results,
+    DiscoveryCategoryTree? categories,
+  ) {
     if (query.hasFilters) {
       return _Notice(
         key: const ValueKey('discovery-empty-filtered'),
         message: strings.discoveryEmptyFiltered,
+        detail: strings.discoveryFiltersInPlay(
+          discoveryFilterNames(
+            context,
+            query,
+            categories: categories,
+          ).join(' · '),
+        ),
         actionLabel: strings.discoveryClearFilters,
         onAction: () => onApply(query.withoutFilters()),
       );

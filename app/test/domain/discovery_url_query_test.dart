@@ -213,4 +213,37 @@ void main() {
       throwsArgumentError,
     );
   });
+
+  test('copyWith replaces only what it is given, and can allow any price or '
+      'rating again', () {
+    final query = DiscoveryUrlQuery(
+      sort: DiscoverySort.topRated,
+      categoryIds: const ['cafes'],
+      reviewBands: const [DiscoveryReviewBand.from50],
+      priceLevel: 2,
+      minimumRating: DiscoveryMinimumRating.four,
+      hoursWindows: const [DiscoveryHoursWindow.openNow],
+      completeness: const [DiscoveryCompleteness.photos],
+      text: 'late',
+    );
+
+    expect(query.copyWith(), query);
+    expect(query.copyWith(text: 'rooftop').priceLevel, 2);
+    final any = query.copyWith(priceLevel: null, minimumRating: null);
+    expect(any.priceLevel, isNull);
+    expect(any.minimumRating, isNull);
+    expect(any.reviewBands, [DiscoveryReviewBand.from50]);
+    expect(
+      query.withCategories(const ['sushi', 'coffee']).categoryIds,
+      ['coffee', 'sushi'],
+    );
+
+    // Six values from the sheet: a band, a price, a rating, a window, a
+    // completeness requirement and text. Categories are not the sheet's.
+    expect(query.sheetFilterCount, 6);
+    final cleared = query.withoutSheetFilters();
+    expect(cleared.sheetFilterCount, 0);
+    expect(cleared.categoryIds, ['cafes']);
+    expect(cleared.sort, DiscoverySort.topRated);
+  });
 }

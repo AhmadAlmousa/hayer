@@ -27,4 +27,17 @@ class DiscoveryRepository {
       includeMap: includeMap,
     ),
   ).timeout(_timeout);
+
+  Future<DiscoverFacets> facets({
+    required DiscoverQuery query,
+    required DiscoverQueryContext context,
+  }) => withAnonymousAuthentication(
+    client,
+    () => client.discover.facets(query: query, context: context),
+  ).timeout(_timeout);
+
+  Future<DiscoveryTaxonomySnapshot> taxonomy() => withAnonymousAuthentication(
+    client,
+    client.discover.taxonomy,
+  ).timeout(_timeout);
 }

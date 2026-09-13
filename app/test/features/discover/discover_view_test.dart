@@ -1,12 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hayer_app/app/router.dart';
-import 'package:hayer_app/app/theme.dart';
-import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/domain/discovery_area.dart';
 import 'package:hayer_app/domain/discovery_url_query.dart';
 import 'package:hayer_app/features/discover/discover_screen.dart';
@@ -14,12 +10,10 @@ import 'package:hayer_app/features/discover/discovery_area_labels.dart';
 import 'package:hayer_app/features/discover/discovery_map.dart';
 import 'package:hayer_app/features/discover/discovery_place_row.dart';
 import 'package:hayer_app/features/discover/discovery_results_sheet.dart';
-import 'package:hayer_app/l10n/generated/app_localizations.dart';
-import 'package:hayer_app/l10n/localization_delegates.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'discover_harness.dart';
 import 'discovery_fakes.dart';
 import 'discovery_results_fakes.dart';
 
@@ -28,18 +22,18 @@ const _searchArea = ValueKey('discovery-search-area');
 const _sheetToggle = ValueKey('discovery-sheet-toggle');
 
 void main() {
-  late _Fixture fixture;
+  late DiscoverFixture fixture;
 
   setUp(() {
     FlutterSecureStorage.setMockInitialValues({});
     useFakeMapPlatform();
-    fixture = _Fixture();
+    fixture = DiscoverFixture();
   });
 
   group('the starting area', () {
     testWidgets('is the default city with no location or remembered area, '
         'and replaces the link rather than adding a search', (tester) async {
-      final router = await _pump(tester, fixture, '/discover?v=1');
+      final router = await pumpDiscover(tester, fixture, '/discover?v=1');
 
       final viewport = _committedViewport(router);
       final center = discoveryViewportCenter(viewport);
@@ -64,7 +58,7 @@ void main() {
     ) async {
       fixture.location.position = testPosition(24.95, 46.95);
 
-      final router = await _pump(tester, fixture, '/discover?v=1');
+      final router = await pumpDiscover(tester, fixture, '/discover?v=1');
 
       final center = discoveryViewportCenter(_committedViewport(router));
       expect(center.latitude, closeTo(24.95, 1e-3));
@@ -82,7 +76,7 @@ void main() {
         east: 39.3,
       );
 
-      final router = await _pump(tester, fixture, '/discover?v=1');
+      final router = await pumpDiscover(tester, fixture, '/discover?v=1');
 
       expect(_committedViewport(router).token, '21.4,39.1,21.6,39.3');
     });
@@ -120,7 +114,7 @@ void main() {
       ],
     );
 
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
     await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
 
@@ -150,7 +144,7 @@ void main() {
       items: [testPlace(1, latitude: 24.71, longitude: 46.70)],
     );
 
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
 
     expect(find.textContaining('1.1 km away'), findsOneWidget);
     expect(
@@ -162,7 +156,7 @@ void main() {
   testWidgets('without a permitted location there are no distances', (
     tester,
   ) async {
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
 
     expect(find.textContaining(' away'), findsNothing);
     expect(
@@ -175,7 +169,7 @@ void main() {
     fixture.geocoder.address =
         'King Fahd Road, Al Olaya, Riyadh, Riyadh Province, Saudi Arabia';
 
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
 
     expect(find.text('Al Olaya · this view'), findsOneWidget);
   });
@@ -183,7 +177,7 @@ void main() {
   testWidgets('the area bar says This area when the geocoder fails', (
     tester,
   ) async {
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
 
     expect(fixture.geocoder.calls, 1);
     expect(find.text('This area · this view'), findsOneWidget);
@@ -210,7 +204,7 @@ void main() {
 
   testWidgets('moving the map offers Search this area, which adds one '
       'history entry that Back undoes', (tester) async {
-    final router = await _pump(tester, fixture, _riyadhLink);
+    final router = await pumpDiscover(tester, fixture, _riyadhLink);
     final map = tester.widget<DiscoveryMap>(find.byType(DiscoveryMap));
 
     // The camera fitted to the committed area has not moved.
@@ -266,7 +260,7 @@ void main() {
         gemMaximumReviewsExclusive: 800,
       ),
     );
-    final router = await _pump(tester, fixture, _riyadhLink);
+    final router = await pumpDiscover(tester, fixture, _riyadhLink);
 
     await tester.tap(find.byKey(const ValueKey('discovery-sort')));
     await tester.pumpAndSettle();
@@ -291,7 +285,11 @@ void main() {
         request.query.minimumRating == null
         ? testBrowsePage()
         : testBrowsePage(items: [], total: 0, eligible: 50);
-    final router = await _pump(tester, fixture, '$_riyadhLink&rating=4.5');
+    final router = await pumpDiscover(
+      tester,
+      fixture,
+      '$_riyadhLink&rating=4.5',
+    );
 
     expect(
       find.text('No places in this view match your filters.'),
@@ -313,7 +311,7 @@ void main() {
     fixture.repository.onBrowse = (_) async =>
         testBrowsePage(items: [], total: 0, eligible: 0);
 
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
 
     expect(find.text('No places in view'), findsOneWidget);
     expect(find.text('We haven’t explored this area yet.'), findsOneWidget);
@@ -327,7 +325,7 @@ void main() {
       if (failing) throw TimeoutException('slow');
       return testBrowsePage();
     };
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
 
     expect(
       find.text('Couldn’t load places. Check your connection and try again.'),
@@ -342,7 +340,11 @@ void main() {
 
   testWidgets('an area outside the Gulf is explained without asking the '
       'server', (tester) async {
-    await _pump(tester, fixture, '/discover?v=1&bbox=51.4,-0.2,51.6,0.1');
+    await pumpDiscover(
+      tester,
+      fixture,
+      '/discover?v=1&bbox=51.4,-0.2,51.6,0.1',
+    );
 
     expect(
       find.text(
@@ -361,7 +363,7 @@ void main() {
         ? testBrowsePage(total: 4, nextCursor: 'after-3')
         : testBrowsePage(total: 4, items: [testPlace(4)]);
 
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
     await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
 
@@ -381,7 +383,7 @@ void main() {
       return testBrowsePage(nextCursor: 'after-3');
     };
 
-    await _pump(tester, fixture, _riyadhLink);
+    await pumpDiscover(tester, fixture, _riyadhLink);
 
     expect(
       find.text('Results changed, so the list started over.'),
@@ -415,7 +417,7 @@ void main() {
       ],
     );
 
-    await _pump(
+    await pumpDiscover(
       tester,
       fixture,
       '$_riyadhLink&sort=hidden_gems&rating=4',
@@ -449,57 +451,3 @@ DiscoveryViewport _committedViewport(GoRouter router) =>
     DiscoveryViewport.tryParse(
       router.routeInformationProvider.value.uri.queryParameters['bbox']!,
     )!;
-
-class _Fixture {
-  final bootstrap = FakeBootstrap();
-  final links = MemoryPendingDiscoveryLinkStore();
-  final repository = FakeDiscoveryRepository();
-  final areas = MemoryDiscoveryAreaStore();
-  final location = FakeLocationWarmup();
-  final geocoder = FakeLocationRepository();
-}
-
-Future<GoRouter> _pump(
-  WidgetTester tester,
-  _Fixture fixture,
-  String location, {
-  Locale locale = const Locale('en'),
-  double textScale = 1,
-  Size size = const Size(390, 844),
-}) async {
-  tester.view.physicalSize = size * 3;
-  tester.view.devicePixelRatio = 3;
-  addTearDown(tester.view.reset);
-  final router = createAppRouter(initialLocation: location);
-  addTearDown(router.dispose);
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        clientProvider.overrideWithValue(DiscoveryClient(fixture.bootstrap)),
-        pendingDiscoveryLinkStoreProvider.overrideWithValue(fixture.links),
-        discoveryRepositoryProvider.overrideWithValue(fixture.repository),
-        discoveryAreaStoreProvider.overrideWithValue(fixture.areas),
-        locationWarmupProvider.overrideWithValue(fixture.location),
-        locationRepositoryProvider.overrideWithValue(fixture.geocoder),
-      ],
-      child: MaterialApp.router(
-        routerConfig: router,
-        locale: locale,
-        theme: HayerTheme.light(),
-        localizationsDelegates: hayerLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(textScale)),
-          child: M3ETheme(
-            data: M3EThemeData.fromMaterial(Theme.of(context)),
-            child: child!,
-          ),
-        ),
-      ),
-    ),
-  );
-  await tester.pumpAndSettle();
-  return router;
-}

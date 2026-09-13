@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 import '../../core/providers.dart';
+import '../../domain/discovery_url_query.dart';
 import 'discovery_config_controller.dart';
 import 'discovery_search.dart';
 
@@ -174,9 +177,16 @@ final class DiscoveryResults {
 /// an earlier search can never replace a newer one. Further pages reuse the
 /// generation's server context and cursor, skip places already shown, and
 /// start again from the top when the server says the query changed.
-class DiscoveryResultsController extends Notifier<DiscoveryResults> {
+///
+/// A search for places open now is checked again at each minute boundary and
+/// whenever the app returns to the foreground, since the server answers it
+/// for one evaluation instant. The pages start over only if the places that
+/// match changed.
+class DiscoveryResultsController extends Notifier<DiscoveryResults>
+    with WidgetsBindingObserver {
   int _generation = 0;
   DiscoverySearch? _requested;
+  Timer? _openNowCheck;
 
   /// Restarts since a later page last loaded. More than one in a row means
   /// the server keeps rejecting the fresh cursor, so the list stops reloading
@@ -185,6 +195,11 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults> {
 
   @override
   DiscoveryResults build() {
+    final binding = WidgetsBinding.instance..addObserver(this);
+    ref.onDispose(() {
+      binding.removeObserver(this);
+      _openNowCheck?.cancel();
+    });
     // A new scoring policy or category tree reorders or regroups results, so
     // the old pages no longer describe the search.
     ref.listen(discoveryConfigProvider, (previous, next) {
@@ -306,21 +321,7 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults> {
     try {
       final page = await _browse(search, includeMap: true);
       if (!_isCurrent(generation)) return;
-      final shown = <int>{};
-      state = DiscoveryResults(
-        search: search,
-        items: [
-          for (final item in page.items)
-            if (shown.add(item.catalogId)) item,
-        ],
-        total: page.total,
-        context: page.context,
-        fetchedAt: page.fetchedAt,
-        nextCursor: page.nextCursor,
-        map: page.map,
-        coverage: page.coverage,
-        restarts: state.restarts + (restarted ? 1 : 0),
-      );
+      _showFirstPage(search, page, restarted: restarted);
     } catch (error) {
       if (!_isCurrent(generation)) return;
       final failure = DiscoveryError.from(error);
@@ -329,6 +330,98 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults> {
         unawaited(ref.read(discoveryConfigProvider.notifier).refresh());
       }
       state = state._copyWith(loading: null, error: failure);
+    }
+  }
+
+  void _showFirstPage(
+    DiscoverySearch search,
+    DiscoverBrowsePage page, {
+    bool restarted = false,
+  }) {
+    final shown = <int>{};
+    state = DiscoveryResults(
+      search: search,
+      items: [
+        for (final item in page.items)
+          if (shown.add(item.catalogId)) item,
+      ],
+      total: page.total,
+      context: page.context,
+      fetchedAt: page.fetchedAt,
+      nextCursor: page.nextCursor,
+      map: page.map,
+      coverage: page.coverage,
+      restarts: state.restarts + (restarted ? 1 : 0),
+    );
+    _scheduleOpenNowCheck(search);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        unawaited(_checkOpenNow());
+      case AppLifecycleState.hidden ||
+          AppLifecycleState.paused ||
+          AppLifecycleState.detached:
+        _openNowCheck?.cancel();
+      case AppLifecycleState.inactive:
+        break;
+    }
+  }
+
+  static bool _asksOpenNow(DiscoverySearch search) =>
+      search.query.hoursWindows.contains(DiscoveryHoursWindow.openNow);
+
+  void _scheduleOpenNowCheck(DiscoverySearch search) {
+    _openNowCheck?.cancel();
+    if (!_asksOpenNow(search)) return;
+    final now = ref.read(discoveryClockProvider)();
+    final intoMinute = Duration(
+      seconds: now.second,
+      milliseconds: now.millisecond,
+      microseconds: now.microsecond,
+    );
+    _openNowCheck = Timer(
+      const Duration(minutes: 1) - intoMinute,
+      () => unawaited(_checkOpenNow()),
+    );
+  }
+
+  /// Asks again for the first page of a shown open-now search, and starts
+  /// the pages over only when the matching places changed.
+  Future<void> _checkOpenNow() async {
+    _openNowCheck?.cancel();
+    final search = state.search;
+    if (search == null ||
+        search != _requested ||
+        state.loading != null ||
+        !_asksOpenNow(search)) {
+      return;
+    }
+    final generation = _generation;
+    try {
+      final page = await _browse(search, includeMap: true);
+      if (!_isCurrent(generation)) return;
+      final unchanged =
+          page.total == state.total &&
+          listEquals(
+            [for (final item in page.items) item.catalogId],
+            [
+              for (final item in state.items.take(page.items.length))
+                item.catalogId,
+            ],
+          );
+      if (unchanged) {
+        _scheduleOpenNowCheck(search);
+        return;
+      }
+      _generation++;
+      _restartsInARow = 0;
+      _showFirstPage(search, page);
+    } catch (_) {
+      // A failed check changes nothing on screen; the next one may succeed.
+      if (_isCurrent(generation)) _scheduleOpenNowCheck(search);
     }
   }
 
