@@ -12,11 +12,16 @@ class SavePlaceButton extends ConsumerWidget {
     required this.place,
     this.iconOnly = false,
     this.onDark = false,
+    this.prominent = false,
   });
 
   final PlaceSnapshot place;
   final bool iconOnly;
   final bool onDark;
+
+  /// Whether saving is one of the surface's main actions, drawn as a filled
+  /// button.
+  final bool prominent;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,6 +75,18 @@ class SavePlaceButton extends ConsumerWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : icon,
+      );
+    }
+    if (prominent) {
+      return FilledButton.tonalIcon(
+        onPressed: saving ? null : toggle,
+        icon: saving
+            ? const SizedBox.square(
+                dimension: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : icon,
+        label: Text(tooltip),
       );
     }
     return TextButton.icon(

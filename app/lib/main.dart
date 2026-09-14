@@ -14,6 +14,7 @@ import 'data/authentication.dart';
 import 'data/resilient_auth_storage.dart';
 import 'data/session_repository.dart';
 import 'core/widgets/friendly_error_view.dart';
+import 'features/discover/discovery_config_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,6 +65,11 @@ Future<Widget> _initialize() async {
             appBuild: build,
             platform: _analyticsPlatform,
           ),
+        ),
+        placeDetailsAvailableProvider.overrideWith(
+          (ref) =>
+              ref.watch(discoveryConfigProvider).config?.detailsAvailable ??
+              false,
         ),
       ],
       child: HayerApp(updateRequired: updateRequired),

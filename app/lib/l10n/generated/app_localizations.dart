@@ -2429,7 +2429,7 @@ abstract class AppLocalizations {
   /// No description provided for @discoveryPreviewFailed.
   ///
   /// In en, this message translates to:
-  /// **'Couldn’t load this place.'**
+  /// **'Couldn’t count the places that match.'**
   String get discoveryPreviewFailed;
 
   /// No description provided for @discoveryCategories.
@@ -2521,6 +2521,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected on the map'**
   String get discoveryPreviewTitle;
+
+  /// No description provided for @discoveryPlaceLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load this place.'**
+  String get discoveryPlaceLoadFailed;
 
   /// No description provided for @discoveryLoadingPlace.
   ///
@@ -2635,6 +2641,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Results updated with newly explored places.'**
   String get discoveryExplorationUpdated;
+
+  /// No description provided for @discoveryShareSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this search'**
+  String get discoveryShareSearch;
+
+  /// No description provided for @discoveryShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Places on Hayer: {link}'**
+  String discoveryShareMessage(String link);
+
+  /// No description provided for @discoveryStandingLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparing this place with the others…'**
+  String get discoveryStandingLoading;
+
+  /// No description provided for @discoveryStandingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t compare this place with the others.'**
+  String get discoveryStandingFailed;
+
+  /// No description provided for @discoveryStandingChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'These results changed after they loaded. Close this to see the new ones.'**
+  String get discoveryStandingChanged;
+
+  /// No description provided for @discoveryStandingIneligible.
+  ///
+  /// In en, this message translates to:
+  /// **'This place no longer matches this search.'**
+  String get discoveryStandingIneligible;
+
+  /// No description provided for @discoveryStandingRank.
+  ///
+  /// In en, this message translates to:
+  /// **'#{ordinal}'**
+  String discoveryStandingRank(String ordinal);
+
+  /// No description provided for @discoveryStandingOfPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'{total, plural, =1{of 1 place} other{of {total} places}}'**
+  String discoveryStandingOfPlaces(int total);
+
+  /// No description provided for @discoveryStandingOfCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'{total, plural, =1{of 1 in {category}} other{of {total} in {category}}}'**
+  String discoveryStandingOfCategory(int total, String category);
+
+  /// No description provided for @discoveryStandingSortedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorted by {sort}'**
+  String discoveryStandingSortedBy(String sort);
+
+  /// No description provided for @discoveryStandingHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Where it sits in this view'**
+  String get discoveryStandingHeading;
+
+  /// No description provided for @discoveryPercentilePlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Rated higher than {percent} of the other places in view'**
+  String discoveryPercentilePlaces(String percent);
+
+  /// No description provided for @discoveryPercentileCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Rated higher than {percent} of {category} in view'**
+  String discoveryPercentileCategory(String percent, String category);
+
+  /// No description provided for @discoveryPercentileNonePlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'No other place in view is rated lower'**
+  String get discoveryPercentileNonePlaces;
+
+  /// No description provided for @discoveryPercentileNoneCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing else in {category} in view is rated lower'**
+  String discoveryPercentileNoneCategory(String category);
+
+  /// No description provided for @discoveryStraightLineDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} away in a straight line'**
+  String discoveryStraightLineDistance(String distance);
+
+  /// No description provided for @discoveryPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo} other{{count} photos}}'**
+  String discoveryPhotoCount(int count);
+
+  /// No description provided for @discoveryAddedToHayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to Hayer in {month}'**
+  String discoveryAddedToHayer(String month);
+
+  /// No description provided for @reportUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporting isn’t available right now. Please try again later.'**
+  String get reportUnavailable;
+
+  /// No description provided for @reportPlaceGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This place is no longer listed, so it can’t be reported.'**
+  String get reportPlaceGone;
 }
 
 class _AppLocalizationsDelegate

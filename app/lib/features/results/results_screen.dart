@@ -719,6 +719,7 @@ class _ResultCard extends StatelessWidget {
               sessionId: sessionId,
               place: place,
             ),
+            saveButton: (place) => SavePlaceButton(place: place),
           );
         },
         child: Padding(

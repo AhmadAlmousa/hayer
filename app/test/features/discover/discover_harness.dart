@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_app/app/router.dart';
@@ -30,6 +31,7 @@ Future<GoRouter> pumpDiscover(
   Locale locale = const Locale('en'),
   double textScale = 1,
   Size size = const Size(390, 844),
+  List<Override> overrides = const [],
 }) async {
   tester.view.physicalSize = size * 3;
   tester.view.devicePixelRatio = 3;
@@ -45,6 +47,7 @@ Future<GoRouter> pumpDiscover(
         discoveryAreaStoreProvider.overrideWithValue(fixture.areas),
         locationWarmupProvider.overrideWithValue(fixture.location),
         locationRepositoryProvider.overrideWithValue(fixture.geocoder),
+        ...overrides,
       ],
       child: MaterialApp.router(
         routerConfig: router,

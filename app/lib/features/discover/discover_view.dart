@@ -6,8 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart'
     show DiscoveryHarvestState, DiscoveryMapMode;
 import 'package:material_ui/material_ui.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/providers.dart';
+import '../../core/public_links.dart';
 import '../../domain/discovery_area.dart';
 import '../../domain/discovery_category_tree.dart';
 import '../../domain/discovery_coverage.dart';
@@ -362,6 +364,22 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
         actual.keys.every((key) => listEquals(actual[key], expected[key]));
   }
 
+  /// Shares the committed search as a public link. The link holds the area,
+  /// sort and filters, and nothing about where this device is.
+  Future<void> _share() async {
+    final strings = AppLocalizations.of(context)!;
+    final link = hayerPublicUri(_query.location);
+    final box = context.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: strings.discoveryShareMessage(link.toString()),
+        sharePositionOrigin: box == null
+            ? null
+            : box.localToGlobal(Offset.zero) & box.size,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
@@ -445,6 +463,7 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                               : strings.discoveryAreaThisView(area),
                           locating: _locating,
                           onLocate: _locate,
+                          onShare: viewport == null ? null : _share,
                         ),
                         const SizedBox(height: 4),
                         DiscoveryFilterBar(
@@ -543,11 +562,15 @@ class _AreaBar extends StatelessWidget {
     required this.title,
     required this.locating,
     required this.onLocate,
+    required this.onShare,
   });
 
   final String title;
   final bool locating;
   final VoidCallback onLocate;
+
+  /// Shares the committed search, while there is one.
+  final VoidCallback? onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -572,6 +595,12 @@ class _AreaBar extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+            ),
+            IconButton(
+              key: const ValueKey('discovery-share'),
+              tooltip: strings.discoveryShareSearch,
+              onPressed: onShare,
+              icon: const Icon(Icons.share_rounded),
             ),
             IconButton.filledTonal(
               tooltip: strings.discoveryShowMyLocation,

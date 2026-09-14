@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hayer_client/hayer_client.dart' show DiscoverPlace;
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -9,10 +10,12 @@ import '../../domain/discovery_category_tree.dart';
 import '../../domain/discovery_coverage.dart';
 import '../../domain/discovery_url_query.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../report/report_place_issue_sheet.dart';
 import 'discovery_config_controller.dart';
 import 'discovery_coverage_controller.dart';
 import 'discovery_coverage_strip.dart';
 import 'discovery_filter_text.dart';
+import 'discovery_place_details.dart';
 import 'discovery_place_preview.dart';
 import 'discovery_place_row.dart';
 import 'discovery_results_controller.dart';
@@ -102,6 +105,24 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
       alignment: 0.1,
       duration: _revealDuration,
       curve: Curves.easeOutCubic,
+    );
+  }
+
+  /// Opens a loaded row's details, in the search and context it was loaded
+  /// in.
+  void _openDetails(DiscoverPlace item) {
+    final results = ref.read(discoveryResultsProvider);
+    final search = results.search;
+    final queryContext = results.context;
+    if (search == null || queryContext == null) return;
+    unawaited(
+      showDiscoveryPlaceDetails(
+        context,
+        item: item,
+        search: search,
+        queryContext: queryContext,
+        origin: widget.origin,
+      ),
     );
   }
 
@@ -224,6 +245,19 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
                     origin: widget.origin,
                     selected: selected,
                     onTap: () => selector.selectRow(item),
+                    onDetails: selected ? () => _openDetails(item) : null,
+                    // Worst rated is where a wrong rating or a closed place
+                    // is most likely to be noticed, so reporting is direct.
+                    onReport:
+                        results.search?.query.sort == DiscoverySort.worstRated
+                        ? () => showCatalogPlaceIssue(
+                            // The screen's context, which outlives a row
+                            // rebuilt while the report is open.
+                            this.context,
+                            catalogId: item.catalogId,
+                            place: item.place,
+                          )
+                        : null,
                   ),
                 );
               },

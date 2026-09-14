@@ -69,6 +69,8 @@ class DiscoveryPlaceRow extends StatelessWidget {
     this.origin,
     this.selected = false,
     this.onTap,
+    this.onDetails,
+    this.onReport,
   });
 
   final DiscoverPlace item;
@@ -87,6 +89,13 @@ class DiscoveryPlaceRow extends StatelessWidget {
   final bool selected;
   final VoidCallback? onTap;
 
+  /// Opens the place's details, from a button under the row when set.
+  final VoidCallback? onDetails;
+
+  /// Reports a problem with the place's data, from a button beside it when
+  /// set.
+  final VoidCallback? onReport;
+
   @override
   Widget build(BuildContext context) => Semantics(
     selected: selected,
@@ -96,7 +105,28 @@ class DiscoveryPlaceRow extends StatelessWidget {
           : Colors.transparent,
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(onTap: onTap, child: _content(context)),
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _content(context),
+            if (onDetails case final onDetails?)
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(76, 0, 8, 10),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FilledButton.tonalIcon(
+                    key: ValueKey('discovery-details-${item.catalogId}'),
+                    onPressed: onDetails,
+                    icon: const Icon(Icons.info_outline_rounded),
+                    label: Text(AppLocalizations.of(context)!.placeDetails),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     ),
   );
 
@@ -164,6 +194,15 @@ class DiscoveryPlaceRow extends StatelessWidget {
       ),
       null => null,
     };
+    final report = switch (onReport) {
+      final onReport? => IconButton(
+        key: ValueKey('discovery-report-${item.catalogId}'),
+        tooltip: strings.reportDataIssue,
+        onPressed: onReport,
+        icon: const Icon(Icons.outlined_flag_rounded),
+      ),
+      null => null,
+    };
     if (MediaQuery.textScalerOf(context).scale(14) > 20) {
       // At large text sizes everything stacks beside the thumbnail and wraps,
       // so nothing is pushed off a narrow screen.
@@ -201,6 +240,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
                 ],
               ),
             ),
+            ?report,
           ],
         ),
       );
@@ -257,6 +297,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
                 Text(reviews, style: muted.copyWith(fontSize: 11)),
             ],
           ),
+          ?report,
         ],
       ),
     );

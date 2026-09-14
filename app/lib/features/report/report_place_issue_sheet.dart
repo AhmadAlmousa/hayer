@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
 
@@ -9,16 +9,29 @@ Future<void> showReportPlaceIssue(
   BuildContext context, {
   required String sessionId,
   required PlaceSnapshot place,
-}) async {
+}) => _showReport(
+  context,
+  ReportPlaceIssueSheet(sessionId: sessionId, place: place),
+);
+
+/// Reports a place found outside any session, such as in Discover, by its
+/// catalog id.
+Future<void> showCatalogPlaceIssue(
+  BuildContext context, {
+  required int catalogId,
+  required PlaceSnapshot place,
+}) => _showReport(
+  context,
+  ReportPlaceIssueSheet.catalog(catalogId: catalogId, place: place),
+);
+
+Future<void> _showReport(BuildContext context, Widget sheet) async {
   FocusManager.instance.primaryFocus?.unfocus();
   final sent = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => ReportPlaceIssueSheet(
-      sessionId: sessionId,
-      place: place,
-    ),
+    builder: (_) => sheet,
   );
   if (sent == true && context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -30,11 +43,21 @@ Future<void> showReportPlaceIssue(
 class ReportPlaceIssueSheet extends ConsumerStatefulWidget {
   const ReportPlaceIssueSheet({
     super.key,
-    required this.sessionId,
+    required String this.sessionId,
     required this.place,
-  });
+  }) : catalogId = null;
 
-  final String sessionId;
+  const ReportPlaceIssueSheet.catalog({
+    super.key,
+    required int this.catalogId,
+    required this.place,
+  }) : sessionId = null;
+
+  /// The swipe session the place is reported from, when it is from one.
+  final String? sessionId;
+
+  /// The reported place's catalog id, when it is reported outside a session.
+  final int? catalogId;
   final PlaceSnapshot place;
 
   @override
@@ -43,11 +66,19 @@ class ReportPlaceIssueSheet extends ConsumerStatefulWidget {
 }
 
 class _ReportPlaceIssueSheetState extends ConsumerState<ReportPlaceIssueSheet> {
+  static const _uuid = Uuid();
+
   final _formKey = GlobalKey<FormState>();
   final _details = TextEditingController();
   PoiIssueType? _type;
   bool _submitting = false;
   String? _error;
+
+  /// The catalog report last sent and the key it was sent with. Sending the
+  /// same report again reuses the key, so a report whose answer was lost is
+  /// filed once; a changed report is a new one.
+  (PoiIssueType, String?)? _catalogReport;
+  String? _catalogKey;
 
   @override
   void dispose() {
@@ -166,7 +197,8 @@ class _ReportPlaceIssueSheetState extends ConsumerState<ReportPlaceIssueSheet> {
 
   Future<void> _submit() async {
     final strings = AppLocalizations.of(context)!;
-    if (_type == null) {
+    final type = _type;
+    if (type == null) {
       setState(() => _error = strings.reportReasonRequired);
       return;
     }
@@ -175,22 +207,40 @@ class _ReportPlaceIssueSheetState extends ConsumerState<ReportPlaceIssueSheet> {
       _submitting = true;
       _error = null;
     });
+    final details = _details.text.trim().isEmpty ? null : _details.text.trim();
+    final repository = ref.read(poiIssueRepositoryProvider);
     try {
-      await ref
-          .read(poiIssueRepositoryProvider)
-          .submit(
-            sessionId: widget.sessionId,
-            placeId: widget.place.placeId,
-            issueType: _type!,
-            details: _details.text.trim().isEmpty ? null : _details.text.trim(),
-          );
+      if (widget.catalogId case final catalogId?) {
+        final report = (type, details);
+        if (report != _catalogReport) {
+          _catalogReport = report;
+          _catalogKey = _uuid.v7();
+        }
+        await repository.submitCatalog(
+          catalogId: catalogId,
+          issueType: type,
+          details: details,
+          idempotencyKey: _catalogKey!,
+        );
+      } else {
+        await repository.submit(
+          sessionId: widget.sessionId!,
+          placeId: widget.place.placeId,
+          issueType: type,
+          details: details,
+        );
+      }
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (error) {
       if (!mounted) return;
+      final catalog = widget.catalogId != null;
       setState(() {
-        _error = error.code == 'rate_limited'
-            ? strings.reportRateLimited
-            : strings.reportFailed;
+        _error = switch (error.code) {
+          'rate_limited' => strings.reportRateLimited,
+          'feature_disabled' when catalog => strings.reportUnavailable,
+          'not_found' when catalog => strings.reportPlaceGone,
+          _ => strings.reportFailed,
+        };
         _submitting = false;
       });
     } catch (_) {

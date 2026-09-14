@@ -31,4 +31,35 @@ void main() {
     expect(calls.first.key, calls.last.key);
     expect(Uuid.isValidUUID(fromString: calls.first.key), isTrue);
   });
+
+  test(
+    'reports a catalog place with the key it is given, across a retry',
+    () async {
+      final client = Client('http://localhost:8080/');
+      addTearDown(client.close);
+      final calls = <(int, PoiIssueType, String?, String)>[];
+      final repository = PoiIssueRepository(
+        client: client,
+        catalogTransport: (catalogId, type, details, key) async {
+          calls.add((catalogId, type, details, key));
+          if (calls.length == 1) {
+            throw ServerpodClientException('offline', -1);
+          }
+          return 'report-id';
+        },
+      );
+
+      final reportId = await repository.submitCatalog(
+        catalogId: 7,
+        issueType: PoiIssueType.closed,
+        idempotencyKey: 'report-key',
+      );
+
+      expect(reportId, 'report-id');
+      expect(calls, [
+        (7, PoiIssueType.closed, null, 'report-key'),
+        (7, PoiIssueType.closed, null, 'report-key'),
+      ]);
+    },
+  );
 }

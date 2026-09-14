@@ -911,7 +911,11 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   area country and structured area label; G4, pins, selection and coverage,
   also on 2026-09-14 against generated contracts and mocks. Acceptance waits
   on the M9-C and M9-E implementations; device checks belong to M9-K.
-- [ ] M9-H — Place detail, save, share and report (front end).
+- [~] M9-H — Place detail, save, share and report (front end). The shared
+  sheet's Discover mode with standing and catalog age, Save, sessionless
+  reports from the sheet and Worst rated rows, and Share landed on 2026-09-14
+  against generated contracts and mocks. Acceptance waits on the M9-C and
+  M9-D implementations; device link checks belong to M9-K.
 - [~] M9-J — Admin (front end). Policy knobs, Discover tree editor, unmapped
   types, harvest manifest, harvest jobs, growth metrics and report sources
   landed on 2026-09-14 against generated contracts and mocks. Requirement 16's
@@ -1075,6 +1079,21 @@ next backend implementation slice after this owner-requested contract delivery.
   its exploration and offers Deepen. Pinned full preflight passed 159 server,
   329 app and 72 admin tests with clean analyses. Signed `0.2.1+7` built at
   SHA-256 `f2dfde148db26cd3f02bff462edb1561ab7c588eae9839996964c69ff0fee44d`
+  and verifies under APK Signature Scheme v2 with the existing signer.
+  Discovery stays disabled. Details are in `lane-frontend.md`.
+- 2026-09-14: landed M9-H in the front-end lane on the generated place-detail,
+  place-context and catalog-report contracts, without merging `main` while
+  Codex is paused. The shared details sheet has an explicit Discover mode
+  beside the swipe session. Both modes read `place.details` over the
+  snapshot. Discover's sheet shows where a place stands in the whole search,
+  says only when Hayer added a place, saves through the unchanged saved-places
+  controller, and reports catalog places without a session, as Worst rated
+  rows now also do. Share sends the committed search as a public link. The
+  report sheet's thanks, which never showed because the sheet used
+  `flutter/material`'s messenger in a `material_ui` app, now shows. Pinned
+  full preflight passed 159 server, 351 app and 72 admin
+  tests with clean analyses. Signed `0.2.1+7` built at SHA-256
+  `7a4bfa45ba154620f3187bccab7ac881a2455634a7ea8d2e6f28e2d88d0c4be8`
   and verifies under APK Signature Scheme v2 with the existing signer.
   Discovery stays disabled. Details are in `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved

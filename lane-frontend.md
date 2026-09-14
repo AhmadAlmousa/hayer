@@ -26,9 +26,10 @@ Last updated: 2026-09-14
   follow-up on the back-end lane's `eda8827` contract. M9-J's admin surfaces
   landed the same day on the back-end lane's `ebbdf5f` admin contracts, and
   G4, pins, selection and coverage, later that day on the same generated
-  types, without merging `main` while Codex is paused. H builds on the same
-  generated types and fakes (`backend/discovery-contracts.md`). Every discovery data and admin RPC
-  still answers `feature_disabled`. See the checkpoints below and
+  types, without merging `main` while Codex is paused. H, place detail, save,
+  share and report, followed on the same generated types and fakes
+  (`backend/discovery-contracts.md`). Every discovery data, detail, report
+  and admin RPC still answers `feature_disabled`. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
@@ -55,6 +56,148 @@ Last updated: 2026-09-14
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-H place detail, save, share and report — built against contracts (2026-09-14)
+
+The client half of requirement 10 and the sharing half of requirement 11. It
+is built on the generated M9-C `placeContext` and M9-D `place.details` and
+`place.reportCatalogIssue` contracts, all on this branch since `ebbdf5f`.
+Every one still answers `feature_disabled`, so nothing here has met a real
+server, and Discovery stays dark. `main` was not merged in while Codex is
+paused.
+
+**One sheet, two modes.** `PlaceDetailsSheet`
+(`app/lib/core/widgets/place_details_sheet.dart`) now takes a
+`PlaceDetailsMode`:
+
+- `SessionPlaceDetails` is Swipe as it was. The existing constructor and
+  `showPlaceDetails` build it, so both swipe call sites and the
+  photo-decoding test compile unchanged, and route estimates stay
+  session-only.
+- `DiscoveryPlaceDetails` has no session. Its distance is a straight line
+  from the permitted location and it never asks for a route estimate. It
+  shows the hidden-gem and open-now badges over the photos, or as chips when
+  there are none, a photo count, and the place's standing.
+
+Both modes read `place.details` when the sheet opens. The snapshot shows
+first and the answer replaces it; a failure or an unavailable read keeps the
+snapshot. The read is made only while `placeDetailsAvailableProvider` is
+true, which the app root answers from the discovery configuration's
+`detailsAvailable`. That flag is independent of `enabled`, so Swipe keeps the
+read with Discover off, and no sheet asks a server that has no such read.
+Swipe identities use the provider `google-web`, as the contract names it;
+Discover rows carry their own.
+
+Save is handed to the sheet as a builder, because saving lives in
+`features/saved` and `core` imports no feature. Both modes pass
+`SavePlaceButton`, which gained a prominent style, over the unmodified
+`SavedPlacesController`, and it saves the details last read. Directions now
+comes first, then Save, then call and website. Save's snack bar appears once
+the sheet closes, because a scaffold holds snack bars while another route
+covers it; the button's label changes at once.
+
+**Standing.** `DiscoveryPlaceStanding`
+(`app/lib/features/discover/discovery_place_details.dart`) says where the
+place stands in the whole filtered search, not in the loaded rows:
+
+- the rank and total, "#2 of 31 places", naming a category only when the
+  server gives `populationCategoryId`, and the sort the rank is under;
+- "Where it sits in this view": the rating distribution as a strip with the
+  place's own bucket highlighted, and the percentile sentence. Percentiles
+  round down, to tenths below one percent. Zero reads as nothing rated lower,
+  and no percentile means no sentence.
+
+A selected row's Details asks `placeContext` in the query generation and
+context the row was loaded in. A map preview already holds the answer, so its
+Details asks nothing more. An ineligible answer says the place no longer
+matches. `query_changed` says the results changed, with no retry, since the
+results behind the sheet are already starting over. Any other failure offers
+Try again.
+
+**Catalog age, not venue age.** The sheet says "Added to Hayer in March 2025"
+from `firstSeenAt`, in small type under the attribution. Nothing states or
+implies when a place opened, and a test searches the whole screen for opening
+words in both languages.
+
+**Details from the list and the map.** A selected row shows a Details button
+beneath it, and the map preview shows one under its row.
+
+**Reporting.** `ReportPlaceIssueSheet.catalog` reports by catalog id through
+`PoiIssueRepository.submitCatalog`, with no session and no snapshot. Sending
+the same report again reuses its idempotency key, so a report whose answer
+was lost is filed once; a changed reason or explanation takes a new key.
+`feature_disabled` and `not_found` get their own messages. Discover's sheet
+reports through it, and Worst rated rows carry a report button beside the
+rating. The sheet closes itself with its own context, and Discover opens it
+from the navigator's, so Report still works after the row or preview that
+opened the details has gone, as it can when results refresh.
+
+**Sharing.** The area bar's Share sends the committed search as
+`https://hayer.almou.sa/discover?…` through SharePlus. The host now lives in
+`app/lib/core/public_links.dart`, shared with join links. The link holds the
+area, sort and filters and nothing about the device's location. After the
+camera moves without Search this area, Share still sends the committed
+search, whose results are the ones showing.
+
+**Fixed on the way.**
+
+- The report sheet imported `package:flutter/material.dart`. Its
+  `ScaffoldMessenger` and `Theme` are different classes from `material_ui`'s,
+  which the app runs on. After a report was sent, `ScaffoldMessenger.of` found
+  no messenger, so the thanks never showed (an assertion in debug, a null
+  check in release), and the sheet drew with the default theme instead of
+  Hayer's. It now imports `material_ui`, and so does its test, whose app
+  was a `flutter/material` one and hid the fault. This affected Swipe's
+  reports too.
+- G3 and G4 both defined `discoveryPreviewFailed`. The later definition won,
+  so the filter sheet's failed count read "Couldn’t load this place." G4's
+  string is now `discoveryPlaceLoadFailed`.
+
+Not fixed here: `data_and_privacy_screen.dart` and
+`route_origin_choice_sheet.dart` also import `flutter/material.dart`. The
+first calls its `ScaffoldMessenger.of` and `showDialog`; both, and
+`weekly_hours_calendar.dart`, read its `Theme.of`, which falls back to the
+default theme in the app.
+
+**Strings.** Everything new is in English and Arabic.
+
+Tests:
+
+- `place_details_sheet_test.dart`: the snapshot first and the details after;
+  no read while unavailable; a failed read keeping the snapshot; a Discover
+  sheet reading without a session, with badges, photo count and straight-line
+  distance, no route estimate, and Save acting on the details last read.
+- `discover_place_details_test.dart` drives the screen through the real
+  router:
+  - a selected row's standing and the request behind it; a category
+    population under Worst rated with the lowest percentile; a rank without
+    percentile or distribution; a preview's Details asking nothing more;
+  - ineligible, changed and retried standings;
+  - catalog age, and no venue-age wording, in English and Arabic;
+  - Save through the controller into the store;
+  - a report from the sheet with no session, retried under one key; a
+    report opening after the preview that opened the details has gone; Worst
+    rated rows reporting directly, and the unavailable message;
+  - Share's public link;
+  - Arabic at 200% on 320×640;
+  - percentile rounding and bucket placement.
+- `poi_issue_repository_test.dart`: a catalog report keeps the key it is
+  given across the transient retry.
+- The report-sheet tests pass with only their import changed. The swipe,
+  results, photo-decoding and earlier Discover tests pass unmodified.
+
+Verification: pinned full preflight passed generation, formatting, fatal-info
+analyses, 159 server, 351 app (up from 329) and 72 admin
+tests, shell checks, and diff checks. `scripts/build-release-apk.sh` produced
+signed `0.2.1+7` at 106,926,159 bytes with SHA-256
+`7a4bfa45ba154620f3187bccab7ac881a2455634a7ea8d2e6f28e2d88d0c4be8`. It
+declares `sa.almou.hayer` versionCode 7 / versionName 0.2.1 with target SDK
+36 and verifies under APK Signature Scheme v2 with the same signing
+certificate (`426f3bf4…77a6`) as previous releases.
+
+Not verified here: real detail refreshes, rank and percentile against
+PostGIS, sessionless report storage, and the Android share sheet and shared
+links opened cold and warm on a device (M9-K).
 
 ### M9-G4 map pins, selection and coverage — landed (2026-09-14)
 
@@ -1150,6 +1293,27 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ## Open handoffs to the back-end lane
 
+### Discover details, standing and catalog reports — noted 2026-09-14 (M9-H)
+
+H reads `place.details`, `placeContext` and `place.reportCatalogIssue` in
+ways the M9-C and M9-D implementations need to allow.
+
+- **Swipe identity.** A swipe sheet sends `PoiIdentity(provider:
+  'google-web', placeId:)` with its session id, because `PlaceSnapshot`
+  carries no provider. A second provider reaching sessions would need one on
+  the snapshot.
+- **Refreshes in progress.** `PlaceDetailResult.refreshState` can be
+  `refreshing`, but only another read says when a refresh ends. The sheet
+  reads once per opening. Asked: finish within the read's deadline where
+  possible, or set `retryAfter` when a second read is worth making.
+- **Population.** The rank names a category only from
+  `populationCategoryId`, looked up in the published tree; an id the tree
+  lacks reads as places.
+- **Report errors.** The catalog report sheet maps `rate_limited`,
+  `feature_disabled` and `not_found`. Anything else, `bad_request` included,
+  reads as a failed send; the sheet checks an explanation's length as the
+  session sheet does.
+
 ### Discover coverage freshness and request rates — noted 2026-09-14 (M9-G4)
 
 G4's strip and selection read `browse`, `ensureArea`, `harvestStatus` and
@@ -1341,6 +1505,21 @@ run from here.
 
 ## Lane decisions
 
+- 2026-09-14: Gate the shared detail read on a `core` provider that the app
+  root overrides from the discovery configuration, instead of reading the
+  configuration in the sheet. `core` imports no feature, the sheet serves
+  Swipe with Discover off, and a scope without the override, which is every
+  existing swipe test, asks for nothing.
+- 2026-09-14: Keep the source's status line for when a place closes rather
+  than derive the design's "Closes 23:00" chip. The app has no time zone for
+  a place, and a closing time worked out on the device would be wrong exactly
+  where it matters. The "3 photos" chip ships, in Discover's mode.
+- 2026-09-14: Offer Details under a selected row, not on every row or on a
+  second tap. A second tap already clears the selection, and a button on
+  every row would crowd the ranked list.
+- 2026-09-14: Share the committed search from the area bar, even after the
+  camera moves. The results showing are the committed search's, and a link to
+  an unsearched view would open results nobody saw.
 - 2026-09-14: Open Unmapped types from the Discover tree instead of giving it
   a navigation entry. With four new entries, the last destination ended at
   935 pixels in the test font. That is past the 900-pixel window

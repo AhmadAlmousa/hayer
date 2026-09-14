@@ -1446,7 +1446,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoveryCountingPlaces => 'Counting places';
 
   @override
-  String get discoveryPreviewFailed => 'Couldn’t load this place.';
+  String get discoveryPreviewFailed => 'Couldn’t count the places that match.';
 
   @override
   String get discoveryCategories => 'Categories';
@@ -1512,6 +1512,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get discoveryPreviewTitle => 'Selected on the map';
+
+  @override
+  String get discoveryPlaceLoadFailed => 'Couldn’t load this place.';
 
   @override
   String get discoveryLoadingPlace => 'Loading this place…';
@@ -1608,4 +1611,123 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get discoveryExplorationUpdated =>
       'Results updated with newly explored places.';
+
+  @override
+  String get discoveryShareSearch => 'Share this search';
+
+  @override
+  String discoveryShareMessage(String link) {
+    return 'Places on Hayer: $link';
+  }
+
+  @override
+  String get discoveryStandingLoading =>
+      'Comparing this place with the others…';
+
+  @override
+  String get discoveryStandingFailed =>
+      'Couldn’t compare this place with the others.';
+
+  @override
+  String get discoveryStandingChanged =>
+      'These results changed after they loaded. Close this to see the new ones.';
+
+  @override
+  String get discoveryStandingIneligible =>
+      'This place no longer matches this search.';
+
+  @override
+  String discoveryStandingRank(String ordinal) {
+    return '#$ordinal';
+  }
+
+  @override
+  String discoveryStandingOfPlaces(int total) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'of $totalString places',
+      one: 'of 1 place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryStandingOfCategory(int total, String category) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'of $totalString in $category',
+      one: 'of 1 in $category',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryStandingSortedBy(String sort) {
+    return 'Sorted by $sort';
+  }
+
+  @override
+  String get discoveryStandingHeading => 'Where it sits in this view';
+
+  @override
+  String discoveryPercentilePlaces(String percent) {
+    return 'Rated higher than $percent of the other places in view';
+  }
+
+  @override
+  String discoveryPercentileCategory(String percent, String category) {
+    return 'Rated higher than $percent of $category in view';
+  }
+
+  @override
+  String get discoveryPercentileNonePlaces =>
+      'No other place in view is rated lower';
+
+  @override
+  String discoveryPercentileNoneCategory(String category) {
+    return 'Nothing else in $category in view is rated lower';
+  }
+
+  @override
+  String discoveryStraightLineDistance(String distance) {
+    return '$distance away in a straight line';
+  }
+
+  @override
+  String discoveryPhotoCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryAddedToHayer(String month) {
+    return 'Added to Hayer in $month';
+  }
+
+  @override
+  String get reportUnavailable =>
+      'Reporting isn’t available right now. Please try again later.';
+
+  @override
+  String get reportPlaceGone =>
+      'This place is no longer listed, so it can’t be reported.';
 }

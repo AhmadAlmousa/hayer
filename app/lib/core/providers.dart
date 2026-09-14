@@ -14,6 +14,7 @@ import '../data/location_warmup.dart';
 import '../data/location_repository.dart';
 import '../data/pending_discovery_link_store.dart';
 import '../data/pending_swipe_store.dart';
+import '../data/place_detail_repository.dart';
 import '../data/poi_issue_repository.dart';
 import '../data/session_repository.dart';
 import '../data/route_estimate_repository.dart';
@@ -78,6 +79,17 @@ final deviceDataRepositoryProvider = Provider<DeviceDataRepository>(
 final poiIssueRepositoryProvider = Provider<PoiIssueRepository>(
   (ref) => PoiIssueRepository(client: ref.watch(clientProvider)),
 );
+
+final placeDetailRepositoryProvider = Provider<PlaceDetailRepository>(
+  (ref) => PlaceDetailRepository(client: ref.watch(clientProvider)),
+);
+
+/// Whether a details sheet may ask the server for a place's current details.
+///
+/// Off unless the app's root scope says otherwise. The app answers from the
+/// discovery configuration's `detailsAvailable`, which holds whether or not
+/// Discover itself is on, so no sheet asks a server without the read.
+final placeDetailsAvailableProvider = Provider<bool>((ref) => false);
 
 final routeEstimateRepositoryProvider = Provider<RouteEstimateRepository>(
   (ref) => RouteEstimateRepository(

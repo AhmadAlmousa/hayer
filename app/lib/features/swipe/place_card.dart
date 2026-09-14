@@ -338,6 +338,7 @@ class PlaceCard extends StatelessWidget {
         sessionId: sessionId,
         place: place,
       ),
+      saveButton: (place) => SavePlaceButton(place: place),
     );
     onDetailsClosed?.call();
   }

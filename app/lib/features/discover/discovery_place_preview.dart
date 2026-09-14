@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -5,6 +7,7 @@ import '../../core/display_formatters.dart';
 import '../../domain/discovery_area.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'discovery_config_controller.dart';
+import 'discovery_place_details.dart';
 import 'discovery_place_row.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
@@ -45,6 +48,22 @@ class DiscoveryPlacePreview extends ConsumerWidget {
           evaluatedAt: preview.context.evaluatedAt,
           scoring: scoring,
           origin: origin,
+          onDetails: () {
+            final search = ref.read(discoveryResultsProvider).search;
+            if (search == null) return;
+            // The preview already says where the place stands in the shown
+            // search, so the sheet does not ask again.
+            unawaited(
+              showDiscoveryPlaceDetails(
+                context,
+                item: item,
+                search: search,
+                queryContext: preview.context,
+                standing: preview,
+                origin: origin,
+              ),
+            );
+          },
         ),
         null => _Padded(
           children: [
@@ -65,7 +84,7 @@ class DiscoveryPlacePreview extends ConsumerWidget {
           name,
           Text(
             error.failure == DiscoveryFailure.connection
-                ? strings.discoveryPreviewFailed
+                ? strings.discoveryPlaceLoadFailed
                 : discoveryErrorMessage(strings, error),
           ),
           Align(

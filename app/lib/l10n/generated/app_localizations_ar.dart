@@ -1451,7 +1451,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoveryCountingPlaces => 'جارٍ عدّ الأماكن';
 
   @override
-  String get discoveryPreviewFailed => 'تعذّر تحميل هذا المكان.';
+  String get discoveryPreviewFailed => 'تعذّر عدّ الأماكن المطابقة.';
 
   @override
   String get discoveryCategories => 'الفئات';
@@ -1520,6 +1520,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get discoveryPreviewTitle => 'المحدّد على الخريطة';
+
+  @override
+  String get discoveryPlaceLoadFailed => 'تعذّر تحميل هذا المكان.';
 
   @override
   String get discoveryLoadingPlace => 'جارٍ تحميل هذا المكان…';
@@ -1620,4 +1623,127 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get discoveryExplorationUpdated =>
       'حُدّثت النتائج بأماكن استُكشفت حديثًا.';
+
+  @override
+  String get discoveryShareSearch => 'مشاركة هذا البحث';
+
+  @override
+  String discoveryShareMessage(String link) {
+    return 'أماكن على حيّر: $link';
+  }
+
+  @override
+  String get discoveryStandingLoading => 'نقارن هذا المكان بغيره…';
+
+  @override
+  String get discoveryStandingFailed => 'تعذّرت مقارنة هذا المكان بغيره.';
+
+  @override
+  String get discoveryStandingChanged =>
+      'تغيّرت هذه النتائج بعد تحميلها. أغلق هذه النافذة لرؤية الجديدة.';
+
+  @override
+  String get discoveryStandingIneligible =>
+      'لم يعد هذا المكان مطابقًا لهذا البحث.';
+
+  @override
+  String discoveryStandingRank(String ordinal) {
+    return 'المرتبة $ordinal';
+  }
+
+  @override
+  String discoveryStandingOfPlaces(int total) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'من $totalString مكان',
+      many: 'من $totalString مكانًا',
+      few: 'من $totalString أماكن',
+      two: 'من مكانين',
+      one: 'من مكان واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryStandingOfCategory(int total, String category) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'من $totalString في $category',
+      one: 'من واحد في $category',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryStandingSortedBy(String sort) {
+    return 'الترتيب حسب: $sort';
+  }
+
+  @override
+  String get discoveryStandingHeading => 'موقعه بين أماكن هذا العرض';
+
+  @override
+  String discoveryPercentilePlaces(String percent) {
+    return 'تقييمه أعلى من $percent من الأماكن الأخرى في هذا العرض';
+  }
+
+  @override
+  String discoveryPercentileCategory(String percent, String category) {
+    return 'تقييمه أعلى من $percent من $category في هذا العرض';
+  }
+
+  @override
+  String get discoveryPercentileNonePlaces =>
+      'لا يوجد مكان آخر في هذا العرض بتقييم أقل';
+
+  @override
+  String discoveryPercentileNoneCategory(String category) {
+    return 'لا شيء غيره في $category ضمن هذا العرض بتقييم أقل';
+  }
+
+  @override
+  String discoveryStraightLineDistance(String distance) {
+    return 'على بعد $distance بخط مستقيم';
+  }
+
+  @override
+  String discoveryPhotoCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString صورة',
+      many: '$countString صورة',
+      few: '$countString صور',
+      two: 'صورتان',
+      one: 'صورة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discoveryAddedToHayer(String month) {
+    return 'أُضيف إلى حيّر في $month';
+  }
+
+  @override
+  String get reportUnavailable =>
+      'الإبلاغ غير متاح حاليًا. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get reportPlaceGone =>
+      'لم يعد هذا المكان مدرجًا، لذا لا يمكن الإبلاغ عنه.';
 }
