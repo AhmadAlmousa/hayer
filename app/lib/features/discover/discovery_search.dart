@@ -4,15 +4,14 @@ import '../../domain/discovery_url_query.dart';
 
 /// A committed Discover query resolved to a request the server can answer.
 ///
-/// The link carries the viewport, sort and filters. The country is not part
-/// of the link: it describes the committed area, so it is worked out from the
-/// viewport when the search is made.
+/// The link carries the viewport, sort and filters. Neither the link nor the
+/// request names a country: the server resolves it from the viewport and
+/// returns it in the first page's [DiscoverQueryContext].
 final class DiscoverySearch {
-  DiscoverySearch({required this.query, required this.countryCode})
+  DiscoverySearch({required this.query})
     : assert(query.viewport != null, 'a search needs a committed viewport');
 
   final DiscoveryUrlQuery query;
-  final String countryCode;
 
   DiscoveryViewport get viewport => query.viewport!;
 
@@ -26,7 +25,6 @@ final class DiscoverySearch {
       north: viewport.north,
       east: viewport.east,
     ),
-    countryCode: countryCode,
     sort: DiscoverSort.values.byName(query.sort.name),
     categoryIds: query.categoryIds,
     reviewBands: [
@@ -48,13 +46,11 @@ final class DiscoverySearch {
 
   @override
   bool operator ==(Object other) =>
-      other is DiscoverySearch &&
-      other.query == query &&
-      other.countryCode == countryCode;
+      other is DiscoverySearch && other.query == query;
 
   @override
-  int get hashCode => Object.hash(query, countryCode);
+  int get hashCode => query.hashCode;
 
   @override
-  String toString() => 'DiscoverySearch(${query.location}, $countryCode)';
+  String toString() => 'DiscoverySearch(${query.location})';
 }

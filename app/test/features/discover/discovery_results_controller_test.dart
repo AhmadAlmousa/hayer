@@ -46,7 +46,7 @@ void main() {
     expect(request.cursor, isNull);
     expect(request.includeMap, isTrue);
     expect(request.pageSize, 50);
-    expect(request.query.countryCode, 'SA');
+    expect(request.query.countryCode, isNull);
     expect(request.query.sort, DiscoverSort.best);
     expect(results().search, testSearch());
     expect(results().items, hasLength(3));
@@ -317,14 +317,13 @@ void main() {
         completeness: const [DiscoveryCompleteness.photos],
         text: 'rooftop',
       ),
-      countryCode: 'SA',
     ).toWire();
 
     expect(query.viewport.south, 24.6);
     expect(query.viewport.west, 46.6);
     expect(query.viewport.north, 24.8);
     expect(query.viewport.east, 46.8);
-    expect(query.countryCode, 'SA');
+    expect(query.countryCode, isNull);
     expect(query.sort, DiscoverSort.recentlyDiscovered);
     expect(query.categoryIds, ['cafe']);
     expect(query.reviewBands, [DiscoverReviewBand.from1000]);
@@ -382,7 +381,6 @@ void main() {
           viewport: testViewport,
           hoursWindows: const [DiscoveryHoursWindow.openNow],
         ),
-        countryCode: 'SA',
       ),
     );
     await pumpEventQueue();

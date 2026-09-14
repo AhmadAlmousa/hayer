@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hayer_client/hayer_client.dart';
 
 import '../../core/providers.dart';
 import '../../data/location_repository.dart';
@@ -31,7 +32,7 @@ class DiscoveryAreaLabels {
     if (cached != null) return _labels[key] = cached;
     final center = discoveryViewportCenter(viewport);
     final label = _repository
-        .reverseGeocode(
+        .reverseGeocodeDetails(
           latitude: center.latitude,
           longitude: center.longitude,
           languageCode: languageCode,
@@ -49,17 +50,17 @@ class DiscoveryAreaLabels {
   }
 }
 
-/// The part of a reverse-geocoded address that names an area.
+/// The name of the area a reverse-geocoded [place] lies in: its locality, else
+/// its city, else null.
 ///
-/// The geocoder returns one line ordered street, district, city, region,
-/// country, with whichever parts it knows. When the last three are present
-/// the district, or the city when there is no district, sits just before
-/// them; shorter lines start with the most local part they have.
-String? discoveryAreaName(String address) {
-  final parts = [
-    for (final part in address.split(','))
-      if (part.trim() case final trimmed when trimmed.isNotEmpty) trimmed,
-  ];
-  if (parts.isEmpty) return null;
-  return parts.length >= 4 ? parts[parts.length - 4] : parts.first;
+/// The formatted address is never split for a name. Which of its parts are
+/// present varies from place to place, so a part picked by position can name
+/// a street.
+String? discoveryAreaName(ReverseGeocodeResult place) {
+  for (final name in [place.locality, place.city]) {
+    if (name?.trim() case final trimmed? when trimmed.isNotEmpty) {
+      return trimmed;
+    }
+  }
+  return null;
 }

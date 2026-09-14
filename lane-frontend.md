@@ -22,7 +22,8 @@ Last updated: 2026-09-14
   G1 landed in `017e17c`. M9-F is complete: its prework in `bb212d7`, and
   the configuration read and kept links on the back-end lane's contract
   commit `4014037`. G2, the results screen, landed on 2026-09-13, and G3,
-  filters and categories, on 2026-09-14. G4, then H and J, build on the same
+  filters and categories, on 2026-09-14, followed that day by the area
+  follow-up on the back-end lane's `eda8827` contract. G4, then H and J, build on the same
   generated types and fakes (`backend/discovery-contracts.md`). Every
   discovery data RPC still answers `feature_disabled`. See the checkpoints
   below and `discovery_upgrade.md` §"Implementation plan".
@@ -51,6 +52,48 @@ Last updated: 2026-09-14
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-G2 area follow-up — landed (2026-09-14)
+
+The app now uses the back-end lane's `eda8827` area contract, merged into
+this branch from `main`. That contract answers both M9-G2 handoffs below.
+Discovery stays dark.
+
+**Country.** Requests no longer name a country. `DiscoverySearch`
+(`app/lib/features/discover/discovery_search.dart`) leaves
+`DiscoverQuery.countryCode` null. `discoveryCountryFor` and its rough
+bounding boxes are gone from `app/lib/domain/discovery_area.dart`. The
+server resolves the country from the viewport and returns it in
+`DiscoverQueryContext.countryCode`. Rows and the filter sheet's price chips
+now take their currency from the shown generation's context. The app does
+not call `ensureArea` or `deepen` yet; that is G4.
+
+- Every committed area is now sent to the server. Before, an area outside
+  all six boxes was explained without a request. Now the server's
+  `unsupported_area` answer shows "Got time covers the Gulf countries only".
+  That notice replaces any rows kept from a covered area rather than dimming
+  them, and Refresh stays off, as it did under the local check.
+- The filter sheet counts whenever the committed generation has a context;
+  it no longer waits for a country.
+
+**Area label.** `DiscoveryAreaLabels` reads `place.reverseGeocodeDetails`
+through the new `LocationRepository.reverseGeocodeDetails`. It sends the
+same centre and language as before, with the same 8-second timeout and
+per-area cache. The label is the `locality`, else the `city`. When the
+lookup fails, or returns neither, the bar keeps "This area".
+`discoveryAreaName` no longer picks a part of the formatted address by
+position. Setup's GPS enrichment still uses the string `reverseGeocode`.
+
+Tests: the view tests cover the locality label, the city fallback, blank
+names, rows priced in the context's country, and a server-rejected area
+replacing kept rows with no country in the request. The filter tests check
+price chips in the context's country and a draft count sent without one. The
+controller and facets tests now expect no country on the wire. The
+country-pick tests went with the function.
+
+Verification: pinned full preflight passed 156 server, 279 app and
+51 admin tests with clean analyses. Signed `0.2.1+7` built at SHA-256
+`fa7ee73e219d6b30d14fb3179ceb2dc26e4707d99070f4815c966cf4836c746c` and verifies under APK Signature Scheme v2 with the same signing certificate (`426f3bf4…77a6`) as previous releases.
 
 ### M9-G3 Discover filters and categories — landed (2026-09-14)
 
@@ -201,7 +244,8 @@ notifier; nothing mirrors it.
   area and any respelling of a link replace it rather than adding an entry.
 - The country for the request is picked from rough bounds of the six
   countries. An area outside all of them is explained without a request;
-  see the handoff below.
+  see the handoff below. Superseded on 2026-09-14 by the server-resolved
+  country; see the area follow-up.
 
 **Results.** `DiscoveryResultsController` numbers a generation for every
 first page and applies an answer only while its generation is current, so a
@@ -911,7 +955,14 @@ need to allow.
   requirements, so those chips show none. Requirement 8 does not ask for
   them; add them only if they come cheaply from the same statement.
 
-### Discover area country — requested 2026-09-13 (M9-G2)
+### Discover area country — requested 2026-09-13, delivered and wired 2026-09-14 (M9-G2)
+
+The back-end lane delivered this in `eda8827`. The country is now optional
+on `DiscoverQuery`, `ensureArea` and `deepen`. The server resolves it from
+the viewport and returns it in `DiscoverQueryContext.countryCode`, and a
+hint that disagrees is to be rejected as `unsupported_area`. The client now
+sends no country; see the area follow-up checkpoint. The original request is
+kept below.
 
 `DiscoverQuery.countryCode`, `ensureArea` and `deepen` each take a country
 for the committed area, and the contract says it describes the area rather
@@ -923,7 +974,13 @@ neighbour. Asked: derive the country from the viewport on the server, or
 accept a null country and return the resolved one in `DiscoverQueryContext`,
 and keep rejecting a mismatch with `unsupported_area` as planned.
 
-### Discover area label — requested 2026-09-13 (M9-G2)
+### Discover area label — requested 2026-09-13, delivered and wired 2026-09-14 (M9-G2)
+
+Delivered in `eda8827` as `place.reverseGeocodeDetails`. It returns the
+formatted address with nullable locality, city, region and country code, on
+the same F09 budget and cache as `place.reverseGeocode`. The client now
+labels the area by locality, then city; see the area follow-up checkpoint.
+The original request is kept below.
 
 The area header uses `place.reverseGeocode`, as requirement 2 asks, but that
 read returns one formatted line: street, district, city, region, country,

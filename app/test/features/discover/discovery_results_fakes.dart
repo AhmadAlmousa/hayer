@@ -27,7 +27,6 @@ DiscoverySearch testSearch({
   DiscoveryViewport? viewport,
 }) => DiscoverySearch(
   query: DiscoveryUrlQuery(viewport: viewport ?? testViewport, sort: sort),
-  countryCode: 'SA',
 );
 
 typedef BrowseRequest = ({
@@ -97,10 +96,12 @@ class FakeDiscoveryRepository extends Fake implements DiscoveryRepository {
 }
 
 DiscoverQueryContext testQueryContext({
+  String countryCode = 'SA',
   int policyRevision = 1,
   int taxonomyRevision = 1,
 }) => DiscoverQueryContext(
   fingerprint: 'fingerprint',
+  countryCode: countryCode,
   policyRevision: policyRevision,
   taxonomyRevision: taxonomyRevision,
   evaluatedAt: testEvaluatedAt,
@@ -224,19 +225,19 @@ Position testPosition(double latitude, double longitude) => Position(
   speedAccuracy: 0,
 );
 
-/// A geocoder that answers [address], or fails while [address] is null.
+/// A geocoder that answers [place], or fails while [place] is null.
 class FakeLocationRepository extends Fake implements LocationRepository {
-  String? address;
+  ReverseGeocodeResult? place;
   int calls = 0;
 
   @override
-  Future<String> reverseGeocode({
+  Future<ReverseGeocodeResult> reverseGeocodeDetails({
     required double latitude,
     required double longitude,
     required String languageCode,
   }) async {
     calls++;
-    return address ?? (throw Exception('geocoder unavailable'));
+    return place ?? (throw Exception('geocoder unavailable'));
   }
 }
 

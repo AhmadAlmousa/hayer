@@ -134,36 +134,4 @@ void main() {
     );
     expect(discoveryStraightLineMeters(riyadh, riyadh), 0);
   });
-
-  group('country', () {
-    const gulf = ['SA', 'AE', 'KW', 'QA', 'BH', 'OM'];
-
-    test('is the served country an area is centred in', () {
-      expect(discoveryCountryFor(_box(24.6, 46.6, 24.8, 46.8), gulf), 'SA');
-      expect(discoveryCountryFor(_box(21.4, 39.1, 21.6, 39.3), gulf), 'SA');
-      expect(discoveryCountryFor(_box(26.3, 50.0, 26.5, 50.2), gulf), 'SA');
-      expect(discoveryCountryFor(_box(25.1, 55.1, 25.3, 55.4), gulf), 'AE');
-      expect(discoveryCountryFor(_box(26.1, 50.5, 26.3, 50.7), gulf), 'BH');
-      expect(discoveryCountryFor(_box(25.2, 51.4, 25.4, 51.6), gulf), 'QA');
-      expect(discoveryCountryFor(_box(29.3, 47.9, 29.4, 48.0), gulf), 'KW');
-      expect(discoveryCountryFor(_box(23.5, 58.3, 23.7, 58.5), gulf), 'OM');
-    });
-
-    test('accepts country codes in any case', () {
-      expect(
-        discoveryCountryFor(_box(25.2, 51.4, 25.4, 51.6), ['sa', 'qa']),
-        'QA',
-      );
-    });
-
-    test('is none for an unserved country, even inside a served '
-        'neighbour\'s bounds', () {
-      expect(discoveryCountryFor(_box(25.1, 55.1, 25.3, 55.4), ['SA']), isNull);
-    });
-
-    test('is none outside the Gulf', () {
-      expect(discoveryCountryFor(_box(29.9, 31.1, 30.1, 31.3), gulf), isNull);
-      expect(discoveryCountryFor(_box(51.4, -0.2, 51.6, 0.1), gulf), isNull);
-    });
-  });
 }

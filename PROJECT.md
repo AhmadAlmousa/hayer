@@ -906,8 +906,9 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   App Link checks belong to M9-K.
 - [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
   `017e17c`; G2, the results screen, on 2026-09-13; G3, the filter sheet and
-  category tree, on 2026-09-14. G4 remains, against generated contracts and
-  mocks.
+  category tree, on 2026-09-14, followed that day by the server-resolved
+  area country and structured area label. G4 remains, against generated
+  contracts and mocks.
 - [ ] M9-H — Place detail, save, share and report (front end).
 - [ ] M9-J — Admin (front end).
 - [ ] M9-K — Cross-mode verification and dark release (both lanes).
@@ -1050,6 +1051,16 @@ implementation work after this owner-requested contract delivery.
   SHA-256 `a10ebfca4ba9ee7ac43bb8cafccfbe5e2a37be99f5d9084f453e0232b0fc7a5b` and verifies under APK Signature Scheme v2 with the
   existing signer. Discovery stays disabled. Details are in
   `lane-frontend.md`.
+- 2026-09-14: moved the front-end lane onto the back-end lane's `eda8827`
+  area contract. Discover requests no longer guess a country from rough
+  boxes. The server resolves the country from the viewport, and the app reads
+  it back from `DiscoverQueryContext`. An area the server rejects as
+  `unsupported_area` is explained in place of kept rows. The area bar names
+  the locality, then the city, from `place.reverseGeocodeDetails`. Pinned
+  full preflight passed 156 server, 279 app and 51 admin tests
+  with clean analyses. Signed `0.2.1+7` built at SHA-256 `fa7ee73e219d6b30d14fb3179ceb2dc26e4707d99070f4815c966cf4836c746c` and verifies
+  under APK Signature Scheme v2 with the existing signer. Discovery stays
+  disabled. Details are in `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

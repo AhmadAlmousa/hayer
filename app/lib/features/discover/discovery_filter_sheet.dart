@@ -22,14 +22,12 @@ const discoveryPreviewDelay = Duration(milliseconds: 400);
 Future<DiscoveryUrlQuery?> showDiscoveryFilterSheet(
   BuildContext context, {
   required DiscoveryUrlQuery committed,
-  required String? countryCode,
 }) => showModalBottomSheet<DiscoveryUrlQuery>(
   context: context,
   isScrollControlled: true,
   showDragHandle: true,
   useSafeArea: true,
-  builder: (context) =>
-      DiscoveryFilterSheet(committed: committed, countryCode: countryCode),
+  builder: (context) => DiscoveryFilterSheet(committed: committed),
 );
 
 /// Every filter over the current view, edited as a draft.
@@ -46,14 +44,9 @@ class DiscoveryFilterSheet extends ConsumerStatefulWidget {
   const DiscoveryFilterSheet({
     super.key,
     required this.committed,
-    required this.countryCode,
   });
 
   final DiscoveryUrlQuery committed;
-
-  /// The committed area's country, or null outside coverage, where nothing
-  /// can be counted.
-  final String? countryCode;
 
   @override
   ConsumerState<DiscoveryFilterSheet> createState() =>
@@ -109,14 +102,13 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
   Future<void> _count() async {
     final draft = _draft;
     final context = ref.read(discoveryResultsProvider).context;
-    final country = widget.countryCode;
-    if (context == null || country == null || draft.viewport == null) return;
+    if (context == null || draft.viewport == null) return;
     final generation = ++_generation;
     try {
       final counts = await ref
           .read(discoveryRepositoryProvider)
           .facets(
-            query: DiscoverySearch(query: draft, countryCode: country).toWire(),
+            query: DiscoverySearch(query: draft).toWire(),
             context: context,
           );
       if (!mounted || generation != _generation) return;
@@ -177,11 +169,15 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final canCount =
-        widget.countryCode != null &&
-        ref.watch(
-          discoveryResultsProvider.select((results) => results.context != null),
-        );
+    final canCount = ref.watch(
+      discoveryResultsProvider.select((results) => results.context != null),
+    );
+    // Prices are drawn in the country the server resolved for the area.
+    final countryCode = ref.watch(
+      discoveryResultsProvider.select(
+        (results) => results.context?.countryCode,
+      ),
+    );
     final current = _counted == _draft ? _counts : null;
     final counts = _counts;
     final waiting = canCount && current == null && !_countFailed;
@@ -309,7 +305,7 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                           ChoiceChip(
                             key: ValueKey('discovery-price-$level'),
                             label: _PriceLabel(
-                              countryCode: widget.countryCode,
+                              countryCode: countryCode,
                               level: level,
                               count: _priceCount(counts, level),
                             ),

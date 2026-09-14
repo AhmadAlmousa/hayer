@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hayer_app/core/gcc_currency_symbol.dart';
 import 'package:hayer_app/features/discover/discovery_category_sheet.dart';
 import 'package:hayer_app/features/discover/discovery_filter_sheet.dart';
 import 'package:hayer_client/hayer_client.dart';
@@ -212,6 +213,28 @@ void main() {
       expect(_parameters(router)['cat'], 'coffee');
       expect(_parameters(router), isNot(contains('reviews')));
       expect(_parameters(router), isNot(contains('q')));
+    });
+
+    testWidgets('draws prices in the country the server resolved for the '
+        'area, and counts without naming one', (tester) async {
+      fixture.repository.onBrowse = (_) async =>
+          testBrowsePage(context: testQueryContext(countryCode: 'AE'));
+      await pumpDiscover(tester, fixture, _riyadhLink);
+      await _open(tester, _filters);
+
+      final prices = tester.widgetList<GccPriceLevel>(
+        find.byType(GccPriceLevel),
+      );
+      expect(prices, isNotEmpty);
+      expect(prices.map((price) => price.countryCode), everyElement('AE'));
+
+      await _tapInSheet(
+        tester,
+        find.byKey(const ValueKey('discovery-price-2')),
+      );
+      await _counted(tester);
+      expect(fixture.repository.facetsRequests.last.query.exactPriceLevel, 2);
+      expect(fixture.repository.facetsRequests.last.query.countryCode, isNull);
     });
 
     testWidgets('sets an exact price and a minimum rating counted by the '

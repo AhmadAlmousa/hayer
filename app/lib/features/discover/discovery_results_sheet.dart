@@ -28,7 +28,6 @@ class DiscoveryResultsSheet extends ConsumerWidget {
     required this.scrollController,
     required this.sheetController,
     required this.pending,
-    required this.outsideCoverage,
     required this.origin,
     required this.onApply,
   });
@@ -42,10 +41,6 @@ class DiscoveryResultsSheet extends ConsumerWidget {
   /// results describe the previous one.
   final bool pending;
 
-  /// Whether the committed area is outside every supported country, in which
-  /// case nothing was asked of the server.
-  final bool outsideCoverage;
-
   /// The permitted device location, for distances.
   final DiscoveryPoint? origin;
 
@@ -56,6 +51,10 @@ class DiscoveryResultsSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final strings = AppLocalizations.of(context)!;
     final results = ref.watch(discoveryResultsProvider);
+    // Only the server decides what Discover covers. Rows kept from a covered
+    // area say nothing about one it does not, so they give way to the notice.
+    final outsideCoverage =
+        results.error?.failure == DiscoveryFailure.unsupportedArea;
     final scoring = ref.watch(
       discoveryConfigProvider.select(
         (availability) => availability.config?.scoring,
@@ -126,7 +125,7 @@ class DiscoveryResultsSheet extends ConsumerWidget {
               opacity: current ? 1 : 0.5,
               child: DiscoveryPlaceRow(
                 item: results.items[index],
-                countryCode: results.search?.countryCode,
+                countryCode: results.context?.countryCode,
                 evaluatedAt: results.context!.evaluatedAt,
                 scoring: scoring,
                 origin: origin,

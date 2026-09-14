@@ -77,11 +77,6 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
         !discoveryViewportShows(visible, committed);
   }
 
-  bool get _outsideCoverage {
-    final viewport = _query.viewport;
-    return viewport != null && _countryFor(viewport) == null;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -139,17 +134,10 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     if (_normalizeCategories()) return;
     _labelArea(viewport);
     unawaited(ref.read(discoveryAreaStoreProvider).write(viewport));
-    final country = _countryFor(viewport);
-    if (country == null) return;
     ref
         .read(discoveryResultsProvider.notifier)
-        .show(DiscoverySearch(query: _query, countryCode: country));
+        .show(DiscoverySearch(query: _query));
   }
-
-  String? _countryFor(DiscoveryViewport viewport) => discoveryCountryFor(
-    viewport,
-    ref.read(discoveryConfigProvider).config?.supportedCountries ?? const [],
-  );
 
   /// Opens a link without a viewport at the permitted device location, else
   /// the last area searched here, else the default city. Browsing never asks
@@ -314,13 +302,8 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
   }
 
   Future<void> _openFilters() async {
-    final viewport = _query.viewport;
-    if (viewport == null) return;
-    final applied = await showDiscoveryFilterSheet(
-      context,
-      committed: _query,
-      countryCode: _countryFor(viewport),
-    );
+    if (_query.viewport == null) return;
+    final applied = await showDiscoveryFilterSheet(context, committed: _query);
     if (applied != null && mounted) _apply(applied);
   }
 
@@ -476,7 +459,6 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                         scrollController: scrollController,
                         sheetController: _sheet,
                         pending: pending,
-                        outsideCoverage: _outsideCoverage,
                         origin: _origin,
                         onApply: _apply,
                       ),

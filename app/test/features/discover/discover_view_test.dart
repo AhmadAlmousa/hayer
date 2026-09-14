@@ -165,9 +165,17 @@ void main() {
     );
   });
 
-  testWidgets('the area bar names the committed area', (tester) async {
-    fixture.geocoder.address =
-        'King Fahd Road, Al Olaya, Riyadh, Riyadh Province, Saudi Arabia';
+  testWidgets('the area bar names the committed area by its locality', (
+    tester,
+  ) async {
+    fixture.geocoder.place = ReverseGeocodeResult(
+      formattedAddress:
+          'King Fahd Road, Al Olaya, Riyadh, Riyadh Province, Saudi Arabia',
+      locality: 'Al Olaya',
+      city: 'Riyadh',
+      region: 'Riyadh Province',
+      countryCode: 'SA',
+    );
 
     await pumpDiscover(tester, fixture, _riyadhLink);
 
@@ -183,23 +191,39 @@ void main() {
     expect(find.text('This area · this view'), findsOneWidget);
   });
 
-  test('an area name is the most local part of an address', () {
+  test('an area name is the locality, then the city, and never a part of the '
+      'address', () {
+    ReverseGeocodeResult place({String? locality, String? city}) =>
+        ReverseGeocodeResult(
+          formattedAddress: 'King Fahd Road, Riyadh, Saudi Arabia',
+          locality: locality,
+          city: city,
+          region: 'Riyadh Province',
+          countryCode: 'SA',
+        );
+
     expect(
-      discoveryAreaName(
-        'King Fahd Road, Al Olaya, Riyadh, Riyadh Province, Saudi Arabia',
-      ),
+      discoveryAreaName(place(locality: 'Al Olaya', city: 'Riyadh')),
       'Al Olaya',
     );
-    expect(
-      discoveryAreaName('Al Olaya, Riyadh, Riyadh Province, Saudi Arabia'),
-      'Al Olaya',
+    expect(discoveryAreaName(place(city: 'Riyadh')), 'Riyadh');
+    expect(discoveryAreaName(place(locality: ' ', city: ' Riyadh ')), 'Riyadh');
+    expect(discoveryAreaName(place()), isNull);
+  });
+
+  testWidgets('rows are priced in the country the server resolved for the '
+      'area', (tester) async {
+    fixture.repository.onBrowse = (_) async =>
+        testBrowsePage(context: testQueryContext(countryCode: 'AE'));
+
+    await pumpDiscover(tester, fixture, _riyadhLink);
+
+    final rows = tester.widgetList<DiscoveryPlaceRow>(
+      find.byType(DiscoveryPlaceRow),
     );
-    expect(
-      discoveryAreaName('Riyadh, Riyadh Province, Saudi Arabia'),
-      'Riyadh',
-    );
-    expect(discoveryAreaName('Saudi Arabia'), 'Saudi Arabia');
-    expect(discoveryAreaName(' , '), isNull);
+    expect(rows, isNotEmpty);
+    expect(rows.map((row) => row.countryCode), everyElement('AE'));
+    expect(fixture.repository.requests.single.query.countryCode, isNull);
   });
 
   testWidgets('moving the map offers Search this area, which adds one '
@@ -338,14 +362,19 @@ void main() {
     expect(find.text('3 places in view'), findsOneWidget);
   });
 
-  testWidgets('an area outside the Gulf is explained without asking the '
-      'server', (tester) async {
-    await pumpDiscover(
-      tester,
-      fixture,
-      '/discover?v=1&bbox=51.4,-0.2,51.6,0.1',
-    );
+  testWidgets('an area the server does not cover is explained in place of '
+      'the rows kept from a covered one', (tester) async {
+    final router = await pumpDiscover(tester, fixture, _riyadhLink);
+    expect(find.byType(DiscoveryPlaceRow), findsWidgets);
 
+    fixture.repository.onBrowse = (_) async =>
+        throw ApiException(code: 'unsupported_area', message: '');
+    router.go('/discover?v=1&bbox=51.4,-0.2,51.6,0.1');
+    await tester.pumpAndSettle();
+
+    // The app does not guess a country: it asks, and the server answers.
+    expect(fixture.repository.requests, hasLength(2));
+    expect(fixture.repository.requests.last.query.countryCode, isNull);
     expect(
       find.text(
         'Got time covers the Gulf countries only. Move the map there and '
@@ -353,7 +382,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(fixture.repository.requests, isEmpty);
+    expect(find.byType(DiscoveryPlaceRow), findsNothing);
   });
 
   testWidgets('reaching the end of the list loads the next page', (

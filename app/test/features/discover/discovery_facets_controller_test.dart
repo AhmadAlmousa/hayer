@@ -52,7 +52,7 @@ void main() {
         request.context,
         same(container.read(discoveryResultsProvider).context),
       );
-      expect(request.query.countryCode, 'SA');
+      expect(request.query.countryCode, isNull);
       expect(request.query.sort, DiscoverSort.best);
       expect(facets().facets?.total, 24);
       expect(facets().search, testSearch());

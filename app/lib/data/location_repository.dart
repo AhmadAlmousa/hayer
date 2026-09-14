@@ -33,4 +33,18 @@ class LocationRepository {
       languageCode: languageCode,
     ),
   ).timeout(const Duration(seconds: 8));
+
+  /// The same reverse-geocoding read, with the address's parts kept apart.
+  Future<ReverseGeocodeResult> reverseGeocodeDetails({
+    required double latitude,
+    required double longitude,
+    required String languageCode,
+  }) => withAnonymousAuthentication(
+    client,
+    () => client.place.reverseGeocodeDetails(
+      latitude: latitude,
+      longitude: longitude,
+      languageCode: languageCode,
+    ),
+  ).timeout(const Duration(seconds: 8));
 }

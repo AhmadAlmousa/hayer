@@ -126,54 +126,6 @@ double discoveryStraightLineMeters(DiscoveryPoint from, DiscoveryPoint to) {
   return 2 * earthRadius * math.asin(math.min(1, math.sqrt(a)));
 }
 
-/// Rough bounds of the countries Discover can serve, smallest first, so a
-/// small country is not claimed by a larger neighbour whose box contains it.
-const _countryBounds =
-    <
-      ({
-        String code,
-        double south,
-        double west,
-        double north,
-        double east,
-      })
-    >[
-      (code: 'BH', south: 25.55, west: 50.35, north: 26.35, east: 50.85),
-      (code: 'QA', south: 24.45, west: 50.70, north: 26.20, east: 51.70),
-      (code: 'KW', south: 28.50, west: 46.50, north: 30.15, east: 48.50),
-      (code: 'AE', south: 22.60, west: 51.50, north: 26.10, east: 56.40),
-      (code: 'OM', south: 16.60, west: 52.00, north: 26.45, east: 59.90),
-      (code: 'SA', south: 16.30, west: 34.50, north: 32.20, east: 55.70),
-    ];
-
-/// The country the centre of [viewport] falls in, when Discover serves it;
-/// otherwise null.
-///
-/// Bounds this rough can pick a neighbour close to a border. The server
-/// validates the area either way; this only chooses which country to ask
-/// about, and lets an area outside every served country be explained without
-/// a request. The first box holding the centre decides, even when its country
-/// is not served, so an unserved small country is never passed off as the
-/// large neighbour whose box also covers it.
-String? discoveryCountryFor(
-  DiscoveryViewport viewport,
-  Iterable<String> supportedCountries,
-) {
-  final center = discoveryViewportCenter(viewport);
-  for (final bounds in _countryBounds) {
-    if (center.latitude >= bounds.south &&
-        center.latitude <= bounds.north &&
-        center.longitude >= bounds.west &&
-        center.longitude <= bounds.east) {
-      final served = supportedCountries.any(
-        (code) => code.toUpperCase() == bounds.code,
-      );
-      return served ? bounds.code : null;
-    }
-  }
-  return null;
-}
-
 double _mercatorX(double longitude) => (longitude + 180) / 360;
 
 double _mercatorY(double latitude) {
