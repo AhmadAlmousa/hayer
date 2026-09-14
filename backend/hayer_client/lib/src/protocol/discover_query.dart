@@ -22,7 +22,7 @@ import 'package:hayer_client/src/protocol/protocol.dart' as _i7;
 abstract class DiscoverQuery implements _i1.SerializableModel {
   DiscoverQuery._({
     required this.viewport,
-    required this.countryCode,
+    this.countryCode,
     required this.sort,
     required this.categoryIds,
     required this.reviewBands,
@@ -35,7 +35,7 @@ abstract class DiscoverQuery implements _i1.SerializableModel {
 
   factory DiscoverQuery({
     required _i2.DiscoverViewport viewport,
-    required String countryCode,
+    String? countryCode,
     required _i3.DiscoverSort sort,
     required List<String> categoryIds,
     required List<_i4.DiscoverReviewBand> reviewBands,
@@ -51,7 +51,7 @@ abstract class DiscoverQuery implements _i1.SerializableModel {
       viewport: _i7.Protocol().deserialize<_i2.DiscoverViewport>(
         jsonSerialization['viewport'],
       ),
-      countryCode: jsonSerialization['countryCode'] as String,
+      countryCode: jsonSerialization['countryCode'] as String?,
       sort: _i3.DiscoverSort.fromJson((jsonSerialization['sort'] as String)),
       categoryIds: _i7.Protocol().deserialize<List<String>>(
         jsonSerialization['categoryIds'],
@@ -73,7 +73,7 @@ abstract class DiscoverQuery implements _i1.SerializableModel {
 
   _i2.DiscoverViewport viewport;
 
-  String countryCode;
+  String? countryCode;
 
   _i3.DiscoverSort sort;
 
@@ -111,7 +111,7 @@ abstract class DiscoverQuery implements _i1.SerializableModel {
     return {
       '__className__': 'DiscoverQuery',
       'viewport': viewport.toJson(),
-      'countryCode': countryCode,
+      if (countryCode != null) 'countryCode': countryCode,
       'sort': sort.toJson(),
       'categoryIds': categoryIds.toJson(),
       'reviewBands': reviewBands.toJson(valueToJson: (v) => v.toJson()),
@@ -134,7 +134,7 @@ class _Undefined {}
 class _DiscoverQueryImpl extends DiscoverQuery {
   _DiscoverQueryImpl({
     required _i2.DiscoverViewport viewport,
-    required String countryCode,
+    String? countryCode,
     required _i3.DiscoverSort sort,
     required List<String> categoryIds,
     required List<_i4.DiscoverReviewBand> reviewBands,
@@ -162,7 +162,7 @@ class _DiscoverQueryImpl extends DiscoverQuery {
   @override
   DiscoverQuery copyWith({
     _i2.DiscoverViewport? viewport,
-    String? countryCode,
+    Object? countryCode = _Undefined,
     _i3.DiscoverSort? sort,
     List<String>? categoryIds,
     List<_i4.DiscoverReviewBand>? reviewBands,
@@ -174,7 +174,7 @@ class _DiscoverQueryImpl extends DiscoverQuery {
   }) {
     return DiscoverQuery(
       viewport: viewport ?? this.viewport.copyWith(),
-      countryCode: countryCode ?? this.countryCode,
+      countryCode: countryCode is String? ? countryCode : this.countryCode,
       sort: sort ?? this.sort,
       categoryIds: categoryIds ?? this.categoryIds.map((e0) => e0).toList(),
       reviewBands: reviewBands ?? this.reviewBands.map((e0) => e0).toList(),

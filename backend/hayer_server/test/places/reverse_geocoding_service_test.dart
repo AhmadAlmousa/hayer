@@ -24,7 +24,8 @@ void main() {
               "neighbourhood": "Al Olaya",
               "city": "Riyadh",
               "state": "Riyadh Region",
-              "country": "Saudi Arabia"
+              "country": "Saudi Arabia",
+              "country_code": "sa"
             }
           }''',
             200,
@@ -57,8 +58,10 @@ void main() {
           longitude: 46.6753,
           languageCode: 'en',
         );
+        expect(details.locality, 'Al Olaya');
         expect(details.city, 'Riyadh');
         expect(details.region, 'Riyadh Region');
+        expect(details.countryCode, 'SA');
       },
     );
 

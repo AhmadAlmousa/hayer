@@ -15,7 +15,6 @@ void main() {
         north: 24.8,
         east: 46.8,
       ),
-      countryCode: 'SA',
       sort: DiscoverSort.best,
       categoryIds: [],
       reviewBands: [],
@@ -25,6 +24,7 @@ void main() {
     );
     final context = DiscoverQueryContext(
       fingerprint: 'fixture',
+      countryCode: 'SA',
       policyRevision: 0,
       taxonomyRevision: 0,
       evaluatedAt: DateTime.utc(2026, 9, 13),
@@ -72,12 +72,10 @@ void main() {
         () => endpoints.discover.ensureArea(
           member,
           viewport: query.viewport,
-          countryCode: 'SA',
         ),
         () => endpoints.discover.deepen(
           member,
           viewport: query.viewport,
-          countryCode: 'SA',
           idempotencyKey: 'fixture',
         ),
         () => endpoints.discover.harvestStatus(member, jobId: 'fixture'),
@@ -108,6 +106,15 @@ void main() {
         );
         await expectLater(
           endpoints.place.details(builder, identity: identity),
+          throwsA(isA<ServerpodUnauthenticatedException>()),
+        );
+        await expectLater(
+          endpoints.place.reverseGeocodeDetails(
+            builder,
+            latitude: 24.7136,
+            longitude: 46.6753,
+            languageCode: 'en',
+          ),
           throwsA(isA<ServerpodUnauthenticatedException>()),
         );
       },

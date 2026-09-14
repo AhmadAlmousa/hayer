@@ -17,6 +17,7 @@ abstract class DiscoverQueryContext
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DiscoverQueryContext._({
     required this.fingerprint,
+    required this.countryCode,
     required this.policyRevision,
     required this.taxonomyRevision,
     required this.evaluatedAt,
@@ -24,6 +25,7 @@ abstract class DiscoverQueryContext
 
   factory DiscoverQueryContext({
     required String fingerprint,
+    required String countryCode,
     required int policyRevision,
     required int taxonomyRevision,
     required DateTime evaluatedAt,
@@ -34,6 +36,7 @@ abstract class DiscoverQueryContext
   ) {
     return DiscoverQueryContext(
       fingerprint: jsonSerialization['fingerprint'] as String,
+      countryCode: jsonSerialization['countryCode'] as String,
       policyRevision: jsonSerialization['policyRevision'] as int,
       taxonomyRevision: jsonSerialization['taxonomyRevision'] as int,
       evaluatedAt: _i1.DateTimeJsonExtension.fromJson(
@@ -43,6 +46,8 @@ abstract class DiscoverQueryContext
   }
 
   String fingerprint;
+
+  String countryCode;
 
   int policyRevision;
 
@@ -55,6 +60,7 @@ abstract class DiscoverQueryContext
   @_i1.useResult
   DiscoverQueryContext copyWith({
     String? fingerprint,
+    String? countryCode,
     int? policyRevision,
     int? taxonomyRevision,
     DateTime? evaluatedAt,
@@ -64,6 +70,7 @@ abstract class DiscoverQueryContext
     return {
       '__className__': 'DiscoverQueryContext',
       'fingerprint': fingerprint,
+      'countryCode': countryCode,
       'policyRevision': policyRevision,
       'taxonomyRevision': taxonomyRevision,
       'evaluatedAt': evaluatedAt.toJson(),
@@ -75,6 +82,7 @@ abstract class DiscoverQueryContext
     return {
       '__className__': 'DiscoverQueryContext',
       'fingerprint': fingerprint,
+      'countryCode': countryCode,
       'policyRevision': policyRevision,
       'taxonomyRevision': taxonomyRevision,
       'evaluatedAt': evaluatedAt.toJson(),
@@ -90,11 +98,13 @@ abstract class DiscoverQueryContext
 class _DiscoverQueryContextImpl extends DiscoverQueryContext {
   _DiscoverQueryContextImpl({
     required String fingerprint,
+    required String countryCode,
     required int policyRevision,
     required int taxonomyRevision,
     required DateTime evaluatedAt,
   }) : super._(
          fingerprint: fingerprint,
+         countryCode: countryCode,
          policyRevision: policyRevision,
          taxonomyRevision: taxonomyRevision,
          evaluatedAt: evaluatedAt,
@@ -106,12 +116,14 @@ class _DiscoverQueryContextImpl extends DiscoverQueryContext {
   @override
   DiscoverQueryContext copyWith({
     String? fingerprint,
+    String? countryCode,
     int? policyRevision,
     int? taxonomyRevision,
     DateTime? evaluatedAt,
   }) {
     return DiscoverQueryContext(
       fingerprint: fingerprint ?? this.fingerprint,
+      countryCode: countryCode ?? this.countryCode,
       policyRevision: policyRevision ?? this.policyRevision,
       taxonomyRevision: taxonomyRevision ?? this.taxonomyRevision,
       evaluatedAt: evaluatedAt ?? this.evaluatedAt,

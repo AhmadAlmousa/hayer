@@ -1,7 +1,7 @@
 class: DiscoverQuery
 fields:
   viewport: DiscoverViewport
-  countryCode: String
+  countryCode: String?
   sort: DiscoverSort
   categoryIds: List<String>
   reviewBands: List<DiscoverReviewBand>

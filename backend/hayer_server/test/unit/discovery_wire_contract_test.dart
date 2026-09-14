@@ -37,6 +37,55 @@ void main() {
     expect(restored.completeness, query.completeness);
   });
 
+  test('country is resolved into context when the query omits its hint', () {
+    final query = DiscoverQuery(
+      viewport: DiscoverViewport(
+        south: 24.6,
+        west: 46.5,
+        north: 24.8,
+        east: 46.8,
+      ),
+      sort: DiscoverSort.best,
+      categoryIds: [],
+      reviewBands: [],
+      hoursWindows: [],
+      text: '',
+      completeness: [],
+    );
+    final queryJson = jsonDecode(jsonEncode(query)) as Map<String, dynamic>;
+    expect(queryJson, isNot(contains('countryCode')));
+    expect(DiscoverQuery.fromJson(queryJson).countryCode, isNull);
+
+    final context = DiscoverQueryContext(
+      fingerprint: 'fixture',
+      countryCode: 'SA',
+      policyRevision: 1,
+      taxonomyRevision: 2,
+      evaluatedAt: DateTime.utc(2026, 9, 14),
+    );
+    final contextJson = jsonDecode(jsonEncode(context)) as Map<String, dynamic>;
+    expect(contextJson['countryCode'], 'SA');
+    expect(DiscoverQueryContext.fromJson(contextJson).countryCode, 'SA');
+  });
+
+  test('structured reverse geocode result preserves area fields', () {
+    final result = ReverseGeocodeResult(
+      formattedAddress: 'Al Olaya, Riyadh, Saudi Arabia',
+      locality: 'Al Olaya',
+      city: 'Riyadh',
+      region: 'Riyadh Region',
+      countryCode: 'SA',
+    );
+    final restored = ReverseGeocodeResult.fromJson(
+      jsonDecode(jsonEncode(result)) as Map<String, dynamic>,
+    );
+    expect(restored.formattedAddress, result.formattedAddress);
+    expect(restored.locality, 'Al Olaya');
+    expect(restored.city, 'Riyadh');
+    expect(restored.region, 'Riyadh Region');
+    expect(restored.countryCode, 'SA');
+  });
+
   test(
     'recursive taxonomy retains interior aliases and bilingual children',
     () {

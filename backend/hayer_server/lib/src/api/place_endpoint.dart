@@ -73,6 +73,39 @@ class PlaceEndpoint extends Endpoint {
     required double latitude,
     required double longitude,
     String languageCode = 'en',
+  }) async => (await _reverseGeocode(
+    session,
+    latitude: latitude,
+    longitude: longitude,
+    languageCode: languageCode,
+  )).formattedAddress;
+
+  Future<ReverseGeocodeResult> reverseGeocodeDetails(
+    Session session, {
+    required double latitude,
+    required double longitude,
+    String languageCode = 'en',
+  }) async {
+    final location = await _reverseGeocode(
+      session,
+      latitude: latitude,
+      longitude: longitude,
+      languageCode: languageCode,
+    );
+    return ReverseGeocodeResult(
+      formattedAddress: location.formattedAddress,
+      locality: location.locality,
+      city: location.city,
+      region: location.region,
+      countryCode: location.countryCode,
+    );
+  }
+
+  Future<ResolvedLocation> _reverseGeocode(
+    Session session, {
+    required double latitude,
+    required double longitude,
+    required String languageCode,
   }) async {
     if (!latitude.isFinite ||
         !longitude.isFinite ||
@@ -93,7 +126,7 @@ class PlaceEndpoint extends Endpoint {
       window: const Duration(minutes: 1),
     );
     try {
-      return await _geocoder.reverse(
+      return await _geocoder.reverseDetails(
         latitude: latitude,
         longitude: longitude,
         languageCode: const {'ar', 'en'}.contains(languageCode)

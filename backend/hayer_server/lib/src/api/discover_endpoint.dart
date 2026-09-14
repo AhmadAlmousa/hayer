@@ -35,13 +35,13 @@ class DiscoverEndpoint extends Endpoint {
   Future<DiscoveryAreaReceipt> ensureArea(
     Session session, {
     required DiscoverViewport viewport,
-    required String countryCode,
+    String? countryCode,
   }) async => DiscoveryContract.unavailable();
 
   Future<DiscoveryAreaReceipt> deepen(
     Session session, {
     required DiscoverViewport viewport,
-    required String countryCode,
+    String? countryCode,
     required String idempotencyKey,
   }) async => DiscoveryContract.unavailable();
 

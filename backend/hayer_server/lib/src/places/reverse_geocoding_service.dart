@@ -248,6 +248,7 @@ class ReverseGeocodingService {
     if (formattedAddress != null) {
       return ResolvedLocation(
         formattedAddress: formattedAddress,
+        locality: locality,
         city: city,
         region: state,
         countryCode: _first(address, const ['country_code'])?.toUpperCase(),
@@ -272,12 +273,14 @@ class ReverseGeocodingService {
 class ResolvedLocation {
   const ResolvedLocation({
     required this.formattedAddress,
+    this.locality,
     this.city,
     this.region,
     this.countryCode,
   });
 
   final String formattedAddress;
+  final String? locality;
   final String? city;
   final String? region;
   final String? countryCode;

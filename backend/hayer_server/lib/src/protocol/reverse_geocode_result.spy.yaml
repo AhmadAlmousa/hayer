@@ -1,0 +1,7 @@
+class: ReverseGeocodeResult
+fields:
+  formattedAddress: String
+  locality: String?
+  city: String?
+  region: String?
+  countryCode: String?

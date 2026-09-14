@@ -66,14 +66,15 @@ import 'package:hayer_client/src/protocol/session_result.dart' as _i47;
 import 'package:hayer_client/src/protocol/session_event.dart' as _i48;
 import 'package:hayer_client/src/protocol/place_detail_result.dart' as _i49;
 import 'package:hayer_client/src/protocol/poi_issue_type.dart' as _i50;
-import 'package:hayer_client/src/protocol/route_estimate.dart' as _i51;
-import 'package:hayer_client/src/protocol/taxonomy_snapshot.dart' as _i52;
+import 'package:hayer_client/src/protocol/reverse_geocode_result.dart' as _i51;
+import 'package:hayer_client/src/protocol/route_estimate.dart' as _i52;
+import 'package:hayer_client/src/protocol/taxonomy_snapshot.dart' as _i53;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i53;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i54;
-import 'dart:typed_data' as _i55;
-import 'protocol.dart' as _i56;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i55;
+import 'dart:typed_data' as _i56;
+import 'protocol.dart' as _i57;
 
 /// {@category Endpoint}
 class EndpointAdmin extends _i1.EndpointRef {
@@ -653,7 +654,7 @@ class EndpointDiscover extends _i1.EndpointRef {
 
   _i2.Future<_i38.DiscoveryAreaReceipt> ensureArea({
     required _i39.DiscoverViewport viewport,
-    required String countryCode,
+    String? countryCode,
   }) => caller.callServerEndpoint<_i38.DiscoveryAreaReceipt>(
     'discover',
     'ensureArea',
@@ -665,7 +666,7 @@ class EndpointDiscover extends _i1.EndpointRef {
 
   _i2.Future<_i38.DiscoveryAreaReceipt> deepen({
     required _i39.DiscoverViewport viewport,
-    required String countryCode,
+    String? countryCode,
     required String idempotencyKey,
   }) => caller.callServerEndpoint<_i38.DiscoveryAreaReceipt>(
     'discover',
@@ -860,12 +861,26 @@ class EndpointPlace extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i51.RouteEstimate> routeEstimate({
+  _i2.Future<_i51.ReverseGeocodeResult> reverseGeocodeDetails({
+    required double latitude,
+    required double longitude,
+    required String languageCode,
+  }) => caller.callServerEndpoint<_i51.ReverseGeocodeResult>(
+    'place',
+    'reverseGeocodeDetails',
+    {
+      'latitude': latitude,
+      'longitude': longitude,
+      'languageCode': languageCode,
+    },
+  );
+
+  _i2.Future<_i52.RouteEstimate> routeEstimate({
     required String sessionId,
     required String placeId,
     double? originLatitude,
     double? originLongitude,
-  }) => caller.callServerEndpoint<_i51.RouteEstimate>(
+  }) => caller.callServerEndpoint<_i52.RouteEstimate>(
     'place',
     'routeEstimate',
     {
@@ -902,8 +917,8 @@ class EndpointTaxonomy extends _i1.EndpointRef {
   @override
   String get name => 'taxonomy';
 
-  _i2.Future<_i52.TaxonomySnapshot> current() =>
-      caller.callServerEndpoint<_i52.TaxonomySnapshot>(
+  _i2.Future<_i53.TaxonomySnapshot> current() =>
+      caller.callServerEndpoint<_i53.TaxonomySnapshot>(
         'taxonomy',
         'current',
         {},
@@ -937,8 +952,8 @@ class EndpointAdminEnrollment extends _i1.EndpointRef {
   @override
   String get name => 'adminEnrollment';
 
-  _i2.Future<({_i53.AuthSuccess auth, String operator})> begin() =>
-      caller.callServerEndpoint<({_i53.AuthSuccess auth, String operator})>(
+  _i2.Future<({_i54.AuthSuccess auth, String operator})> begin() =>
+      caller.callServerEndpoint<({_i54.AuthSuccess auth, String operator})>(
         'adminEnrollment',
         'begin',
         {},
@@ -946,7 +961,7 @@ class EndpointAdminEnrollment extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointAnonymousIdp extends _i54.EndpointAnonymousIdpBase {
+class EndpointAnonymousIdp extends _i55.EndpointAnonymousIdpBase {
   EndpointAnonymousIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -957,8 +972,8 @@ class EndpointAnonymousIdp extends _i54.EndpointAnonymousIdpBase {
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
   @override
-  _i2.Future<_i53.AuthSuccess> login({String? token}) =>
-      caller.callServerEndpoint<_i53.AuthSuccess>(
+  _i2.Future<_i54.AuthSuccess> login({String? token}) =>
+      caller.callServerEndpoint<_i54.AuthSuccess>(
         'anonymousIdp',
         'login',
         {'token': token},
@@ -968,7 +983,7 @@ class EndpointAnonymousIdp extends _i54.EndpointAnonymousIdpBase {
 /// By extending [RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i53.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i54.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -993,9 +1008,9 @@ class EndpointJwtRefresh extends _i53.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i53.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i54.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i53.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i54.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -1004,15 +1019,15 @@ class EndpointJwtRefresh extends _i53.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
-class EndpointPasskeyIdp extends _i54.EndpointPasskeyIdpBase {
+class EndpointPasskeyIdp extends _i55.EndpointPasskeyIdpBase {
   EndpointPasskeyIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'passkeyIdp';
 
   @override
-  _i2.Future<({_i55.ByteData challenge, _i1.UuidValue id})> createChallenge() =>
-      caller.callServerEndpoint<({_i55.ByteData challenge, _i1.UuidValue id})>(
+  _i2.Future<({_i56.ByteData challenge, _i1.UuidValue id})> createChallenge() =>
+      caller.callServerEndpoint<({_i56.ByteData challenge, _i1.UuidValue id})>(
         'passkeyIdp',
         'createChallenge',
         {},
@@ -1020,7 +1035,7 @@ class EndpointPasskeyIdp extends _i54.EndpointPasskeyIdpBase {
 
   @override
   _i2.Future<void> register({
-    required _i54.PasskeyRegistrationRequest registrationRequest,
+    required _i55.PasskeyRegistrationRequest registrationRequest,
   }) => caller.callServerEndpoint<void>(
     'passkeyIdp',
     'register',
@@ -1028,9 +1043,9 @@ class EndpointPasskeyIdp extends _i54.EndpointPasskeyIdpBase {
   );
 
   @override
-  _i2.Future<_i53.AuthSuccess> login({
-    required _i54.PasskeyLoginRequest loginRequest,
-  }) => caller.callServerEndpoint<_i53.AuthSuccess>(
+  _i2.Future<_i54.AuthSuccess> login({
+    required _i55.PasskeyLoginRequest loginRequest,
+  }) => caller.callServerEndpoint<_i54.AuthSuccess>(
     'passkeyIdp',
     'login',
     {'loginRequest': loginRequest},
@@ -1046,13 +1061,13 @@ class EndpointPasskeyIdp extends _i54.EndpointPasskeyIdpBase {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i54.Caller(client);
-    serverpod_auth_core = _i53.Caller(client);
+    serverpod_auth_idp = _i55.Caller(client);
+    serverpod_auth_core = _i54.Caller(client);
   }
 
-  late final _i54.Caller serverpod_auth_idp;
+  late final _i55.Caller serverpod_auth_idp;
 
-  late final _i53.Caller serverpod_auth_core;
+  late final _i54.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -1075,7 +1090,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i56.Protocol(),
+         _i57.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
