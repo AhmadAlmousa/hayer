@@ -908,8 +908,9 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
   `017e17c`; G2, the results screen, on 2026-09-13; G3, the filter sheet and
   category tree, on 2026-09-14, followed that day by the server-resolved
-  area country and structured area label. G4 remains, against generated
-  contracts and mocks.
+  area country and structured area label; G4, pins, selection and coverage,
+  also on 2026-09-14 against generated contracts and mocks. Acceptance waits
+  on the M9-C and M9-E implementations; device checks belong to M9-K.
 - [ ] M9-H — Place detail, save, share and report (front end).
 - [~] M9-J — Admin (front end). Policy knobs, Discover tree editor, unmapped
   types, harvest manifest, harvest jobs, growth metrics and report sources
@@ -1065,6 +1066,17 @@ next backend implementation slice after this owner-requested contract delivery.
   with clean analyses. Signed `0.2.1+7` built at SHA-256 `fa7ee73e219d6b30d14fb3179ceb2dc26e4707d99070f4815c966cf4836c746c` and verifies
   under APK Signature Scheme v2 with the existing signer. Discovery stays
   disabled. Details are in `lane-frontend.md`.
+- 2026-09-14: landed M9-G4 in the front-end lane on the generated map,
+  place-context and coverage contracts, without merging `main` while Codex is
+  paused. The Discover map draws clustered rating pins, or the server's area
+  counts above the point limit, from sources added once per style. Pins and
+  rows select each other, and a place beyond the loaded pages is previewed
+  above the list. A coverage strip reports each committed area once, follows
+  its exploration and offers Deepen. Pinned full preflight passed 159 server,
+  329 app and 72 admin tests with clean analyses. Signed `0.2.1+7` built at
+  SHA-256 `f2dfde148db26cd3f02bff462edb1561ab7c588eae9839996964c69ff0fee44d`
+  and verifies under APK Signature Scheme v2 with the existing signer.
+  Discovery stays disabled. Details are in `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

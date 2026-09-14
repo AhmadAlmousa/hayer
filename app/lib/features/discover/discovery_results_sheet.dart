@@ -6,12 +6,17 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../domain/discovery_area.dart';
 import '../../domain/discovery_category_tree.dart';
+import '../../domain/discovery_coverage.dart';
 import '../../domain/discovery_url_query.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'discovery_config_controller.dart';
+import 'discovery_coverage_controller.dart';
+import 'discovery_coverage_strip.dart';
 import 'discovery_filter_text.dart';
+import 'discovery_place_preview.dart';
 import 'discovery_place_row.dart';
 import 'discovery_results_controller.dart';
+import 'discovery_selection_controller.dart';
 import 'discovery_sort_text.dart';
 import 'discovery_taxonomy_provider.dart';
 
@@ -20,8 +25,10 @@ import 'discovery_taxonomy_provider.dart';
 const discoverySheetPeek = 0.2;
 const discoverySheetHalf = 0.5;
 
+const _revealDuration = Duration(milliseconds: 250);
+
 /// The ranked Discover results, in a sheet dragged over the map.
-class DiscoveryResultsSheet extends ConsumerWidget {
+class DiscoveryResultsSheet extends ConsumerStatefulWidget {
   const DiscoveryResultsSheet({
     super.key,
     required this.query,
@@ -48,9 +55,71 @@ class DiscoveryResultsSheet extends ConsumerWidget {
   final ValueChanged<DiscoveryUrlQuery> onApply;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DiscoveryResultsSheet> createState() =>
+      _DiscoveryResultsSheetState();
+}
+
+class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
+  /// The selected row, which a tapped pin scrolls into view.
+  final _selectedRow = GlobalKey();
+
+  /// Scrolls the selected place's row into view, raising the sheet first if
+  /// it is lowered.
+  Future<void> _reveal() async {
+    final place = ref.read(discoverySelectionProvider).place;
+    if (place == null) return;
+    final items = ref.read(discoveryResultsProvider).items;
+    final index = items.indexWhere((item) => item.catalogId == place.catalogId);
+    if (index < 0) return;
+    final sheet = widget.sheetController;
+    if (sheet.isAttached && sheet.size < discoverySheetHalf - 0.01) {
+      await sheet.animateTo(
+        discoverySheetHalf,
+        duration: _revealDuration,
+        curve: Curves.easeOutCubic,
+      );
+    }
+    // Rows are built only as they near the viewport, so a row further down
+    // is first brought close by estimate.
+    for (var attempt = 0; attempt < 3; attempt++) {
+      if (!mounted || _selectedRow.currentContext != null) break;
+      final scroll = widget.scrollController;
+      if (!scroll.hasClients) return;
+      final position = scroll.position;
+      final estimate =
+          (position.maxScrollExtent + position.viewportDimension) *
+          index /
+          items.length;
+      scroll.jumpTo(
+        estimate.clamp(position.minScrollExtent, position.maxScrollExtent),
+      );
+      await WidgetsBinding.instance.endOfFrame;
+    }
+    final row = _selectedRow.currentContext;
+    if (!mounted || row == null || !row.mounted) return;
+    await Scrollable.ensureVisible(
+      row,
+      alignment: 0.1,
+      duration: _revealDuration,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = widget.query;
     final strings = AppLocalizations.of(context)!;
     final results = ref.watch(discoveryResultsProvider);
+    ref.listen(
+      discoverySelectionProvider.select((selection) => selection.reveals),
+      (previous, next) {
+        if (next != previous) unawaited(_reveal());
+      },
+    );
+    final selection = ref.watch(discoverySelectionProvider);
+    final selector = ref.read(discoverySelectionProvider.notifier);
+    // A previewed place is not one of the rows, so no row is highlighted.
+    final selectedId = selection.previewing ? null : selection.place?.catalogId;
     // Only the server decides what Discover covers. Rows kept from a covered
     // area say nothing about one it does not, so they give way to the notice.
     final outsideCoverage =
@@ -60,6 +129,17 @@ class DiscoveryResultsSheet extends ConsumerWidget {
         (availability) => availability.config?.scoring,
       ),
     );
+    final viewport = query.viewport;
+    final exploration = ref.watch(discoveryCoverageProvider);
+    final exploring =
+        viewport != null &&
+        discoveryExplorationStatus(
+              viewport: viewport,
+              results: results,
+              exploration: exploration,
+              now: ref.read(discoveryClockProvider)(),
+            )?.kind ==
+            DiscoveryCoverageKind.exploring;
     final notifier = ref.read(discoveryResultsProvider.notifier);
     // Rows from an earlier query stay visible, dimmed, until the committed
     // query's first page replaces them.
@@ -70,18 +150,18 @@ class DiscoveryResultsSheet extends ConsumerWidget {
       DiscoveryResults(search: null, error: null) =>
         strings.discoveryLoadingPlaces,
       DiscoveryResults(search: null) => strings.discoveryThisArea,
-      DiscoveryResults(:final total) when pending =>
+      DiscoveryResults(:final total) when widget.pending =>
         strings.discoveryPlacesInPreviousArea(total),
       DiscoveryResults(:final total) => strings.discoveryPlacesInView(total),
     };
     return CustomScrollView(
-      controller: scrollController,
+      controller: widget.scrollController,
       slivers: [
         SliverToBoxAdapter(
           child: _Header(
             title: title,
             explainer: discoverySortExplainer(context, shownSort, scoring),
-            sheetController: sheetController,
+            sheetController: widget.sheetController,
             onRefresh: outsideCoverage ? null : notifier.refresh,
           ),
         ),
@@ -95,46 +175,63 @@ class DiscoveryResultsSheet extends ConsumerWidget {
           SliverToBoxAdapter(
             child: _Notice(message: strings.discoveryUnsupportedArea),
           )
-        else if (results.search == null) ...[
-          if (results.error case final error?)
-            SliverToBoxAdapter(child: _failure(strings, notifier, error))
-          else
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-        ] else ...[
-          if (results.error case final error?)
+        else ...[
+          if (viewport != null)
             SliverToBoxAdapter(
-              child: _failure(strings, notifier, error, stale: !current),
+              child: DiscoveryCoverageStrip(viewport: viewport),
             ),
-          if (current && results.items.isEmpty)
-            SliverToBoxAdapter(
-              child: _empty(
-                context,
-                strings,
-                results,
-                ref.watch(discoveryCategoryNamesProvider),
-              ),
-            ),
-          SliverList.builder(
-            itemCount: results.items.length,
-            itemBuilder: (context, index) => Opacity(
-              opacity: current ? 1 : 0.5,
-              child: DiscoveryPlaceRow(
-                item: results.items[index],
-                countryCode: results.context?.countryCode,
-                evaluatedAt: results.context!.evaluatedAt,
-                scoring: scoring,
-                origin: origin,
-              ),
-            ),
-          ),
           SliverToBoxAdapter(
-            child: _Footer(results: results, origin: origin),
+            child: DiscoveryPlacePreview(origin: widget.origin),
           ),
+          if (results.search == null)
+            SliverToBoxAdapter(
+              child: switch (results.error) {
+                final error? => _failure(strings, notifier, error),
+                null => const Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              },
+            )
+          else ...[
+            if (results.error case final error?)
+              SliverToBoxAdapter(
+                child: _failure(strings, notifier, error, stale: !current),
+              ),
+            if (current && results.items.isEmpty)
+              SliverToBoxAdapter(
+                child: _empty(
+                  context,
+                  strings,
+                  results,
+                  ref.watch(discoveryCategoryNamesProvider),
+                  exploring: exploring,
+                ),
+              ),
+            SliverList.builder(
+              itemCount: results.items.length,
+              itemBuilder: (context, index) {
+                final item = results.items[index];
+                final selected = item.catalogId == selectedId;
+                return Opacity(
+                  opacity: current ? 1 : 0.5,
+                  child: DiscoveryPlaceRow(
+                    key: selected ? _selectedRow : null,
+                    item: item,
+                    countryCode: results.context?.countryCode,
+                    evaluatedAt: results.context!.evaluatedAt,
+                    scoring: scoring,
+                    origin: widget.origin,
+                    selected: selected,
+                    onTap: () => selector.selectRow(item),
+                  ),
+                );
+              },
+            ),
+            SliverToBoxAdapter(
+              child: _Footer(results: results, origin: widget.origin),
+            ),
+          ],
         ],
         SliverPadding(
           padding: EdgeInsets.only(
@@ -151,6 +248,7 @@ class DiscoveryResultsSheet extends ConsumerWidget {
     DiscoveryError error, {
     bool stale = false,
   }) {
+    final query = widget.query;
     final message = discoveryErrorMessage(strings, error);
     final (label, action) = switch (error.failure) {
       DiscoveryFailure.connection ||
@@ -158,7 +256,7 @@ class DiscoveryResultsSheet extends ConsumerWidget {
       DiscoveryFailure.unavailable => (strings.tryAgain, notifier.retry),
       DiscoveryFailure.badQuery when query.hasFilters => (
         strings.discoveryClearFilters,
-        () => onApply(query.withoutFilters()),
+        () => widget.onApply(query.withoutFilters()),
       ),
       _ => (null, null),
     };
@@ -175,8 +273,10 @@ class DiscoveryResultsSheet extends ConsumerWidget {
     BuildContext context,
     AppLocalizations strings,
     DiscoveryResults results,
-    DiscoveryCategoryTree? categories,
-  ) {
+    DiscoveryCategoryTree? categories, {
+    required bool exploring,
+  }) {
+    final query = widget.query;
     if (query.hasFilters) {
       return _Notice(
         key: const ValueKey('discovery-empty-filtered'),
@@ -189,12 +289,18 @@ class DiscoveryResultsSheet extends ConsumerWidget {
           ).join(' · '),
         ),
         actionLabel: strings.discoveryClearFilters,
-        onAction: () => onApply(query.withoutFilters()),
+        onAction: () => widget.onApply(query.withoutFilters()),
       );
     }
     // Nothing known here at all is a gap in what Hayer has explored, not a
     // place with nothing in it.
     if ((results.coverage?.eligibleCatalogCount ?? 0) == 0) {
+      if (exploring) {
+        return _Notice(
+          key: const ValueKey('discovery-empty-exploring'),
+          message: strings.discoveryEmptyExploring,
+        );
+      }
       return _Notice(
         key: const ValueKey('discovery-empty-unexplored'),
         message: strings.discoveryEmptyUnexplored,
@@ -209,7 +315,7 @@ class DiscoveryResultsSheet extends ConsumerWidget {
       actionLabel: query.sort == DiscoverySort.best
           ? null
           : strings.discoveryShowBest,
-      onAction: () => onApply(query.withSort(DiscoverySort.best)),
+      onAction: () => widget.onApply(query.withSort(DiscoverySort.best)),
     );
   }
 }

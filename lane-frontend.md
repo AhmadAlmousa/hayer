@@ -24,9 +24,10 @@ Last updated: 2026-09-14
   commit `4014037`. G2, the results screen, landed on 2026-09-13, and G3,
   filters and categories, on 2026-09-14, followed that day by the area
   follow-up on the back-end lane's `eda8827` contract. M9-J's admin surfaces
-  landed the same day on the back-end lane's `ebbdf5f` admin contracts. G4
-  and H build on the same generated types and fakes
-  (`backend/discovery-contracts.md`). Every discovery data and admin RPC
+  landed the same day on the back-end lane's `ebbdf5f` admin contracts, and
+  G4, pins, selection and coverage, later that day on the same generated
+  types, without merging `main` while Codex is paused. H builds on the same
+  generated types and fakes (`backend/discovery-contracts.md`). Every discovery data and admin RPC
   still answers `feature_disabled`. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
@@ -54,6 +55,135 @@ Last updated: 2026-09-14
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-G4 map pins, selection and coverage — landed (2026-09-14)
+
+The last part of the Discover surface. It is built on the generated M9-C map
+and place-context contracts and on M9-E's consumer coverage contracts
+(`ensureArea`, `deepen`, `harvestStatus`), all on this branch since
+`ebbdf5f`. Every one still answers `feature_disabled`, so nothing here has
+met a real server, and Discovery stays dark. On the owner's instruction,
+`main` was not merged in while Codex is paused.
+
+**Pins.** `DiscoveryMap` (`app/lib/features/discover/discovery_map.dart`)
+draws the first page's map payload on the G1 `HayerMap` with style sources
+and layers rather than annotations:
+
+- up to the configured point limit, every match is a pin in a clustered
+  GeoJSON source, labelled with its rating, with hidden gems dark-filled;
+- above the limit, the server's aggregate cells go in a separate,
+  unclustered source, and the bar asks to "Zoom in to see places";
+- the selected place is drawn above both from a third source.
+
+The three sources and eight layers are added once per loaded style and then
+only fed new data, so repeated filter changes add nothing to the map; a
+replaced style gets them again. Tapping a pin selects its place, a cluster
+zooms in two levels, and a cell fits the camera to its bounds, which stages
+Search this area like any other move. The GeoJSON builders are pure
+functions in `discovery_map_features.dart`.
+
+Pin labels keep Western digits in Arabic. The map draws them with the tile
+style's Noto Sans, which has no Arabic-Indic digits. The list still formats
+ratings for the locale.
+
+**Selection.** `DiscoverySelectionController` keeps pins and rows in step.
+
+- A pin whose row is loaded selects that row. The sheet rises to half height
+  if it was lowered, and the row scrolls into view.
+- A pin beyond the loaded pages is previewed above the list through
+  `placeContext`, in the shown generation's query and context. No pages are
+  loaded or reordered, and a late preview for an earlier pin is dropped.
+- Tapping a row selects it and highlights its pin; tapping it again clears
+  the selection.
+- When the results are replaced from the top, a selection still among the
+  rows stays. One missing from a points payload is cleared with a notice.
+  Otherwise, as always with aggregates, the place is asked about again and
+  cleared with the notice once it no longer matches. `query_changed` reloads
+  the results once.
+
+`DiscoveryResults` gained a `generation` count, so the selection can tell a
+new first page from a later one.
+
+**Coverage.** `DiscoveryCoverageController` reports each committed area to
+`ensureArea` once, whether it came from a link, the starting area or Search
+this area. Sorting, filtering or paging the same area reports nothing.
+
+- It follows any exploration the report starts, or that the results list as
+  pending. It checks every 3 seconds, or at the job's `retryAfter` within 3 to
+  30 seconds, and stops in the background until the app returns.
+- A succeeded or partial exploration reloads the results from the top, with
+  a notice.
+- Deepen keeps its idempotency key across a failed attempt and takes a new
+  one once the server accepts it.
+- A `rate_limited` answer, or a job or footprint cooldown, disables Deepen
+  until it passes and says when.
+
+The strip (`discovery_coverage_strip.dart`) describes whichever of the
+results and the latest area receipt is newer, through
+`app/lib/domain/discovery_coverage.dart`:
+
+- Not explored yet, with how many places are already known there;
+- Partly explored, when complete footprints do not together cover the view,
+  checked by cutting the view along every footprint edge;
+- Explored, when they do, still saying there may be places not yet found;
+- Exploring, with completed and total searches;
+- when the area was last explored, and whether the last attempt finished.
+
+An empty, unexplored view that is being explored says so in place of "We
+haven't explored this area yet". Empty results under filters keep the strip
+beside Clear filters. At large text sizes the details and Deepen fold under
+the strip's title: at 200% on a 320-pixel phone the full strip was 370 pixels
+tall and pushed every row off the screen.
+
+**Strings.** Everything new is in English and Arabic.
+
+Tests:
+
+- `discovery_coverage_test.dart`: the four states, footprint unions over
+  quarters and around a centre cell, unfinished attempts, waits that count
+  only while ahead, and a finished job outranking stale coverage.
+- `discovery_map_features_test.dart`: pin, cell and selected features and
+  their labels.
+- `discovery_map_test.dart` runs the real `DiscoveryMap` over a recording
+  MapLibre platform that creates a controller. It covers sources and layers
+  added once across five query changes and a switch to cells, and again for a
+  new style; pin, cluster and cell taps; and disposal releasing taps.
+- `discovery_selection_controller_test.dart`: loaded and unloaded pins, late
+  previews, what a refresh keeps or clears, the aggregates re-check,
+  `query_changed` reloading once, and a failed preview's retry.
+- `discovery_coverage_controller_test.dart`: one report per area, following
+  an exploration to success, partial and failure, pending jobs listed by the
+  results, stopping for a new area, Deepen keys, the rate-limit wait, and the
+  newer-coverage choice.
+- `discover_map_view_test.dart` drives the screen through the real router:
+  - pins kept across pages, a loaded pin revealed, and an unloaded pin
+    previewed without touching the pages;
+  - a row highlighting its pin, and a departed selection's notice;
+  - aggregates and the zoom-in prompt;
+  - a cold area going from not explored to exploring to reloaded, and a sort
+    that reports nothing more;
+  - Deepen, the rate-limit wait, an unfinished exploration, and coverage kept
+    beside Clear filters;
+  - Arabic at 200% on 320×640 with the strip unfolded and a preview.
+
+The existing Discover tests pass unmodified.
+
+Verification: pinned full preflight passed generation, formatting, fatal-info
+analyses, 159 server, 329 app (up from 279) and 72 admin tests, shell checks,
+and diff checks. `scripts/build-release-apk.sh` produced signed `0.2.1+7` at
+107,483,215 bytes with SHA-256
+`f2dfde148db26cd3f02bff462edb1561ab7c588eae9839996964c69ff0fee44d`. It
+declares `sa.almou.hayer` versionCode 7 / versionName 0.2.1 with target SDK
+36, verifies under APK Signature Scheme v2 with the same signing certificate
+(`426f3bf4…77a6`) as previous releases, and its compiled manifest still
+carries both discovery App Link paths.
+
+Not verified here: MapLibre clustering, label glyphs, tap hit-testing, and
+pan and pinch with several hundred pins, all on a device (M9-K). Real
+coverage waits on the M9-C and M9-E implementations.
+
+Not in G4: the preview's details action and a row's details affordance are
+M9-H.
 
 ### M9-J admin surfaces — built against contracts (2026-09-14)
 
@@ -1019,6 +1149,28 @@ only in `admin_app.dart`, seven call sites against 23 ARB keys — so it is a
 pre-existing lane-wide gap rather than a P06 regression.
 
 ## Open handoffs to the back-end lane
+
+### Discover coverage freshness and request rates — noted 2026-09-14 (M9-G4)
+
+G4's strip and selection read `browse`, `ensureArea`, `harvestStatus` and
+`placeContext` in ways the M9-C and M9-E implementations need to allow.
+
+- **Freshness.** Requirement 13 expires "recently explored" after the
+  policy's freshness hours, but the consumer configuration carries no
+  freshness, so the app cannot age a footprint. Asked: return only fresh
+  footprints in `DiscoveryCoverage`, flag each one as fresh, or add the hours
+  to `DiscoveryClientLimits`. Until then the strip says Explored for any
+  complete footprint union, and always shows when the area was last explored.
+- **Exploration checks.** A followed job is checked every 3 seconds, or at
+  its `retryAfter` when that is later, capped at 30 seconds, and not at all in
+  the background. Setting `retryAfter` on `harvestStatus` slows clients down.
+- **Area reports.** `ensureArea` goes out once per committed viewport: a
+  link, the starting area, Search this area, and Back or Forward to an
+  earlier area. Repeats of the same area need to stay idempotent.
+- **Place context.** `placeContext` is read for a tapped pin outside the
+  loaded rows. It is read again after each new first page while such a place
+  stays selected and the points cannot decide, which is always the case in
+  aggregates mode.
 
 ### Discover admin contracts — requested 2026-09-14, delivered and wired 2026-09-14 (M9-J)
 

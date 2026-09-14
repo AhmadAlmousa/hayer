@@ -1446,7 +1446,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoveryCountingPlaces => 'Counting places';
 
   @override
-  String get discoveryPreviewFailed => 'Couldn’t count the places that match.';
+  String get discoveryPreviewFailed => 'Couldn’t load this place.';
 
   @override
   String get discoveryCategories => 'Categories';
@@ -1502,4 +1502,110 @@ class AppLocalizationsEn extends AppLocalizations {
   String discoveryRemoveCategory(String category) {
     return 'Remove $category';
   }
+
+  @override
+  String get discoveryZoomInForPlaces => 'Zoom in to see places';
+
+  @override
+  String get discoverySelectionGone =>
+      'The place you selected isn’t in these results anymore.';
+
+  @override
+  String get discoveryPreviewTitle => 'Selected on the map';
+
+  @override
+  String get discoveryLoadingPlace => 'Loading this place…';
+
+  @override
+  String discoveryPreviewRank(String ordinal, String total) {
+    return 'Number $ordinal of $total in this view';
+  }
+
+  @override
+  String get discoveryClearSelection => 'Clear selection';
+
+  @override
+  String get discoveryCoverageUnexplored => 'Not explored yet';
+
+  @override
+  String discoveryCoverageKnown(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString places known here from earlier searches',
+      one: '1 place known here from earlier searches',
+      zero: 'Nothing known here yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryCoveragePartial => 'Partly explored';
+
+  @override
+  String get discoveryCoveragePartialDetail =>
+      'Only part of this view has been explored.';
+
+  @override
+  String get discoveryCoverageExplored => 'Explored';
+
+  @override
+  String get discoveryCoverageExploredDetail =>
+      'All of this view has been explored. There may still be places we haven’t found.';
+
+  @override
+  String discoveryCoverageLastExplored(String when) {
+    return 'Last explored $when';
+  }
+
+  @override
+  String get discoveryCoverageExploring => 'Exploring this area…';
+
+  @override
+  String discoveryCoverageProgress(int completed, int total) {
+    final intl.NumberFormat completedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String completedString = completedNumberFormat.format(completed);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: '$completedString of $totalString searches done',
+      one: '$completedString of 1 search done',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryCoverageStarting => 'Starting…';
+
+  @override
+  String get discoveryCoverageUnfinished =>
+      'The last exploration didn’t finish.';
+
+  @override
+  String discoveryCoverageRetryAt(String time) {
+    return 'You can try again at $time.';
+  }
+
+  @override
+  String get discoveryDeepen => 'Deepen this area';
+
+  @override
+  String get discoveryDeepenFailed => 'Couldn’t start exploring this area.';
+
+  @override
+  String get discoveryEmptyExploring =>
+      'We’re exploring this area now. Places will show up here as we find them.';
+
+  @override
+  String get discoveryExplorationUpdated =>
+      'Results updated with newly explored places.';
 }

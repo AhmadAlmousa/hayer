@@ -67,6 +67,8 @@ class DiscoveryPlaceRow extends StatelessWidget {
     required this.evaluatedAt,
     required this.scoring,
     this.origin,
+    this.selected = false,
+    this.onTap,
   });
 
   final DiscoverPlace item;
@@ -81,8 +83,24 @@ class DiscoveryPlaceRow extends StatelessWidget {
   /// The permitted device location distances are measured from, if any.
   final DiscoveryPoint? origin;
 
+  /// Whether this place is the one selected on the map.
+  final bool selected;
+  final VoidCallback? onTap;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Semantics(
+    selected: selected,
+    child: Material(
+      color: selected
+          ? Theme.of(context).colorScheme.primaryContainer
+          : Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(onTap: onTap, child: _content(context)),
+    ),
+  );
+
+  Widget _content(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;

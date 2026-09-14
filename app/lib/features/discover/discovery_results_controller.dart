@@ -103,6 +103,7 @@ final class DiscoveryResults {
     this.error,
     this.moreError,
     this.restarts = 0,
+    this.generation = 0,
   });
 
   /// The search [items] answer, or null while nothing has loaded yet.
@@ -135,6 +136,10 @@ final class DiscoveryResults {
   /// from the top. The screen explains each new restart.
   final int restarts;
 
+  /// Counts the first pages shown, so it changes whenever the results are
+  /// replaced from the top rather than extended.
+  final int generation;
+
   bool get hasMore => nextCursor != null;
 
   DiscoveryResults _copyWith({
@@ -164,6 +169,7 @@ final class DiscoveryResults {
         ? this.moreError
         : moreError as DiscoveryError?,
     restarts: restarts,
+    generation: generation,
   );
 }
 
@@ -352,6 +358,7 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults>
       map: page.map,
       coverage: page.coverage,
       restarts: state.restarts + (restarted ? 1 : 0),
+      generation: state.generation + 1,
     );
     _scheduleOpenNowCheck(search);
   }

@@ -39,6 +39,14 @@ typedef BrowseRequest = ({
 
 typedef FacetsRequest = ({DiscoverQuery query, DiscoverQueryContext context});
 
+typedef PlaceContextRequest = ({
+  PoiIdentity identity,
+  DiscoverQuery query,
+  DiscoverQueryContext context,
+});
+
+typedef DeepenRequest = ({DiscoverViewport viewport, String idempotencyKey});
+
 /// Answers browse with [onBrowse], or with three places by default, and
 /// records every request.
 class FakeDiscoveryRepository extends Fake implements DiscoveryRepository {
@@ -93,6 +101,74 @@ class FakeDiscoveryRepository extends Fake implements DiscoveryRepository {
     taxonomyCalls++;
     return (onTaxonomy ?? () async => testTaxonomy())();
   }
+
+  final placeContextRequests = <PlaceContextRequest>[];
+
+  /// Answers place context instead of an eligible [testPlaceContext].
+  Future<DiscoverPlaceContext> Function(PlaceContextRequest request)?
+  onPlaceContext;
+
+  @override
+  Future<DiscoverPlaceContext> placeContext({
+    required PoiIdentity identity,
+    required DiscoverQuery query,
+    required DiscoverQueryContext context,
+  }) async {
+    final request = (identity: identity, query: query, context: context);
+    placeContextRequests.add(request);
+    return (onPlaceContext ??
+        (request) async => testPlaceContext(context: request.context))(
+      request,
+    );
+  }
+
+  final ensureAreaRequests = <DiscoverViewport>[];
+
+  /// Answers reporting an area instead of an idle [testReceipt].
+  Future<DiscoveryAreaReceipt> Function(DiscoverViewport viewport)?
+  onEnsureArea;
+
+  @override
+  Future<DiscoveryAreaReceipt> ensureArea({
+    required DiscoverViewport viewport,
+  }) async {
+    ensureAreaRequests.add(viewport);
+    return (onEnsureArea ?? (_) async => testReceipt())(viewport);
+  }
+
+  final deepenRequests = <DeepenRequest>[];
+
+  /// Answers Deepen instead of a receipt for a started exploration.
+  Future<DiscoveryAreaReceipt> Function(DeepenRequest request)? onDeepen;
+
+  @override
+  Future<DiscoveryAreaReceipt> deepen({
+    required DiscoverViewport viewport,
+    required String idempotencyKey,
+  }) async {
+    final request = (viewport: viewport, idempotencyKey: idempotencyKey);
+    deepenRequests.add(request);
+    return (onDeepen ??
+        (_) async => testReceipt(
+          job: testHarvestJob(trigger: DiscoveryHarvestTrigger.deepen),
+        ))(request);
+  }
+
+  final harvestStatusRequests = <String>[];
+
+  /// Answers an exploration check instead of a finished [testHarvestJob].
+  Future<DiscoveryHarvestStatus> Function(String jobId)? onHarvestStatus;
+
+  @override
+  Future<DiscoveryHarvestStatus> harvestStatus({required String jobId}) async {
+    harvestStatusRequests.add(jobId);
+    return (onHarvestStatus ??
+        (jobId) async => testHarvestJob(
+          jobId: jobId,
+          state: DiscoveryHarvestState.succeeded,
+          completed: 9,
+        ))(jobId);
+  }
 }
 
 DiscoverQueryContext testQueryContext({
@@ -114,6 +190,8 @@ DiscoverBrowsePage testBrowsePage({
   String? nextCursor,
   int eligible = 100,
   bool includeMap = true,
+  DiscoveryMapPayload? map,
+  DiscoveryCoverage? coverage,
 }) {
   final places = items ?? [for (var id = 1; id <= 3; id++) testPlace(id)];
   return DiscoverBrowsePage(
@@ -123,19 +201,130 @@ DiscoverBrowsePage testBrowsePage({
     fetchedAt: testEvaluatedAt,
     nextCursor: nextCursor,
     map: includeMap
-        ? DiscoveryMapPayload(
-            mode: DiscoveryMapMode.points,
-            points: const [],
-            aggregates: const [],
-          )
+        ? map ??
+              DiscoveryMapPayload(
+                mode: DiscoveryMapMode.points,
+                points: const [],
+                aggregates: const [],
+              )
         : null,
-    coverage: DiscoveryCoverage(
-      eligibleCatalogCount: eligible,
-      footprints: const [],
-      pendingJobs: const [],
-    ),
+    coverage: coverage ?? testCoverage(eligible: eligible),
   );
 }
+
+DiscoverViewport testWireViewport([DiscoveryViewport? viewport]) {
+  final box = viewport ?? testViewport;
+  return DiscoverViewport(
+    south: box.south,
+    west: box.west,
+    north: box.north,
+    east: box.east,
+  );
+}
+
+DiscoveryCoverage testCoverage({
+  int eligible = 100,
+  List<DiscoveryCoverageFootprint> footprints = const [],
+  List<DiscoveryHarvestStatus> pendingJobs = const [],
+}) => DiscoveryCoverage(
+  eligibleCatalogCount: eligible,
+  footprints: footprints,
+  pendingJobs: pendingJobs,
+);
+
+/// A harvest cell over [bounds], or the whole test viewport, that last
+/// succeeded at [lastSuccessAt] with every query group complete unless
+/// [incomplete] names some.
+DiscoveryCoverageFootprint testFootprint({
+  DiscoveryViewport? bounds,
+  String cellId = 'cell-1',
+  DateTime? lastAttemptAt,
+  DateTime? lastSuccessAt,
+  List<String> incomplete = const [],
+  DateTime? retryAfter,
+}) => DiscoveryCoverageFootprint(
+  cellId: cellId,
+  bounds: testWireViewport(bounds),
+  manifestRevision: 1,
+  completedQueryGroups: const ['food', 'things'],
+  incompleteQueryGroups: incomplete,
+  lastAttemptAt: lastAttemptAt ?? lastSuccessAt,
+  lastSuccessAt: lastSuccessAt,
+  retryAfter: retryAfter,
+);
+
+DiscoveryHarvestStatus testHarvestJob({
+  String jobId = 'job-1',
+  DiscoveryHarvestState state = DiscoveryHarvestState.running,
+  DiscoveryHarvestTrigger trigger = DiscoveryHarvestTrigger.committedSearch,
+  int completed = 2,
+  int total = 9,
+  DateTime? retryAfter,
+}) => DiscoveryHarvestStatus(
+  jobId: jobId,
+  state: state,
+  trigger: trigger,
+  bounds: testWireViewport(),
+  manifestRevision: 1,
+  completedQueries: completed,
+  totalQueries: total,
+  observedPlaces: completed * 4,
+  fetchedAt: testEvaluatedAt,
+  retryAfter: retryAfter,
+);
+
+DiscoveryAreaReceipt testReceipt({
+  DiscoveryCoverage? coverage,
+  DiscoveryHarvestStatus? job,
+  DateTime? retryAfter,
+  DateTime? fetchedAt,
+}) => DiscoveryAreaReceipt(
+  coverage: coverage ?? testCoverage(),
+  job: job,
+  retryAfter: retryAfter,
+  fetchedAt: fetchedAt ?? testEvaluatedAt,
+);
+
+DiscoveryMapPoint testMapPoint(
+  int id, {
+  double? rating = 4.3,
+  bool hiddenGem = false,
+  double latitude = 24.71,
+  double longitude = 46.71,
+}) => DiscoveryMapPoint(
+  catalogId: id,
+  provider: 'google-web',
+  placeId: 'place-$id',
+  name: 'Place $id',
+  latitude: latitude,
+  longitude: longitude,
+  rating: rating,
+  hiddenGem: hiddenGem,
+);
+
+DiscoveryMapPayload testPointsMap(Iterable<int> ids) => DiscoveryMapPayload(
+  mode: DiscoveryMapMode.points,
+  points: [for (final id in ids) testMapPoint(id)],
+  aggregates: const [],
+);
+
+DiscoverPlaceContext testPlaceContext({
+  bool eligible = true,
+  DiscoverPlace? place,
+  int? ordinal = 120,
+  int total = 240,
+  DiscoverQueryContext? context,
+}) => DiscoverPlaceContext(
+  eligible: eligible,
+  place: eligible ? place : null,
+  ordinal: eligible ? ordinal : null,
+  total: total,
+  ratingPercentile: eligible ? 62.5 : null,
+  populationCategoryId: null,
+  ratingDistribution: const [],
+  context: context ?? testQueryContext(),
+  fetchedAt: testEvaluatedAt,
+);
 
 DiscoverPlace testPlace(
   int id, {

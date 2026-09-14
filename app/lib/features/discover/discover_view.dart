@@ -3,22 +3,27 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hayer_client/hayer_client.dart'
+    show DiscoveryHarvestState, DiscoveryMapMode;
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/providers.dart';
 import '../../domain/discovery_area.dart';
 import '../../domain/discovery_category_tree.dart';
+import '../../domain/discovery_coverage.dart';
 import '../../domain/discovery_url_query.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'discovery_area_labels.dart';
 import 'discovery_category_sheet.dart';
 import 'discovery_config_controller.dart';
+import 'discovery_coverage_controller.dart';
 import 'discovery_filter_bar.dart';
 import 'discovery_filter_sheet.dart';
 import 'discovery_map.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
 import 'discovery_search.dart';
+import 'discovery_selection_controller.dart';
 import 'discovery_sort_text.dart';
 import 'discovery_taxonomy_provider.dart';
 
@@ -137,6 +142,8 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     ref
         .read(discoveryResultsProvider.notifier)
         .show(DiscoverySearch(query: _query));
+    // Reported once per committed area; sorts and filters keep the area.
+    ref.read(discoveryCoverageProvider.notifier).ensure(viewport);
   }
 
   /// Opens a link without a viewport at the permitted device location, else
@@ -369,6 +376,31 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     ref.listen(discoveryTaxonomyProvider, (_, next) {
       if (next.hasValue) _commit();
     });
+    ref.listen(
+      discoverySelectionProvider.select((selection) => selection.departures),
+      (previous, next) {
+        if (next > (previous ?? 0)) _notify(strings.discoverySelectionGone);
+      },
+    );
+    ref.listen(discoveryCoverageProvider.select((coverage) => coverage.job), (
+      previous,
+      next,
+    ) {
+      final found =
+          next?.state == DiscoveryHarvestState.succeeded ||
+          next?.state == DiscoveryHarvestState.partial;
+      if (found &&
+          previous?.jobId == next?.jobId &&
+          !discoveryHarvestFinished(previous!.state)) {
+        _notify(strings.discoveryExplorationUpdated);
+      }
+    });
+    final places = ref.watch(
+      discoveryResultsProvider.select((results) => results.map),
+    );
+    final selected = ref.watch(
+      discoverySelectionProvider.select((selection) => selection.place?.marker),
+    );
     final viewport = _query.viewport;
     final pending = _pending;
     final area = _areaLabel ?? strings.discoveryThisArea;
@@ -391,6 +423,11 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                             viewport: viewport,
                             onVisibleViewport: (visible) =>
                                 setState(() => _visible = visible),
+                            places: places,
+                            selected: selected,
+                            onPlace: ref
+                                .read(discoverySelectionProvider.notifier)
+                                .selectPoint,
                           ),
                   ),
                   Positioned(
@@ -417,6 +454,32 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                           onCategories: _openCategories,
                           onApply: _apply,
                         ),
+                        if (places?.mode == DiscoveryMapMode.aggregates &&
+                            !pending)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Material(
+                                key: const ValueKey('discovery-zoom-in'),
+                                color: colors.inverseSurface,
+                                shape: const StadiumBorder(),
+                                elevation: 2,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 8,
+                                  ),
+                                  child: Text(
+                                    strings.discoveryZoomInForPlaces,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: colors.onInverseSurface,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         if (pending)
                           Center(
                             child: Padding(

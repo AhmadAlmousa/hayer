@@ -1451,7 +1451,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoveryCountingPlaces => 'جارٍ عدّ الأماكن';
 
   @override
-  String get discoveryPreviewFailed => 'تعذّر عدّ الأماكن المطابقة.';
+  String get discoveryPreviewFailed => 'تعذّر تحميل هذا المكان.';
 
   @override
   String get discoveryCategories => 'الفئات';
@@ -1510,4 +1510,114 @@ class AppLocalizationsAr extends AppLocalizations {
   String discoveryRemoveCategory(String category) {
     return 'إزالة $category';
   }
+
+  @override
+  String get discoveryZoomInForPlaces => 'كبّر الخريطة لرؤية الأماكن';
+
+  @override
+  String get discoverySelectionGone =>
+      'المكان الذي اخترته لم يعد ضمن هذه النتائج.';
+
+  @override
+  String get discoveryPreviewTitle => 'المحدّد على الخريطة';
+
+  @override
+  String get discoveryLoadingPlace => 'جارٍ تحميل هذا المكان…';
+
+  @override
+  String discoveryPreviewRank(String ordinal, String total) {
+    return 'رقم $ordinal من $total في هذا العرض';
+  }
+
+  @override
+  String get discoveryClearSelection => 'إلغاء التحديد';
+
+  @override
+  String get discoveryCoverageUnexplored => 'لم تُستكشف بعد';
+
+  @override
+  String discoveryCoverageKnown(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'نعرف $countString مكان هنا من عمليات بحث سابقة',
+      many: 'نعرف $countString مكانًا هنا من عمليات بحث سابقة',
+      few: 'نعرف $countString أماكن هنا من عمليات بحث سابقة',
+      two: 'نعرف مكانين هنا من عمليات بحث سابقة',
+      one: 'نعرف مكانًا واحدًا هنا من عمليات بحث سابقة',
+      zero: 'لا نعرف أماكن هنا بعد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryCoveragePartial => 'مُستكشفة جزئيًا';
+
+  @override
+  String get discoveryCoveragePartialDetail => 'استُكشف جزء من هذا العرض فقط.';
+
+  @override
+  String get discoveryCoverageExplored => 'مُستكشفة';
+
+  @override
+  String get discoveryCoverageExploredDetail =>
+      'استُكشف هذا العرض كله. قد تبقى أماكن لم نعثر عليها بعد.';
+
+  @override
+  String discoveryCoverageLastExplored(String when) {
+    return 'آخر استكشاف: $when';
+  }
+
+  @override
+  String get discoveryCoverageExploring => 'نستكشف هذه المنطقة…';
+
+  @override
+  String discoveryCoverageProgress(int completed, int total) {
+    final intl.NumberFormat completedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String completedString = completedNumberFormat.format(completed);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'اكتمل $completedString من $totalString عملية بحث',
+      many: 'اكتمل $completedString من $totalString عملية بحث',
+      few: 'اكتمل $completedString من $totalString عمليات بحث',
+      two: 'اكتمل $completedString من بحثين',
+      one: 'اكتمل $completedString من بحث واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discoveryCoverageStarting => 'نبدأ الاستكشاف…';
+
+  @override
+  String get discoveryCoverageUnfinished => 'لم يكتمل آخر استكشاف.';
+
+  @override
+  String discoveryCoverageRetryAt(String time) {
+    return 'يمكنك المحاولة مجددًا عند $time.';
+  }
+
+  @override
+  String get discoveryDeepen => 'استكشف المنطقة أكثر';
+
+  @override
+  String get discoveryDeepenFailed => 'تعذّر بدء استكشاف هذه المنطقة.';
+
+  @override
+  String get discoveryEmptyExploring =>
+      'نستكشف هذه المنطقة الآن. ستظهر الأماكن هنا عند العثور عليها.';
+
+  @override
+  String get discoveryExplorationUpdated =>
+      'حُدّثت النتائج بأماكن استُكشفت حديثًا.';
 }

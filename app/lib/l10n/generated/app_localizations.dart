@@ -2429,7 +2429,7 @@ abstract class AppLocalizations {
   /// No description provided for @discoveryPreviewFailed.
   ///
   /// In en, this message translates to:
-  /// **'Couldn’t count the places that match.'**
+  /// **'Couldn’t load this place.'**
   String get discoveryPreviewFailed;
 
   /// No description provided for @discoveryCategories.
@@ -2503,6 +2503,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove {category}'**
   String discoveryRemoveCategory(String category);
+
+  /// No description provided for @discoveryZoomInForPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in to see places'**
+  String get discoveryZoomInForPlaces;
+
+  /// No description provided for @discoverySelectionGone.
+  ///
+  /// In en, this message translates to:
+  /// **'The place you selected isn’t in these results anymore.'**
+  String get discoverySelectionGone;
+
+  /// No description provided for @discoveryPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected on the map'**
+  String get discoveryPreviewTitle;
+
+  /// No description provided for @discoveryLoadingPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading this place…'**
+  String get discoveryLoadingPlace;
+
+  /// No description provided for @discoveryPreviewRank.
+  ///
+  /// In en, this message translates to:
+  /// **'Number {ordinal} of {total} in this view'**
+  String discoveryPreviewRank(String ordinal, String total);
+
+  /// No description provided for @discoveryClearSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get discoveryClearSelection;
+
+  /// No description provided for @discoveryCoverageUnexplored.
+  ///
+  /// In en, this message translates to:
+  /// **'Not explored yet'**
+  String get discoveryCoverageUnexplored;
+
+  /// No description provided for @discoveryCoverageKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing known here yet} =1{1 place known here from earlier searches} other{{count} places known here from earlier searches}}'**
+  String discoveryCoverageKnown(int count);
+
+  /// No description provided for @discoveryCoveragePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Partly explored'**
+  String get discoveryCoveragePartial;
+
+  /// No description provided for @discoveryCoveragePartialDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Only part of this view has been explored.'**
+  String get discoveryCoveragePartialDetail;
+
+  /// No description provided for @discoveryCoverageExplored.
+  ///
+  /// In en, this message translates to:
+  /// **'Explored'**
+  String get discoveryCoverageExplored;
+
+  /// No description provided for @discoveryCoverageExploredDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'All of this view has been explored. There may still be places we haven’t found.'**
+  String get discoveryCoverageExploredDetail;
+
+  /// No description provided for @discoveryCoverageLastExplored.
+  ///
+  /// In en, this message translates to:
+  /// **'Last explored {when}'**
+  String discoveryCoverageLastExplored(String when);
+
+  /// No description provided for @discoveryCoverageExploring.
+  ///
+  /// In en, this message translates to:
+  /// **'Exploring this area…'**
+  String get discoveryCoverageExploring;
+
+  /// No description provided for @discoveryCoverageProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{total, plural, =1{{completed} of 1 search done} other{{completed} of {total} searches done}}'**
+  String discoveryCoverageProgress(int completed, int total);
+
+  /// No description provided for @discoveryCoverageStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting…'**
+  String get discoveryCoverageStarting;
+
+  /// No description provided for @discoveryCoverageUnfinished.
+  ///
+  /// In en, this message translates to:
+  /// **'The last exploration didn’t finish.'**
+  String get discoveryCoverageUnfinished;
+
+  /// No description provided for @discoveryCoverageRetryAt.
+  ///
+  /// In en, this message translates to:
+  /// **'You can try again at {time}.'**
+  String discoveryCoverageRetryAt(String time);
+
+  /// No description provided for @discoveryDeepen.
+  ///
+  /// In en, this message translates to:
+  /// **'Deepen this area'**
+  String get discoveryDeepen;
+
+  /// No description provided for @discoveryDeepenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t start exploring this area.'**
+  String get discoveryDeepenFailed;
+
+  /// No description provided for @discoveryEmptyExploring.
+  ///
+  /// In en, this message translates to:
+  /// **'We’re exploring this area now. Places will show up here as we find them.'**
+  String get discoveryEmptyExploring;
+
+  /// No description provided for @discoveryExplorationUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Results updated with newly explored places.'**
+  String get discoveryExplorationUpdated;
 }
 
 class _AppLocalizationsDelegate

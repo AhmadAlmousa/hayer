@@ -40,4 +40,46 @@ class DiscoveryRepository {
     client,
     client.discover.taxonomy,
   ).timeout(_timeout);
+
+  /// Where one place stands in a query generation, for a place that is not
+  /// among the loaded rows.
+  Future<DiscoverPlaceContext> placeContext({
+    required PoiIdentity identity,
+    required DiscoverQuery query,
+    required DiscoverQueryContext context,
+  }) => withAnonymousAuthentication(
+    client,
+    () => client.discover.placeContext(
+      identity: identity,
+      query: query,
+      context: context,
+    ),
+  ).timeout(_timeout);
+
+  /// Reports a committed area, which the server may start exploring.
+  Future<DiscoveryAreaReceipt> ensureArea({
+    required DiscoverViewport viewport,
+  }) => withAnonymousAuthentication(
+    client,
+    () => client.discover.ensureArea(viewport: viewport),
+  ).timeout(_timeout);
+
+  /// Asks the server to explore an area further. A retry of the same request
+  /// sends the same [idempotencyKey].
+  Future<DiscoveryAreaReceipt> deepen({
+    required DiscoverViewport viewport,
+    required String idempotencyKey,
+  }) => withAnonymousAuthentication(
+    client,
+    () => client.discover.deepen(
+      viewport: viewport,
+      idempotencyKey: idempotencyKey,
+    ),
+  ).timeout(_timeout);
+
+  Future<DiscoveryHarvestStatus> harvestStatus({required String jobId}) =>
+      withAnonymousAuthentication(
+        client,
+        () => client.discover.harvestStatus(jobId: jobId),
+      ).timeout(_timeout);
 }
