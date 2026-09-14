@@ -1310,8 +1310,8 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'countryCode': _i1.ParameterDescription(
               name: 'countryCode',
-              type: _i1.getType<String>(),
-              nullable: false,
+              type: _i1.getType<String?>(),
+              nullable: true,
             ),
           },
           call:
@@ -1335,8 +1335,8 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'countryCode': _i1.ParameterDescription(
               name: 'countryCode',
-              type: _i1.getType<String>(),
-              nullable: false,
+              type: _i1.getType<String?>(),
+              nullable: true,
             ),
             'idempotencyKey': _i1.ParameterDescription(
               name: 'idempotencyKey',
@@ -1737,6 +1737,37 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['place'] as _i6.PlaceEndpoint).reverseGeocode(
+                    session,
+                    latitude: params['latitude'],
+                    longitude: params['longitude'],
+                    languageCode: params['languageCode'],
+                  ),
+        ),
+        'reverseGeocodeDetails': _i1.MethodConnector(
+          name: 'reverseGeocodeDetails',
+          params: {
+            'latitude': _i1.ParameterDescription(
+              name: 'latitude',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'longitude': _i1.ParameterDescription(
+              name: 'longitude',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'languageCode': _i1.ParameterDescription(
+              name: 'languageCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['place'] as _i6.PlaceEndpoint)
+                  .reverseGeocodeDetails(
                     session,
                     latitude: params['latitude'],
                     longitude: params['longitude'],

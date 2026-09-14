@@ -68,6 +68,7 @@ place:
   - reportCatalogIssue:
   - suggest:
   - reverseGeocode:
+  - reverseGeocodeDetails:
   - routeEstimate:
   - reportIssue:
 taxonomy:

@@ -1,6 +1,7 @@
 # Discovery frontend handoff — contract v1
 
-Delivered on 13 September 2026 for M9-B/C/D and the consumer part of M9-E.
+Delivered on 13 September 2026 for M9-B/C/D and the consumer part of M9-E;
+amended on 14 September 2026 for the M9-G2 area handoff.
 The generated `hayer_client` types are ready for frontend development with
 `Fake implements Client` and endpoint doubles. The merged frontend prework is
 on `main` (`d4b58b7`). Bring the frontend lane forward with
@@ -84,13 +85,18 @@ client.discover.placeContext(identity: identity, query: query, context: context)
 though the server declares defaults. `context` and `cursor` are nullable for
 browse; facets and placeContext require a context.
 
-`DiscoverQuery` holds `viewport` (`south/west/north/east`), `countryCode`,
+`DiscoverQuery` holds `viewport` (`south/west/north/east`), nullable
+`countryCode`,
 `sort`, `categoryIds`, `reviewBands`, nullable `exactPriceLevel` and
 `minimumRating`, `hoursWindows`, `text` and `completeness`. Empty lists/text and
 null scalar filters mean no restriction. Resolve the URL's optional viewport
-to the app's area fallback before the call. `countryCode` describes that area,
-not the device's current location. Bounds must be within supported coverage;
-the implementation will validate finite, ordered coordinates and area limits.
+to the app's area fallback before the call. Omit `countryCode`: the server
+resolves it from the viewport and returns it in `DiscoverQueryContext`.
+An older client may still send a country hint; the implementation must reject
+a hint that does not match the resolved area with `unsupported_area`. It must
+never infer the area country from the device's current location. Bounds must
+be within supported coverage; the implementation will validate finite,
+ordered coordinates and area limits.
 
 Use the generated `DiscoverSort`, `DiscoverReviewBand`, `DiscoverHoursWindow`
 and `DiscoverCompleteness` enums. They serialize **by name**. Their Dart names
@@ -101,8 +107,9 @@ Map URL `priceLevel` to `exactPriceLevel` and the minimum-rating enum's numeric
 value to `minimumRating`.
 
 The first browse sends null context/cursor. Reuse its returned
-`DiscoverQueryContext` (opaque `fingerprint`, policy/taxonomy revisions and
-server `evaluatedAt`) for the matching facets, later pages and place context.
+`DiscoverQueryContext` (opaque `fingerprint`, resolved `countryCode`,
+policy/taxonomy revisions and server `evaluatedAt`) for the matching facets,
+later pages and place context.
 It freezes hours evaluation for that generation, not the catalog contents.
 Keep context and cursor out of share URLs. Reset from the first page on
 `query_changed`, a changed revision, explicit Refresh or completed harvesting.
@@ -161,9 +168,9 @@ client.place.reportCatalogIssue(
   catalogId: catalogId, issueType: issueType, details: optionalDetails,
   idempotencyKey: stableRetryKey,
 );
-client.discover.ensureArea(viewport: viewport, countryCode: countryCode);
+client.discover.ensureArea(viewport: viewport);
 client.discover.deepen(
-  viewport: viewport, countryCode: countryCode, idempotencyKey: stableRetryKey,
+  viewport: viewport, idempotencyKey: stableRetryKey,
 );
 client.discover.harvestStatus(jobId: jobId);
 ```
@@ -201,6 +208,13 @@ count, cell footprints, query-group completion and pending jobs. Poll the
 returned job id; distinguish `succeeded`, `partial`, `failed` and `cancelled`.
 Terminal success/partial results can refresh visible data without claiming the
 area is complete. A job's observed-place count is not necessarily new inserts.
+
+For the area bar, call `place.reverseGeocodeDetails` with the viewport centre.
+It shares the existing reverse-geocoder cache, queue, rate limit and language
+handling, and returns `formattedAddress`, nullable `locality`, `city`, `region`
+and `countryCode`. Prefer locality, then city, for the short area label; do not
+parse the formatted line by comma position. The existing string-returning
+`place.reverseGeocode` remains available to older consumers.
 
 ## Admin and implementation boundaries
 

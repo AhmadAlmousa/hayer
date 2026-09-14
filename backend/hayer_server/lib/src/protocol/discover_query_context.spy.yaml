@@ -1,6 +1,7 @@
 class: DiscoverQueryContext
 fields:
   fingerprint: String
+  countryCode: String
   policyRevision: int
   taxonomyRevision: int
   evaluatedAt: DateTime

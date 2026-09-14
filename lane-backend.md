@@ -9,7 +9,7 @@ over on 2026-09-11 and continues this log rather than starting a new one.
 acceptance gates. Detailed back-end checkpoints and front-end handoffs live
 here so the two lanes do not repeatedly edit the same evidence paragraphs.
 
-Last updated: 2026-09-13
+Last updated: 2026-09-14
 
 ## Current state
 
@@ -44,8 +44,46 @@ Last updated: 2026-09-13
   `main`. It adds no new backend handoff: G2–G4 can continue against the dark
   generated contracts and fakes. The next discovery backend slice remains
   M9-A's shared source/observation writer, followed by persistent M9-B/C/D/E.
+- M9-G2's area handoffs are reflected in the generated contract. The app no
+  longer has to guess a country from rough boxes, and a structured consumer
+  reverse-geocode read exposes locality and city without parsing an address
+  line. Discovery data methods remain dark until their implementation gates.
 
 ## Checkpoints
+
+### M9-G2 area contract follow-up — delivered (2026-09-14)
+
+The discovery country is now server-authoritative. `DiscoverQuery.countryCode`
+is an optional compatibility hint, and `ensureArea` and `deepen` no longer
+require one. The first browse context returns the resolved `countryCode`, so
+later reads can remain pinned to the same area interpretation. When the dark
+browse and coverage stubs are implemented, they must derive the country from
+the viewport and reject a supplied hint that disagrees with it as
+`unsupported_area`; they must not use the device location. No provider work is
+added while discovery still returns `feature_disabled`.
+
+`place.reverseGeocodeDetails` is an additive consumer read returning the
+formatted address plus nullable locality, city, region and country code. It
+uses the same validation, authenticated rate limit, shared geocoder admission,
+cache and language handling as the existing string-returning
+`place.reverseGeocode`. `ResolvedLocation` now retains Nominatim's structured
+locality rather than using it only while assembling the formatted line. The
+frontend can label the area with locality, then city, without guessing a comma
+position. Existing Swipe callers and older clients keep the string RPC.
+
+The generated server bindings, client package and integration test tools were
+refreshed, and `backend/discovery-contracts.md` carries the exact client
+handoff. The Data & Privacy additions for the retained Discover link, the last
+searched area and the fact that Discover sends a map area remain the frontend
+lane's deliberate M9-K release-copy pass; this contract follow-up does not
+change live copy.
+
+Verification: pinned full preflight passed generation and formatting, all
+fatal-info analyses, 156 server tests, 207 app tests and 51 admin tests. The
+guarded disposable-PostGIS suite passed all 52 tests, including omitted country
+arguments and the new RPC's authentication boundary. Existing custom-PostGIS
+schema metadata warnings remain. No schema migration or production activation
+is introduced.
 
 ### F10/F21 source resilience and truthful refresh jobs — implemented locally (2026-09-13)
 
@@ -570,6 +608,24 @@ both manifests and APK Signature Scheme v2 verify. The backend-only change
 correctly leaves the APK bytes unchanged from the prior P06 build.
 
 ## Open handoffs to the front-end lane
+
+### M9-G2 authoritative area fields — ready 2026-09-14
+
+After bringing forward the regenerated `hayer_client`, omit `countryCode` from
+`DiscoverQuery`, `ensureArea` and `deepen`; remove the rough-box
+`discoveryCountryFor` decision from request construction. Read the server's
+resolved country from the first browse response's
+`DiscoverQueryContext.countryCode`. The optional request field remains only so
+older clients can send a compatibility hint.
+
+For the top-bar label, call `place.reverseGeocodeDetails` with the same
+coordinates and language code used by the current reverse-geocode call. Prefer
+`locality`, then `city`, and retain "This area" as the failure fallback. Do not
+parse `formattedAddress` by position. The new read consumes the same shared F09
+budget and cache as the old one.
+
+The Data & Privacy copy remains intentionally queued for M9-K as recorded in
+the frontend lane; no copy change is part of this handoff.
 
 ### F17 lightweight progress contract — back-end complete (2026-09-09)
 
