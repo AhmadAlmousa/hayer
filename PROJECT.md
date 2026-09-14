@@ -890,7 +890,9 @@ ships dark behind `discoveryEnabled`. Scope, ownership, contracts and
 dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 §"Implementation plan"; each lane log holds its evidence.
 
-- [ ] M9-A — Shared source and observation writer (back end, after F08).
+- [x] M9-A — Shared source and observation writer (back end). Raw provider
+  pages are evidence-neutral; Swipe adds its query evidence in its adapter,
+  while the shared writer persists broad/detail observations independently.
 - [~] M9-B — Flag, configuration and Discover taxonomy (back end). Public
   disabled config and generated policy/tree contracts delivered; persistence,
   seed, validation and lifecycle implementation remain open.

@@ -52,8 +52,37 @@ Last updated: 2026-09-14
   lifecycle, harvest job inspection, unmapped/ambiguous type reporting and
   shared-cache growth/reuse metrics. Their storage and worker implementations
   remain dark alongside the earlier consumer contracts.
+- M9-A is complete. Raw Google result pages no longer manufacture Swipe
+  evidence, and the shared observation writer persists valid broad/detail
+  observations without changing Swipe evidence or coverage semantics.
 
 ## Checkpoints
+
+### M9-A shared source and observation writer — complete (2026-09-14)
+
+`GoogleWebPlaceSource.fetchPage` now exposes one bounded provider page whose
+observations carry no automatic Swipe category evidence. `PlaceSearchService`
+remains the Swipe-only adapter that attaches the exact query category before
+selection. `CatalogObservationWriter` unconditionally upserts the valid
+observations it receives and independently accepts optional Swipe evidence and
+coverage, so broad harvests and focused detail refreshes can grow the shared
+catalog without manufacturing either.
+
+The catalog conflict update retains established evidence-backed category ids
+inside a fresher unevidenced snapshot; a later evidence upsert in the same
+transaction still rebuilds the exact current category union. The new guarded
+PostGIS regression proves an unevidenced batch adds a catalog row while leaving
+the prior evidence and coverage row counts unchanged and retaining an existing
+place's categories. A stubbed transport test proves single-page retrieval makes
+one search request and returns evidence-neutral observations. Existing Swipe
+selection/evidence tests pass unchanged.
+
+Verification: pinned full preflight passed generation, formatting, all
+fatal-info analyses, 160 server tests, 279 app tests and 51 admin tests. The
+guarded remote PostGIS suite passed all 53 tests, including the new shared
+writer regression. The signed `0.2.1+7` APK is 107,122,415 bytes, verifies with
+APK Signature Scheme v2, and has SHA-256
+`d5aaca0b71174fc3d93d64699b2706e62fcf83fdaaa23e5912de60a6967a14a5`.
 
 ### M9-E admin contract handoff — delivered (2026-09-14)
 

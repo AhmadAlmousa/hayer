@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import 'catalog_observation_writer.dart';
 import 'catalog_persistence.dart';
 import 'catalog_spatial_query.dart';
 import 'google_web_place_source.dart';
@@ -425,11 +426,10 @@ class CatalogPlaceService {
     required int freshHours,
     required String? partialFailureCode,
   }) async {
-    final queryByCategory = {
-      for (final query in queries) query.categoryId: query.query,
-    };
-    final queryKey = {parentCategoryId, ...queryByCategory.keys}.toList()
-      ..sort();
+    final queryKey = {
+      parentCategoryId,
+      ...queries.map((query) => query.categoryId),
+    }.toList()..sort();
     final coverageKey = _coverageKey(
       categoryIds: queryKey,
       countryCode: countryCode,
@@ -437,102 +437,29 @@ class CatalogPlaceService {
       longitude: longitude,
       radiusMeters: radiusMeters,
     );
-    final evidencePrefix = catalogEvidencePrefix(calibrationVersion);
-    final uniquePlaces = {
-      for (final place in places) place.placeId: place,
-    }.values.toList()..sort((a, b) => a.placeId.compareTo(b.placeId));
-    final catalogInput = <Map<String, Object?>>[];
-    final evidenceInput = <Map<String, Object?>>[];
-    var evidencedPlaceCount = 0;
-    for (final place in uniquePlaces) {
-      final directlyObserved =
-          place.categoryIds.where(queryByCategory.containsKey).toSet().toList()
-            ..sort();
-      if (directlyObserved.isEmpty) continue;
-      evidencedPlaceCount++;
-      final evidencedCategories = {
-        ...directlyObserved,
-        parentCategoryId,
-      }.toList()..sort();
-      final snapshot = place.copyWith(
-        categoryIds: evidencedCategories,
-        sourceCheckedAt: now,
-        isStale: false,
-      );
-      catalogInput.add({
-        'providerPlaceId': place.placeId,
-        'featureId': place.featureId,
-        'normalizedName': _normalizeName(place.name),
-        'name': place.name,
-        'countryCode': countryCode,
-        'latitude': place.latitude,
-        'longitude': place.longitude,
-        'categoryIds': evidencedCategories,
-        'snapshot': snapshot.toJson(),
-        'calibrationVersion': calibrationVersion,
-        'sourceCheckedAt': now.toIso8601String(),
-        'seenAt': now.toIso8601String(),
-      });
-      for (final categoryId in evidencedCategories) {
-        final isDirect = directlyObserved.contains(categoryId);
-        final evidenceDetail = isDirect
-            ? 'query:${queryByCategory[categoryId]}'
-            : 'parent:${directlyObserved.join(',')}';
-        evidenceInput.add({
-          'providerPlaceId': place.placeId,
-          'categoryId': categoryId,
-          'evidenceQuery': '$evidencePrefix$evidenceDetail',
-          'seenAt': now.toIso8601String(),
-        });
-      }
-    }
-    evidenceInput.sort((a, b) {
-      final byPlace = (a['providerPlaceId']! as String).compareTo(
-        b['providerPlaceId']! as String,
-      );
-      return byPlace != 0
-          ? byPlace
-          : (a['categoryId']! as String).compareTo(
-              b['categoryId']! as String,
-            );
-    });
-    await session.db.transaction((transaction) async {
-      if (catalogInput.isNotEmpty) {
-        await session.db.unsafeExecute(
-          catalogBatchUpsertSql,
-          parameters: QueryParameters.named({
-            'places': jsonEncode(catalogInput),
-          }),
-          transaction: transaction,
-        );
-        await session.db.unsafeExecute(
-          catalogEvidenceBatchUpsertSql,
-          parameters: QueryParameters.named({
-            'evidence': jsonEncode(evidenceInput),
-            'evidencePrefix': evidencePrefix,
-          }),
-          transaction: transaction,
-        );
-      }
-      await session.db.unsafeExecute(
-        catalogCoverageUpsertSql,
-        parameters: QueryParameters.named({
-          'coverageKey': coverageKey,
-          'queryKey': queryKey.join(','),
-          'countryCode': countryCode,
-          'latitude': latitude,
-          'longitude': longitude,
-          'radiusMeters': radiusMeters,
-          'calibrationVersion': calibrationVersion,
-          'resultCount': evidencedPlaceCount,
-          'refreshedAt': now,
-          'expiresAt': now.add(Duration(hours: freshHours)),
-          'lastFailureCode': partialFailureCode,
-          'invalidatedAt': partialFailureCode == null ? null : now,
-        }),
-        transaction: transaction,
-      );
-    });
+    await CatalogObservationWriter(
+      calibrationVersion: calibrationVersion,
+    ).write(
+      session,
+      places,
+      countryCode: countryCode,
+      observedAt: now,
+      evidence: CatalogObservationEvidence(
+        parentCategoryId: parentCategoryId,
+        queries: queries,
+      ),
+      coverage: CatalogObservationCoverage(
+        coverageKey: coverageKey,
+        queryKey: queryKey.join(','),
+        countryCode: countryCode,
+        latitude: latitude,
+        longitude: longitude,
+        radiusMeters: radiusMeters,
+        refreshedAt: now,
+        expiresAt: now.add(Duration(hours: freshHours)),
+        failureCode: partialFailureCode,
+      ),
+    );
   }
 
   PlaceCandidate _candidateFromRow(
@@ -603,9 +530,6 @@ class CatalogPlaceService {
       ),
     );
   }
-
-  String _normalizeName(String value) =>
-      value.toLowerCase().replaceAll(RegExp(r'\s+'), ' ').trim();
 
   String _coverageKey({
     required List<String> categoryIds,

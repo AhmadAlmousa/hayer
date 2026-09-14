@@ -41,9 +41,8 @@ class GoogleWebPlaceSource implements PlaceSource {
     required String countryCode,
   }) => ProviderOperation.run(() async {
     try {
-      final first = await _page(
+      final first = await fetchPage(
         query: query,
-        categoryId: categoryId,
         latitude: latitude,
         longitude: longitude,
         radiusMeters: radiusMeters,
@@ -55,9 +54,8 @@ class GoogleWebPlaceSource implements PlaceSource {
       if (desiredCount > places.length &&
           first.length >= calibration.pageSize - 3) {
         final pages = await Future.wait([
-          _page(
+          fetchPage(
             query: query,
-            categoryId: categoryId,
             latitude: latitude,
             longitude: longitude,
             radiusMeters: radiusMeters,
@@ -66,9 +64,8 @@ class GoogleWebPlaceSource implements PlaceSource {
             offset: calibration.pageSize,
           ),
           if (desiredCount > calibration.pageSize * 2)
-            _page(
+            fetchPage(
               query: query,
-              categoryId: categoryId,
               latitude: latitude,
               longitude: longitude,
               radiusMeters: radiusMeters,
@@ -105,9 +102,13 @@ class GoogleWebPlaceSource implements PlaceSource {
     }
   });
 
-  Future<List<PlaceCandidate>> _page({
+  /// Retrieves exactly one calibrated provider result page.
+  ///
+  /// The returned observations intentionally carry no Swipe query evidence.
+  /// Swipe's query adapter adds that evidence; Discover harvest and detail
+  /// refresh callers persist the same observations without fabricating it.
+  Future<List<PlaceCandidate>> fetchPage({
     required String query,
-    required String categoryId,
     required double latitude,
     required double longitude,
     required int radiusMeters,
@@ -167,14 +168,7 @@ class GoogleWebPlaceSource implements PlaceSource {
         'The active place calibration no longer matches the response.',
       );
     }
-    return parsed.places
-        .map(
-          (place) => place.copyWith(
-            categoryIds: {...place.categoryIds, categoryId}.toList(),
-            evidenceCategoryIds: [categoryId],
-          ),
-        )
-        .toList(growable: false);
+    return parsed.places;
   }
 
   void close() => _session.close();
