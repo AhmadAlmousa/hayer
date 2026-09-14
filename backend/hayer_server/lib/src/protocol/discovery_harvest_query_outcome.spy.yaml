@@ -1,0 +1,11 @@
+class: DiscoveryHarvestQueryOutcome
+fields:
+  entryId: String
+  kind: DiscoveryHarvestQueryKind
+  query: String
+  languageCode: String
+  state: DiscoveryHarvestQueryState
+  pagesAttempted: int
+  observedPlaces: int
+  upstreamRequests: int
+  failureCode: String?

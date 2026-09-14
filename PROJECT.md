@@ -899,8 +899,9 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [~] M9-D — Shared detail resolver and sessionless reporting (back end).
   Generated contracts delivered; shared resolver and report storage remain open.
 - [~] M9-E — Harvesting and coverage (back end, after F21). Consumer coverage
-  contracts and web path rewrites delivered; workers, coverage storage and
-  admin manifest/job/growth contracts remain open. Hosting deployment pending.
+  and admin manifest/job/unmapped-type/growth contracts plus web path rewrites
+  delivered; workers and persistent manifest, coverage and metrics storage
+  remain open. Hosting deployment pending.
 - [x] M9-F — Entry, configuration and links (front end). Prework in `bb212d7`;
   the configuration read and kept disabled links landed on 2026-09-13. Device
   App Link checks belong to M9-K.
@@ -916,8 +917,8 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. All new discovery data,
 detail and mutation RPCs still return `feature_disabled`; no checkpoint above
-is complete from contract availability. F10/F21 remain the next backend
-implementation work after this owner-requested contract delivery.
+is complete from contract availability. M9-A's shared observation writer is the
+next backend implementation slice after this owner-requested contract delivery.
 
 ## Verification gates
 

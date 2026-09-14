@@ -1,0 +1,10 @@
+class: DiscoveryGrowthMetricBreakdown
+fields:
+  mode: DiscoveryMetricMode
+  operation: DiscoveryMetricOperation
+  observations: int
+  newCatalogPlaces: int
+  cacheHits: int
+  cacheMisses: int
+  detailRefreshes: int
+  upstreamRequests: int

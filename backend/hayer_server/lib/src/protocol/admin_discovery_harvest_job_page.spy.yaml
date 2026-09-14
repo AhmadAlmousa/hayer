@@ -1,0 +1,6 @@
+class: AdminDiscoveryHarvestJobPage
+fields:
+  items: List<AdminDiscoveryHarvestJob>
+  total: int
+  page: int
+  pageSize: int

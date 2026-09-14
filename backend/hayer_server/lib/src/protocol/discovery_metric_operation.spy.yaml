@@ -1,0 +1,7 @@
+enum: DiscoveryMetricOperation
+serialized: byName
+values:
+  - browse
+  - search
+  - harvest
+  - detailRefresh

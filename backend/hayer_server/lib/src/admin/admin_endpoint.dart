@@ -189,6 +189,95 @@ class AdminEndpoint extends Endpoint {
     return DiscoveryContract.unavailable();
   }
 
+  Future<AdminDiscoveryHarvestManifestVersion> discoveryHarvestManifestDraft(
+    Session session,
+  ) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<List<AdminDiscoveryHarvestManifestVersion>>
+  discoveryHarvestManifestHistory(Session session) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryHarvestManifestVersion>
+  saveDiscoveryHarvestManifestDraft(
+    Session session, {
+    required String reason,
+    required String version,
+    required int revision,
+    required List<DiscoveryHarvestManifestEntry> entries,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<DiscoveryHarvestManifestValidation>
+  validateDiscoveryHarvestManifestDraft(
+    Session session, {
+    required String reason,
+    required String version,
+    required int revision,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryHarvestManifestVersion> publishDiscoveryHarvestManifest(
+    Session session, {
+    required String reason,
+    required String version,
+    required int revision,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryHarvestManifestVersion> rollbackDiscoveryHarvestManifest(
+    Session session, {
+    required String reason,
+    required String version,
+    required int expectedActiveRevision,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryHarvestJobPage> discoveryHarvestJobs(
+    Session session, {
+    required int page,
+    required int pageSize,
+    String? query,
+    DiscoveryHarvestState? state,
+    DiscoveryHarvestRequester? requester,
+    DiscoveryHarvestTrigger? trigger,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<AdminDiscoveryUnmappedTypePage> discoveryUnmappedTypes(
+    Session session, {
+    required int page,
+    required int pageSize,
+    String? query,
+    DiscoveryTypeMappingIssue? issue,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
+  Future<DiscoveryGrowthMetrics> discoveryGrowthMetrics(
+    Session session, {
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    await _authorize(session);
+    return DiscoveryContract.unavailable();
+  }
+
   Future<AdminTaxonomyVersion> taxonomyDraft(Session session) async {
     final operatorName = await _authorize(session);
     return TaxonomyService.editableDraft(

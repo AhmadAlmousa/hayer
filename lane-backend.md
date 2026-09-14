@@ -48,8 +48,52 @@ Last updated: 2026-09-14
   longer has to guess a country from rough boxes, and a structured consumer
   reverse-geocode read exposes locality and city without parsing an address
   line. Discovery data methods remain dark until their implementation gates.
+- M9-E's remaining admin contracts are delivered: the broad-query manifest
+  lifecycle, harvest job inspection, unmapped/ambiguous type reporting and
+  shared-cache growth/reuse metrics. Their storage and worker implementations
+  remain dark alongside the earlier consumer contracts.
 
 ## Checkpoints
+
+### M9-E admin contract handoff — delivered (2026-09-14)
+
+The generated admin client now exposes a versioned broad-query manifest with
+draft, history, save, validate, publish and rollback calls. Manifest entries
+carry a stable id, operator-facing label, English primary query, reviewed
+Arabic fallback, order and enabled state. This lifecycle is separate from the
+Swipe and Discover taxonomy editors, as required. Calls authorize first and
+then return `feature_disabled`; no manifest table, seed or mutation exists yet.
+
+Dedicated paged harvest-job inspection carries the requester class, consumer
+trigger, actual canonical footprint/radius, calibration and manifest revisions,
+the exact enqueued manifest snapshot, summary counters, cooldown and broad or
+compatibility per-query outcomes. `DiscoveryHarvestRequester.administrator`
+is the wire spelling because Serverpod reserves `operator`. A paged
+unmapped-type read distinguishes unmapped from ambiguous aliases and includes
+frequency, catalog-place count, observation dates and bounded example ids. The
+admin's map action reuses the existing Discover taxonomy draft lifecycle rather
+than introducing a competing mutation.
+
+The growth response exposes catalog counts at both window boundaries, new,
+quarantined and removed places, explored cells, observations, cache hits and
+misses, detail refreshes and upstream requests. Its breakdowns attribute the
+same counters to initiating Swipe/Discover mode and browse, search, harvest or
+detail-refresh operation. All admin reads are dark and make no database or
+provider calls after authorization.
+
+The M9-G3 implementation notes are retained in the frontend handoff and now in
+`backend/discovery-contracts.md`: facets previews may use a query fingerprint
+different from their committed context while retaining its revisions/time;
+facets need a budget separate from browse; publishing must advance taxonomy,
+configuration and facets revisions together; Other remains a synthetic id.
+These constrain the future M9-B/C implementation and do not activate it here.
+
+Verification: pinned full preflight passed generation and formatting, all
+fatal-info analyses, 159 server tests, 279 app tests and 51 admin tests. The
+discovery wire-contract suite accounts for nine of those server tests. The
+guarded disposable-PostGIS suite passed all 52 tests, including the expanded
+dark-admin authorization case. Existing custom-PostGIS schema metadata
+warnings remain. No schema migration or production activation is introduced.
 
 ### M9-G2 area contract follow-up — delivered (2026-09-14)
 
@@ -608,6 +652,21 @@ both manifests and APK Signature Scheme v2 verify. The backend-only change
 correctly leaves the APK bytes unchanged from the prior P06 build.
 
 ## Open handoffs to the front-end lane
+
+### M9-E admin contracts — ready 2026-09-14
+
+Bring forward the regenerated `hayer_client` and build the manifest editor,
+harvest-job inspection, unmapped-type mapping flow and growth/reuse dashboard
+against fakes. Exact calls and field semantics are in
+`backend/discovery-contracts.md`. All nine new admin methods currently return
+`feature_disabled` after authorization, so frontend production calls must keep
+their existing unavailable/loading behavior until the persistent M9-E slice
+lands.
+
+Use `DiscoveryHarvestRequester.administrator` for operator-initiated jobs. Map
+an unmapped or ambiguous `primaryType` by editing the existing Discover
+taxonomy draft; there is no dedicated mapping RPC. Compute cache reuse from the
+returned hit/miss counts and keep Swipe versus Discover attribution visible.
 
 ### M9-G2 authoritative area fields — ready 2026-09-14
 

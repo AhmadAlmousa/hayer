@@ -121,6 +121,165 @@ void main() {
     },
   );
 
+  test('harvest manifest lifecycle preserves reviewed bilingual queries', () {
+    final manifest = AdminDiscoveryHarvestManifestVersion(
+      version: 'broad-v1',
+      revision: 7,
+      status: DiscoveryManifestStatus.draft,
+      entries: [
+        DiscoveryHarvestManifestEntry(
+          id: 'restaurants-cafes',
+          label: 'Restaurants and cafes',
+          queryEn: 'restaurants and cafes',
+          fallbackQueryAr: 'مطاعم ومقاهي',
+          sortOrder: 0,
+          enabled: true,
+        ),
+      ],
+      validationPassed: true,
+      validationErrors: [],
+      createdBy: 'operator',
+      createdAt: DateTime.utc(2026, 9, 14),
+      validatedAt: DateTime.utc(2026, 9, 14, 1),
+    );
+    final json = jsonDecode(jsonEncode(manifest)) as Map<String, dynamic>;
+    expect(json['status'], 'draft');
+
+    final restored = AdminDiscoveryHarvestManifestVersion.fromJson(json);
+    expect(restored.entries.single.fallbackQueryAr, 'مطاعم ومقاهي');
+    expect(restored.entries.single.enabled, isTrue);
+    expect(restored.revision, 7);
+  });
+
+  test(
+    'admin harvest jobs retain source, footprint, snapshot and outcomes',
+    () {
+      final manifestEntry = DiscoveryHarvestManifestEntry(
+        id: 'hotels',
+        label: 'Hotels',
+        queryEn: 'hotels',
+        fallbackQueryAr: 'فنادق',
+        sortOrder: 2,
+        enabled: true,
+      );
+      final job = AdminDiscoveryHarvestJob(
+        jobId: 'job-1',
+        state: DiscoveryHarvestState.partial,
+        requester: DiscoveryHarvestRequester.user,
+        requestedBy: 'user-hash',
+        trigger: DiscoveryHarvestTrigger.deepen,
+        countryCode: 'SA',
+        cellId: 'riyadh-1km-1',
+        bounds: DiscoverViewport(
+          south: 24.6,
+          west: 46.5,
+          north: 24.8,
+          east: 46.8,
+        ),
+        radiusMeters: 5000,
+        manifestVersion: 'broad-v1',
+        manifestRevision: 7,
+        calibrationVersion: 'hayer-google-web-18',
+        manifestEntries: [manifestEntry],
+        queryOutcomes: [
+          DiscoveryHarvestQueryOutcome(
+            entryId: manifestEntry.id,
+            kind: DiscoveryHarvestQueryKind.broad,
+            query: manifestEntry.queryEn,
+            languageCode: 'en',
+            state: DiscoveryHarvestQueryState.failed,
+            pagesAttempted: 1,
+            observedPlaces: 12,
+            upstreamRequests: 2,
+            failureCode: 'source_unavailable',
+          ),
+        ],
+        attemptedQueries: 1,
+        completedQueries: 0,
+        totalQueries: 1,
+        observedPlaces: 12,
+        upstreamRequests: 2,
+        createdAt: DateTime.utc(2026, 9, 14),
+        retryAfter: DateTime.utc(2026, 9, 14, 1),
+        failureCode: 'partial_source_failure',
+      );
+      final json = jsonDecode(jsonEncode(job)) as Map<String, dynamic>;
+      expect(json['requester'], 'user');
+      expect(json['trigger'], 'deepen');
+      expect(
+        (json['queryOutcomes'] as List).single,
+        containsPair('state', 'failed'),
+      );
+
+      final restored = AdminDiscoveryHarvestJob.fromJson(json);
+      expect(restored.bounds.west, 46.5);
+      expect(restored.manifestEntries.single.id, 'hotels');
+      expect(restored.queryOutcomes.single.failureCode, 'source_unavailable');
+    },
+  );
+
+  test('unmapped types and shared-cache metrics retain admin dimensions', () {
+    final unmapped = AdminDiscoveryUnmappedTypePage(
+      items: [
+        AdminDiscoveryUnmappedType(
+          primaryType: 'Escape room center',
+          issue: DiscoveryTypeMappingIssue.ambiguous,
+          catalogPlaceCount: 8,
+          observationCount: 13,
+          firstObservedAt: DateTime.utc(2026, 9, 1),
+          lastObservedAt: DateTime.utc(2026, 9, 14),
+          exampleCatalogIds: [17, 42],
+        ),
+      ],
+      total: 1,
+      page: 0,
+      pageSize: 25,
+    );
+    final restoredUnmapped = AdminDiscoveryUnmappedTypePage.fromJson(
+      jsonDecode(jsonEncode(unmapped)) as Map<String, dynamic>,
+    );
+    expect(
+      restoredUnmapped.items.single.issue,
+      DiscoveryTypeMappingIssue.ambiguous,
+    );
+    expect(restoredUnmapped.items.single.exampleCatalogIds, [17, 42]);
+
+    final metrics = DiscoveryGrowthMetrics(
+      from: DateTime.utc(2026, 9, 1),
+      to: DateTime.utc(2026, 9, 14),
+      catalogPlacesAtStart: 100,
+      catalogPlacesAtEnd: 118,
+      newCatalogPlaces: 25,
+      quarantinedPlaces: 2,
+      removedPlaces: 5,
+      exploredCells: 4,
+      observations: 60,
+      cacheHits: 40,
+      cacheMisses: 20,
+      detailRefreshes: 3,
+      upstreamRequests: 14,
+      breakdowns: [
+        DiscoveryGrowthMetricBreakdown(
+          mode: DiscoveryMetricMode.discovery,
+          operation: DiscoveryMetricOperation.harvest,
+          observations: 60,
+          newCatalogPlaces: 25,
+          cacheHits: 0,
+          cacheMisses: 4,
+          detailRefreshes: 0,
+          upstreamRequests: 14,
+        ),
+      ],
+      generatedAt: DateTime.utc(2026, 9, 14),
+    );
+    final json = jsonDecode(jsonEncode(metrics)) as Map<String, dynamic>;
+    final breakdown =
+        (json['breakdowns'] as List).single as Map<String, dynamic>;
+    expect(breakdown['mode'], 'discovery');
+    expect(breakdown['operation'], 'harvest');
+    expect(DiscoveryGrowthMetrics.fromJson(json).catalogPlacesAtEnd, 118);
+  });
+
   test('configuration contains only client capabilities and provisional display settings', () {
     final config = DiscoveryConfig.fromJson(
       jsonDecode(jsonEncode(DiscoveryContract.configuration()))

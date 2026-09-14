@@ -1,0 +1,6 @@
+class: AdminDiscoveryUnmappedTypePage
+fields:
+  items: List<AdminDiscoveryUnmappedType>
+  total: int
+  page: int
+  pageSize: int

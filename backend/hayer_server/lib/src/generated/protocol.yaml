@@ -11,6 +11,15 @@ admin:
   - validateDiscoveryTaxonomyDraft:
   - publishDiscoveryTaxonomy:
   - rollbackDiscoveryTaxonomy:
+  - discoveryHarvestManifestDraft:
+  - discoveryHarvestManifestHistory:
+  - saveDiscoveryHarvestManifestDraft:
+  - validateDiscoveryHarvestManifestDraft:
+  - publishDiscoveryHarvestManifest:
+  - rollbackDiscoveryHarvestManifest:
+  - discoveryHarvestJobs:
+  - discoveryUnmappedTypes:
+  - discoveryGrowthMetrics:
   - taxonomyDraft:
   - taxonomyHistory:
   - saveTaxonomyDraft:

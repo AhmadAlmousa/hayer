@@ -121,7 +121,7 @@ void main() {
     );
 
     test(
-      'taxonomy lifecycle stubs authorize then reject without a mutation',
+      'admin discovery stubs authorize then reject without a mutation',
       () async {
         final session = builder.build();
         var authorizations = 0;
@@ -159,6 +159,52 @@ void main() {
               reason: 'fixture',
               version: 'old',
               expectedActiveRevision: 0,
+            ),
+            () => admin.discoveryHarvestManifestDraft(session),
+            () => admin.discoveryHarvestManifestHistory(session),
+            () => admin.saveDiscoveryHarvestManifestDraft(
+              session,
+              reason: 'fixture',
+              version: 'draft',
+              revision: 0,
+              entries: [],
+            ),
+            () => admin.validateDiscoveryHarvestManifestDraft(
+              session,
+              reason: 'fixture',
+              version: 'draft',
+              revision: 0,
+            ),
+            () => admin.publishDiscoveryHarvestManifest(
+              session,
+              reason: 'fixture',
+              version: 'draft',
+              revision: 0,
+            ),
+            () => admin.rollbackDiscoveryHarvestManifest(
+              session,
+              reason: 'fixture',
+              version: 'old',
+              expectedActiveRevision: 0,
+            ),
+            () => admin.discoveryHarvestJobs(
+              session,
+              page: 0,
+              pageSize: 25,
+              state: DiscoveryHarvestState.partial,
+              requester: DiscoveryHarvestRequester.user,
+              trigger: DiscoveryHarvestTrigger.deepen,
+            ),
+            () => admin.discoveryUnmappedTypes(
+              session,
+              page: 0,
+              pageSize: 25,
+              issue: DiscoveryTypeMappingIssue.unmapped,
+            ),
+            () => admin.discoveryGrowthMetrics(
+              session,
+              from: DateTime.utc(2026, 9, 1),
+              to: DateTime.utc(2026, 9, 14),
             ),
           ];
           for (final call in calls) {

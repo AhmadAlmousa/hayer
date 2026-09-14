@@ -1,0 +1,8 @@
+class: DiscoveryHarvestManifestEntry
+fields:
+  id: String
+  label: String
+  queryEn: String
+  fallbackQueryAr: String
+  sortOrder: int
+  enabled: bool

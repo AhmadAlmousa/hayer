@@ -1,0 +1,17 @@
+class: DiscoveryGrowthMetrics
+fields:
+  from: DateTime
+  to: DateTime
+  catalogPlacesAtStart: int
+  catalogPlacesAtEnd: int
+  newCatalogPlaces: int
+  quarantinedPlaces: int
+  removedPlaces: int
+  exploredCells: int
+  observations: int
+  cacheHits: int
+  cacheMisses: int
+  detailRefreshes: int
+  upstreamRequests: int
+  breakdowns: List<DiscoveryGrowthMetricBreakdown>
+  generatedAt: DateTime

@@ -1,0 +1,6 @@
+enum: DiscoveryManifestStatus
+serialized: byName
+values:
+  - draft
+  - active
+  - superseded

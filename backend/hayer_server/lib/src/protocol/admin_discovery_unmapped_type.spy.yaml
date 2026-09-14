@@ -1,0 +1,9 @@
+class: AdminDiscoveryUnmappedType
+fields:
+  primaryType: String
+  issue: DiscoveryTypeMappingIssue
+  catalogPlaceCount: int
+  observationCount: int
+  firstObservedAt: DateTime
+  lastObservedAt: DateTime
+  exampleCatalogIds: List<int>

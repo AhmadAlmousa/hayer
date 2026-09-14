@@ -1,0 +1,9 @@
+enum: DiscoveryHarvestQueryState
+serialized: byName
+values:
+  - unattempted
+  - running
+  - succeeded
+  - empty
+  - failed
+  - skipped

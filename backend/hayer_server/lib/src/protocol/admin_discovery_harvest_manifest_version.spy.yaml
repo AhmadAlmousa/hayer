@@ -1,0 +1,12 @@
+class: AdminDiscoveryHarvestManifestVersion
+fields:
+  version: String
+  revision: int
+  status: DiscoveryManifestStatus
+  entries: List<DiscoveryHarvestManifestEntry>
+  validationPassed: bool
+  validationErrors: List<String>
+  createdBy: String
+  createdAt: DateTime
+  validatedAt: DateTime?
+  publishedAt: DateTime?

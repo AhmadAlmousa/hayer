@@ -1,0 +1,26 @@
+class: AdminDiscoveryHarvestJob
+fields:
+  jobId: String
+  state: DiscoveryHarvestState
+  requester: DiscoveryHarvestRequester
+  requestedBy: String
+  trigger: DiscoveryHarvestTrigger
+  countryCode: String
+  cellId: String
+  bounds: DiscoverViewport
+  radiusMeters: int
+  manifestVersion: String
+  manifestRevision: int
+  calibrationVersion: String
+  manifestEntries: List<DiscoveryHarvestManifestEntry>
+  queryOutcomes: List<DiscoveryHarvestQueryOutcome>
+  attemptedQueries: int
+  completedQueries: int
+  totalQueries: int
+  observedPlaces: int
+  upstreamRequests: int
+  createdAt: DateTime
+  startedAt: DateTime?
+  completedAt: DateTime?
+  retryAfter: DateTime?
+  failureCode: String?

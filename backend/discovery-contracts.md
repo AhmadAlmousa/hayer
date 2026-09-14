@@ -1,7 +1,8 @@
 # Discovery frontend handoff — contract v1
 
 Delivered on 13 September 2026 for M9-B/C/D and the consumer part of M9-E;
-amended on 14 September 2026 for the M9-G2 area handoff.
+amended on 14 September 2026 for the M9-G2 area handoff and M9-E's admin
+contracts.
 The generated `hayer_client` types are ready for frontend development with
 `Fake implements Client` and endpoint doubles. The merged frontend prework is
 on `main` (`d4b58b7`). Bring the frontend lane forward with
@@ -29,10 +30,11 @@ Places API, per-mode cache or a dedicated Vela detail RPC: that RPC is not mappe
 | M9-G3 filter preview and category tree | `discover.facets`, `discover.taxonomy`, `DiscoverFacets`, `DiscoveryTaxonomyNode` |
 | M9-G4 pins, unloaded selection, coverage | browse map payload, `placeContext`, `ensureArea`, `deepen`, `harvestStatus` |
 | M9-H shared detail, context and reporting | `place.details`, `discover.placeContext`, `place.reportCatalogIssue` |
-| M9-J policy, tree editor, issue display | nullable policy DTOs, admin discovery taxonomy methods, nullable issue context |
+| M9-J admin surfaces | policy/tree/issue contracts plus the harvest manifest lifecycle, job inspection, unmapped types and growth metrics |
 
-M9-E's admin manifest, job-inspection, unmapped-type and growth-metric contracts
-remain outstanding. The consumer coverage contracts do not unblock those pages.
+M9-E's admin contracts are now generated. Like the consumer coverage contracts,
+their endpoint implementations remain dark until the storage and worker slice
+lands.
 
 ## Configuration and disabled links
 
@@ -122,6 +124,10 @@ own fingerprint. Its implementation must accept a different query fingerprint
 for this preview while rejecting stale policy/taxonomy revisions; pagination
 and placeContext require the exact query context. Keep the preview separate
 from committed results; applying the draft starts a fresh browse generation.
+Budget `facets` separately from `browse`: a committed search makes one of each,
+and an open filter sheet can make a facets request after each 400 ms editing
+pause. An applied Open now filter also refreshes the first browse page once a
+minute and whenever the app returns to the foreground.
 
 Browse supplies `items`, `total`, `context`, `fetchedAt`, nullable `nextCursor`,
 nullable `map` and `coverage`. Each `DiscoverPlace` includes the canonical
@@ -159,6 +165,10 @@ node's own mapped count, not a pre-rolled branch total. Sum its own counts plus
 descendants exactly once. Unmapped types use config's `otherCategoryId`.
 Keep selected zero-count nodes and their ancestors visible. The existing Swipe
 taxonomy endpoint, evidence categories and five-query limit are unchanged.
+Publish must advance the taxonomy snapshot revision, configuration revision and
+facets context revision together. `otherCategoryId` is a synthetic bucket and
+must never equal a taxonomy node id. Empty roots mean unpublished; they do not
+authorize clearing category ids retained from a shared link.
 
 ## Details, reporting and coverage
 
@@ -228,6 +238,64 @@ values come from the server; retain them for optimistic concurrency.
 Documents use the existing `TaxonomyStatus` enum (`draft`, `active`,
 `superseded`), recursive roots and validation/audit timestamps.
 
+The broad-query manifest has its own parallel lifecycle, separate from both
+taxonomy editors:
+
+```dart
+client.admin.discoveryHarvestManifestDraft();
+client.admin.discoveryHarvestManifestHistory();
+client.admin.saveDiscoveryHarvestManifestDraft(
+  reason: reason, version: version, revision: revision, entries: entries,
+);
+client.admin.validateDiscoveryHarvestManifestDraft(
+  reason: reason, version: version, revision: revision,
+);
+client.admin.publishDiscoveryHarvestManifest(
+  reason: reason, version: version, revision: revision,
+);
+client.admin.rollbackDiscoveryHarvestManifest(
+  reason: reason, version: version,
+  expectedActiveRevision: expectedActiveRevision,
+);
+```
+
+`AdminDiscoveryHarvestManifestVersion` uses `DiscoveryManifestStatus` and holds
+stable entries with an admin label, primary English query, reviewed Arabic
+fallback, order and enabled state. Retain version/revision for optimistic
+concurrency. All six lifecycle calls currently authorize and then return
+`feature_disabled`; mocks can drive the editor until persistence lands.
+
+The remaining reads are:
+
+```dart
+client.admin.discoveryHarvestJobs(
+  page: page, pageSize: pageSize,
+  query: query, state: state, requester: requester, trigger: trigger,
+);
+client.admin.discoveryUnmappedTypes(
+  page: page, pageSize: pageSize, query: query, issue: issue,
+);
+client.admin.discoveryGrowthMetrics(from: from, to: to);
+```
+
+Harvest jobs distinguish `DiscoveryHarvestRequester.user` from
+`.administrator` (Serverpod reserves `operator`), while trigger remains the
+consumer event (`committedSearch` or `deepen`). Each row carries the actual
+cell/footprint, radius, calibration and manifest revisions, the exact manifest
+snapshot, attempted/completed totals, cooldown, and per-query broad versus
+compatibility outcomes. Do not infer a successful full harvest from a terminal
+job alone; use its state and query outcomes.
+
+The unmapped-type page includes ambiguous aliases as a separate issue, since
+both feed the synthetic Other count. Its direct map action should load the
+existing Discover taxonomy draft and add the raw `primaryType` as an alias;
+there is intentionally no second mapping mutation. Growth metrics report the
+catalog row count at both window boundaries, additions, quarantine/removal,
+cells, observations, cache hits/misses, detail refreshes and actual upstream
+requests. Breakdowns use initiating `swipe`/`discovery` mode and
+`browse`/`search`/`harvest`/`detailRefresh` operation. Derive cache-hit rate
+from hits and misses rather than accepting an unscoped percentage.
+
 `CachePolicy.discovery` contains `DiscoveryPolicy` (enabled, scoring, harvest
 budgets/cooldown, user and read quotas, timeout and page/map caps).
 `CachePolicy.detailRefresh` holds separate request/time/cooldown limits.
@@ -237,11 +305,12 @@ before a write, rather than accepted and silently discarded. Existing policy
 edits with null sections still work. Build the new controls with mocks until
 the persisted policy implementation lands; then null means preserve settings.
 
-No database schema changes accompany this contract commit. Persistent policy
-fields, discovery taxonomy storage/seed, generated catalog columns, nullable
-`PoiIssueReportRow.sessionId` plus source backfill, refresh metadata, worker
-leases and harvest coverage belong to their implementation migrations. Do not
-mark their acceptance gates complete from DTO availability.
+No database schema changes accompany these contract commits. Persistent policy
+fields, discovery taxonomy/manifest storage and seeds, generated catalog
+columns, nullable `PoiIssueReportRow.sessionId` plus source backfill, refresh
+metadata, unmapped-type aggregation, metrics, worker leases and harvest
+coverage belong to their implementation migrations. Do not mark their
+acceptance gates complete from DTO availability.
 
 All new errors use the existing `ApiException` envelope and optional
 `retryAfterSeconds`. Handle `feature_disabled` through the retained-link flow,

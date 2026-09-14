@@ -1,0 +1,5 @@
+enum: DiscoveryTypeMappingIssue
+serialized: byName
+values:
+  - unmapped
+  - ambiguous

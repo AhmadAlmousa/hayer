@@ -1,0 +1,5 @@
+enum: DiscoveryHarvestRequester
+serialized: byName
+values:
+  - user
+  - administrator

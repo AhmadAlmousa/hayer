@@ -1,0 +1,5 @@
+enum: DiscoveryMetricMode
+serialized: byName
+values:
+  - swipe
+  - discovery

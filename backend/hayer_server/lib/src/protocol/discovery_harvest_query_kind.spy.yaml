@@ -1,0 +1,5 @@
+enum: DiscoveryHarvestQueryKind
+serialized: byName
+values:
+  - broad
+  - compatibility
