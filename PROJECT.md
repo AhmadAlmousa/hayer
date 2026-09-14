@@ -911,7 +911,10 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   area country and structured area label. G4 remains, against generated
   contracts and mocks.
 - [ ] M9-H — Place detail, save, share and report (front end).
-- [ ] M9-J — Admin (front end).
+- [~] M9-J — Admin (front end). Policy knobs, Discover tree editor, unmapped
+  types, harvest manifest, harvest jobs, growth metrics and report sources
+  landed on 2026-09-14 against generated contracts and mocks. Requirement 16's
+  acceptance waits on the M9-B, M9-D and M9-E implementations.
 - [ ] M9-K — Cross-mode verification and dark release (both lanes).
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).

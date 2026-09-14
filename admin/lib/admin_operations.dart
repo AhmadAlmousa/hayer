@@ -54,6 +54,89 @@ abstract interface class AdminOperations {
     required String version,
   });
 
+  Future<AdminDiscoveryTaxonomyVersion> discoveryTaxonomyDraft();
+
+  Future<List<AdminDiscoveryTaxonomyVersion>> discoveryTaxonomyHistory();
+
+  Future<AdminDiscoveryTaxonomyVersion> saveDiscoveryTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required List<DiscoveryTaxonomyNode> roots,
+  });
+
+  Future<DiscoveryTaxonomyValidation> validateDiscoveryTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+  });
+
+  Future<AdminDiscoveryTaxonomyVersion> publishDiscoveryTaxonomy({
+    required String reason,
+    required String version,
+    required int revision,
+  });
+
+  Future<AdminDiscoveryTaxonomyVersion> rollbackDiscoveryTaxonomy({
+    required String reason,
+    required String version,
+    required int expectedActiveRevision,
+  });
+
+  Future<AdminDiscoveryUnmappedTypePage> discoveryUnmappedTypes({
+    required int page,
+    required int pageSize,
+    String? query,
+    DiscoveryTypeMappingIssue? issue,
+  });
+
+  Future<AdminDiscoveryHarvestManifestVersion> discoveryHarvestManifestDraft();
+
+  Future<List<AdminDiscoveryHarvestManifestVersion>>
+  discoveryHarvestManifestHistory();
+
+  Future<AdminDiscoveryHarvestManifestVersion>
+  saveDiscoveryHarvestManifestDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required List<DiscoveryHarvestManifestEntry> entries,
+  });
+
+  Future<DiscoveryHarvestManifestValidation>
+  validateDiscoveryHarvestManifestDraft({
+    required String reason,
+    required String version,
+    required int revision,
+  });
+
+  Future<AdminDiscoveryHarvestManifestVersion> publishDiscoveryHarvestManifest({
+    required String reason,
+    required String version,
+    required int revision,
+  });
+
+  Future<AdminDiscoveryHarvestManifestVersion>
+  rollbackDiscoveryHarvestManifest({
+    required String reason,
+    required String version,
+    required int expectedActiveRevision,
+  });
+
+  Future<AdminDiscoveryHarvestJobPage> discoveryHarvestJobs({
+    required int page,
+    required int pageSize,
+    String? query,
+    DiscoveryHarvestState? state,
+    DiscoveryHarvestRequester? requester,
+    DiscoveryHarvestTrigger? trigger,
+  });
+
+  Future<DiscoveryGrowthMetrics> discoveryGrowthMetrics({
+    required DateTime from,
+    required DateTime to,
+  });
+
   Future<CacheDashboardSummary> summary();
 
   Future<CatalogPlacePage> catalog({
@@ -263,6 +346,155 @@ class ServerpodAdminOperations implements AdminOperations {
     required String reason,
     required String version,
   }) => client.admin.rollbackTaxonomy(reason: reason, version: version);
+
+  @override
+  Future<AdminDiscoveryTaxonomyVersion> discoveryTaxonomyDraft() =>
+      client.admin.discoveryTaxonomyDraft();
+
+  @override
+  Future<List<AdminDiscoveryTaxonomyVersion>> discoveryTaxonomyHistory() =>
+      client.admin.discoveryTaxonomyHistory();
+
+  @override
+  Future<AdminDiscoveryTaxonomyVersion> saveDiscoveryTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required List<DiscoveryTaxonomyNode> roots,
+  }) => client.admin.saveDiscoveryTaxonomyDraft(
+    reason: reason,
+    version: version,
+    revision: revision,
+    roots: roots,
+  );
+
+  @override
+  Future<DiscoveryTaxonomyValidation> validateDiscoveryTaxonomyDraft({
+    required String reason,
+    required String version,
+    required int revision,
+  }) => client.admin.validateDiscoveryTaxonomyDraft(
+    reason: reason,
+    version: version,
+    revision: revision,
+  );
+
+  @override
+  Future<AdminDiscoveryTaxonomyVersion> publishDiscoveryTaxonomy({
+    required String reason,
+    required String version,
+    required int revision,
+  }) => client.admin.publishDiscoveryTaxonomy(
+    reason: reason,
+    version: version,
+    revision: revision,
+  );
+
+  @override
+  Future<AdminDiscoveryTaxonomyVersion> rollbackDiscoveryTaxonomy({
+    required String reason,
+    required String version,
+    required int expectedActiveRevision,
+  }) => client.admin.rollbackDiscoveryTaxonomy(
+    reason: reason,
+    version: version,
+    expectedActiveRevision: expectedActiveRevision,
+  );
+
+  @override
+  Future<AdminDiscoveryUnmappedTypePage> discoveryUnmappedTypes({
+    required int page,
+    required int pageSize,
+    String? query,
+    DiscoveryTypeMappingIssue? issue,
+  }) => client.admin.discoveryUnmappedTypes(
+    page: page,
+    pageSize: pageSize,
+    query: query,
+    issue: issue,
+  );
+
+  @override
+  Future<AdminDiscoveryHarvestManifestVersion>
+  discoveryHarvestManifestDraft() =>
+      client.admin.discoveryHarvestManifestDraft();
+
+  @override
+  Future<List<AdminDiscoveryHarvestManifestVersion>>
+  discoveryHarvestManifestHistory() =>
+      client.admin.discoveryHarvestManifestHistory();
+
+  @override
+  Future<AdminDiscoveryHarvestManifestVersion>
+  saveDiscoveryHarvestManifestDraft({
+    required String reason,
+    required String version,
+    required int revision,
+    required List<DiscoveryHarvestManifestEntry> entries,
+  }) => client.admin.saveDiscoveryHarvestManifestDraft(
+    reason: reason,
+    version: version,
+    revision: revision,
+    entries: entries,
+  );
+
+  @override
+  Future<DiscoveryHarvestManifestValidation>
+  validateDiscoveryHarvestManifestDraft({
+    required String reason,
+    required String version,
+    required int revision,
+  }) => client.admin.validateDiscoveryHarvestManifestDraft(
+    reason: reason,
+    version: version,
+    revision: revision,
+  );
+
+  @override
+  Future<AdminDiscoveryHarvestManifestVersion> publishDiscoveryHarvestManifest({
+    required String reason,
+    required String version,
+    required int revision,
+  }) => client.admin.publishDiscoveryHarvestManifest(
+    reason: reason,
+    version: version,
+    revision: revision,
+  );
+
+  @override
+  Future<AdminDiscoveryHarvestManifestVersion>
+  rollbackDiscoveryHarvestManifest({
+    required String reason,
+    required String version,
+    required int expectedActiveRevision,
+  }) => client.admin.rollbackDiscoveryHarvestManifest(
+    reason: reason,
+    version: version,
+    expectedActiveRevision: expectedActiveRevision,
+  );
+
+  @override
+  Future<AdminDiscoveryHarvestJobPage> discoveryHarvestJobs({
+    required int page,
+    required int pageSize,
+    String? query,
+    DiscoveryHarvestState? state,
+    DiscoveryHarvestRequester? requester,
+    DiscoveryHarvestTrigger? trigger,
+  }) => client.admin.discoveryHarvestJobs(
+    page: page,
+    pageSize: pageSize,
+    query: query,
+    state: state,
+    requester: requester,
+    trigger: trigger,
+  );
+
+  @override
+  Future<DiscoveryGrowthMetrics> discoveryGrowthMetrics({
+    required DateTime from,
+    required DateTime to,
+  }) => client.admin.discoveryGrowthMetrics(from: from, to: to);
 
   @override
   Future<CacheDashboardSummary> summary() => client.admin.summary();

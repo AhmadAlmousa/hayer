@@ -170,6 +170,9 @@ class _PoiIssuePageState extends State<PoiIssuePage> {
     final busy = _busyReportId == issue.reportId;
     final current = issue.currentSnapshot;
     final closedAfter = issue.resolvedAt?.difference(issue.createdAt);
+    // A server that predates Discover sends no source; every report it holds
+    // came from a room.
+    final fromDiscover = issue.source == PoiIssueSource.discovery;
     return Card(
       key: ValueKey('poi-issue-${issue.reportId}'),
       margin: const EdgeInsets.only(bottom: 12),
@@ -190,6 +193,15 @@ class _PoiIssuePageState extends State<PoiIssuePage> {
                 ),
                 Chip(label: Text(_typeLabel(issue.issueType))),
                 Chip(label: Text(_statusLabel(issue.status))),
+                Chip(
+                  avatar: Icon(
+                    fromDiscover
+                        ? Icons.explore_outlined
+                        : Icons.groups_outlined,
+                    size: 18,
+                  ),
+                  label: Text(fromDiscover ? 'From Discover' : 'From a room'),
+                ),
                 if (issue.quarantinedAt != null)
                   Chip(
                     avatar: const Icon(Icons.block_outlined, size: 18),
@@ -200,7 +212,8 @@ class _PoiIssuePageState extends State<PoiIssuePage> {
             ),
             const SizedBox(height: 8),
             SelectableText(
-              'Report ${issue.reportId} · Place ${issue.placeId}',
+              'Report ${issue.reportId} · Place ${issue.placeId}'
+              '${issue.sessionId == null ? '' : ' · Room ${issue.sessionId}'}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
@@ -215,7 +228,10 @@ class _PoiIssuePageState extends State<PoiIssuePage> {
               children: [
                 Text('Reported ${_formatDate(issue.createdAt)}'),
                 Text('${issue.recurrenceCount} similar reports'),
-                Text('${issue.affectedSessionCount} affected rooms'),
+                // Recurrence spans both modes, so a Discover report can still
+                // share its problem with rooms; say so only when some did.
+                if (!fromDiscover || issue.affectedSessionCount > 0)
+                  Text('${issue.affectedSessionCount} affected rooms'),
                 if (issue.ownerName != null) Text('Owner: ${issue.ownerName}'),
                 if (closedAfter != null)
                   Text('Resolution time: ${_duration(closedAfter)}'),

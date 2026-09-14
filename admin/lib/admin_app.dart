@@ -8,6 +8,12 @@ import 'admin_operations.dart';
 import 'features/analytics/analytics_pages.dart';
 import 'features/auth/admin_auth_controller.dart';
 import 'features/auth/admin_auth_page.dart';
+import 'features/discovery/discover_taxonomy_page.dart';
+import 'features/discovery/discovery_policy_fields.dart';
+import 'features/discovery/growth_metrics_page.dart';
+import 'features/discovery/harvest_jobs_view.dart';
+import 'features/discovery/harvest_manifest_page.dart';
+import 'features/discovery/unmapped_types_page.dart';
 import 'features/issues/poi_issue_page.dart';
 import 'features/navigation/admin_navigation.dart';
 import 'features/taxonomy/taxonomy_page.dart';
@@ -56,9 +62,7 @@ class _AdminAppState extends State<AdminApp> {
       ),
       ShellRoute(
         builder: (context, state, child) => _Dashboard(
-          selectedIndex: adminRoutes
-              .indexOf(state.uri.path)
-              .clamp(0, adminRoutes.length - 1),
+          selectedIndex: adminDestinationIndex(state.uri.path),
           onSelect: (index) => context.go(adminRoutes[index]),
           authController: widget.authController,
           child: child,
@@ -80,8 +84,23 @@ class _AdminAppState extends State<AdminApp> {
                 _page(PlaceAnalyticsPage(operations: _operations)),
           ),
           GoRoute(
+            path: '/growth',
+            pageBuilder: (_, _) =>
+                _page(DiscoveryGrowthPage(operations: _operations)),
+          ),
+          GoRoute(
             path: '/taxonomy',
             pageBuilder: (_, _) => _page(TaxonomyPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/discover-tree',
+            pageBuilder: (_, _) =>
+                _page(DiscoverTaxonomyPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/discover-types',
+            pageBuilder: (_, _) =>
+                _page(DiscoveryUnmappedTypesPage(operations: _operations)),
           ),
           // `q` carries the subject of the figure an operator followed here,
           // so the place they were looking at does not have to be searched
@@ -121,6 +140,11 @@ class _AdminAppState extends State<AdminApp> {
             path: '/calibration',
             pageBuilder: (_, _) =>
                 _page(_CalibrationPage(operations: _operations)),
+          ),
+          GoRoute(
+            path: '/harvest-manifest',
+            pageBuilder: (_, _) =>
+                _page(HarvestManifestPage(operations: _operations)),
           ),
           GoRoute(
             path: '/audit',
@@ -888,6 +912,8 @@ class _CoveragePageState extends State<_CoveragePage> {
   }
 }
 
+enum _JobsView { coverage, harvests }
+
 class _JobsPage extends StatefulWidget {
   const _JobsPage({required this.operations});
 
@@ -903,6 +929,8 @@ class _JobsPageState extends State<_JobsPage> {
   Object? _error;
   JobStatus? _status;
   int _pageIndex = 0;
+  _JobsView _view = _JobsView.coverage;
+  int _harvestReload = 0;
 
   @override
   void initState() {
@@ -940,155 +968,194 @@ class _JobsPageState extends State<_JobsPage> {
     title: 'Refresh jobs',
     trailing: IconButton(
       tooltip: 'Refresh jobs',
-      onPressed: _load,
+      onPressed: () {
+        if (_view == _JobsView.coverage) {
+          _load();
+        } else {
+          setState(() => _harvestReload++);
+        }
+      },
       icon: const Icon(Icons.refresh_rounded),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: TextField(
-                controller: _search,
-                textInputAction: TextInputAction.search,
-                onSubmitted: (_) {
-                  _pageIndex = 0;
-                  _load();
-                },
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search_rounded),
-                  labelText: 'Search job, coverage, or operator',
-                ),
+        // Coverage refreshes are only ever queued by operators; Discover
+        // harvests may come from users too, and say so.
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: SegmentedButton<_JobsView>(
+            key: const Key('jobs-view'),
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(
+                value: _JobsView.coverage,
+                icon: Icon(Icons.map_outlined),
+                label: Text('Coverage refreshes'),
               ),
-            ),
-            SizedBox(
-              width: 220,
-              child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Status'),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<JobStatus?>(
-                    value: _status,
-                    isDense: true,
-                    isExpanded: true,
-                    items: [
-                      const DropdownMenuItem<JobStatus?>(
-                        value: null,
-                        child: Text('All statuses'),
-                      ),
-                      for (final status in JobStatus.values)
-                        DropdownMenuItem<JobStatus?>(
-                          value: status,
-                          child: Text(_jobStatusLabel(status)),
-                        ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _status = value;
-                        _pageIndex = 0;
-                      });
-                      _load();
-                    },
-                  ),
-                ),
+              ButtonSegment(
+                value: _JobsView.harvests,
+                icon: Icon(Icons.explore_outlined),
+                label: Text('Discover harvests'),
               ),
-            ),
-          ],
+            ],
+            selected: {_view},
+            onSelectionChanged: (value) => setState(() => _view = value.single),
+          ),
         ),
         const SizedBox(height: 16),
-        if (_error != null)
-          _ErrorPanel(_error!)
-        else if (_page == null)
-          const Center(child: CircularProgressIndicator())
-        else if (_page!.items.isEmpty)
-          const _EmptyPanel(
-            icon: Icons.sync_rounded,
-            message: 'No refresh jobs match these filters.',
+        if (_view == _JobsView.harvests)
+          DiscoveryHarvestJobsView(
+            operations: widget.operations,
+            reloadToken: _harvestReload,
           )
-        else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _page!.items.length,
-            itemBuilder: (context, index) {
-              final job = _page!.items[index];
-              final cancellable =
-                  job.status == JobStatus.pending ||
-                  job.status == JobStatus.running;
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsetsDirectional.only(end: 12),
-                            child: Icon(_jobStatusIcon(job.status)),
-                          ),
-                          Expanded(
-                            child: SelectableText(
-                              job.jobId,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                          _StatusChip(
-                            label: _jobStatusLabel(job.status),
-                            color: _jobStatusColor(context, job.status),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      SelectableText(job.coverageKey),
-                      const SizedBox(height: 6),
-                      Text('${job.requestedBy} · ${job.reason}'),
-                      Text('Created ${_formatDate(job.createdAt)}'),
-                      if (job.errorCode != null)
-                        Text(
-                          'Error: ${job.errorCode}',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
-                      if (cancellable)
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: TextButton(
-                            onPressed: () => _cancel(job),
-                            child: const Text('Cancel'),
-                          ),
-                        ),
-                    ],
+        else ...[
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: TextField(
+                  controller: _search,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (_) {
+                    _pageIndex = 0;
+                    _load();
+                  },
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.search_rounded),
+                    labelText: 'Search job, coverage, or operator',
                   ),
                 ),
-              );
-            },
+              ),
+              SizedBox(
+                width: 220,
+                child: InputDecorator(
+                  decoration: const InputDecoration(labelText: 'Status'),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<JobStatus?>(
+                      value: _status,
+                      isDense: true,
+                      isExpanded: true,
+                      items: [
+                        const DropdownMenuItem<JobStatus?>(
+                          value: null,
+                          child: Text('All statuses'),
+                        ),
+                        for (final status in JobStatus.values)
+                          DropdownMenuItem<JobStatus?>(
+                            value: status,
+                            child: Text(_jobStatusLabel(status)),
+                          ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _status = value;
+                          _pageIndex = 0;
+                        });
+                        _load();
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        if (_page != null)
-          _Pager(
-            page: _pageIndex,
-            pageSize: 25,
-            total: _page!.total,
-            onPrevious: _pageIndex == 0
-                ? null
-                : () {
-                    _pageIndex--;
-                    _load();
-                  },
-            onNext: (_pageIndex + 1) * 25 >= _page!.total
-                ? null
-                : () {
-                    _pageIndex++;
-                    _load();
-                  },
-          ),
+          const SizedBox(height: 16),
+          if (_error != null)
+            _ErrorPanel(_error!)
+          else if (_page == null)
+            const Center(child: CircularProgressIndicator())
+          else if (_page!.items.isEmpty)
+            const _EmptyPanel(
+              icon: Icons.sync_rounded,
+              message: 'No refresh jobs match these filters.',
+            )
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _page!.items.length,
+              itemBuilder: (context, index) {
+                final job = _page!.items[index];
+                final cancellable =
+                    job.status == JobStatus.pending ||
+                    job.status == JobStatus.running;
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                end: 12,
+                              ),
+                              child: Icon(_jobStatusIcon(job.status)),
+                            ),
+                            Expanded(
+                              child: SelectableText(
+                                job.jobId,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            _StatusChip(
+                              label: _jobStatusLabel(job.status),
+                              color: _jobStatusColor(context, job.status),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        SelectableText(job.coverageKey),
+                        const SizedBox(height: 6),
+                        Text('${job.requestedBy} · ${job.reason}'),
+                        Text('Created ${_formatDate(job.createdAt)}'),
+                        if (job.errorCode != null)
+                          Text(
+                            'Error: ${job.errorCode}',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        if (cancellable)
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: TextButton(
+                              onPressed: () => _cancel(job),
+                              child: const Text('Cancel'),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          if (_page != null)
+            _Pager(
+              page: _pageIndex,
+              pageSize: 25,
+              total: _page!.total,
+              onPrevious: _pageIndex == 0
+                  ? null
+                  : () {
+                      _pageIndex--;
+                      _load();
+                    },
+              onNext: (_pageIndex + 1) * 25 >= _page!.total
+                  ? null
+                  : () {
+                      _pageIndex++;
+                      _load();
+                    },
+            ),
+        ],
       ],
     ),
   );
@@ -1269,6 +1336,8 @@ class _PolicyPageState extends State<_PolicyPage> {
   bool _allowParticipantLocation = true;
   RouteOriginMode _defaultRouteOrigin = RouteOriginMode.sessionAnchor;
   Object? _error;
+  DiscoveryPolicyFields? _discovery;
+  PlaceDetailPolicyFields? _detailRefresh;
 
   @override
   void initState() {
@@ -1281,6 +1350,8 @@ class _PolicyPageState extends State<_PolicyPage> {
     for (final value in _controllers) {
       value.dispose();
     }
+    _discovery?.dispose();
+    _detailRefresh?.dispose();
     super.dispose();
   }
 
@@ -1307,6 +1378,7 @@ class _PolicyPageState extends State<_PolicyPage> {
         _routeEstimatesEnabled = value.routeEstimatesEnabled;
         _allowParticipantLocation = value.allowParticipantLocation;
         _defaultRouteOrigin = value.defaultRouteOrigin;
+        _adoptSections(value);
         _error = null;
       });
     } catch (error) {
@@ -1445,6 +1517,14 @@ class _PolicyPageState extends State<_PolicyPage> {
                       ),
                   ],
                 ),
+                const SizedBox(height: 28),
+                const Divider(),
+                const SizedBox(height: 20),
+                DiscoveryPolicySection(
+                  discovery: _discovery,
+                  detailRefresh: _detailRefresh,
+                  onChanged: () => setState(() {}),
+                ),
                 const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -1459,6 +1539,29 @@ class _PolicyPageState extends State<_PolicyPage> {
     );
   }
 
+  // A section the server leaves out keeps whatever the form holds: null from
+  // the server means it has nothing to report, not that settings were cleared.
+  void _adoptSections(CachePolicy value) {
+    final discovery = value.discovery;
+    if (discovery != null) {
+      final fields = _discovery;
+      if (fields == null) {
+        _discovery = DiscoveryPolicyFields(discovery);
+      } else {
+        fields.reset(discovery);
+      }
+    }
+    final detailRefresh = value.detailRefresh;
+    if (detailRefresh != null) {
+      final fields = _detailRefresh;
+      if (fields == null) {
+        _detailRefresh = PlaceDetailPolicyFields(detailRefresh);
+      } else {
+        fields.reset(detailRefresh);
+      }
+    }
+  }
+
   Future<void> _save() async {
     final reason = await _reasonDialog(context, 'Save system policy');
     if (reason == null) return;
@@ -1466,6 +1569,9 @@ class _PolicyPageState extends State<_PolicyPage> {
       final values = _controllers
           .map((value) => int.parse(value.text))
           .toList();
+      // Each is null unless edited, so the server keeps the stored section.
+      final discovery = _discovery?.changes();
+      final detailRefresh = _detailRefresh?.changes();
       final now = DateTime.now().toUtc();
       final updated = await widget.operations.updatePolicy(
         reason: reason,
@@ -1487,9 +1593,15 @@ class _PolicyPageState extends State<_PolicyPage> {
           routeRequestsPerMinute: values[8],
           routeBurst: values[9],
           updatedAt: now,
+          discovery: discovery,
+          detailRefresh: detailRefresh,
         ),
       );
-      setState(() => _policy = updated);
+      if (!mounted) return;
+      setState(() {
+        _policy = updated;
+        _adoptSections(updated);
+      });
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context)

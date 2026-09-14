@@ -6,11 +6,16 @@ class AdminDestination {
     required this.route,
     required this.label,
     required this.icon,
+    this.subroutes = const [],
   });
 
   final String route;
   final String label;
   final IconData icon;
+
+  /// Pages opened from this destination rather than from the navigation,
+  /// which keep it selected while they are shown.
+  final List<String> subroutes;
 }
 
 /// Destinations that answer the same kind of question.
@@ -48,6 +53,11 @@ const adminNavigationGroups = <AdminNavigationGroup>[
         label: 'Places',
         icon: Icons.favorite_outline_rounded,
       ),
+      AdminDestination(
+        route: '/growth',
+        label: 'Catalog growth',
+        icon: Icons.stacked_line_chart_rounded,
+      ),
     ],
   ),
   AdminNavigationGroup(
@@ -57,6 +67,14 @@ const adminNavigationGroups = <AdminNavigationGroup>[
         route: '/taxonomy',
         label: 'Taxonomy',
         icon: Icons.account_tree_outlined,
+      ),
+      // Unmapped types opens from the tree it feeds. Its own entry pushed the
+      // last group past a 900-pixel window.
+      AdminDestination(
+        route: '/discover-tree',
+        label: 'Discover tree',
+        icon: Icons.explore_outlined,
+        subroutes: ['/discover-types'],
       ),
       AdminDestination(
         route: '/catalog',
@@ -99,6 +117,11 @@ const adminNavigationGroups = <AdminNavigationGroup>[
         icon: Icons.science_outlined,
       ),
       AdminDestination(
+        route: '/harvest-manifest',
+        label: 'Harvest manifest',
+        icon: Icons.playlist_add_check_rounded,
+      ),
+      AdminDestination(
         route: '/audit',
         label: 'Audit log',
         icon: Icons.history_rounded,
@@ -118,6 +141,16 @@ final List<AdminDestination> adminDestinations = [
 final List<String> adminRoutes = [
   for (final destination in adminDestinations) destination.route,
 ];
+
+/// Index of the destination that owns [path], its own route or one of its
+/// subroutes, falling back to the first destination as the router always has.
+int adminDestinationIndex(String path) {
+  final index = adminDestinations.indexWhere(
+    (destination) =>
+        destination.route == path || destination.subroutes.contains(path),
+  );
+  return index < 0 ? 0 : index;
+}
 
 /// A heading over a run of destinations.
 class AdminNavigationGroupLabel extends StatelessWidget {

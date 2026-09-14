@@ -23,10 +23,12 @@ Last updated: 2026-09-14
   the configuration read and kept links on the back-end lane's contract
   commit `4014037`. G2, the results screen, landed on 2026-09-13, and G3,
   filters and categories, on 2026-09-14, followed that day by the area
-  follow-up on the back-end lane's `eda8827` contract. G4, then H and J, build on the same
-  generated types and fakes (`backend/discovery-contracts.md`). Every
-  discovery data RPC still answers `feature_disabled`. See the checkpoints
-  below and `discovery_upgrade.md` §"Implementation plan".
+  follow-up on the back-end lane's `eda8827` contract. M9-J's admin surfaces
+  landed the same day on the back-end lane's `ebbdf5f` admin contracts. G4
+  and H build on the same generated types and fakes
+  (`backend/discovery-contracts.md`). Every discovery data and admin RPC
+  still answers `feature_disabled`. See the checkpoints below and
+  `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
 - F17 is complete in this lane as of 2026-09-10: the client now refreshes
@@ -52,6 +54,114 @@ Last updated: 2026-09-14
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-J admin surfaces — built against contracts (2026-09-14)
+
+The admin half of Discover, built on the back-end lane's contract commits:
+M9-B's policy and tree, M9-D's report source, and M9-E's admin reads in
+`ebbdf5f`, which fast-forwarded this branch from `main`. Every one of these
+methods still answers `feature_disabled`, so each page explains that state
+rather than showing an error. Nothing here is proven against a real server
+yet. Admin stays English-only.
+
+**System policy.** `DiscoveryPolicySection`
+(`admin/lib/features/discovery/discovery_policy_fields.dart`) adds, under the
+existing form, the Discover switch, the Best formula, the scoring and badge
+thresholds, harvest budgets and read limits, and a separate place detail
+refresh section. A section is sent only when something in it changed.
+Otherwise it goes as null, which the contract defines as "preserve", so a
+save that touches only route estimates is exactly what an older dashboard
+sends. A server that reports no section gets a note instead of controls, and
+a save leaves the section alone. A malformed value names its field, and
+nothing is sent.
+
+**Discover tree** (`/discover-tree`, `discover_taxonomy_page.dart`). It
+mirrors the Swipe taxonomy page's lifecycle (save, validate, publish,
+restore) over the recursive tree. An operator can add a top-level or child
+node down to the eighth level, edit its labels, emoji and aliases, reorder
+siblings, and remove a node after a warning that says what goes with it.
+Publish stays off until a saved draft passes validation. A restore sends the
+history's active revision as `expectedActiveRevision`. There is no live
+canary: Discover reads the catalog it already has, and its queries live in
+the manifest. Tree edits are pure functions in `discovery_tree.dart`,
+addressed by path rather than id, because only validation makes ids unique.
+
+**Unmapped types** (`/discover-types`). The page lists unmapped and ambiguous
+types with their place and observation counts, filterable by issue. "Map into
+tree" loads the current tree draft and lets the operator pick one node. It
+then saves the draft with the raw `primaryType` added there and removed from
+every other node, which is what resolves an ambiguous type. As the contract
+asks, there is no mapping method of its own. A mapped type goes live through
+the tree's validate and publish, which the confirmation links to. On screen,
+aliases compare after trimming and lower-casing; the server's normalisation
+decides. The page opens from the tree editor and keeps "Discover tree"
+selected in the navigation; see the lane decision on navigation height.
+
+**Harvest manifest** (`/harvest-manifest`, under Governance). The same
+lifecycle, over entries with an admin label, English query, reviewed Arabic
+fallback, order and an enabled switch. Entries are disabled rather than
+deleted, since job outcomes refer to them by id.
+
+**Refresh jobs.** A switch between the existing coverage refreshes, still the
+default, and Discover harvests (`harvest_jobs_view.dart`). Each harvest shows:
+
+- User-requested or Operator-requested, and its trigger;
+- cell, footprint and radius;
+- manifest and calibration revisions;
+- attempted and completed queries, observed places and upstream requests;
+- remaining cooldown;
+- expandable per-query outcomes and the manifest snapshot.
+
+Filters cover requester, state and trigger. A finished job that carries
+failed or unattempted queries says "Incomplete", because the contract warns
+against reading a terminal state as a whole harvest. Skipped compatibility
+queries do not count against it.
+
+**Catalog growth** (`/growth`, under Insights). For the last 24 hours, 7 days
+or 30 days, the page shows:
+
+- catalog size at both ends, with net change beside new, quarantined and
+  removed places;
+- cells explored, observations, detail refreshes and upstream requests;
+- a table by initiating mode and operation.
+
+Every hit rate is computed from hits and misses, and a row with neither says
+"No lookups" rather than 0%.
+
+**Reports.** Each report says whether it came from Discover or from a room.
+A Discover report has no room line, and shows affected rooms only when some
+share its problem. A room report adds its room id. Moderation is unchanged.
+
+Tests: `discovery_tree_test.dart` covers path edits and both mapping cases.
+`discovery_admin_test.dart` drives each surface through `AdminApp` with a
+fake:
+
+- policy sections sent only when edited, left alone on a server without
+  them, and a malformed knob;
+- tree add, save, validate and publish, the removal warning and the restore
+  revision;
+- mapping an unmapped and an ambiguous type, and the issue filter;
+- harvest requester, shortfall, cooldown and outcomes, and the requester
+  filter;
+- manifest edit and restore;
+- the growth hit rate;
+- report sources;
+- every page on a server that does not offer it, and each page at 200% text.
+
+The existing admin tests pass unmodified.
+
+Still open: requirement 16's acceptance needs the implementations. Seeing a
+mapped type's places appear needs M9-B, M9-C and M9-E, audit rows for publish
+and rollback are server-side, and user harvests need M9-E's worker.
+
+Verification: pinned full preflight passed 159 server, 279 app and 72 admin
+tests, up from 51 admin, with clean analyses and formatting, and
+`flutter build web --release` compiles the dashboard. Nothing under `app/`
+changed, but the branch now carries `ebbdf5f`'s regenerated client, so a
+signed `0.2.1+7` was built at SHA-256
+`7e134a7973412342cc2f004b408fe7dc504216315d0cb31d78f84c621df5603d`. It
+verifies under APK Signature Scheme v2 with the same signing certificate
+(`426f3bf4…77a6`) as previous releases.
 
 ### M9-G2 area follow-up — landed (2026-09-14)
 
@@ -910,22 +1020,31 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ## Open handoffs to the back-end lane
 
-### Discover admin contracts — requested 2026-09-14 (M9-J)
+### Discover admin contracts — requested 2026-09-14, delivered and wired 2026-09-14 (M9-J)
 
-`backend/discovery-contracts.md` lists M9-E's admin contracts as outstanding:
-the broad-query manifest, harvest job inspection, unmapped types and growth
-metrics. The generated client on `main` at `4ab6f5a` still has none of them.
-These parts of M9-J cannot start until they exist:
+The back-end lane delivered the manifest, harvest job, unmapped-type and
+growth contracts in `ebbdf5f`, and every M9-J page now uses them; see "M9-J
+admin surfaces". What those pages expect of the implementations:
 
-- the manifest editor;
-- user-requested versus operator-requested harvests on the refresh jobs page;
-- the unmapped-types report with its map-into-tree action;
-- the growth and reuse metrics.
+- **Unmapped types ranked on the server.** The report is paged, so the page
+  can only show types in the order it receives them. Requirement 16 asks for
+  frequency order: sort by `catalogPlaceCount`, then `observationCount`,
+  descending.
+- **Policy responses carry the stored sections.** The dashboard sends
+  `discovery` and `detailRefresh` only when edited. It shows their controls
+  only when `policy` returns them, and takes `updatePolicy`'s response as the
+  new baseline, so both should return the persisted sections once they
+  exist.
+- **Tree saves conflict on revision.** A type is mapped by saving the draft
+  at the revision the unmapped-types page just loaded. That page and an open
+  tree editor, or two operators, must get a revision conflict rather than
+  overwrite each other.
+- **An opaque user requester.** Operators see a user harvest's `requestedBy`
+  as-is, so it should be a stable pseudonymous id, not an account email or a
+  device identifier.
 
-The policy knobs, the Discover taxonomy editor and the display of
-discovery-origin issues can start on the contracts already delivered. Asked:
-the M9-E admin contract commit, ahead of its implementation, as was done for
-the consumer contracts.
+Originally asked: the M9-E admin contract commit ahead of its implementation,
+as was done for the consumer contracts.
 
 ### Discover counts, tree and request budgets — noted 2026-09-14 (M9-G3)
 
@@ -1070,6 +1189,22 @@ run from here.
 
 ## Lane decisions
 
+- 2026-09-14: Open Unmapped types from the Discover tree instead of giving it
+  a navigation entry. With four new entries, the last destination ended at
+  935 pixels in the test font. That is past the 900-pixel window
+  `widget_test.dart` holds the navigation to. With three it ends at 883.
+  Destinations now carry `subroutes`, which keep their entry selected.
+- 2026-09-14: Send each new policy section only when it was edited. The
+  contract makes null mean "preserve", and until persistence lands it rejects
+  any non-null section. Sending unedited sections would break every existing
+  policy save now, and would resend another operator's settings later.
+- 2026-09-14: Map a type by saving the draft the unmapped-types page loads,
+  not by editing an open tree editor's in-memory draft. The contract has no
+  mapping method, and one draft revision guards both paths. Publishing stays
+  in the tree editor, behind validation.
+- 2026-09-14: Show harvests on the refresh jobs page behind a view switch
+  that defaults to coverage refreshes. They are different records from
+  different methods, and requirement 16 asks for them on that page.
 - 2026-09-13: Register `/discover` under `/` and navigate to Discover links
   with `go`. Every committed query change then matches the same page key,
   so one screen, one map and one results notifier survive a change of
