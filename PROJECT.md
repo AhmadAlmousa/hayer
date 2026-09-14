@@ -893,9 +893,9 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [x] M9-A — Shared source and observation writer (back end). Raw provider
   pages are evidence-neutral; Swipe adds its query evidence in its adapter,
   while the shared writer persists broad/detail observations independently.
-- [~] M9-B — Flag, configuration and Discover taxonomy (back end). Public
-  disabled config and generated policy/tree contracts delivered; persistence,
-  seed, validation and lifecycle implementation remain open.
+- [x] M9-B — Flag, configuration and Discover taxonomy (back end). Typed
+  policy storage, backward-compatible updates, public configuration, the
+  shared flag guard, and the seeded/validated/audited tree lifecycle are live.
 - [~] M9-C — Catalog columns and discovery query (back end). Query, paging,
   facet, map and place-context contracts delivered; SQL/migration remain open.
 - [~] M9-D — Shared detail resolver and sessionless reporting (back end).

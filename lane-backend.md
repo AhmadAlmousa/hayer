@@ -24,7 +24,7 @@ Last updated: 2026-09-14
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 52/52 against real PostGIS,
+- The latest integration suite is fully green: 55/55 against real PostGIS,
   including legacy-calibration repair, bounded version-retention/rollback,
   dark discovery contracts, and refresh-job concurrency/outcome handling.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
@@ -38,12 +38,13 @@ Last updated: 2026-09-14
 - The owner prioritized contracts to unblock Claude's discovery work. Frontend
   prework is merged in `d4b58b7`; M9-B/C/D and consumer M9-E generated contracts
   are delivered. The exact calls, mock semantics and retained-link flow are in
-  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). Persistent
-  implementations and production activation remain open.
+  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). M9-B's
+  persistent implementation is complete; M9-C/D/E and production activation
+  remain open.
 - Claude's M9-F configuration/link retention commit `5863f02` is merged into
   `main`. It adds no new backend handoff: G2–G4 can continue against the dark
   generated contracts and fakes. The next discovery backend slice remains
-  M9-A's shared source/observation writer, followed by persistent M9-B/C/D/E.
+  M9-A's shared source/observation writer, followed by persistent M9-C/D/E.
 - M9-G2's area handoffs are reflected in the generated contract. The app no
   longer has to guess a country from rough boxes, and a structured consumer
   reverse-geocode read exposes locality and city without parsing an address
@@ -55,8 +56,39 @@ Last updated: 2026-09-14
 - M9-A is complete. Raw Google result pages no longer manufacture Swipe
   evidence, and the shared observation writer persists valid broad/detail
   observations without changing Swipe evidence or coverage semantics.
+- M9-B is complete. Policy reads and writes round-trip the Discover and shared
+  detail sections, public configuration reflects stored revisions and limits,
+  and the independently seeded Discover tree has guarded, audited lifecycle
+  mutations with optimistic revision conflicts.
 
 ## Checkpoints
+
+### M9-B policy, configuration and Discover taxonomy — complete (2026-09-14)
+
+`hayer_cache_settings` now persists every typed Discover scoring, harvest,
+read-limit and shared detail-refresh field behind `discoveryEnabled=false`.
+Policy reads always return those sections, while updates from an older client
+that omits them preserve the stored values. `discoveryConfig` remains public
+while disabled and reports the stored policy revision, active tree revision,
+client thresholds and limits. All consumer Discover methods share the same
+persisted flag guard.
+
+`hayer_discovery_taxonomy` seeds the nine bilingual domains and enforces one
+active and one draft row. One alias normalizer is shared by validation and the
+next query slice. Validation rejects duplicate ids and normalized aliases,
+missing bilingual labels, invalid ids and trees deeper than eight levels.
+Draft saves compare revisions under a row lock; validation, publish and restore
+are transactional, keep public revisions monotonic and write their audit rows
+atomically. Publish and restore audit records carry both prior and resulting
+versions/revisions.
+
+Verification: pinned full preflight passed generation, formatting, all
+fatal-info analyses, 165 server tests, 279 app tests and 51 admin tests. The
+guarded remote PostGIS suite passed all 55 tests, including concurrent Discover
+tree saves, atomic publish/restore audits, stored configuration and legacy
+policy preservation. The signed `0.2.1+7` APK remains 107,122,415 bytes,
+verifies with APK Signature Scheme v2, and has SHA-256
+`d5aaca0b71174fc3d93d64699b2706e62fcf83fdaaa23e5912de60a6967a14a5`.
 
 ### M9-A shared source and observation writer — complete (2026-09-14)
 

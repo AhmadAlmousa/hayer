@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   const migrationId = '20260901083702427-spatial-schema-repair';
-  const latestMigrationId = '20260909025500100-poi-issue-reports';
+  const latestMigrationId = '20260914073223386-discovery-policy-taxonomy';
   final migrationDirectory = Directory('migrations/$migrationId');
 
   group('spatial schema migration', () {

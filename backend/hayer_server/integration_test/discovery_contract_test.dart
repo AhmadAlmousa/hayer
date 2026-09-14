@@ -1,5 +1,5 @@
 import 'package:hayer_server/src/admin/admin_endpoint.dart';
-import 'package:hayer_server/src/discovery/discovery_contract.dart';
+import 'package:hayer_server/src/discovery/discovery_policy_service.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
@@ -42,6 +42,7 @@ void main() {
       () async {
         final config = await endpoints.bootstrap.discoveryConfig(builder);
         expect(config.enabled, isFalse);
+        expect(config.taxonomyRevision, 1);
         expect(config.detailsAvailable, isFalse);
         expect(
           config.expiresAt.difference(config.serverTime),
@@ -121,7 +122,7 @@ void main() {
     );
 
     test(
-      'admin discovery stubs authorize then reject without a mutation',
+      'remaining admin discovery stubs authorize then reject without a mutation',
       () async {
         final session = builder.build();
         var authorizations = 0;
@@ -133,33 +134,6 @@ void main() {
         );
         try {
           final calls = <Future<Object?> Function()>[
-            () => admin.discoveryTaxonomyDraft(session),
-            () => admin.discoveryTaxonomyHistory(session),
-            () => admin.saveDiscoveryTaxonomyDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-              roots: [],
-            ),
-            () => admin.validateDiscoveryTaxonomyDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.publishDiscoveryTaxonomy(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.rollbackDiscoveryTaxonomy(
-              session,
-              reason: 'fixture',
-              version: 'old',
-              expectedActiveRevision: 0,
-            ),
             () => admin.discoveryHarvestManifestDraft(session),
             () => admin.discoveryHarvestManifestHistory(session),
             () => admin.saveDiscoveryHarvestManifestDraft(
@@ -218,7 +192,7 @@ void main() {
     );
 
     test(
-      'new policy fields cannot be acknowledged and silently discarded',
+      'new policy fields persist and legacy clients preserve them',
       () async {
         final session = builder.build();
         final admin = AdminEndpoint.forTesting(
@@ -226,6 +200,8 @@ void main() {
         );
         try {
           final before = await admin.policy(session);
+          expect(before.discovery, isNotNull);
+          expect(before.detailRefresh, isNotNull);
           final legacy = CachePolicy.fromJson(
             before.toJson()
               ..remove('discovery')
@@ -235,7 +211,7 @@ void main() {
           expect(legacy.detailRefresh, isNull);
           final discovery = DiscoveryPolicy(
             enabled: true,
-            scoring: DiscoveryContract.configuration().scoring,
+            scoring: DiscoveryPolicyService.defaultScoring(),
             harvestMaximumRequests: 24,
             harvestDesiredCandidatesPerQuery: 50,
             harvestMaximumSeconds: 300,
@@ -247,29 +223,38 @@ void main() {
             maximumPageSize: 100,
             maximumMapPoints: 2000,
           );
-          await expectLater(
-            admin.updatePolicy(
-              session,
-              reason: 'fixture',
-              policy: legacy.copyWith(discovery: discovery),
-            ),
-            throwsA(_disabled),
+          final withDiscovery = await admin.updatePolicy(
+            session,
+            reason: 'Enable discovery for the test.',
+            policy: legacy.copyWith(discovery: discovery),
           );
-          await expectLater(
-            admin.updatePolicy(
-              session,
-              reason: 'fixture',
-              policy: legacy.copyWith(
-                detailRefresh: PlaceDetailPolicy(
-                  maximumRequests: 3,
-                  maximumSeconds: 10,
-                  cooldownMinutes: 15,
-                ),
-              ),
-            ),
-            throwsA(_disabled),
+          expect(withDiscovery.discovery?.enabled, isTrue);
+          expect(withDiscovery.discovery?.harvestMaximumRequests, 24);
+
+          final legacyEdit = CachePolicy.fromJson(
+            withDiscovery.toJson()
+              ..remove('discovery')
+              ..remove('detailRefresh'),
           );
-          expect((await admin.policy(session)).version, before.version);
+          final saved = await admin.updatePolicy(
+            session,
+            reason: 'Legacy client updates a shared setting.',
+            policy: legacyEdit.copyWith(freshHours: 48),
+          );
+          expect(saved.freshHours, 48);
+          expect(saved.discovery?.enabled, isTrue);
+          expect(saved.discovery?.harvestMaximumRequests, 24);
+          expect(saved.detailRefresh?.maximumRequests, 3);
+
+          final config = await endpoints.bootstrap.discoveryConfig(builder);
+          expect(config.enabled, isTrue);
+          expect(config.policyRevision, saved.version);
+          expect(config.scoring.gemMaximumReviewsExclusive, 500);
+          expect(config.limits.maximumPageSize, 100);
+
+          final taxonomy = await endpoints.discover.taxonomy(member);
+          expect(taxonomy.revision, config.taxonomyRevision);
+          expect(taxonomy.roots, hasLength(9));
         } finally {
           await session.close();
         }

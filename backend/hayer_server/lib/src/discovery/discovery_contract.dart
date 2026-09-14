@@ -1,42 +1,42 @@
-import '../generated/protocol.dart';
+import 'package:serverpod/serverpod.dart';
 
-// Contract rollout is deliberately dark until the query, storage and feature
-// policy implementations pass M9-K. This is not a configurable launch flag.
+import '../generated/protocol.dart';
+import 'discovery_policy_service.dart';
+import 'discovery_taxonomy_service.dart';
+
 abstract final class DiscoveryContract {
   static Never unavailable() => throw ApiException(
     code: 'feature_disabled',
     message: 'Discovery is not available yet. Please try again later.',
   );
 
-  static DiscoveryConfig configuration() {
+  static Future<DiscoveryPolicy> requireEnabled(Session session) async {
+    final policy = (await DiscoveryPolicyService.load(session)).discovery!;
+    if (!policy.enabled) unavailable();
+    return policy;
+  }
+
+  static Future<DiscoveryConfig> configuration(Session session) async {
+    final policy = await DiscoveryPolicyService.load(session);
+    final discovery = policy.discovery!;
+    final taxonomy = await DiscoveryTaxonomyService.activeRow(session);
     final now = DateTime.now().toUtc();
     return DiscoveryConfig(
       contractVersion: 1,
-      enabled: false,
+      enabled: discovery.enabled,
       detailsAvailable: false,
-      policyRevision: 0,
-      taxonomyRevision: 0,
+      policyRevision: policy.version,
+      taxonomyRevision: taxonomy.revision,
       serverTime: now,
       expiresAt: now.add(const Duration(minutes: 5)),
       supportedCountries: const ['SA', 'AE', 'KW', 'QA', 'BH', 'OM'],
-      scoring: DiscoveryScoring(
-        bestFormula: DiscoveryBestFormula.popularityWeighted,
-        gemMinimumRating: 4.5,
-        gemMinimumReviews: 1,
-        gemMaximumReviewsExclusive: 500,
-        bayesianPriorReviews: 100,
-        bayesianMeanRating: 4.0,
-        bestMinimumReviews: 1,
-        topRatedMinimumReviews: 0,
-        worstRatedMinimumReviews: 0,
-        recentlyAddedDays: 45,
-      ),
+      scoring: discovery.scoring.copyWith(),
       limits: DiscoveryClientLimits(
         defaultPageSize: 50,
-        maximumPageSize: 100,
+        maximumPageSize: discovery.maximumPageSize,
         maximumCategoryIds: 50,
         maximumTextCodePoints: 256,
-        maximumMapPoints: 2000,
+        maximumMapPoints: discovery.maximumMapPoints,
         otherCategoryId: 'other',
       ),
       amenitiesAvailable: false,

@@ -13,6 +13,7 @@
 
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../route_origin_mode.dart' as _i2;
+import '../discovery_best_formula.dart' as _i3;
 
 abstract class CacheSettingsRow
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -33,6 +34,30 @@ abstract class CacheSettingsRow
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
+    bool? discoveryEnabled,
+    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    double? discoveryGemMinimumRating,
+    int? discoveryGemMinimumReviews,
+    int? discoveryGemMaximumReviewsExclusive,
+    int? discoveryBayesianPriorReviews,
+    double? discoveryBayesianMeanRating,
+    int? discoveryBestMinimumReviews,
+    int? discoveryTopRatedMinimumReviews,
+    int? discoveryWorstRatedMinimumReviews,
+    int? discoveryRecentlyAddedDays,
+    int? discoveryHarvestMaximumRequests,
+    int? discoveryHarvestDesiredCandidatesPerQuery,
+    int? discoveryHarvestMaximumSeconds,
+    int? discoveryHarvestCooldownMinutes,
+    int? discoveryUserHarvestsPerHour,
+    int? discoveryBrowseRequestsPerMinute,
+    int? discoveryFacetRequestsPerMinute,
+    int? discoveryQueryTimeoutMilliseconds,
+    int? discoveryMaximumPageSize,
+    int? discoveryMaximumMapPoints,
+    int? detailRefreshMaximumRequests,
+    int? detailRefreshMaximumSeconds,
+    int? detailRefreshCooldownMinutes,
     required this.updatedBy,
     required this.updatedAt,
   }) : routeEstimatesEnabled = routeEstimatesEnabled ?? true,
@@ -41,7 +66,37 @@ abstract class CacheSettingsRow
            defaultRouteOrigin ?? _i2.RouteOriginMode.sessionAnchor,
        routeEstimateCacheMinutes = routeEstimateCacheMinutes ?? 10,
        routeRequestsPerMinute = routeRequestsPerMinute ?? 30,
-       routeBurst = routeBurst ?? 6;
+       routeBurst = routeBurst ?? 6,
+       discoveryEnabled = discoveryEnabled ?? false,
+       discoveryBestFormula =
+           discoveryBestFormula ?? _i3.DiscoveryBestFormula.popularityWeighted,
+       discoveryGemMinimumRating = discoveryGemMinimumRating ?? 4.5,
+       discoveryGemMinimumReviews = discoveryGemMinimumReviews ?? 1,
+       discoveryGemMaximumReviewsExclusive =
+           discoveryGemMaximumReviewsExclusive ?? 500,
+       discoveryBayesianPriorReviews = discoveryBayesianPriorReviews ?? 100,
+       discoveryBayesianMeanRating = discoveryBayesianMeanRating ?? 4.0,
+       discoveryBestMinimumReviews = discoveryBestMinimumReviews ?? 1,
+       discoveryTopRatedMinimumReviews = discoveryTopRatedMinimumReviews ?? 0,
+       discoveryWorstRatedMinimumReviews =
+           discoveryWorstRatedMinimumReviews ?? 0,
+       discoveryRecentlyAddedDays = discoveryRecentlyAddedDays ?? 45,
+       discoveryHarvestMaximumRequests = discoveryHarvestMaximumRequests ?? 24,
+       discoveryHarvestDesiredCandidatesPerQuery =
+           discoveryHarvestDesiredCandidatesPerQuery ?? 50,
+       discoveryHarvestMaximumSeconds = discoveryHarvestMaximumSeconds ?? 300,
+       discoveryHarvestCooldownMinutes = discoveryHarvestCooldownMinutes ?? 60,
+       discoveryUserHarvestsPerHour = discoveryUserHarvestsPerHour ?? 3,
+       discoveryBrowseRequestsPerMinute =
+           discoveryBrowseRequestsPerMinute ?? 30,
+       discoveryFacetRequestsPerMinute = discoveryFacetRequestsPerMinute ?? 60,
+       discoveryQueryTimeoutMilliseconds =
+           discoveryQueryTimeoutMilliseconds ?? 2000,
+       discoveryMaximumPageSize = discoveryMaximumPageSize ?? 100,
+       discoveryMaximumMapPoints = discoveryMaximumMapPoints ?? 2000,
+       detailRefreshMaximumRequests = detailRefreshMaximumRequests ?? 3,
+       detailRefreshMaximumSeconds = detailRefreshMaximumSeconds ?? 20,
+       detailRefreshCooldownMinutes = detailRefreshCooldownMinutes ?? 60;
 
   factory CacheSettingsRow({
     _i1.UuidValue? id,
@@ -60,6 +115,30 @@ abstract class CacheSettingsRow
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
+    bool? discoveryEnabled,
+    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    double? discoveryGemMinimumRating,
+    int? discoveryGemMinimumReviews,
+    int? discoveryGemMaximumReviewsExclusive,
+    int? discoveryBayesianPriorReviews,
+    double? discoveryBayesianMeanRating,
+    int? discoveryBestMinimumReviews,
+    int? discoveryTopRatedMinimumReviews,
+    int? discoveryWorstRatedMinimumReviews,
+    int? discoveryRecentlyAddedDays,
+    int? discoveryHarvestMaximumRequests,
+    int? discoveryHarvestDesiredCandidatesPerQuery,
+    int? discoveryHarvestMaximumSeconds,
+    int? discoveryHarvestCooldownMinutes,
+    int? discoveryUserHarvestsPerHour,
+    int? discoveryBrowseRequestsPerMinute,
+    int? discoveryFacetRequestsPerMinute,
+    int? discoveryQueryTimeoutMilliseconds,
+    int? discoveryMaximumPageSize,
+    int? discoveryMaximumMapPoints,
+    int? detailRefreshMaximumRequests,
+    int? detailRefreshMaximumSeconds,
+    int? detailRefreshCooldownMinutes,
     required String updatedBy,
     required DateTime updatedAt,
   }) = _CacheSettingsRowImpl;
@@ -101,6 +180,62 @@ abstract class CacheSettingsRow
       routeRequestsPerMinute:
           jsonSerialization['routeRequestsPerMinute'] as int?,
       routeBurst: jsonSerialization['routeBurst'] as int?,
+      discoveryEnabled: jsonSerialization['discoveryEnabled'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['discoveryEnabled'],
+            ),
+      discoveryBestFormula: jsonSerialization['discoveryBestFormula'] == null
+          ? null
+          : _i3.DiscoveryBestFormula.fromJson(
+              (jsonSerialization['discoveryBestFormula'] as String),
+            ),
+      discoveryGemMinimumRating:
+          (jsonSerialization['discoveryGemMinimumRating'] as num?)?.toDouble(),
+      discoveryGemMinimumReviews:
+          jsonSerialization['discoveryGemMinimumReviews'] as int?,
+      discoveryGemMaximumReviewsExclusive:
+          jsonSerialization['discoveryGemMaximumReviewsExclusive'] as int?,
+      discoveryBayesianPriorReviews:
+          jsonSerialization['discoveryBayesianPriorReviews'] as int?,
+      discoveryBayesianMeanRating:
+          (jsonSerialization['discoveryBayesianMeanRating'] as num?)
+              ?.toDouble(),
+      discoveryBestMinimumReviews:
+          jsonSerialization['discoveryBestMinimumReviews'] as int?,
+      discoveryTopRatedMinimumReviews:
+          jsonSerialization['discoveryTopRatedMinimumReviews'] as int?,
+      discoveryWorstRatedMinimumReviews:
+          jsonSerialization['discoveryWorstRatedMinimumReviews'] as int?,
+      discoveryRecentlyAddedDays:
+          jsonSerialization['discoveryRecentlyAddedDays'] as int?,
+      discoveryHarvestMaximumRequests:
+          jsonSerialization['discoveryHarvestMaximumRequests'] as int?,
+      discoveryHarvestDesiredCandidatesPerQuery:
+          jsonSerialization['discoveryHarvestDesiredCandidatesPerQuery']
+              as int?,
+      discoveryHarvestMaximumSeconds:
+          jsonSerialization['discoveryHarvestMaximumSeconds'] as int?,
+      discoveryHarvestCooldownMinutes:
+          jsonSerialization['discoveryHarvestCooldownMinutes'] as int?,
+      discoveryUserHarvestsPerHour:
+          jsonSerialization['discoveryUserHarvestsPerHour'] as int?,
+      discoveryBrowseRequestsPerMinute:
+          jsonSerialization['discoveryBrowseRequestsPerMinute'] as int?,
+      discoveryFacetRequestsPerMinute:
+          jsonSerialization['discoveryFacetRequestsPerMinute'] as int?,
+      discoveryQueryTimeoutMilliseconds:
+          jsonSerialization['discoveryQueryTimeoutMilliseconds'] as int?,
+      discoveryMaximumPageSize:
+          jsonSerialization['discoveryMaximumPageSize'] as int?,
+      discoveryMaximumMapPoints:
+          jsonSerialization['discoveryMaximumMapPoints'] as int?,
+      detailRefreshMaximumRequests:
+          jsonSerialization['detailRefreshMaximumRequests'] as int?,
+      detailRefreshMaximumSeconds:
+          jsonSerialization['detailRefreshMaximumSeconds'] as int?,
+      detailRefreshCooldownMinutes:
+          jsonSerialization['detailRefreshCooldownMinutes'] as int?,
       updatedBy: jsonSerialization['updatedBy'] as String,
       updatedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
@@ -145,6 +280,54 @@ abstract class CacheSettingsRow
 
   int routeBurst;
 
+  bool discoveryEnabled;
+
+  _i3.DiscoveryBestFormula discoveryBestFormula;
+
+  double discoveryGemMinimumRating;
+
+  int discoveryGemMinimumReviews;
+
+  int discoveryGemMaximumReviewsExclusive;
+
+  int discoveryBayesianPriorReviews;
+
+  double discoveryBayesianMeanRating;
+
+  int discoveryBestMinimumReviews;
+
+  int discoveryTopRatedMinimumReviews;
+
+  int discoveryWorstRatedMinimumReviews;
+
+  int discoveryRecentlyAddedDays;
+
+  int discoveryHarvestMaximumRequests;
+
+  int discoveryHarvestDesiredCandidatesPerQuery;
+
+  int discoveryHarvestMaximumSeconds;
+
+  int discoveryHarvestCooldownMinutes;
+
+  int discoveryUserHarvestsPerHour;
+
+  int discoveryBrowseRequestsPerMinute;
+
+  int discoveryFacetRequestsPerMinute;
+
+  int discoveryQueryTimeoutMilliseconds;
+
+  int discoveryMaximumPageSize;
+
+  int discoveryMaximumMapPoints;
+
+  int detailRefreshMaximumRequests;
+
+  int detailRefreshMaximumSeconds;
+
+  int detailRefreshCooldownMinutes;
+
   String updatedBy;
 
   DateTime updatedAt;
@@ -172,6 +355,30 @@ abstract class CacheSettingsRow
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
+    bool? discoveryEnabled,
+    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    double? discoveryGemMinimumRating,
+    int? discoveryGemMinimumReviews,
+    int? discoveryGemMaximumReviewsExclusive,
+    int? discoveryBayesianPriorReviews,
+    double? discoveryBayesianMeanRating,
+    int? discoveryBestMinimumReviews,
+    int? discoveryTopRatedMinimumReviews,
+    int? discoveryWorstRatedMinimumReviews,
+    int? discoveryRecentlyAddedDays,
+    int? discoveryHarvestMaximumRequests,
+    int? discoveryHarvestDesiredCandidatesPerQuery,
+    int? discoveryHarvestMaximumSeconds,
+    int? discoveryHarvestCooldownMinutes,
+    int? discoveryUserHarvestsPerHour,
+    int? discoveryBrowseRequestsPerMinute,
+    int? discoveryFacetRequestsPerMinute,
+    int? discoveryQueryTimeoutMilliseconds,
+    int? discoveryMaximumPageSize,
+    int? discoveryMaximumMapPoints,
+    int? detailRefreshMaximumRequests,
+    int? detailRefreshMaximumSeconds,
+    int? detailRefreshCooldownMinutes,
     String? updatedBy,
     DateTime? updatedAt,
   });
@@ -195,6 +402,32 @@ abstract class CacheSettingsRow
       'routeEstimateCacheMinutes': routeEstimateCacheMinutes,
       'routeRequestsPerMinute': routeRequestsPerMinute,
       'routeBurst': routeBurst,
+      'discoveryEnabled': discoveryEnabled,
+      'discoveryBestFormula': discoveryBestFormula.toJson(),
+      'discoveryGemMinimumRating': discoveryGemMinimumRating,
+      'discoveryGemMinimumReviews': discoveryGemMinimumReviews,
+      'discoveryGemMaximumReviewsExclusive':
+          discoveryGemMaximumReviewsExclusive,
+      'discoveryBayesianPriorReviews': discoveryBayesianPriorReviews,
+      'discoveryBayesianMeanRating': discoveryBayesianMeanRating,
+      'discoveryBestMinimumReviews': discoveryBestMinimumReviews,
+      'discoveryTopRatedMinimumReviews': discoveryTopRatedMinimumReviews,
+      'discoveryWorstRatedMinimumReviews': discoveryWorstRatedMinimumReviews,
+      'discoveryRecentlyAddedDays': discoveryRecentlyAddedDays,
+      'discoveryHarvestMaximumRequests': discoveryHarvestMaximumRequests,
+      'discoveryHarvestDesiredCandidatesPerQuery':
+          discoveryHarvestDesiredCandidatesPerQuery,
+      'discoveryHarvestMaximumSeconds': discoveryHarvestMaximumSeconds,
+      'discoveryHarvestCooldownMinutes': discoveryHarvestCooldownMinutes,
+      'discoveryUserHarvestsPerHour': discoveryUserHarvestsPerHour,
+      'discoveryBrowseRequestsPerMinute': discoveryBrowseRequestsPerMinute,
+      'discoveryFacetRequestsPerMinute': discoveryFacetRequestsPerMinute,
+      'discoveryQueryTimeoutMilliseconds': discoveryQueryTimeoutMilliseconds,
+      'discoveryMaximumPageSize': discoveryMaximumPageSize,
+      'discoveryMaximumMapPoints': discoveryMaximumMapPoints,
+      'detailRefreshMaximumRequests': detailRefreshMaximumRequests,
+      'detailRefreshMaximumSeconds': detailRefreshMaximumSeconds,
+      'detailRefreshCooldownMinutes': detailRefreshCooldownMinutes,
       'updatedBy': updatedBy,
       'updatedAt': updatedAt.toJson(),
     };
@@ -255,6 +488,30 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
+    bool? discoveryEnabled,
+    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    double? discoveryGemMinimumRating,
+    int? discoveryGemMinimumReviews,
+    int? discoveryGemMaximumReviewsExclusive,
+    int? discoveryBayesianPriorReviews,
+    double? discoveryBayesianMeanRating,
+    int? discoveryBestMinimumReviews,
+    int? discoveryTopRatedMinimumReviews,
+    int? discoveryWorstRatedMinimumReviews,
+    int? discoveryRecentlyAddedDays,
+    int? discoveryHarvestMaximumRequests,
+    int? discoveryHarvestDesiredCandidatesPerQuery,
+    int? discoveryHarvestMaximumSeconds,
+    int? discoveryHarvestCooldownMinutes,
+    int? discoveryUserHarvestsPerHour,
+    int? discoveryBrowseRequestsPerMinute,
+    int? discoveryFacetRequestsPerMinute,
+    int? discoveryQueryTimeoutMilliseconds,
+    int? discoveryMaximumPageSize,
+    int? discoveryMaximumMapPoints,
+    int? detailRefreshMaximumRequests,
+    int? detailRefreshMaximumSeconds,
+    int? detailRefreshCooldownMinutes,
     required String updatedBy,
     required DateTime updatedAt,
   }) : super._(
@@ -274,6 +531,32 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
          routeEstimateCacheMinutes: routeEstimateCacheMinutes,
          routeRequestsPerMinute: routeRequestsPerMinute,
          routeBurst: routeBurst,
+         discoveryEnabled: discoveryEnabled,
+         discoveryBestFormula: discoveryBestFormula,
+         discoveryGemMinimumRating: discoveryGemMinimumRating,
+         discoveryGemMinimumReviews: discoveryGemMinimumReviews,
+         discoveryGemMaximumReviewsExclusive:
+             discoveryGemMaximumReviewsExclusive,
+         discoveryBayesianPriorReviews: discoveryBayesianPriorReviews,
+         discoveryBayesianMeanRating: discoveryBayesianMeanRating,
+         discoveryBestMinimumReviews: discoveryBestMinimumReviews,
+         discoveryTopRatedMinimumReviews: discoveryTopRatedMinimumReviews,
+         discoveryWorstRatedMinimumReviews: discoveryWorstRatedMinimumReviews,
+         discoveryRecentlyAddedDays: discoveryRecentlyAddedDays,
+         discoveryHarvestMaximumRequests: discoveryHarvestMaximumRequests,
+         discoveryHarvestDesiredCandidatesPerQuery:
+             discoveryHarvestDesiredCandidatesPerQuery,
+         discoveryHarvestMaximumSeconds: discoveryHarvestMaximumSeconds,
+         discoveryHarvestCooldownMinutes: discoveryHarvestCooldownMinutes,
+         discoveryUserHarvestsPerHour: discoveryUserHarvestsPerHour,
+         discoveryBrowseRequestsPerMinute: discoveryBrowseRequestsPerMinute,
+         discoveryFacetRequestsPerMinute: discoveryFacetRequestsPerMinute,
+         discoveryQueryTimeoutMilliseconds: discoveryQueryTimeoutMilliseconds,
+         discoveryMaximumPageSize: discoveryMaximumPageSize,
+         discoveryMaximumMapPoints: discoveryMaximumMapPoints,
+         detailRefreshMaximumRequests: detailRefreshMaximumRequests,
+         detailRefreshMaximumSeconds: detailRefreshMaximumSeconds,
+         detailRefreshCooldownMinutes: detailRefreshCooldownMinutes,
          updatedBy: updatedBy,
          updatedAt: updatedAt,
        );
@@ -299,6 +582,30 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
+    bool? discoveryEnabled,
+    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    double? discoveryGemMinimumRating,
+    int? discoveryGemMinimumReviews,
+    int? discoveryGemMaximumReviewsExclusive,
+    int? discoveryBayesianPriorReviews,
+    double? discoveryBayesianMeanRating,
+    int? discoveryBestMinimumReviews,
+    int? discoveryTopRatedMinimumReviews,
+    int? discoveryWorstRatedMinimumReviews,
+    int? discoveryRecentlyAddedDays,
+    int? discoveryHarvestMaximumRequests,
+    int? discoveryHarvestDesiredCandidatesPerQuery,
+    int? discoveryHarvestMaximumSeconds,
+    int? discoveryHarvestCooldownMinutes,
+    int? discoveryUserHarvestsPerHour,
+    int? discoveryBrowseRequestsPerMinute,
+    int? discoveryFacetRequestsPerMinute,
+    int? discoveryQueryTimeoutMilliseconds,
+    int? discoveryMaximumPageSize,
+    int? discoveryMaximumMapPoints,
+    int? detailRefreshMaximumRequests,
+    int? detailRefreshMaximumSeconds,
+    int? detailRefreshCooldownMinutes,
     String? updatedBy,
     DateTime? updatedAt,
   }) {
@@ -325,6 +632,61 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
       routeRequestsPerMinute:
           routeRequestsPerMinute ?? this.routeRequestsPerMinute,
       routeBurst: routeBurst ?? this.routeBurst,
+      discoveryEnabled: discoveryEnabled ?? this.discoveryEnabled,
+      discoveryBestFormula: discoveryBestFormula ?? this.discoveryBestFormula,
+      discoveryGemMinimumRating:
+          discoveryGemMinimumRating ?? this.discoveryGemMinimumRating,
+      discoveryGemMinimumReviews:
+          discoveryGemMinimumReviews ?? this.discoveryGemMinimumReviews,
+      discoveryGemMaximumReviewsExclusive:
+          discoveryGemMaximumReviewsExclusive ??
+          this.discoveryGemMaximumReviewsExclusive,
+      discoveryBayesianPriorReviews:
+          discoveryBayesianPriorReviews ?? this.discoveryBayesianPriorReviews,
+      discoveryBayesianMeanRating:
+          discoveryBayesianMeanRating ?? this.discoveryBayesianMeanRating,
+      discoveryBestMinimumReviews:
+          discoveryBestMinimumReviews ?? this.discoveryBestMinimumReviews,
+      discoveryTopRatedMinimumReviews:
+          discoveryTopRatedMinimumReviews ??
+          this.discoveryTopRatedMinimumReviews,
+      discoveryWorstRatedMinimumReviews:
+          discoveryWorstRatedMinimumReviews ??
+          this.discoveryWorstRatedMinimumReviews,
+      discoveryRecentlyAddedDays:
+          discoveryRecentlyAddedDays ?? this.discoveryRecentlyAddedDays,
+      discoveryHarvestMaximumRequests:
+          discoveryHarvestMaximumRequests ??
+          this.discoveryHarvestMaximumRequests,
+      discoveryHarvestDesiredCandidatesPerQuery:
+          discoveryHarvestDesiredCandidatesPerQuery ??
+          this.discoveryHarvestDesiredCandidatesPerQuery,
+      discoveryHarvestMaximumSeconds:
+          discoveryHarvestMaximumSeconds ?? this.discoveryHarvestMaximumSeconds,
+      discoveryHarvestCooldownMinutes:
+          discoveryHarvestCooldownMinutes ??
+          this.discoveryHarvestCooldownMinutes,
+      discoveryUserHarvestsPerHour:
+          discoveryUserHarvestsPerHour ?? this.discoveryUserHarvestsPerHour,
+      discoveryBrowseRequestsPerMinute:
+          discoveryBrowseRequestsPerMinute ??
+          this.discoveryBrowseRequestsPerMinute,
+      discoveryFacetRequestsPerMinute:
+          discoveryFacetRequestsPerMinute ??
+          this.discoveryFacetRequestsPerMinute,
+      discoveryQueryTimeoutMilliseconds:
+          discoveryQueryTimeoutMilliseconds ??
+          this.discoveryQueryTimeoutMilliseconds,
+      discoveryMaximumPageSize:
+          discoveryMaximumPageSize ?? this.discoveryMaximumPageSize,
+      discoveryMaximumMapPoints:
+          discoveryMaximumMapPoints ?? this.discoveryMaximumMapPoints,
+      detailRefreshMaximumRequests:
+          detailRefreshMaximumRequests ?? this.detailRefreshMaximumRequests,
+      detailRefreshMaximumSeconds:
+          detailRefreshMaximumSeconds ?? this.detailRefreshMaximumSeconds,
+      detailRefreshCooldownMinutes:
+          detailRefreshCooldownMinutes ?? this.detailRefreshCooldownMinutes,
       updatedBy: updatedBy ?? this.updatedBy,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -418,6 +780,150 @@ class CacheSettingsRowUpdateTable
     value,
   );
 
+  _i1.ColumnValue<bool, bool> discoveryEnabled(bool value) => _i1.ColumnValue(
+    table.discoveryEnabled,
+    value,
+  );
+
+  _i1.ColumnValue<_i3.DiscoveryBestFormula, _i3.DiscoveryBestFormula>
+  discoveryBestFormula(_i3.DiscoveryBestFormula value) => _i1.ColumnValue(
+    table.discoveryBestFormula,
+    value,
+  );
+
+  _i1.ColumnValue<double, double> discoveryGemMinimumRating(double value) =>
+      _i1.ColumnValue(
+        table.discoveryGemMinimumRating,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryGemMinimumReviews(int value) =>
+      _i1.ColumnValue(
+        table.discoveryGemMinimumReviews,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryGemMaximumReviewsExclusive(int value) =>
+      _i1.ColumnValue(
+        table.discoveryGemMaximumReviewsExclusive,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryBayesianPriorReviews(int value) =>
+      _i1.ColumnValue(
+        table.discoveryBayesianPriorReviews,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> discoveryBayesianMeanRating(double value) =>
+      _i1.ColumnValue(
+        table.discoveryBayesianMeanRating,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryBestMinimumReviews(int value) =>
+      _i1.ColumnValue(
+        table.discoveryBestMinimumReviews,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryTopRatedMinimumReviews(int value) =>
+      _i1.ColumnValue(
+        table.discoveryTopRatedMinimumReviews,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryWorstRatedMinimumReviews(int value) =>
+      _i1.ColumnValue(
+        table.discoveryWorstRatedMinimumReviews,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryRecentlyAddedDays(int value) =>
+      _i1.ColumnValue(
+        table.discoveryRecentlyAddedDays,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryHarvestMaximumRequests(int value) =>
+      _i1.ColumnValue(
+        table.discoveryHarvestMaximumRequests,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryHarvestDesiredCandidatesPerQuery(
+    int value,
+  ) => _i1.ColumnValue(
+    table.discoveryHarvestDesiredCandidatesPerQuery,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> discoveryHarvestMaximumSeconds(int value) =>
+      _i1.ColumnValue(
+        table.discoveryHarvestMaximumSeconds,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryHarvestCooldownMinutes(int value) =>
+      _i1.ColumnValue(
+        table.discoveryHarvestCooldownMinutes,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryUserHarvestsPerHour(int value) =>
+      _i1.ColumnValue(
+        table.discoveryUserHarvestsPerHour,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryBrowseRequestsPerMinute(int value) =>
+      _i1.ColumnValue(
+        table.discoveryBrowseRequestsPerMinute,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryFacetRequestsPerMinute(int value) =>
+      _i1.ColumnValue(
+        table.discoveryFacetRequestsPerMinute,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryQueryTimeoutMilliseconds(int value) =>
+      _i1.ColumnValue(
+        table.discoveryQueryTimeoutMilliseconds,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryMaximumPageSize(int value) =>
+      _i1.ColumnValue(
+        table.discoveryMaximumPageSize,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> discoveryMaximumMapPoints(int value) =>
+      _i1.ColumnValue(
+        table.discoveryMaximumMapPoints,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> detailRefreshMaximumRequests(int value) =>
+      _i1.ColumnValue(
+        table.detailRefreshMaximumRequests,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> detailRefreshMaximumSeconds(int value) =>
+      _i1.ColumnValue(
+        table.detailRefreshMaximumSeconds,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> detailRefreshCooldownMinutes(int value) =>
+      _i1.ColumnValue(
+        table.detailRefreshCooldownMinutes,
+        value,
+      );
+
   _i1.ColumnValue<String, String> updatedBy(String value) => _i1.ColumnValue(
     table.updatedBy,
     value,
@@ -501,6 +1007,127 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
       this,
       hasDefault: true,
     );
+    discoveryEnabled = _i1.ColumnBool(
+      'discoveryEnabled',
+      this,
+      hasDefault: true,
+    );
+    discoveryBestFormula = _i1.ColumnEnum(
+      'discoveryBestFormula',
+      this,
+      _i1.EnumSerialization.byName,
+      hasDefault: true,
+    );
+    discoveryGemMinimumRating = _i1.ColumnDouble(
+      'discoveryGemMinimumRating',
+      this,
+      hasDefault: true,
+    );
+    discoveryGemMinimumReviews = _i1.ColumnInt(
+      'discoveryGemMinimumReviews',
+      this,
+      hasDefault: true,
+    );
+    discoveryGemMaximumReviewsExclusive = _i1.ColumnInt(
+      'discoveryGemMaximumReviewsExclusive',
+      this,
+      hasDefault: true,
+    );
+    discoveryBayesianPriorReviews = _i1.ColumnInt(
+      'discoveryBayesianPriorReviews',
+      this,
+      hasDefault: true,
+    );
+    discoveryBayesianMeanRating = _i1.ColumnDouble(
+      'discoveryBayesianMeanRating',
+      this,
+      hasDefault: true,
+    );
+    discoveryBestMinimumReviews = _i1.ColumnInt(
+      'discoveryBestMinimumReviews',
+      this,
+      hasDefault: true,
+    );
+    discoveryTopRatedMinimumReviews = _i1.ColumnInt(
+      'discoveryTopRatedMinimumReviews',
+      this,
+      hasDefault: true,
+    );
+    discoveryWorstRatedMinimumReviews = _i1.ColumnInt(
+      'discoveryWorstRatedMinimumReviews',
+      this,
+      hasDefault: true,
+    );
+    discoveryRecentlyAddedDays = _i1.ColumnInt(
+      'discoveryRecentlyAddedDays',
+      this,
+      hasDefault: true,
+    );
+    discoveryHarvestMaximumRequests = _i1.ColumnInt(
+      'discoveryHarvestMaximumRequests',
+      this,
+      hasDefault: true,
+    );
+    discoveryHarvestDesiredCandidatesPerQuery = _i1.ColumnInt(
+      'discoveryHarvestDesiredCandidatesPerQuery',
+      this,
+      hasDefault: true,
+    );
+    discoveryHarvestMaximumSeconds = _i1.ColumnInt(
+      'discoveryHarvestMaximumSeconds',
+      this,
+      hasDefault: true,
+    );
+    discoveryHarvestCooldownMinutes = _i1.ColumnInt(
+      'discoveryHarvestCooldownMinutes',
+      this,
+      hasDefault: true,
+    );
+    discoveryUserHarvestsPerHour = _i1.ColumnInt(
+      'discoveryUserHarvestsPerHour',
+      this,
+      hasDefault: true,
+    );
+    discoveryBrowseRequestsPerMinute = _i1.ColumnInt(
+      'discoveryBrowseRequestsPerMinute',
+      this,
+      hasDefault: true,
+    );
+    discoveryFacetRequestsPerMinute = _i1.ColumnInt(
+      'discoveryFacetRequestsPerMinute',
+      this,
+      hasDefault: true,
+    );
+    discoveryQueryTimeoutMilliseconds = _i1.ColumnInt(
+      'discoveryQueryTimeoutMilliseconds',
+      this,
+      hasDefault: true,
+    );
+    discoveryMaximumPageSize = _i1.ColumnInt(
+      'discoveryMaximumPageSize',
+      this,
+      hasDefault: true,
+    );
+    discoveryMaximumMapPoints = _i1.ColumnInt(
+      'discoveryMaximumMapPoints',
+      this,
+      hasDefault: true,
+    );
+    detailRefreshMaximumRequests = _i1.ColumnInt(
+      'detailRefreshMaximumRequests',
+      this,
+      hasDefault: true,
+    );
+    detailRefreshMaximumSeconds = _i1.ColumnInt(
+      'detailRefreshMaximumSeconds',
+      this,
+      hasDefault: true,
+    );
+    detailRefreshCooldownMinutes = _i1.ColumnInt(
+      'detailRefreshCooldownMinutes',
+      this,
+      hasDefault: true,
+    );
     updatedBy = _i1.ColumnString(
       'updatedBy',
       this,
@@ -543,6 +1170,54 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnInt routeBurst;
 
+  late final _i1.ColumnBool discoveryEnabled;
+
+  late final _i1.ColumnEnum<_i3.DiscoveryBestFormula> discoveryBestFormula;
+
+  late final _i1.ColumnDouble discoveryGemMinimumRating;
+
+  late final _i1.ColumnInt discoveryGemMinimumReviews;
+
+  late final _i1.ColumnInt discoveryGemMaximumReviewsExclusive;
+
+  late final _i1.ColumnInt discoveryBayesianPriorReviews;
+
+  late final _i1.ColumnDouble discoveryBayesianMeanRating;
+
+  late final _i1.ColumnInt discoveryBestMinimumReviews;
+
+  late final _i1.ColumnInt discoveryTopRatedMinimumReviews;
+
+  late final _i1.ColumnInt discoveryWorstRatedMinimumReviews;
+
+  late final _i1.ColumnInt discoveryRecentlyAddedDays;
+
+  late final _i1.ColumnInt discoveryHarvestMaximumRequests;
+
+  late final _i1.ColumnInt discoveryHarvestDesiredCandidatesPerQuery;
+
+  late final _i1.ColumnInt discoveryHarvestMaximumSeconds;
+
+  late final _i1.ColumnInt discoveryHarvestCooldownMinutes;
+
+  late final _i1.ColumnInt discoveryUserHarvestsPerHour;
+
+  late final _i1.ColumnInt discoveryBrowseRequestsPerMinute;
+
+  late final _i1.ColumnInt discoveryFacetRequestsPerMinute;
+
+  late final _i1.ColumnInt discoveryQueryTimeoutMilliseconds;
+
+  late final _i1.ColumnInt discoveryMaximumPageSize;
+
+  late final _i1.ColumnInt discoveryMaximumMapPoints;
+
+  late final _i1.ColumnInt detailRefreshMaximumRequests;
+
+  late final _i1.ColumnInt detailRefreshMaximumSeconds;
+
+  late final _i1.ColumnInt detailRefreshCooldownMinutes;
+
   late final _i1.ColumnString updatedBy;
 
   late final _i1.ColumnDateTime updatedAt;
@@ -565,6 +1240,30 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
     routeEstimateCacheMinutes,
     routeRequestsPerMinute,
     routeBurst,
+    discoveryEnabled,
+    discoveryBestFormula,
+    discoveryGemMinimumRating,
+    discoveryGemMinimumReviews,
+    discoveryGemMaximumReviewsExclusive,
+    discoveryBayesianPriorReviews,
+    discoveryBayesianMeanRating,
+    discoveryBestMinimumReviews,
+    discoveryTopRatedMinimumReviews,
+    discoveryWorstRatedMinimumReviews,
+    discoveryRecentlyAddedDays,
+    discoveryHarvestMaximumRequests,
+    discoveryHarvestDesiredCandidatesPerQuery,
+    discoveryHarvestMaximumSeconds,
+    discoveryHarvestCooldownMinutes,
+    discoveryUserHarvestsPerHour,
+    discoveryBrowseRequestsPerMinute,
+    discoveryFacetRequestsPerMinute,
+    discoveryQueryTimeoutMilliseconds,
+    discoveryMaximumPageSize,
+    discoveryMaximumMapPoints,
+    detailRefreshMaximumRequests,
+    detailRefreshMaximumSeconds,
+    detailRefreshCooldownMinutes,
     updatedBy,
     updatedAt,
   ];

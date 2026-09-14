@@ -137,43 +137,44 @@ import 'storage/admin_audit_row.dart' as _i121;
 import 'storage/cache_settings_row.dart' as _i122;
 import 'storage/calibration_row.dart' as _i123;
 import 'storage/city_resolution_row.dart' as _i124;
-import 'storage/hayer_session_row.dart' as _i125;
-import 'storage/idempotency_row.dart' as _i126;
-import 'storage/operational_metric_row.dart' as _i127;
-import 'storage/participant_row.dart' as _i128;
-import 'storage/poi_catalog_row.dart' as _i129;
-import 'storage/poi_category_row.dart' as _i130;
-import 'storage/poi_coverage_row.dart' as _i131;
-import 'storage/poi_issue_report_row.dart' as _i132;
-import 'storage/product_analytics_event_row.dart' as _i133;
-import 'storage/product_analytics_hour_row.dart' as _i134;
-import 'storage/rate_limit_row.dart' as _i135;
-import 'storage/refresh_job_row.dart' as _i136;
-import 'storage/session_place_row.dart' as _i137;
-import 'storage/swipe_row.dart' as _i138;
-import 'storage/taxonomy_version_row.dart' as _i139;
-import 'swipe_command.dart' as _i140;
-import 'taxonomy_canary_sample.dart' as _i141;
-import 'taxonomy_item.dart' as _i142;
-import 'taxonomy_kind.dart' as _i143;
-import 'taxonomy_snapshot.dart' as _i144;
-import 'taxonomy_status.dart' as _i145;
-import 'taxonomy_validation.dart' as _i146;
-import 'package:hayer_server/src/generated/location_suggestion.dart' as _i147;
+import 'storage/discovery_taxonomy_version_row.dart' as _i125;
+import 'storage/hayer_session_row.dart' as _i126;
+import 'storage/idempotency_row.dart' as _i127;
+import 'storage/operational_metric_row.dart' as _i128;
+import 'storage/participant_row.dart' as _i129;
+import 'storage/poi_catalog_row.dart' as _i130;
+import 'storage/poi_category_row.dart' as _i131;
+import 'storage/poi_coverage_row.dart' as _i132;
+import 'storage/poi_issue_report_row.dart' as _i133;
+import 'storage/product_analytics_event_row.dart' as _i134;
+import 'storage/product_analytics_hour_row.dart' as _i135;
+import 'storage/rate_limit_row.dart' as _i136;
+import 'storage/refresh_job_row.dart' as _i137;
+import 'storage/session_place_row.dart' as _i138;
+import 'storage/swipe_row.dart' as _i139;
+import 'storage/taxonomy_version_row.dart' as _i140;
+import 'swipe_command.dart' as _i141;
+import 'taxonomy_canary_sample.dart' as _i142;
+import 'taxonomy_item.dart' as _i143;
+import 'taxonomy_kind.dart' as _i144;
+import 'taxonomy_snapshot.dart' as _i145;
+import 'taxonomy_status.dart' as _i146;
+import 'taxonomy_validation.dart' as _i147;
+import 'package:hayer_server/src/generated/location_suggestion.dart' as _i148;
 import 'package:hayer_server/src/generated/admin_discovery_taxonomy_version.dart'
-    as _i148;
-import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
     as _i149;
-import 'package:hayer_server/src/generated/admin_discovery_harvest_manifest_version.dart'
+import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
     as _i150;
-import 'package:hayer_server/src/generated/discovery_harvest_manifest_entry.dart'
+import 'package:hayer_server/src/generated/admin_discovery_harvest_manifest_version.dart'
     as _i151;
-import 'package:hayer_server/src/generated/admin_taxonomy_version.dart'
+import 'package:hayer_server/src/generated/discovery_harvest_manifest_entry.dart'
     as _i152;
-import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i153;
-import 'package:hayer_server/src/generated/metric_point.dart' as _i154;
-import 'package:hayer_server/src/generated/session_result.dart' as _i155;
-import 'dart:typed_data' as _i156;
+import 'package:hayer_server/src/generated/admin_taxonomy_version.dart'
+    as _i153;
+import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i154;
+import 'package:hayer_server/src/generated/metric_point.dart' as _i155;
+import 'package:hayer_server/src/generated/session_result.dart' as _i156;
+import 'dart:typed_data' as _i157;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -294,6 +295,7 @@ export 'storage/admin_audit_row.dart';
 export 'storage/cache_settings_row.dart';
 export 'storage/calibration_row.dart';
 export 'storage/city_resolution_row.dart';
+export 'storage/discovery_taxonomy_version_row.dart';
 export 'storage/hayer_session_row.dart';
 export 'storage/idempotency_row.dart';
 export 'storage/operational_metric_row.dart';
@@ -553,6 +555,174 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: '6',
         ),
         _i2.ColumnDefinition(
+          name: 'discoveryEnabled',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBestFormula',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:DiscoveryBestFormula',
+          columnDefault: '\'popularityWeighted\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryGemMinimumRating',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+          columnDefault: '4.5',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryGemMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '1',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryGemMaximumReviewsExclusive',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '500',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBayesianPriorReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '100',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBayesianMeanRating',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+          columnDefault: '4.0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBestMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '1',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryTopRatedMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryWorstRatedMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryRecentlyAddedDays',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '45',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestMaximumRequests',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '24',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestDesiredCandidatesPerQuery',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '50',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestMaximumSeconds',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '300',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestCooldownMinutes',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '60',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryUserHarvestsPerHour',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '3',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBrowseRequestsPerMinute',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '30',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryFacetRequestsPerMinute',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '60',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryQueryTimeoutMilliseconds',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '2000',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryMaximumPageSize',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '100',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryMaximumMapPoints',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '2000',
+        ),
+        _i2.ColumnDefinition(
+          name: 'detailRefreshMaximumRequests',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '3',
+        ),
+        _i2.ColumnDefinition(
+          name: 'detailRefreshMaximumSeconds',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '20',
+        ),
+        _i2.ColumnDefinition(
+          name: 'detailRefreshCooldownMinutes',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '60',
+        ),
+        _i2.ColumnDefinition(
           name: 'updatedBy',
           columnType: _i2.ColumnType.text,
           isNullable: false,
@@ -805,6 +975,129 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'expiresAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'hayer_discovery_taxonomy',
+      dartName: 'DiscoveryTaxonomyVersionRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'hayer_discovery_taxonomy_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'version',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'revision',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:TaxonomyStatus',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentJson',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validationPassed',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validationErrors',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'publishedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_taxonomy_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_taxonomy_version_key',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'version',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_taxonomy_status',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'publishedAt',
             ),
           ],
           type: 'btree',
@@ -3493,71 +3786,74 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i124.CityResolutionRow) {
       return _i124.CityResolutionRow.fromJson(data) as T;
     }
-    if (t == _i125.HayerSessionRow) {
-      return _i125.HayerSessionRow.fromJson(data) as T;
+    if (t == _i125.DiscoveryTaxonomyVersionRow) {
+      return _i125.DiscoveryTaxonomyVersionRow.fromJson(data) as T;
     }
-    if (t == _i126.IdempotencyRow) {
-      return _i126.IdempotencyRow.fromJson(data) as T;
+    if (t == _i126.HayerSessionRow) {
+      return _i126.HayerSessionRow.fromJson(data) as T;
     }
-    if (t == _i127.OperationalMetricRow) {
-      return _i127.OperationalMetricRow.fromJson(data) as T;
+    if (t == _i127.IdempotencyRow) {
+      return _i127.IdempotencyRow.fromJson(data) as T;
     }
-    if (t == _i128.ParticipantRow) {
-      return _i128.ParticipantRow.fromJson(data) as T;
+    if (t == _i128.OperationalMetricRow) {
+      return _i128.OperationalMetricRow.fromJson(data) as T;
     }
-    if (t == _i129.PoiCatalogRow) {
-      return _i129.PoiCatalogRow.fromJson(data) as T;
+    if (t == _i129.ParticipantRow) {
+      return _i129.ParticipantRow.fromJson(data) as T;
     }
-    if (t == _i130.PoiCategoryRow) {
-      return _i130.PoiCategoryRow.fromJson(data) as T;
+    if (t == _i130.PoiCatalogRow) {
+      return _i130.PoiCatalogRow.fromJson(data) as T;
     }
-    if (t == _i131.PoiCoverageRow) {
-      return _i131.PoiCoverageRow.fromJson(data) as T;
+    if (t == _i131.PoiCategoryRow) {
+      return _i131.PoiCategoryRow.fromJson(data) as T;
     }
-    if (t == _i132.PoiIssueReportRow) {
-      return _i132.PoiIssueReportRow.fromJson(data) as T;
+    if (t == _i132.PoiCoverageRow) {
+      return _i132.PoiCoverageRow.fromJson(data) as T;
     }
-    if (t == _i133.ProductAnalyticsEventRow) {
-      return _i133.ProductAnalyticsEventRow.fromJson(data) as T;
+    if (t == _i133.PoiIssueReportRow) {
+      return _i133.PoiIssueReportRow.fromJson(data) as T;
     }
-    if (t == _i134.ProductAnalyticsHourRow) {
-      return _i134.ProductAnalyticsHourRow.fromJson(data) as T;
+    if (t == _i134.ProductAnalyticsEventRow) {
+      return _i134.ProductAnalyticsEventRow.fromJson(data) as T;
     }
-    if (t == _i135.RateLimitRow) {
-      return _i135.RateLimitRow.fromJson(data) as T;
+    if (t == _i135.ProductAnalyticsHourRow) {
+      return _i135.ProductAnalyticsHourRow.fromJson(data) as T;
     }
-    if (t == _i136.RefreshJobRow) {
-      return _i136.RefreshJobRow.fromJson(data) as T;
+    if (t == _i136.RateLimitRow) {
+      return _i136.RateLimitRow.fromJson(data) as T;
     }
-    if (t == _i137.SessionPlaceRow) {
-      return _i137.SessionPlaceRow.fromJson(data) as T;
+    if (t == _i137.RefreshJobRow) {
+      return _i137.RefreshJobRow.fromJson(data) as T;
     }
-    if (t == _i138.SwipeRow) {
-      return _i138.SwipeRow.fromJson(data) as T;
+    if (t == _i138.SessionPlaceRow) {
+      return _i138.SessionPlaceRow.fromJson(data) as T;
     }
-    if (t == _i139.TaxonomyVersionRow) {
-      return _i139.TaxonomyVersionRow.fromJson(data) as T;
+    if (t == _i139.SwipeRow) {
+      return _i139.SwipeRow.fromJson(data) as T;
     }
-    if (t == _i140.SwipeCommand) {
-      return _i140.SwipeCommand.fromJson(data) as T;
+    if (t == _i140.TaxonomyVersionRow) {
+      return _i140.TaxonomyVersionRow.fromJson(data) as T;
     }
-    if (t == _i141.TaxonomyCanarySample) {
-      return _i141.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _i141.SwipeCommand) {
+      return _i141.SwipeCommand.fromJson(data) as T;
     }
-    if (t == _i142.TaxonomyItem) {
-      return _i142.TaxonomyItem.fromJson(data) as T;
+    if (t == _i142.TaxonomyCanarySample) {
+      return _i142.TaxonomyCanarySample.fromJson(data) as T;
     }
-    if (t == _i143.TaxonomyKind) {
-      return _i143.TaxonomyKind.fromJson(data) as T;
+    if (t == _i143.TaxonomyItem) {
+      return _i143.TaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i144.TaxonomySnapshot) {
-      return _i144.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i144.TaxonomyKind) {
+      return _i144.TaxonomyKind.fromJson(data) as T;
     }
-    if (t == _i145.TaxonomyStatus) {
-      return _i145.TaxonomyStatus.fromJson(data) as T;
+    if (t == _i145.TaxonomySnapshot) {
+      return _i145.TaxonomySnapshot.fromJson(data) as T;
     }
-    if (t == _i146.TaxonomyValidation) {
-      return _i146.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i146.TaxonomyStatus) {
+      return _i146.TaxonomyStatus.fromJson(data) as T;
+    }
+    if (t == _i147.TaxonomyValidation) {
+      return _i147.TaxonomyValidation.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.AdminAnalyticsOverview?>()) {
       return (data != null ? _i5.AdminAnalyticsOverview.fromJson(data) : null)
@@ -4017,81 +4313,87 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i124.CityResolutionRow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i125.HayerSessionRow?>()) {
-      return (data != null ? _i125.HayerSessionRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i126.IdempotencyRow?>()) {
-      return (data != null ? _i126.IdempotencyRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i127.OperationalMetricRow?>()) {
-      return (data != null ? _i127.OperationalMetricRow.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i128.ParticipantRow?>()) {
-      return (data != null ? _i128.ParticipantRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i129.PoiCatalogRow?>()) {
-      return (data != null ? _i129.PoiCatalogRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i130.PoiCategoryRow?>()) {
-      return (data != null ? _i130.PoiCategoryRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i131.PoiCoverageRow?>()) {
-      return (data != null ? _i131.PoiCoverageRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i132.PoiIssueReportRow?>()) {
-      return (data != null ? _i132.PoiIssueReportRow.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i133.ProductAnalyticsEventRow?>()) {
+    if (t == _i1.getType<_i125.DiscoveryTaxonomyVersionRow?>()) {
       return (data != null
-              ? _i133.ProductAnalyticsEventRow.fromJson(data)
+              ? _i125.DiscoveryTaxonomyVersionRow.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i134.ProductAnalyticsHourRow?>()) {
+    if (t == _i1.getType<_i126.HayerSessionRow?>()) {
+      return (data != null ? _i126.HayerSessionRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i127.IdempotencyRow?>()) {
+      return (data != null ? _i127.IdempotencyRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i128.OperationalMetricRow?>()) {
+      return (data != null ? _i128.OperationalMetricRow.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i129.ParticipantRow?>()) {
+      return (data != null ? _i129.ParticipantRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i130.PoiCatalogRow?>()) {
+      return (data != null ? _i130.PoiCatalogRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i131.PoiCategoryRow?>()) {
+      return (data != null ? _i131.PoiCategoryRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i132.PoiCoverageRow?>()) {
+      return (data != null ? _i132.PoiCoverageRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i133.PoiIssueReportRow?>()) {
+      return (data != null ? _i133.PoiIssueReportRow.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i134.ProductAnalyticsEventRow?>()) {
       return (data != null
-              ? _i134.ProductAnalyticsHourRow.fromJson(data)
+              ? _i134.ProductAnalyticsEventRow.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i135.RateLimitRow?>()) {
-      return (data != null ? _i135.RateLimitRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i136.RefreshJobRow?>()) {
-      return (data != null ? _i136.RefreshJobRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i137.SessionPlaceRow?>()) {
-      return (data != null ? _i137.SessionPlaceRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i138.SwipeRow?>()) {
-      return (data != null ? _i138.SwipeRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i139.TaxonomyVersionRow?>()) {
-      return (data != null ? _i139.TaxonomyVersionRow.fromJson(data) : null)
+    if (t == _i1.getType<_i135.ProductAnalyticsHourRow?>()) {
+      return (data != null
+              ? _i135.ProductAnalyticsHourRow.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i140.SwipeCommand?>()) {
-      return (data != null ? _i140.SwipeCommand.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i136.RateLimitRow?>()) {
+      return (data != null ? _i136.RateLimitRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i141.TaxonomyCanarySample?>()) {
-      return (data != null ? _i141.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _i1.getType<_i137.RefreshJobRow?>()) {
+      return (data != null ? _i137.RefreshJobRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i138.SessionPlaceRow?>()) {
+      return (data != null ? _i138.SessionPlaceRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i139.SwipeRow?>()) {
+      return (data != null ? _i139.SwipeRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i140.TaxonomyVersionRow?>()) {
+      return (data != null ? _i140.TaxonomyVersionRow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i142.TaxonomyItem?>()) {
-      return (data != null ? _i142.TaxonomyItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i141.SwipeCommand?>()) {
+      return (data != null ? _i141.SwipeCommand.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i143.TaxonomyKind?>()) {
-      return (data != null ? _i143.TaxonomyKind.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i142.TaxonomyCanarySample?>()) {
+      return (data != null ? _i142.TaxonomyCanarySample.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i144.TaxonomySnapshot?>()) {
-      return (data != null ? _i144.TaxonomySnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i143.TaxonomyItem?>()) {
+      return (data != null ? _i143.TaxonomyItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i145.TaxonomyStatus?>()) {
-      return (data != null ? _i145.TaxonomyStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i144.TaxonomyKind?>()) {
+      return (data != null ? _i144.TaxonomyKind.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i146.TaxonomyValidation?>()) {
-      return (data != null ? _i146.TaxonomyValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i145.TaxonomySnapshot?>()) {
+      return (data != null ? _i145.TaxonomySnapshot.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i146.TaxonomyStatus?>()) {
+      return (data != null ? _i146.TaxonomyStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i147.TaxonomyValidation?>()) {
+      return (data != null ? _i147.TaxonomyValidation.fromJson(data) : null)
           as T;
     }
     if (t == List<_i26.AnalyticsKpi>) {
@@ -4331,72 +4633,72 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i142.TaxonomyItem>) {
+    if (t == List<_i143.TaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i142.TaxonomyItem>(e))
+              .map((e) => deserialize<_i143.TaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i141.TaxonomyCanarySample>) {
+    if (t == List<_i142.TaxonomyCanarySample>) {
       return (data as List)
-              .map((e) => deserialize<_i141.TaxonomyCanarySample>(e))
+              .map((e) => deserialize<_i142.TaxonomyCanarySample>(e))
               .toList()
           as T;
     }
-    if (t == List<_i147.LocationSuggestion>) {
+    if (t == List<_i148.LocationSuggestion>) {
       return (data as List)
-              .map((e) => deserialize<_i147.LocationSuggestion>(e))
+              .map((e) => deserialize<_i148.LocationSuggestion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i148.AdminDiscoveryTaxonomyVersion>) {
+    if (t == List<_i149.AdminDiscoveryTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i148.AdminDiscoveryTaxonomyVersion>(e))
+              .map((e) => deserialize<_i149.AdminDiscoveryTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i149.DiscoveryTaxonomyNode>) {
+    if (t == List<_i150.DiscoveryTaxonomyNode>) {
       return (data as List)
-              .map((e) => deserialize<_i149.DiscoveryTaxonomyNode>(e))
+              .map((e) => deserialize<_i150.DiscoveryTaxonomyNode>(e))
               .toList()
           as T;
     }
-    if (t == List<_i150.AdminDiscoveryHarvestManifestVersion>) {
+    if (t == List<_i151.AdminDiscoveryHarvestManifestVersion>) {
       return (data as List)
               .map(
                 (e) =>
-                    deserialize<_i150.AdminDiscoveryHarvestManifestVersion>(e),
+                    deserialize<_i151.AdminDiscoveryHarvestManifestVersion>(e),
               )
               .toList()
           as T;
     }
-    if (t == List<_i151.DiscoveryHarvestManifestEntry>) {
+    if (t == List<_i152.DiscoveryHarvestManifestEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i151.DiscoveryHarvestManifestEntry>(e))
+              .map((e) => deserialize<_i152.DiscoveryHarvestManifestEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i152.AdminTaxonomyVersion>) {
+    if (t == List<_i153.AdminTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i152.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_i153.AdminTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i153.AdminTaxonomyItem>) {
+    if (t == List<_i154.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i153.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i154.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i154.MetricPoint>) {
+    if (t == List<_i155.MetricPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i154.MetricPoint>(e))
+              .map((e) => deserialize<_i155.MetricPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i155.SessionResult>) {
+    if (t == List<_i156.SessionResult>) {
       return (data as List)
-              .map((e) => deserialize<_i155.SessionResult>(e))
+              .map((e) => deserialize<_i156.SessionResult>(e))
               .toList()
           as T;
     }
@@ -4409,9 +4711,9 @@ class Protocol extends _i1.SerializationManagerServer {
           )
           as T;
     }
-    if (t == _i1.getType<({_i156.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i157.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i156.ByteData>(
+            challenge: deserialize<_i157.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -4554,28 +4856,29 @@ class Protocol extends _i1.SerializationManagerServer {
       _i122.CacheSettingsRow => 'CacheSettingsRow',
       _i123.CalibrationRow => 'CalibrationRow',
       _i124.CityResolutionRow => 'CityResolutionRow',
-      _i125.HayerSessionRow => 'HayerSessionRow',
-      _i126.IdempotencyRow => 'IdempotencyRow',
-      _i127.OperationalMetricRow => 'OperationalMetricRow',
-      _i128.ParticipantRow => 'ParticipantRow',
-      _i129.PoiCatalogRow => 'PoiCatalogRow',
-      _i130.PoiCategoryRow => 'PoiCategoryRow',
-      _i131.PoiCoverageRow => 'PoiCoverageRow',
-      _i132.PoiIssueReportRow => 'PoiIssueReportRow',
-      _i133.ProductAnalyticsEventRow => 'ProductAnalyticsEventRow',
-      _i134.ProductAnalyticsHourRow => 'ProductAnalyticsHourRow',
-      _i135.RateLimitRow => 'RateLimitRow',
-      _i136.RefreshJobRow => 'RefreshJobRow',
-      _i137.SessionPlaceRow => 'SessionPlaceRow',
-      _i138.SwipeRow => 'SwipeRow',
-      _i139.TaxonomyVersionRow => 'TaxonomyVersionRow',
-      _i140.SwipeCommand => 'SwipeCommand',
-      _i141.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i142.TaxonomyItem => 'TaxonomyItem',
-      _i143.TaxonomyKind => 'TaxonomyKind',
-      _i144.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i145.TaxonomyStatus => 'TaxonomyStatus',
-      _i146.TaxonomyValidation => 'TaxonomyValidation',
+      _i125.DiscoveryTaxonomyVersionRow => 'DiscoveryTaxonomyVersionRow',
+      _i126.HayerSessionRow => 'HayerSessionRow',
+      _i127.IdempotencyRow => 'IdempotencyRow',
+      _i128.OperationalMetricRow => 'OperationalMetricRow',
+      _i129.ParticipantRow => 'ParticipantRow',
+      _i130.PoiCatalogRow => 'PoiCatalogRow',
+      _i131.PoiCategoryRow => 'PoiCategoryRow',
+      _i132.PoiCoverageRow => 'PoiCoverageRow',
+      _i133.PoiIssueReportRow => 'PoiIssueReportRow',
+      _i134.ProductAnalyticsEventRow => 'ProductAnalyticsEventRow',
+      _i135.ProductAnalyticsHourRow => 'ProductAnalyticsHourRow',
+      _i136.RateLimitRow => 'RateLimitRow',
+      _i137.RefreshJobRow => 'RefreshJobRow',
+      _i138.SessionPlaceRow => 'SessionPlaceRow',
+      _i139.SwipeRow => 'SwipeRow',
+      _i140.TaxonomyVersionRow => 'TaxonomyVersionRow',
+      _i141.SwipeCommand => 'SwipeCommand',
+      _i142.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _i143.TaxonomyItem => 'TaxonomyItem',
+      _i144.TaxonomyKind => 'TaxonomyKind',
+      _i145.TaxonomySnapshot => 'TaxonomySnapshot',
+      _i146.TaxonomyStatus => 'TaxonomyStatus',
+      _i147.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -4830,49 +5133,51 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'CalibrationRow';
       case _i124.CityResolutionRow():
         return 'CityResolutionRow';
-      case _i125.HayerSessionRow():
+      case _i125.DiscoveryTaxonomyVersionRow():
+        return 'DiscoveryTaxonomyVersionRow';
+      case _i126.HayerSessionRow():
         return 'HayerSessionRow';
-      case _i126.IdempotencyRow():
+      case _i127.IdempotencyRow():
         return 'IdempotencyRow';
-      case _i127.OperationalMetricRow():
+      case _i128.OperationalMetricRow():
         return 'OperationalMetricRow';
-      case _i128.ParticipantRow():
+      case _i129.ParticipantRow():
         return 'ParticipantRow';
-      case _i129.PoiCatalogRow():
+      case _i130.PoiCatalogRow():
         return 'PoiCatalogRow';
-      case _i130.PoiCategoryRow():
+      case _i131.PoiCategoryRow():
         return 'PoiCategoryRow';
-      case _i131.PoiCoverageRow():
+      case _i132.PoiCoverageRow():
         return 'PoiCoverageRow';
-      case _i132.PoiIssueReportRow():
+      case _i133.PoiIssueReportRow():
         return 'PoiIssueReportRow';
-      case _i133.ProductAnalyticsEventRow():
+      case _i134.ProductAnalyticsEventRow():
         return 'ProductAnalyticsEventRow';
-      case _i134.ProductAnalyticsHourRow():
+      case _i135.ProductAnalyticsHourRow():
         return 'ProductAnalyticsHourRow';
-      case _i135.RateLimitRow():
+      case _i136.RateLimitRow():
         return 'RateLimitRow';
-      case _i136.RefreshJobRow():
+      case _i137.RefreshJobRow():
         return 'RefreshJobRow';
-      case _i137.SessionPlaceRow():
+      case _i138.SessionPlaceRow():
         return 'SessionPlaceRow';
-      case _i138.SwipeRow():
+      case _i139.SwipeRow():
         return 'SwipeRow';
-      case _i139.TaxonomyVersionRow():
+      case _i140.TaxonomyVersionRow():
         return 'TaxonomyVersionRow';
-      case _i140.SwipeCommand():
+      case _i141.SwipeCommand():
         return 'SwipeCommand';
-      case _i141.TaxonomyCanarySample():
+      case _i142.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i142.TaxonomyItem():
+      case _i143.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i143.TaxonomyKind():
+      case _i144.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i144.TaxonomySnapshot():
+      case _i145.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i145.TaxonomyStatus():
+      case _i146.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i146.TaxonomyValidation():
+      case _i147.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -5258,71 +5563,74 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'CityResolutionRow') {
       return deserialize<_i124.CityResolutionRow>(data['data']);
     }
+    if (dataClassName == 'DiscoveryTaxonomyVersionRow') {
+      return deserialize<_i125.DiscoveryTaxonomyVersionRow>(data['data']);
+    }
     if (dataClassName == 'HayerSessionRow') {
-      return deserialize<_i125.HayerSessionRow>(data['data']);
+      return deserialize<_i126.HayerSessionRow>(data['data']);
     }
     if (dataClassName == 'IdempotencyRow') {
-      return deserialize<_i126.IdempotencyRow>(data['data']);
+      return deserialize<_i127.IdempotencyRow>(data['data']);
     }
     if (dataClassName == 'OperationalMetricRow') {
-      return deserialize<_i127.OperationalMetricRow>(data['data']);
+      return deserialize<_i128.OperationalMetricRow>(data['data']);
     }
     if (dataClassName == 'ParticipantRow') {
-      return deserialize<_i128.ParticipantRow>(data['data']);
+      return deserialize<_i129.ParticipantRow>(data['data']);
     }
     if (dataClassName == 'PoiCatalogRow') {
-      return deserialize<_i129.PoiCatalogRow>(data['data']);
+      return deserialize<_i130.PoiCatalogRow>(data['data']);
     }
     if (dataClassName == 'PoiCategoryRow') {
-      return deserialize<_i130.PoiCategoryRow>(data['data']);
+      return deserialize<_i131.PoiCategoryRow>(data['data']);
     }
     if (dataClassName == 'PoiCoverageRow') {
-      return deserialize<_i131.PoiCoverageRow>(data['data']);
+      return deserialize<_i132.PoiCoverageRow>(data['data']);
     }
     if (dataClassName == 'PoiIssueReportRow') {
-      return deserialize<_i132.PoiIssueReportRow>(data['data']);
+      return deserialize<_i133.PoiIssueReportRow>(data['data']);
     }
     if (dataClassName == 'ProductAnalyticsEventRow') {
-      return deserialize<_i133.ProductAnalyticsEventRow>(data['data']);
+      return deserialize<_i134.ProductAnalyticsEventRow>(data['data']);
     }
     if (dataClassName == 'ProductAnalyticsHourRow') {
-      return deserialize<_i134.ProductAnalyticsHourRow>(data['data']);
+      return deserialize<_i135.ProductAnalyticsHourRow>(data['data']);
     }
     if (dataClassName == 'RateLimitRow') {
-      return deserialize<_i135.RateLimitRow>(data['data']);
+      return deserialize<_i136.RateLimitRow>(data['data']);
     }
     if (dataClassName == 'RefreshJobRow') {
-      return deserialize<_i136.RefreshJobRow>(data['data']);
+      return deserialize<_i137.RefreshJobRow>(data['data']);
     }
     if (dataClassName == 'SessionPlaceRow') {
-      return deserialize<_i137.SessionPlaceRow>(data['data']);
+      return deserialize<_i138.SessionPlaceRow>(data['data']);
     }
     if (dataClassName == 'SwipeRow') {
-      return deserialize<_i138.SwipeRow>(data['data']);
+      return deserialize<_i139.SwipeRow>(data['data']);
     }
     if (dataClassName == 'TaxonomyVersionRow') {
-      return deserialize<_i139.TaxonomyVersionRow>(data['data']);
+      return deserialize<_i140.TaxonomyVersionRow>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i140.SwipeCommand>(data['data']);
+      return deserialize<_i141.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i141.TaxonomyCanarySample>(data['data']);
+      return deserialize<_i142.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i142.TaxonomyItem>(data['data']);
+      return deserialize<_i143.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i143.TaxonomyKind>(data['data']);
+      return deserialize<_i144.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i144.TaxonomySnapshot>(data['data']);
+      return deserialize<_i145.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i145.TaxonomyStatus>(data['data']);
+      return deserialize<_i146.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i146.TaxonomyValidation>(data['data']);
+      return deserialize<_i147.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -5368,36 +5676,38 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i123.CalibrationRow.t;
       case _i124.CityResolutionRow:
         return _i124.CityResolutionRow.t;
-      case _i125.HayerSessionRow:
-        return _i125.HayerSessionRow.t;
-      case _i126.IdempotencyRow:
-        return _i126.IdempotencyRow.t;
-      case _i127.OperationalMetricRow:
-        return _i127.OperationalMetricRow.t;
-      case _i128.ParticipantRow:
-        return _i128.ParticipantRow.t;
-      case _i129.PoiCatalogRow:
-        return _i129.PoiCatalogRow.t;
-      case _i130.PoiCategoryRow:
-        return _i130.PoiCategoryRow.t;
-      case _i131.PoiCoverageRow:
-        return _i131.PoiCoverageRow.t;
-      case _i132.PoiIssueReportRow:
-        return _i132.PoiIssueReportRow.t;
-      case _i133.ProductAnalyticsEventRow:
-        return _i133.ProductAnalyticsEventRow.t;
-      case _i134.ProductAnalyticsHourRow:
-        return _i134.ProductAnalyticsHourRow.t;
-      case _i135.RateLimitRow:
-        return _i135.RateLimitRow.t;
-      case _i136.RefreshJobRow:
-        return _i136.RefreshJobRow.t;
-      case _i137.SessionPlaceRow:
-        return _i137.SessionPlaceRow.t;
-      case _i138.SwipeRow:
-        return _i138.SwipeRow.t;
-      case _i139.TaxonomyVersionRow:
-        return _i139.TaxonomyVersionRow.t;
+      case _i125.DiscoveryTaxonomyVersionRow:
+        return _i125.DiscoveryTaxonomyVersionRow.t;
+      case _i126.HayerSessionRow:
+        return _i126.HayerSessionRow.t;
+      case _i127.IdempotencyRow:
+        return _i127.IdempotencyRow.t;
+      case _i128.OperationalMetricRow:
+        return _i128.OperationalMetricRow.t;
+      case _i129.ParticipantRow:
+        return _i129.ParticipantRow.t;
+      case _i130.PoiCatalogRow:
+        return _i130.PoiCatalogRow.t;
+      case _i131.PoiCategoryRow:
+        return _i131.PoiCategoryRow.t;
+      case _i132.PoiCoverageRow:
+        return _i132.PoiCoverageRow.t;
+      case _i133.PoiIssueReportRow:
+        return _i133.PoiIssueReportRow.t;
+      case _i134.ProductAnalyticsEventRow:
+        return _i134.ProductAnalyticsEventRow.t;
+      case _i135.ProductAnalyticsHourRow:
+        return _i135.ProductAnalyticsHourRow.t;
+      case _i136.RateLimitRow:
+        return _i136.RateLimitRow.t;
+      case _i137.RefreshJobRow:
+        return _i137.RefreshJobRow.t;
+      case _i138.SessionPlaceRow:
+        return _i138.SessionPlaceRow.t;
+      case _i139.SwipeRow:
+        return _i139.SwipeRow.t;
+      case _i140.TaxonomyVersionRow:
+        return _i140.TaxonomyVersionRow.t;
     }
     return null;
   }
@@ -5426,7 +5736,7 @@ class Protocol extends _i1.SerializationManagerServer {
         },
       };
     }
-    if (record is ({_i156.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i157.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
