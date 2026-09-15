@@ -1,0 +1,20 @@
+class: DiscoveryHarvestManifestRow
+serverOnly: true
+table: hayer_discovery_harvest_manifest
+fields:
+  version: String
+  revision: int
+  status: DiscoveryManifestStatus
+  entries: List<DiscoveryHarvestManifestEntry>
+  validationPassed: bool
+  validationErrors: List<String>
+  createdBy: String
+  createdAt: DateTime
+  validatedAt: DateTime?
+  publishedAt: DateTime?
+indexes:
+  hayer_discovery_manifest_version_key:
+    fields: version
+    unique: true
+  hayer_discovery_manifest_status:
+    fields: status, publishedAt

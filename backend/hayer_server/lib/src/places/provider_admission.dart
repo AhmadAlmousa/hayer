@@ -39,6 +39,9 @@ class ProviderAdmission {
   int admitted = 0;
 
   int get queued => _queue.length;
+
+  /// Tokens a background request must leave for interactive ones.
+  int get backgroundReserve => _burst ~/ 2;
   int get running => _running;
 
   void configure({required int requestsPerMinute, required int burst}) {
@@ -88,11 +91,22 @@ class ProviderAdmission {
             (_active[item.operation] ?? 0) < maximumConcurrentPerOperation,
       );
       if (eligible.isEmpty) return;
-      var delay = _tokens >= 1
+      // Interactive requests go first. Background work also leaves half the
+      // burst unspent, so an interactive search that arrives meanwhile is
+      // admitted at once instead of queueing behind it.
+      final request = eligible.firstWhere(
+        (item) => !item.operation.background,
+        orElse: () => eligible.first,
+      );
+      final tokensNeeded = request.operation.background
+          ? 1.0 + backgroundReserve
+          : 1.0;
+      var delay = _tokens >= tokensNeeded
           ? Duration.zero
           : Duration(
-              microseconds: ((1 - _tokens) * 60000000 / _requestsPerMinute)
-                  .ceil(),
+              microseconds:
+                  ((tokensNeeded - _tokens) * 60000000 / _requestsPerMinute)
+                      .ceil(),
             );
       final last = _lastStart;
       if (last != null) {
@@ -103,7 +117,6 @@ class ProviderAdmission {
         _wake = Timer(delay, _pump);
         return;
       }
-      final request = eligible.first;
       _queue.remove(request);
       request.removeListener();
       try {

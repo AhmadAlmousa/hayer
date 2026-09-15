@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../discovery/discovery_metrics.dart';
 import '../generated/protocol.dart';
 import 'catalog_observation_writer.dart';
 import 'catalog_persistence.dart';
@@ -168,6 +170,12 @@ class CatalogPlaceService {
     );
     if (!forceRefresh && coverageIsFresh && cachedDeck.length >= deckSize) {
       await _metric(session, 'cache_hit_rate', 1);
+      await DiscoveryMetrics.record(
+        session,
+        mode: DiscoveryMetricMode.swipe,
+        operation: DiscoveryMetricOperation.search,
+        cacheHits: 1,
+      );
       return CatalogDeckOutcome(
         deck: cachedDeck,
         origin: CatalogDeckOrigin.freshCache,
@@ -207,6 +215,12 @@ class CatalogPlaceService {
       );
       final live = await refresh;
       await _metric(session, 'cache_hit_rate', 0);
+      await DiscoveryMetrics.record(
+        session,
+        mode: DiscoveryMetricMode.swipe,
+        operation: DiscoveryMetricOperation.search,
+        cacheMisses: 1,
+      );
       await _metric(
         session,
         'source_success_rate',
@@ -271,63 +285,85 @@ class CatalogPlaceService {
       source: source,
       concurrency: settings.perCreationConcurrency,
     );
-    final live = await ProviderOperation.run(
-      () async {
-        final operation = ProviderOperation.current!;
-        PlaceSourceException? failure;
-        for (var attempt = 0; attempt < settings.extractorAttempts; attempt++) {
-          operation.check();
-          try {
-            return await liveSearch.buildDeckWithObservations(
-              categoryId: categoryId,
-              subcategoryIds: subcategoryIds,
-              latitude: latitude,
-              longitude: longitude,
-              radiusMeters: radiusMeters,
-              deckSize: deckSize,
-              maximumPriceLevel: maximumPriceLevel,
-              countryCode: countryCode,
-              queries: queries,
-            );
-          } on PlaceSourceException catch (error) {
-            failure = error;
-            if (error.code == 'rate_limited') break;
-          } on TimeoutException catch (error) {
-            failure = PlaceSourceException(
-              'place_source_unavailable',
-              'Place search exceeded the 30-second deadline.',
-              cause: error,
-            );
-            break;
+    ProviderOperation? sourceOperation;
+    try {
+      final live = await ProviderOperation.run(
+        () async {
+          final operation = ProviderOperation.current!;
+          PlaceSourceException? failure;
+          for (
+            var attempt = 0;
+            attempt < settings.extractorAttempts;
+            attempt++
+          ) {
+            operation.check();
+            try {
+              return await liveSearch.buildDeckWithObservations(
+                categoryId: categoryId,
+                subcategoryIds: subcategoryIds,
+                latitude: latitude,
+                longitude: longitude,
+                radiusMeters: radiusMeters,
+                deckSize: deckSize,
+                maximumPriceLevel: maximumPriceLevel,
+                countryCode: countryCode,
+                queries: queries,
+              );
+            } on PlaceSourceException catch (error) {
+              failure = error;
+              if (error.code == 'rate_limited') break;
+            } on TimeoutException catch (error) {
+              failure = PlaceSourceException(
+                'place_source_unavailable',
+                'Place search exceeded the 30-second deadline.',
+                cause: error,
+              );
+              break;
+            }
           }
-        }
-        throw failure ??
-            const PlaceSourceException(
-              'place_source_unavailable',
-              'Place search exceeded the 30-second deadline.',
-            );
-      },
-      onCreate: onProviderOperation,
-    );
-    // A completed source operation is persisted outside its cancellation
-    // scope, so the request keeps awaiting an already-started DB transaction.
-    await _persist(
-      session,
-      live.observed,
-      parentCategoryId: categoryId,
-      queries: queries,
-      countryCode: countryCode,
-      latitude: latitude,
-      longitude: longitude,
-      radiusMeters: radiusMeters,
-      now: now,
-      freshHours: settings.freshHours,
-      partialFailureCode: live.partialFailureCode,
-    );
-    return _LiveCatalogRefresh(
-      deck: live.deck,
-      partialFailureCode: live.partialFailureCode,
-    );
+          throw failure ??
+              const PlaceSourceException(
+                'place_source_unavailable',
+                'Place search exceeded the 30-second deadline.',
+              );
+        },
+        onCreate: (operation) {
+          sourceOperation = operation;
+          onProviderOperation?.call(operation);
+        },
+      );
+      // A completed source operation is persisted outside its cancellation
+      // scope, so the request keeps awaiting an already-started DB transaction.
+      await _persist(
+        session,
+        live.observed,
+        parentCategoryId: categoryId,
+        queries: queries,
+        countryCode: countryCode,
+        latitude: latitude,
+        longitude: longitude,
+        radiusMeters: radiusMeters,
+        now: now,
+        freshHours: settings.freshHours,
+        partialFailureCode: live.partialFailureCode,
+      );
+      return _LiveCatalogRefresh(
+        deck: live.deck,
+        partialFailureCode: live.partialFailureCode,
+      );
+    } finally {
+      if (sourceOperation case final operation?) {
+        await DiscoveryMetrics.record(
+          session,
+          mode: DiscoveryMetricMode.swipe,
+          operation: DiscoveryMetricOperation.search,
+          upstreamRequests: math.min(
+            operation.requestCount,
+            operation.maximumRequests,
+          ),
+        );
+      }
+    }
   }
 
   Future<List<PlaceCandidate>> _nearbyCatalog(
@@ -459,6 +495,10 @@ class CatalogPlaceService {
         expiresAt: now.add(Duration(hours: freshHours)),
         failureCode: partialFailureCode,
       ),
+      metrics: const CatalogObservationMetrics(
+        mode: DiscoveryMetricMode.swipe,
+        operation: DiscoveryMetricOperation.search,
+      ),
     );
   }
 
@@ -537,14 +577,13 @@ class CatalogPlaceService {
     required double latitude,
     required double longitude,
     required int radiusMeters,
-  }) => sha256
-      .convert(
-        '${countryCode}_${latitude.toStringAsFixed(3)}_'
-                '${longitude.toStringAsFixed(3)}_${radiusMeters}_'
-                '${categoryIds.join(',')}'
-            .codeUnits,
-      )
-      .toString();
+  }) => catalogCoverageKey(
+    categoryIds: categoryIds,
+    countryCode: countryCode,
+    latitude: latitude,
+    longitude: longitude,
+    radiusMeters: radiusMeters,
+  );
 }
 
 enum CatalogDeckOrigin { freshCache, live, partialLive, staleFallback }
@@ -570,6 +609,23 @@ class _LiveCatalogRefresh {
   final List<PlaceSnapshot> deck;
   final String? partialFailureCode;
 }
+
+/// The Swipe coverage key for sorted [categoryIds] around an anchor. Discover
+/// harvests reuse it to write coverage Swipe reads.
+String catalogCoverageKey({
+  required List<String> categoryIds,
+  required String countryCode,
+  required double latitude,
+  required double longitude,
+  required int radiusMeters,
+}) => sha256
+    .convert(
+      '${countryCode}_${latitude.toStringAsFixed(3)}_'
+              '${longitude.toStringAsFixed(3)}_${radiusMeters}_'
+              '${categoryIds.join(',')}'
+          .codeUnits,
+    )
+    .toString();
 
 String catalogRefreshKey({
   required String calibrationVersion,

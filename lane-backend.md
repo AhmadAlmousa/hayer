@@ -28,11 +28,10 @@ Last updated: 2026-09-15
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 101/101 against real PostGIS on
-  the disposable `hayer_test_m9d`, built fresh from the M9-D definition,
-  including 31 M9-C Discover cases and 14 M9-D detail and report cases. The
-  shared `hayer_test` still needs a reset before it can run the suite again;
-  see the M9-C checkpoint.
+- The latest integration suite is fully green: 115/115 against real PostGIS on
+  the disposable `hayer_test_m9e`, built fresh from the M9-E definition,
+  including 31 M9-C, 14 M9-D and 14 M9-E cases. The shared `hayer_test` still
+  needs a reset before it can run the suite again; see the M9-C checkpoint.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is wired into the merged client.
   Two-device acceptance remains open.
@@ -44,8 +43,8 @@ Last updated: 2026-09-15
 - The owner prioritized contracts to unblock Claude's discovery work. Frontend
   prework is merged in `d4b58b7`; M9-B/C/D and consumer M9-E generated contracts
   are delivered. The exact calls, mock semantics and retained-link flow are in
-  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). M9-B's,
-  M9-C's and M9-D's implementations are complete; M9-E and production
+  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). M9-A to
+  M9-E are implemented; M9-K's cross-mode verification and production
   activation remain open.
 - Claude's M9-F configuration/link retention commit `5863f02` is merged into
   `main`. It adds no new backend handoff: G2–G4 can continue against the dark
@@ -73,8 +72,281 @@ Last updated: 2026-09-15
   refreshing a place once under a database lease only when needed, and
   Discover reports go through the session reporting pipeline without a
   session. Details answer whether or not Discover is enabled.
+- M9-E is complete. Committed searches and Deepen enqueue one bounded,
+  deduplicated harvest per canonical cell through the shared source and
+  writer; coverage, the broad-query manifest and the admin job, unmapped-type
+  and growth reads are live behind the flag.
 
 ## Checkpoints
+
+### M9-E harvesting and coverage — complete (2026-09-15)
+
+`ensureArea`, `deepen`, `harvestStatus` and the coverage descriptor on `browse`
+are implemented behind `discoveryEnabled`. So are the broad-query manifest
+lifecycle and the harvest-job, unmapped-type and growth-metric admin reads. User
+harvests run in the existing refresh-job worker through the shared
+Vela-derived source and observation writer.
+
+**Areas.** `DiscoveryArea` resolves a committed viewport to one canonical
+cell in a local equirectangular projection. One degree of latitude is taken as
+110,574 m, and one degree of longitude as 111,320 m times the cosine of the
+cell row's latitude. The viewport centre snaps to the nearest kilometre north,
+then to the nearest kilometre east along that row. The radius is the
+viewport's half-diagonal rounded up to 1, 2, 5 or 10 km. The footprint a
+harvest claims is the square that extends the radius from the snapped centre.
+
+**Requests.** Each request takes a transaction-scoped advisory lock on the
+country, cell and radius, then `ensureArea`:
+
+- joins the active job with the same country, cell, radius, manifest revision
+  and calibration;
+- returns without provider work when every enabled manifest query completed
+  there within the policy's `freshHours`, under the active manifest revision;
+- returns the last finished job and its cooldown when that job ended
+  succeeded, partial or failed within `harvestCooldownMinutes`;
+- otherwise spends one of the user's `userHarvestsPerHour` and enqueues one
+  job.
+
+`deepen` does the same without the freshness check. It remembers its retry
+key: the same key returns the same job, and a key reused for another area is
+`conflict`. Joins, fresh answers and cooldown answers spend no quota. Partial
+unique indexes on active harvests per key back the lock.
+
+**Worker.** A harvest job is a `hayer_refresh_job` row with a `planJson`. The
+plan holds the cell, the manifest revision and a snapshot of its entries, the
+Swipe compatibility queries and the calibration. The existing worker claims it
+like any job and runs `DiscoveryHarvestService.execute`. One harvest spends a
+single `ProviderOperation` of `harvestMaximumRequests` requests and
+`harvestMaximumSeconds`, admitted through F08's shared controller.
+`DiscoveryHarvestScheduler` orders its pages:
+
+- every broad query's first page, in manifest order;
+- every Swipe category's first page;
+- continuation pages, round-robin, while the query's last page came back
+  nearly full and it has fewer than `harvestDesiredCandidatesPerQuery`;
+- one retry of each failed page;
+- the reviewed Arabic fallback of each broad query that came back empty or
+  failed.
+
+Before every page the worker checks its lease, the flag (for user harvests)
+and the budget. It renews `heartbeatAt` every 30 seconds and after each page.
+Recovery now requeues a running job only when its heartbeat, or its start if
+it has none, is five minutes old, so a long harvest is never run twice.
+
+**Persistence.** Broad observations reach the catalog page by page through the
+shared writer, with no Swipe evidence or coverage. Compatibility results are
+real Swipe query results. They are written with that category's evidence, and
+a compatibility query that finishes with no failed page also writes Swipe
+coverage at the cell centre and radius. A compatibility query is skipped when
+its Swipe coverage is already fresh, on the current calibration and holds at
+least 20 results.
+
+`hayer_discovery_coverage` keeps one row per cell and radius. It records the
+manifest revision, when each broad query last completed, and the last attempt,
+complete success and failure. An older plan never overwrites a newer
+revision's row, and a revision change drops earlier completions from the new
+plan's freshness.
+
+**Outcomes.** Harvest states:
+
+- `succeeded`: every planned query was answered. The budget may still have cut
+  continuation depth, which each query's outcome records.
+- `partial`: some queries were answered.
+- `failed`: none were.
+- `cancelled`: by an operator, or by turning Discover off (`feature_disabled`).
+
+Each query records its state, pages, observations, requests and failure.
+Queries the budget never reached stay `unattempted`. The refresh job becomes
+`succeeded`, `failed` with `partial_<cause>` or the cause, or `cancelled`, so a
+partial harvest never shows green on the jobs page.
+
+Turning Discover off cancels pending user harvests in the policy update's
+transaction, and a running one stops before its next page. An operator's
+`cancelRefreshJob` now cancels the harvest record too, and stops the provider
+page in flight on this process.
+
+**Coverage descriptor.** `browse` and area receipts report:
+
+- the known place count;
+- up to 20 intersecting footprints, each with bounds, manifest revision,
+  completed and incomplete manifest entry ids, last attempt and success, and
+  cooldown;
+- up to five pending or running jobs intersecting the view.
+
+**Manifest.** `hayer_discovery_harvest_manifest` mirrors the Discover taxonomy
+lifecycle: one active and one draft row, optimistic revisions, and audited
+save, validate, publish and rollback. Validation requires:
+
+- 1–20 entries, at least one enabled;
+- unique ids, English queries and orders;
+- 2–120-character English queries and Arabic fallbacks.
+
+The seed holds the plan's nine domains. Its Arabic fallbacks are first drafts
+that still need an Arabic-speaking reviewer.
+
+**Admin reads.**
+
+- **Harvest jobs** page by state, requester, trigger and a search over job,
+  cell, country and requester. Each carries the plan's manifest snapshot,
+  per-query outcomes, counters and cooldown. Requesters appear as `user:` and
+  16 hex digits of a salted hash, never a user id. On the refresh jobs page,
+  harvests have reason `discover:committedSearch` or `discover:deepen`.
+- **Unmapped types** come from `hayer_discovery_type_observation`. The shared
+  writer now counts types per batch, and the migration seeds one observation
+  per existing place. A type no Discover alias claims is unmapped; one claimed
+  by two nodes is ambiguous. Items rank by observations, then places, with up
+  to five example catalog ids.
+- **Growth metrics** sum `growth.*` counters in `hayer_operational_metric`, in
+  hourly buckets, over a window of at most 90 days. A boundary's catalog count
+  is today's rows first seen before it plus rows pruned since. Explored cells
+  are distinct cells whose succeeded or partial harvest completed in the
+  window.
+
+**Metrics recorded.**
+
+- Swipe search: cache hits and misses from `buildDeck`, observations and new
+  places from its writes, and each live refresh's upstream requests.
+- Discover browse: a committed search that finds fresh coverage is a hit, and
+  one that enqueues a harvest is a miss.
+- Harvest: observations, new places and upstream requests.
+- Detail refresh, attributed to Swipe with a session and to Discover without:
+  a read served without the provider is a hit; a refresh attempt is a miss, a
+  detail refresh and its upstream requests.
+- Pruning: removed places.
+
+New places are a batch's places the catalog lacked, counted inside the write's
+transaction.
+
+**Shared code touched.**
+
+- `ProviderOperation` gained `requestCount`, `isStopped` and `within`, to spend
+  one budget across sequential pages, and a `background` flag.
+- `ProviderAdmission` admits an eligible interactive request before any
+  background one, and a background request waits until it can leave half the
+  burst unspent. Only harvests are background; Swipe searches, detail
+  refreshes and other refresh jobs are admitted as before.
+- `CatalogPlaceService` exposes `catalogCoverageKey` and records the metrics
+  above. Its selection, evidence and coverage behavior is unchanged, and
+  `place_search_policy.dart` and `catalog_spatial_query.dart` are untouched.
+- The shared writer's catalog, evidence and coverage SQL is unchanged. It adds
+  a count of already-known places for metrics, and a type-count upsert after
+  its transaction.
+- Viewport validation moved from `DiscoveryQuery` to `DiscoveryArea`.
+- The detail resolver and harvests share `PlaceObservation`.
+
+**Migration `20260915080530543-discovery-harvest-coverage`.** It adds:
+
+- the four tables, with their indexes and CHECKs;
+- `hayer_refresh_job.heartbeatAt`;
+- partial unique indexes for one active harvest per key, on both the job queue
+  and the harvest record, and for one active and one draft manifest;
+- type counts seeded from the catalog.
+
+The upgrade ran on the M9-D definition with catalog rows and a finished job, in
+under 0.1 s. Its columns, constraints, indexes and functions fingerprint
+identically to a database built from the new definition (`de5dfdd8…`,
+`56fb3ad7…`, `8870ce91…`, `fc90e713…`). The seeded counts group the spelling
+`' Coffee  shop '` under one key.
+
+**Load.** `benchmark/discovery_harvest_load_test.dart` runs a real
+`ProviderAdmission` at the production defaults: 30 requests a minute, a burst
+of 6, three concurrent and two per operation. Each simulated provider request
+holds its permit for 600 ms. Eight Swipe searches, each three concurrent first
+pages, arrive 6 s apart, first alone and then beside one 24-page harvest.
+
+- With first-come admission, the harvest took each refilled token ahead of
+  Swipe. Search latency rose from a p50 of 1,202 ms to a p50 of 12,600 ms and a
+  p95 of 14,601 ms, and request admission delay reached a p50 of 7,999 ms
+  (`benchmark/results/2026-09-15-harvest-load-fifo.txt`).
+- With interactive priority and the background reserve, Swipe under harvest
+  load matched its baseline: a p50 of 1,202 ms and a p95 of 1,203 ms, with
+  admission delay at a p50 of 0 ms and a p95 of 601 ms. The harvest took
+  90.6 s instead of 84.6 s
+  (`benchmark/results/2026-09-15-harvest-load-priority.txt`).
+
+The latency is simulated, not Google's, so this proves the admission policy
+rather than production numbers.
+
+**Decisions.**
+
+- A footprint is the searched square, not a circle, because clients union
+  rectangles. A 10 km cell is honestly "partly explored" in any wider view.
+- Freshness depends on the manifest revision and `freshHours`, not the
+  calibration, so a calibration update does not re-harvest every area. The
+  dedupe key still includes calibration, as planned.
+- A harvest succeeds when every planned query was answered, even if the budget
+  cut continuation depth; per-query outcomes record the cut.
+- Compatibility queries skip at 20 fresh results, Swipe's default deck size.
+- Type observations before this migration are seeded as one per catalog place.
+- The per-user budget is charged only when a new job is created.
+- Requesters are pseudonymous in admin reads.
+- The cooldown follows succeeded, partial and failed jobs, but not cancelled
+  ones.
+- Harvests yield inside F08's shared limiter rather than getting a limiter of
+  their own, as requirement 12 asks. Steady interactive traffic can hold a
+  harvest back; its `harvestMaximumSeconds` deadline still ends it, recorded as
+  `deadline_exceeded`.
+
+**Acceptance.** `discovery_harvest_test.dart` (10 cases):
+
+- A cold committed search enqueues one job. Simultaneous users, camera jitter
+  and Deepen join it, only one quota is charged, storage refuses a second
+  active job, and a distant camera gets its own job.
+- A harvest stores every observation, and only compatibility results carry
+  Swipe evidence and write Swipe coverage. Area coverage is fresh, and a repeat
+  search and `browse` make no provider request. A matching Swipe search reads
+  the compatibility place from cache while broad-only places stay out, and the
+  metrics add up.
+- With every first page full, each domain's first page still runs before any
+  continuation. Continuation goes round-robin, and the 24-request budget stops
+  the harvest with the stopping query recorded.
+- A provider failure and a four-request budget leave a partial job: per-query
+  failures, unattempted queries, no Swipe coverage, and area completions only
+  for answered queries. A repeat search and Deepen return the cooldown, and a
+  new job starts after it.
+- Retries, then Arabic fallbacks, run after every first page.
+- The per-user budget answers `rate_limited` with a wait, and joining another
+  user's job is free.
+- Deepen keeps its retry key, returns `conflict` for another area, honours the
+  cooldown and ignores freshness after it.
+- Operator cancellation and turning Discover off cancel queued harvests, and a
+  cancelled job does not cool its cell down.
+- A running harvest stops at its next page when Discover is turned off, and an
+  operator's cancellation stops the page in flight.
+- Recovery requeues only harvests whose heartbeat went quiet.
+
+`discovery_admin_harvest_test.dart` (4 cases):
+
+- The manifest lifecycle rejects invalid and stale saves and writes its audits,
+  and a new harvest carries the restored revision.
+- Harvest-job filters work and jobs carry their plans.
+- Unmapped and ambiguous types rank by frequency. Mapping a type into the tree
+  makes its place appear in Discover without a provider request.
+- Growth metrics count harvests, cache use and removals, and invalid windows
+  are refused.
+
+Unit tests cover cell snapping, jitter, radius buckets and footprints; the
+scheduler's ordering, round-robin, retries, fallbacks and release; manifest
+validation, normalization and the seed; the plan codec;
+`ProviderOperation.within`; admission's interactive priority and background
+reserve; and the migration files.
+
+**Verification.** Pinned full preflight passed generation, formatting, all
+fatal-info analyses, 199 server tests, 279 app tests
+and 51 admin tests. `HAYER_TEST_DB_NAME=hayer_test_m9e
+scripts/test-integration-remote.sh` passed 115/115. The signed `0.2.1+7` APK
+is 107,122,415 bytes, verifies with APK Signature Scheme v2 and has SHA-256
+`eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f`. Those are
+M9-D's bytes, because the app did not change. Graft was rebuilt.
+
+**Not verified.**
+
+- Real Google pages: the tests use a fixture source that spends one request per
+  page where admission would.
+- Production deployment, including the public web host serving `/discover`
+  directly.
+- Queue delay and Swipe latency under real provider latency and traffic
+  (M9-K).
 
 ### M9-D shared detail resolver and sessionless reporting — complete (2026-09-15)
 
@@ -1046,6 +1318,32 @@ both manifests and APK Signature Scheme v2 verify. The backend-only change
 correctly leaves the APK bytes unchanged from the prior P06 build.
 
 ## Open handoffs to the front-end lane
+
+### M9-E harvesting, coverage and admin reads — implemented 2026-09-15
+
+The generated client did not change. The settled behavior is in
+`backend/discovery-contracts.md` §"Harvesting and coverage as implemented
+(M9-E)" and §"Admin as implemented (M9-E)". Points for G4 and J:
+
+- An `ensureArea` receipt means one of three things. With a pending or
+  running `job`, an exploration is enqueued or joined. With no job and no
+  `retryAfter`, the area is fresh. With a finished `job` and a `retryAfter`,
+  the cell is cooling down. G4's following and waiting cover all three.
+- Footprints are the square around the snapped cell centre, so a view wider
+  than the cell stays partly explored, as G4's union check expects.
+  Completed and incomplete query groups are manifest entry ids.
+- `lastSuccessAt` moves only when a harvest fully succeeds; a partial one
+  moves `lastAttemptAt`. G4's "unfinished" rule works as written.
+- `rate_limited` comes only when a new harvest would start. Joining, fresh
+  answers and cooldown answers never spend the budget.
+- `totalQueries` includes Swipe compatibility queries, so "searches" counts
+  them.
+- Any signed-in user may poll a job id; an unknown one is `not_found`.
+- For J, the manifest lifecycle, job page, unmapped types and growth metrics
+  are live. Requesters are pseudonymous (`user:` and a hash). Harvests show on
+  the refresh jobs page with reason `discover:<trigger>`, and cancelling one
+  there cancels the harvest. The manifest's Arabic fallbacks still need a
+  reviewer.
 
 ### M9-D details and catalog reports — implemented 2026-09-15
 

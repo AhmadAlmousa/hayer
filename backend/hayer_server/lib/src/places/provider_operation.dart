@@ -9,6 +9,7 @@ class ProviderOperation {
     Duration timeout = const Duration(seconds: 30),
     this.maximumRequests = 36,
     this.maximumBytes = 20 * 1024 * 1024,
+    this.background = false,
   }) : deadline = DateTime.now().add(timeout) {
     _timer = Timer(timeout, cancel);
   }
@@ -20,6 +21,10 @@ class ProviderOperation {
   final DateTime deadline;
   final int maximumRequests;
   final int maximumBytes;
+
+  /// Background work, such as a Discover harvest, yields to interactive
+  /// requests at admission.
+  final bool background;
   final Set<void Function()> _listeners = {};
   late final Timer _timer;
   PlaceSourceException? _failure;
@@ -54,6 +59,24 @@ class ProviderOperation {
     } finally {
       operation.cancel();
     }
+  }
+
+  /// HTTP requests admitted so far under this operation.
+  int get requestCount => _requests;
+
+  /// Whether this operation was cancelled or ran past its deadline.
+  bool get isStopped => _failure != null || !DateTime.now().isBefore(deadline);
+
+  /// Runs [action] inside this operation's budget. A caller spending one
+  /// operation over several sequential steps gets a failure from the step
+  /// that was running when the budget stopped, and never a step continuing
+  /// in the background.
+  Future<T> within<T>(Future<T> Function() action) {
+    check();
+    return runZoned(
+      () => wait(Future.sync(action)),
+      zoneValues: {_zoneKey: this},
+    );
   }
 
   void check() {

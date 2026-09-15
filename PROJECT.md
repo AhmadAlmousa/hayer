@@ -910,10 +910,11 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   One cache-first resolver serves both modes' details, refreshing a place once
   under a database lease and cooldown, and Discover reports share session
   reporting's validation, dedupe, quotas and moderation storage.
-- [~] M9-E — Harvesting and coverage (back end, after F21). Consumer coverage
-  and admin manifest/job/unmapped-type/growth contracts plus web path rewrites
-  delivered; workers and persistent manifest, coverage and metrics storage
-  remain open. Hosting deployment pending.
+- [x] M9-E — Harvesting and coverage (back end, after F21). Committed searches
+  and Deepen enqueue one bounded, deduplicated harvest per canonical cell
+  through the shared source and writer, with honest coverage, a versioned
+  broad-query manifest, admin job, unmapped-type and growth reads, and a
+  measured admission load benchmark. Hosting deployment pending.
 - [x] M9-F — Entry, configuration and links (front end). Prework in `bb212d7`;
   the configuration read and kept disabled links landed on 2026-09-13. Device
   App Link checks belong to M9-K.
@@ -928,10 +929,11 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
-complete from contract availability alone. Discovery stays dark: data and catalog-report RPCs
-answer `feature_disabled` while `discoveryEnabled` is false, and harvest and
-M9-E admin RPCs answer it unconditionally. Shared place details answer in both
-modes whatever the flag. M9-E is the remaining back-end slice.
+complete from contract availability alone. Discovery stays dark: data, harvest and
+catalog-report RPCs answer `feature_disabled` while `discoveryEnabled` is
+false. Shared place details answer in both modes whatever the flag, and the
+M9-E admin reads answer authorized operators. Every back-end M9 slice is
+implemented; M9-K remains.
 
 ## Verification gates
 
@@ -1103,6 +1105,26 @@ modes whatever the flag. M9-E is the remaining back-end slice.
   `0.2.1+7` built at SHA-256 `eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f` and verifies under APK Signature
   Scheme v2 with the existing signer. Discovery stays disabled. Details are in
   `lane-backend.md`.
+- 2026-09-15: closed M9-E in the back-end lane. A committed Discover search or
+  Deepen resolves to one canonical harvest cell. Under an advisory lock the
+  request joins its active job, returns fresh coverage or a cooldown, or
+  spends the user's quota to enqueue one bounded harvest. The existing worker
+  runs it through the shared source and writer, with a heartbeat lease, flag
+  and operator cancellation, and a scheduler that reaches every broad domain
+  and Swipe compatibility query before continuation, retries and Arabic
+  fallbacks. Compatibility results carry genuine Swipe evidence and coverage.
+  Harvests yield to interactive requests inside the shared provider limiter.
+  In a simulated-latency load benchmark, that brought Swipe search latency
+  under a 24-page harvest from a 12.6 s p50 with first-come admission back to
+  its 1.2 s baseline. Coverage footprints, the versioned broad-query manifest and the admin job,
+  unmapped-type and growth reads are live behind the flag. The 14 new PostGIS
+  cases pass within 115/115 on a disposable fresh-schema database, and the
+  populated upgrade fingerprints identically to a fresh one. Pinned full
+  preflight passed 199 server, 279 app and
+  51 admin tests with clean analyses. Signed `0.2.1+7` built at
+  SHA-256 `eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f`, unchanged from M9-D because the app did not
+  change, and verifies under APK Signature Scheme v2 with the existing
+  signer. Discovery stays disabled. Details are in `lane-backend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

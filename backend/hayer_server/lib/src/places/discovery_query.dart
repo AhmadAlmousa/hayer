@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../discovery/discovery_area.dart';
 import '../discovery/discovery_contract.dart';
+import '../discovery/discovery_harvest_service.dart';
 import '../discovery/discovery_policy_service.dart';
 import '../discovery/discovery_taxonomy_index.dart';
 import '../discovery/discovery_taxonomy_service.dart';
@@ -147,12 +149,34 @@ SELECT
             ).encode(prepared.context)
           : null,
       map: _mapPayload(values['map_json']),
-      coverage: DiscoveryCoverage(
+      coverage: await DiscoveryHarvestService.coverageFor(
+        session,
+        countryCode: prepared.context.countryCode,
+        viewport: query.viewport,
         eligibleCatalogCount: _integer(values['catalog_count']),
-        footprints: const [],
-        pendingJobs: const [],
       ),
     );
+  }
+
+  /// Open, unquarantined catalog places inside [viewport], before filters:
+  /// the count Discover's coverage descriptor reports.
+  static Future<int> knownPlaceCount(
+    Session session, {
+    required DiscoverViewport viewport,
+    required String countryCode,
+  }) async {
+    final rows = await session.db.unsafeQuery(
+      'SELECT COUNT(*)::int AS count FROM "hayer_poi_catalog" catalog '
+      'WHERE $_scope',
+      parameters: QueryParameters.named({
+        'countryCode': countryCode,
+        'south': viewport.south,
+        'west': viewport.west,
+        'north': viewport.north,
+        'east': viewport.east,
+      }),
+    );
+    return _integer(rows.single.toColumnMap()['count']);
   }
 
   static Future<DiscoverFacets> facets(
@@ -398,7 +422,7 @@ SELECT
     required DiscoverQueryContext? suppliedContext,
     required bool exactQuery,
   }) async {
-    _validateViewport(query.viewport);
+    DiscoveryArea.validateViewport(query.viewport);
     if (query.categoryIds.length > 50) {
       throw _badRequest('At most 50 categories can be selected.');
     }
@@ -415,20 +439,10 @@ SELECT
             query.minimumRating! > 5)) {
       throw _badRequest('Minimum rating must be between 0 and 5.');
     }
-    final countryCode = _countryFor(query.viewport);
-    if (countryCode == null) {
-      throw ApiException(
-        code: 'unsupported_area',
-        message: 'Discover currently supports GCC areas only.',
-      );
-    }
-    final hint = query.countryCode?.trim().toUpperCase();
-    if (hint != null && hint.isNotEmpty && hint != countryCode) {
-      throw ApiException(
-        code: 'unsupported_area',
-        message: 'The supplied country does not match this map area.',
-      );
-    }
+    final countryCode = DiscoveryArea.resolveCountry(
+      query.viewport,
+      query.countryCode,
+    );
 
     final policy = await DiscoveryPolicyService.load(session);
     final discovery = policy.discovery!;
@@ -957,45 +971,6 @@ CASE
   }
 
   static int _integer(Object? value) => (value as num?)?.toInt() ?? 0;
-
-  static void _validateViewport(DiscoverViewport viewport) {
-    if (!viewport.south.isFinite ||
-        !viewport.west.isFinite ||
-        !viewport.north.isFinite ||
-        !viewport.east.isFinite ||
-        viewport.south < -90 ||
-        viewport.north > 90 ||
-        viewport.west < -180 ||
-        viewport.east > 180 ||
-        viewport.south >= viewport.north ||
-        viewport.west >= viewport.east ||
-        viewport.north - viewport.south > 15 ||
-        viewport.east - viewport.west > 15) {
-      throw ApiException(
-        code: 'invalid_area',
-        message: 'The map bounds are invalid or too large.',
-      );
-    }
-  }
-
-  /// Resolves the supported country from the viewport centre. Kuwait, Qatar
-  /// and Bahrain are checked before the larger boxes that overlap them.
-  static String? _countryFor(DiscoverViewport viewport) {
-    final latitude = (viewport.south + viewport.north) / 2;
-    final longitude = (viewport.west + viewport.east) / 2;
-    bool inside(double south, double north, double west, double east) =>
-        latitude >= south &&
-        latitude <= north &&
-        longitude >= west &&
-        longitude <= east;
-    if (inside(28.3, 30.2, 46.2, 48.8)) return 'KW';
-    if (inside(24.3, 26.3, 50.6, 52.0)) return 'QA';
-    if (inside(25.5, 26.4, 50.3, 51.0)) return 'BH';
-    if (inside(22.5, 26.5, 50.5, 56.5)) return 'AE';
-    if (inside(16.5, 26.5, 51.5, 60.0)) return 'OM';
-    if (inside(16.0, 32.3, 34.4, 55.7)) return 'SA';
-    return null;
-  }
 
   static ApiException _badRequest(String message) =>
       ApiException(code: 'bad_request', message: message);

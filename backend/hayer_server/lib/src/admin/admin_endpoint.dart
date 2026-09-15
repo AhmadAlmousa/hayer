@@ -10,7 +10,10 @@ import 'admin_gateway_access.dart';
 import 'poi_issue_moderation_service.dart';
 import 'refresh_job_service.dart';
 import '../generated/protocol.dart';
-import '../discovery/discovery_contract.dart';
+import '../discovery/discovery_admin_reads.dart';
+import '../discovery/discovery_harvest_manifest_service.dart';
+import '../discovery/discovery_harvest_service.dart';
+import '../discovery/discovery_metrics.dart';
 import '../discovery/discovery_policy_service.dart';
 import '../discovery/discovery_taxonomy_service.dart';
 import '../places/calibration.dart';
@@ -303,14 +306,17 @@ class AdminEndpoint extends Endpoint {
   Future<AdminDiscoveryHarvestManifestVersion> discoveryHarvestManifestDraft(
     Session session,
   ) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    return DiscoveryHarvestManifestService.editableDraft(
+      session,
+      operatorName: operatorName,
+    );
   }
 
   Future<List<AdminDiscoveryHarvestManifestVersion>>
   discoveryHarvestManifestHistory(Session session) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryHarvestManifestService.history(session);
   }
 
   Future<AdminDiscoveryHarvestManifestVersion>
@@ -321,8 +327,31 @@ class AdminEndpoint extends Endpoint {
     required int revision,
     required List<DiscoveryHarvestManifestEntry> entries,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final saved = await DiscoveryHarvestManifestService.saveDraft(
+        session,
+        version: version,
+        revision: revision,
+        entries: entries,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.draft.save',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '${saved.revision}',
+          'entries': '${saved.entries.length}',
+        },
+        transaction: transaction,
+      );
+      return saved;
+    });
   }
 
   Future<DiscoveryHarvestManifestValidation>
@@ -332,8 +361,31 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int revision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final result = await DiscoveryHarvestManifestService.recordValidation(
+        session,
+        version: version,
+        revision: revision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.draft.validate',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '${result.revision}',
+          'passed': '${result.passed}',
+          'errors': '${result.errors.length}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryHarvestManifestVersion> publishDiscoveryHarvestManifest(
@@ -342,8 +394,38 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int revision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final before = await DiscoveryHarvestManifestService.activeRow(
+        session,
+        transaction: transaction,
+      );
+      final result = await DiscoveryHarvestManifestService.publish(
+        session,
+        version: version,
+        revision: revision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.publish',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        before: {
+          'version': before.version,
+          'revision': '${before.revision}',
+        },
+        after: {
+          'version': result.version,
+          'revision': '${result.revision}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryHarvestManifestVersion> rollbackDiscoveryHarvestManifest(
@@ -352,8 +434,38 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int expectedActiveRevision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final before = await DiscoveryHarvestManifestService.activeRow(
+        session,
+        transaction: transaction,
+      );
+      final result = await DiscoveryHarvestManifestService.rollback(
+        session,
+        version: version,
+        expectedActiveRevision: expectedActiveRevision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.rollback',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        before: {
+          'version': before.version,
+          'revision': '${before.revision}',
+        },
+        after: {
+          'version': result.version,
+          'revision': '${result.revision}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryHarvestJobPage> discoveryHarvestJobs(
@@ -366,7 +478,15 @@ class AdminEndpoint extends Endpoint {
     DiscoveryHarvestTrigger? trigger,
   }) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryAdminReads.harvestJobs(
+      session,
+      page: page,
+      pageSize: pageSize,
+      query: query,
+      state: state,
+      requester: requester,
+      trigger: trigger,
+    );
   }
 
   Future<AdminDiscoveryUnmappedTypePage> discoveryUnmappedTypes(
@@ -377,7 +497,13 @@ class AdminEndpoint extends Endpoint {
     DiscoveryTypeMappingIssue? issue,
   }) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryAdminReads.unmappedTypes(
+      session,
+      page: page,
+      pageSize: pageSize,
+      query: query,
+      issue: issue,
+    );
   }
 
   Future<DiscoveryGrowthMetrics> discoveryGrowthMetrics(
@@ -386,7 +512,7 @@ class AdminEndpoint extends Endpoint {
     required DateTime to,
   }) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryMetrics.growth(session, from: from, to: to);
   }
 
   Future<AdminTaxonomyVersion> taxonomyDraft(Session session) async {
@@ -1114,6 +1240,14 @@ class AdminEndpoint extends Endpoint {
           transaction: transaction,
         );
       }
+      if (!saved.discoveryEnabled) {
+        // Turning Discover off cancels queued user harvests; running ones
+        // stop before their next provider page.
+        await DiscoveryHarvestService.cancelPendingUserHarvests(
+          session,
+          transaction: transaction,
+        );
+      }
       await _audit(
         session,
         operatorName: operatorName,
@@ -1241,6 +1375,20 @@ class AdminEndpoint extends Endpoint {
           message: 'The refresh job finished before it could be cancelled.',
         );
       }
+      // A harvest's own state follows its job.
+      await DiscoveryHarvestRow.db.updateWhere(
+        session,
+        where: (table) =>
+            table.jobId.equals(jobId) &
+            (table.state.equals(DiscoveryHarvestState.pending) |
+                table.state.equals(DiscoveryHarvestState.running)),
+        columnValues: (table) => [
+          table.state(DiscoveryHarvestState.cancelled),
+          table.completedAt(DateTime.now().toUtc()),
+          table.failureCode('cancelled'),
+        ],
+        transaction: transaction,
+      );
       await _audit(
         session,
         operatorName: operatorName,

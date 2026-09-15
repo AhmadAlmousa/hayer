@@ -1,0 +1,15 @@
+class: DiscoveryTypeObservationRow
+serverOnly: true
+table: hayer_discovery_type_observation
+fields:
+  # hayer_discovery_normalize(primaryType), the catalog's primary_type_key.
+  typeKey: String
+  # The most recently observed spelling.
+  primaryType: String
+  observationCount: int
+  firstObservedAt: DateTime
+  lastObservedAt: DateTime
+indexes:
+  hayer_discovery_type_observation_key:
+    fields: typeKey
+    unique: true

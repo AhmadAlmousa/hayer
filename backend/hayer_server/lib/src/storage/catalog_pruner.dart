@@ -1,5 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../discovery/discovery_metrics.dart';
+
 /// Removes catalog records that are outside retention and are not referenced
 /// by an immutable session snapshot.
 abstract final class CatalogPruner {
@@ -54,6 +56,11 @@ WITH pruned AS (
 SELECT "providerPlaceId" FROM pruned
 ''',
       parameters: QueryParameters.named({'cutoff': cutoff}),
+      transaction: transaction,
+    );
+    await DiscoveryMetrics.recordRemovedPlaces(
+      session,
+      rows.length,
       transaction: transaction,
     );
     return rows.length;

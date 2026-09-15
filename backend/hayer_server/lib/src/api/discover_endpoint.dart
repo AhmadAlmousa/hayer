@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../discovery/discovery_contract.dart';
+import '../discovery/discovery_harvest_service.dart';
 import '../discovery/discovery_taxonomy_service.dart';
 import '../generated/protocol.dart';
 import '../places/discovery_query.dart';
@@ -63,7 +64,11 @@ class DiscoverEndpoint extends Endpoint {
     String? countryCode,
   }) async {
     await DiscoveryContract.requireEnabled(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryHarvestService.ensureArea(
+      session,
+      viewport: viewport,
+      countryCode: countryCode,
+    );
   }
 
   Future<DiscoveryAreaReceipt> deepen(
@@ -73,7 +78,12 @@ class DiscoverEndpoint extends Endpoint {
     required String idempotencyKey,
   }) async {
     await DiscoveryContract.requireEnabled(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryHarvestService.deepen(
+      session,
+      viewport: viewport,
+      countryCode: countryCode,
+      idempotencyKey: idempotencyKey,
+    );
   }
 
   Future<DiscoveryHarvestStatus> harvestStatus(
@@ -81,6 +91,6 @@ class DiscoverEndpoint extends Endpoint {
     required String jobId,
   }) async {
     await DiscoveryContract.requireEnabled(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryHarvestService.status(session, jobId: jobId);
   }
 }

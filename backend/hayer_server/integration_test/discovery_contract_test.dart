@@ -129,75 +129,53 @@ void main() {
       },
     );
 
-    test(
-      'remaining admin discovery stubs authorize then reject without a mutation',
-      () async {
-        final session = builder.build();
-        var authorizations = 0;
-        final admin = AdminEndpoint.forTesting(
-          authorizer: (_) async {
-            authorizations++;
-            return 'test-operator';
-          },
+    test('admin discovery reads authorize before answering', () async {
+      final session = builder.build();
+      var authorizations = 0;
+      final admin = AdminEndpoint.forTesting(
+        authorizer: (_) async {
+          authorizations++;
+          return 'test-operator';
+        },
+      );
+      try {
+        final draft = await admin.discoveryHarvestManifestDraft(session);
+        expect(draft.entries, hasLength(9));
+        expect(
+          await admin.discoveryHarvestManifestHistory(session),
+          isNotEmpty,
         );
-        try {
-          final calls = <Future<Object?> Function()>[
-            () => admin.discoveryHarvestManifestDraft(session),
-            () => admin.discoveryHarvestManifestHistory(session),
-            () => admin.saveDiscoveryHarvestManifestDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-              entries: [],
-            ),
-            () => admin.validateDiscoveryHarvestManifestDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.publishDiscoveryHarvestManifest(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.rollbackDiscoveryHarvestManifest(
-              session,
-              reason: 'fixture',
-              version: 'old',
-              expectedActiveRevision: 0,
-            ),
-            () => admin.discoveryHarvestJobs(
-              session,
-              page: 0,
-              pageSize: 25,
-              state: DiscoveryHarvestState.partial,
-              requester: DiscoveryHarvestRequester.user,
-              trigger: DiscoveryHarvestTrigger.deepen,
-            ),
-            () => admin.discoveryUnmappedTypes(
-              session,
-              page: 0,
-              pageSize: 25,
-              issue: DiscoveryTypeMappingIssue.unmapped,
-            ),
-            () => admin.discoveryGrowthMetrics(
-              session,
-              from: DateTime.utc(2026, 9, 1),
-              to: DateTime.utc(2026, 9, 14),
-            ),
-          ];
-          for (final call in calls) {
-            await expectLater(call(), throwsA(_disabled));
-          }
-          expect(authorizations, calls.length);
-        } finally {
-          await session.close();
-        }
-      },
-    );
+        expect(
+          (await admin.discoveryHarvestJobs(
+            session,
+            page: 0,
+            pageSize: 25,
+            state: DiscoveryHarvestState.partial,
+            requester: DiscoveryHarvestRequester.user,
+            trigger: DiscoveryHarvestTrigger.deepen,
+          )).items,
+          isEmpty,
+        );
+        expect(
+          (await admin.discoveryUnmappedTypes(
+            session,
+            page: 0,
+            pageSize: 25,
+            issue: DiscoveryTypeMappingIssue.unmapped,
+          )).total,
+          isNonNegative,
+        );
+        final growth = await admin.discoveryGrowthMetrics(
+          session,
+          from: DateTime.utc(2026, 9, 1),
+          to: DateTime.utc(2026, 9, 14),
+        );
+        expect(growth.from, DateTime.utc(2026, 9, 1));
+        expect(authorizations, 5);
+      } finally {
+        await session.close();
+      }
+    });
 
     test(
       'new policy fields persist and legacy clients preserve them',

@@ -13,6 +13,8 @@ fields:
   completedAt: DateTime?
   errorCode: String?
   planJson: String?
+  # A running job's worker renews this; recovery waits for it to go quiet.
+  heartbeatAt: DateTime?
 indexes:
   hayer_refresh_job_id:
     fields: jobId

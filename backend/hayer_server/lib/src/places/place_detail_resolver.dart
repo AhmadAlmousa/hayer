@@ -2,12 +2,14 @@ import 'dart:math' as math;
 
 import 'package:serverpod/serverpod.dart';
 
+import '../discovery/discovery_metrics.dart';
 import '../discovery/discovery_policy_service.dart';
 import '../generated/protocol.dart';
 import '../security/rate_limiter.dart';
 import 'catalog_observation_writer.dart';
 import 'place_candidate.dart';
 import 'place_detail_view.dart';
+import 'place_observation.dart';
 import 'place_services.dart';
 import 'place_source.dart';
 import 'provider_operation.dart';
@@ -36,6 +38,7 @@ typedef _Attempt = ({
   PlaceDetailRefreshState state,
   String? failureCode,
   DateTime? checkedAt,
+  int upstreamRequests,
 });
 
 /// Resolves a place's details for Swipe and Discover from the shared catalog,
@@ -92,6 +95,9 @@ abstract final class PlaceDetailResolver {
     if (identity.provider != provider) throw _notFound();
     final placeId = identity.placeId;
     final userId = session.authenticated!.userIdentifier;
+    final mode = sessionId == null
+        ? DiscoveryMetricMode.discovery
+        : DiscoveryMetricMode.swipe;
 
     SessionPlaceRow? sessionPlace;
     if (sessionId != null) {
@@ -139,6 +145,7 @@ abstract final class PlaceDetailResolver {
 
     final now = clock();
     if (!_needsRefresh(stored, refresh, policy, now)) {
+      await _hit(session, mode);
       return result(PlaceDetailRefreshState.notNeeded);
     }
     if (_leased(refresh, now)) {
@@ -146,6 +153,7 @@ abstract final class PlaceDetailResolver {
     }
     if (refresh?.retryAfter case final retryAfter?
         when retryAfter.isAfter(now)) {
+      await _hit(session, mode);
       return result(PlaceDetailRefreshState.notNeeded);
     }
     try {
@@ -194,6 +202,7 @@ abstract final class PlaceDetailResolver {
       state: PlaceDetailRefreshState.failed,
       failureCode: 'place_source_unavailable',
       checkedAt: null,
+      upstreamRequests: 0,
     );
     try {
       attempt = await _attempt(
@@ -202,6 +211,7 @@ abstract final class PlaceDetailResolver {
         stored: stored,
         policy: policy,
         seconds: seconds,
+        mode: mode,
       );
       stored =
           await _stored(session, placeId, sessionPlace: sessionPlace) ?? stored;
@@ -229,6 +239,16 @@ abstract final class PlaceDetailResolver {
       );
     }
     refresh = await _refreshRow(session, placeId);
+    await DiscoveryMetrics.record(
+      session,
+      mode: mode,
+      operation: DiscoveryMetricOperation.detailRefresh,
+      cacheMisses: 1,
+      detailRefreshes: attempt.state == PlaceDetailRefreshState.budgetExceeded
+          ? 0
+          : 1,
+      upstreamRequests: attempt.upstreamRequests,
+    );
     return result(attempt.state);
   }
 
@@ -249,13 +269,30 @@ abstract final class PlaceDetailResolver {
   static bool _leased(PoiDetailRefreshRow? refresh, DateTime now) =>
       refresh?.leaseExpiresAt?.isAfter(now) ?? false;
 
+  static Future<void> _hit(Session session, DiscoveryMetricMode mode) =>
+      DiscoveryMetrics.record(
+        session,
+        mode: mode,
+        operation: DiscoveryMetricOperation.detailRefresh,
+        cacheHits: 1,
+      );
+
   static Future<_Attempt> _attempt(
     Session session, {
     required String placeId,
     required _Stored stored,
     required CachePolicy policy,
     required int seconds,
+    required DiscoveryMetricMode mode,
   }) async {
+    ProviderOperation? operation;
+    int spent() {
+      final used = operation;
+      return used == null
+          ? 0
+          : math.min(used.requestCount, used.maximumRequests);
+    }
+
     final FocusedPlaceSource source;
     final List<PlaceCandidate> candidates;
     try {
@@ -270,6 +307,7 @@ abstract final class PlaceDetailResolver {
         ),
         timeout: Duration(seconds: seconds),
         maximumRequests: policy.detailRefresh!.maximumRequests,
+        onCreate: (created) => operation = created,
       );
     } on PlaceSourceException catch (error) {
       if (error.code == 'rate_limited') {
@@ -277,12 +315,14 @@ abstract final class PlaceDetailResolver {
           state: PlaceDetailRefreshState.budgetExceeded,
           failureCode: 'rate_limited',
           checkedAt: null,
+          upstreamRequests: spent(),
         );
       }
       return (
         state: PlaceDetailRefreshState.failed,
         failureCode: _failureCode(error.code),
         checkedAt: null,
+        upstreamRequests: spent(),
       );
     } catch (error, stackTrace) {
       session.log(
@@ -295,13 +335,15 @@ abstract final class PlaceDetailResolver {
         state: PlaceDetailRefreshState.failed,
         failureCode: 'place_source_unavailable',
         checkedAt: null,
+        upstreamRequests: spent(),
       );
     }
 
     final observedAt = clock();
     final observations = [
       for (final candidate in candidates)
-        if (_valid(candidate)) _snapshot(candidate, observedAt),
+        if (PlaceObservation.isValid(candidate))
+          PlaceObservation.snapshot(candidate, observedAt),
     ];
     if (observations.isNotEmpty) {
       await CatalogObservationWriter(
@@ -311,6 +353,10 @@ abstract final class PlaceDetailResolver {
         observations,
         countryCode: stored.countryCode,
         observedAt: observedAt,
+        metrics: CatalogObservationMetrics(
+          mode: mode,
+          operation: DiscoveryMetricOperation.detailRefresh,
+        ),
       );
     }
     final matched = observations.any((place) => place.placeId == placeId);
@@ -320,6 +366,7 @@ abstract final class PlaceDetailResolver {
           : PlaceDetailRefreshState.noMatch,
       failureCode: matched ? null : 'no_match',
       checkedAt: observedAt,
+      upstreamRequests: spent(),
     );
   }
 
@@ -492,45 +539,6 @@ WHERE "provider" = @provider
       fetchedAt: now,
     );
   }
-
-  static bool _valid(PlaceCandidate place) =>
-      place.placeId.trim().isNotEmpty &&
-      place.placeId.length <= 500 &&
-      place.name.trim().isNotEmpty &&
-      place.latitude.isFinite &&
-      place.longitude.isFinite &&
-      place.latitude.abs() <= 90 &&
-      place.longitude.abs() <= 180;
-
-  static PlaceSnapshot _snapshot(PlaceCandidate place, DateTime observedAt) =>
-      PlaceSnapshot(
-        placeId: place.placeId,
-        featureId: place.featureId,
-        name: place.name,
-        primaryType: place.primaryType,
-        categoryIds: const [],
-        rating: place.rating,
-        reviewCount: place.reviewCount,
-        priceLevel: place.priceLevel,
-        priceText: place.priceText,
-        isOpen: place.isOpen,
-        statusText: place.statusText,
-        hours: place.hours,
-        distanceMeters: 0,
-        latitude: place.latitude,
-        longitude: place.longitude,
-        address: place.address,
-        formattedAddress: place.formattedAddress,
-        phoneNumber: place.phoneNumber,
-        websiteUrl: place.websiteUrl,
-        mapsUrl: place.mapsUrl,
-        photoUrls: place.photoUrls,
-        featuredReview: place.featuredReview,
-        editorialSummary: place.editorialSummary,
-        attributions: place.attributions,
-        sourceCheckedAt: observedAt,
-        isStale: false,
-      );
 
   static String _failureCode(String code) =>
       RegExp(r'^[a-z_]{1,64}$').hasMatch(code)

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   const migrationId = '20260901083702427-spatial-schema-repair';
-  const latestMigrationId = '20260915070806721-shared-detail-reporting';
+  const latestMigrationId = '20260915080530543-discovery-harvest-coverage';
   const discoveryMigrationId = '20260914142952104-discovery-catalog-query';
   final migrationDirectory = Directory('migrations/$migrationId');
 

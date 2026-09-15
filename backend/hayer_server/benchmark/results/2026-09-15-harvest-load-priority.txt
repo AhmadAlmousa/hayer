@@ -1,0 +1,14 @@
+# Discover harvest admission load, with interactive priority (2026-09-15)
+# dart test benchmark/discovery_harvest_load_test.dart -r expanded
+# ProviderAdmission defaults: 30 requests/minute, burst 6, 3 concurrent, 2 per operation.
+# Eligible interactive requests are admitted before background ones, and a
+# background request waits until it can leave half the burst (3 tokens) unspent.
+Provider latency 600 ms; 8 Swipe searches 6 s apart.
+Without a harvest:
+  Swipe search latency (n=8): p50 1202 ms, p95 1216 ms, max 1216 ms
+  Swipe request admission delay (n=24): p50 0 ms, p95 601 ms, max 605 ms
+With a 24-request harvest starting at once:
+  Swipe search latency (n=8): p50 1202 ms, p95 1203 ms, max 1203 ms
+  Swipe request admission delay (n=24): p50 0 ms, p95 601 ms, max 601 ms
+  Harvest: 24 requests in 90601 ms
+02:13 +1: All tests passed!
