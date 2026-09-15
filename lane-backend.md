@@ -4,12 +4,16 @@ Working notes for the back-end lane: `backend/`, deployment, server contracts,
 generated clients, and repository release tooling. This lane is worked from the
 primary worktree on `main`. Codex held it through 2026-09-10; Claude took it
 over on 2026-09-11 and continues this log rather than starting a new one.
+Codex resumed on 2026-09-13 and paused on its usage limit partway through M9-C
+on 2026-09-14. On 2026-09-15 the owner assigned this lane to Claude until Codex
+returns; Claude keeps the front-end lane too and points to each back-end
+checkpoint from `lane-frontend.md`.
 
 `PROJECT.md` remains authoritative for shared decisions, milestone state, and
 acceptance gates. Detailed back-end checkpoints and front-end handoffs live
 here so the two lanes do not repeatedly edit the same evidence paragraphs.
 
-Last updated: 2026-09-14
+Last updated: 2026-09-15
 
 ## Current state
 
@@ -24,9 +28,10 @@ Last updated: 2026-09-14
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 55/55 against real PostGIS,
-  including legacy-calibration repair, bounded version-retention/rollback,
-  dark discovery contracts, and refresh-job concurrency/outcome handling.
+- The latest integration suite is fully green: 86/86 against real PostGIS on
+  the disposable `hayer_test_m9c_fresh`, including the 31 M9-C Discover cases.
+  The shared `hayer_test` needs a reset before it can run the suite again; see
+  the M9-C checkpoint.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is wired into the merged client.
   Two-device acceptance remains open.
@@ -38,8 +43,8 @@ Last updated: 2026-09-14
 - The owner prioritized contracts to unblock Claude's discovery work. Frontend
   prework is merged in `d4b58b7`; M9-B/C/D and consumer M9-E generated contracts
   are delivered. The exact calls, mock semantics and retained-link flow are in
-  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). M9-B's
-  persistent implementation is complete; M9-C/D/E and production activation
+  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). M9-B's and
+  M9-C's implementations are complete; M9-D/E and production activation
   remain open.
 - Claude's M9-F configuration/link retention commit `5863f02` is merged into
   `main`. It adds no new backend handoff: G2–G4 can continue against the dark
@@ -60,8 +65,162 @@ Last updated: 2026-09-14
   detail sections, public configuration reflects stored revisions and limits,
   and the independently seeded Discover tree has guarded, audited lifecycle
   mutations with optimistic revision conflicts.
+- M9-C is complete. Discover browse, facets and place context run on generated
+  catalog projections well inside the statement timeout on a 200,000-row
+  catalog, with recorded query plans and a timed populated upgrade.
 
 ## Checkpoints
+
+### M9-C catalog columns and discovery query — complete (2026-09-15)
+
+Claude picked this up from Codex's uncommitted draft on 2026-09-15. Codex's
+usage limit had stopped it between a fix and the rerun that would have
+verified it; its session log is
+`~/.codex/sessions/2026/09/14/rollout-2026-09-14T09-12-52-*.jsonl`. The draft
+compiled and its three PostGIS cases passed, but it had no recorded plans and
+most acceptance cases were still unwritten.
+
+**Plans first.** `scripts/benchmark-discovery-query.sh` loads a deterministic
+200,000-row catalog (`benchmark/discovery_catalog_fixture.sql`: 60% in a Riyadh
+city box, 20% in Jeddah, 20% country-wide, with unrated, stale, closed and
+quarantined shares) and records `EXPLAIN (ANALYZE, BUFFERS)` for the exact SQL
+each endpoint sends. It ran on the remote runner's PostgreSQL 16.15 and PostGIS
+3.5.7, the production image, with default memory settings. The draft took
+10–17 s for city and country views and 15 s for facets, 2–5 s of each in JIT
+compilation, against a 2 s statement timeout. It materialized every row in view
+with its full snapshot, parsed opening hours for all of them, sorted every
+eligible row to number a page, and scanned four facet scopes.
+
+**The rewrite** keeps `discovery_query.dart` as the single SQL builder.
+
+- One narrow materialized set of eligible rows. Snapshots are joined back only
+  for the page rows or the place-context target.
+- Ordinals are a count of rows at or before the cursor plus a top-N sort,
+  instead of a window over every eligible row.
+- Facets are one statement over one materialized scope with a flag per filter
+  group; each distribution drops only its own group.
+- `SET LOCAL jit = off` sits beside the statement timeout. A timeout (SQLSTATE
+  57014) answers `rate_limited` with `retryAfterSeconds: 5`, and `placeContext`
+  has its own rate bucket.
+- The geography `&&` still feeds the GiST index, while exact latitude and
+  longitude bounds define the rectangle, because a geography envelope's edges
+  are geodesics.
+- Fixed from the draft: `firstSeenAt` came back as a zone-less timestamp parsed
+  in the server's local zone; text search skipped descriptions of stale places,
+  which stale cards still show; type matching re-implemented the alias
+  normalizer with PostgreSQL's `\s` and `btrim`, which miss no-break spaces and
+  edge tabs; Best and Recently discovered mixed numeric and double sort keys;
+  and the country offsets duplicated `PlaceAvailability`'s table.
+- `DiscoveryCursor` and `DiscoveryTaxonomyIndex` are separate unit-tested
+  classes. An alias claimed by two nodes maps to Other.
+
+| Statement over 200,000 rows | Draft | Final |
+|---|---|---|
+| Best, Riyadh city view, first page and map (92,595 matches) | 10.9 s | 297 ms |
+| Best, city view, second page | 10.6 s | 209 ms |
+| Best, district view, first page and map (621) | 2.7 s | 14 ms |
+| Top rated and Open now, city view, map | 10.3 s | 171 ms |
+| Most reviewed and "coffee", city view, map | 10.9 s | 332 ms |
+| Hidden gems, Cafes and 100–249 reviews, city view | 10.7 s | 185 ms |
+| Recently discovered, whole country, map (195,095) | 17.2 s | 653 ms |
+| Facets for a draft, city view | 14.9 s | 189 ms |
+| Place context, city view | 12.9 s | 170 ms |
+
+These are `EXPLAIN ANALYZE` execution times. Two sparse scenarios added to the
+final run show the kept indexes at work: Top rated and Open now in the district
+view uses the GiST index (7 ms), and a selective text search uses the trigram
+index (81 ms). Both runs' full plans are in
+`backend/hayer_server/benchmark/results/`.
+
+**The migration** `20260914142952104-discovery-catalog-query` keeps the upgrade
+`migration.sql` and the fresh `definition.sql` in step.
+
+- Generated `rating`, `review_count`, `price_level`, `primary_type`,
+  `lifecycle_status`, `completeness_mask` and `search_text` as specified, plus
+  `primary_type_key`, `opening_hours` and the identity `catalogId`.
+- `hayer_discovery_normalize` mirrors `DiscoveryTaxonomyService.normalizeAlias`
+  with explicit whitespace classes and builds both type keys and search text.
+  `hayer_discovery_opening_hours` folds validated periods into week-minute
+  ranges with `PlaceAvailability.isOpenDuring`'s overnight rule, so each hours
+  window is one range test. The completeness hours bit now means at least one
+  valid period.
+- The draft's `EXCEPTION` blocks in the numeric guards are gone. A jsonb number
+  always parses, and each block cost a subtransaction on every catalog write.
+- The five candidate btree indexes on rating, review count, price, type and
+  first-seen time are dropped because no recorded plan used them. The GiST
+  location and trigram indexes stay.
+- `hayer_refresh_job.planJson`, added by the draft, is unused M9-E prework.
+
+**Upgrade on a populated database.** The M9-B `definition.sql` with the same
+200,000 rows, then this `migration.sql`: 110.5 s in total, 108.8 s of it one
+table rewrite under an ACCESS EXCLUSIVE lock and 1.6 s the trigram index. The
+table grows from 268 MB to 319 MB. The final `definition.sql` loaded with the
+same rows gives identical generated values, columns, indexes and catalog ids,
+and identical functions once the numeric guards' text was aligned. Loading
+the rows took 17.8 s without the generated columns and 129 s with them, a cost
+the draft already had: every generated expression re-parses the `json`
+snapshot. Deploy in a quiet window; parsing once per column is the next lever
+if catalog write cost matters.
+
+**Acceptance.** 31 PostGIS cases replace the draft's three.
+
+- Ranking: each sort orders the fixture exactly; switching Best to Bayesian
+  reorders and invalidates old cursors; gem thresholds follow policy; stale
+  places lose rating, reviews, hours and badges.
+- Paging: every filter group with every sort pages two rows at a time to the
+  same sequence as one page, with unique ids, contiguous ordinals and a
+  constant total across ties and null sort values. Cursors reject tampering,
+  another query, a new policy or taxonomy revision, and an instant over an hour
+  old. Inserts ahead of the cursor are skipped, a row that moved reappears for
+  the client to drop, and a refresh rebuilds.
+- Filters: English, Arabic and whitespace-variant aliases, interior nodes' own
+  mappings, Other, and a type mapped by a new revision appearing without a
+  migration; every review-band boundary; exact price and inclusive rating
+  floors; hours windows at their half-open edges, overnight spill, the
+  Sunday-to-Monday rollover and the UAE and Oman offsets; name and description
+  text with literal wildcards; completeness over visible fields; closed and
+  quarantined places excluded everywhere.
+- Facets and map: every type, band, price, rating-threshold and bucket count
+  equals a brute-force browse under two sorts; distributions drop only their
+  own group; drafts count under their own fingerprint; the map returns points
+  up to the ceiling and exact cells above it, on both sides of 2,000.
+- Limits: invalid and unsupported areas, malformed requests, separate budgets,
+  and a real statement timeout.
+- Projections: numeric guards, closure phrases, completeness and search text;
+  `catalogId` stable through `CatalogObservationWriter` upserts;
+  `hayer_discovery_normalize` equal to `normalizeAlias` over a Unicode sample;
+  opening hours equal to `PlaceAvailability.isOpenDuring` every 15 minutes
+  across a week.
+
+`catalog_spatial_query.dart`, `place_search_policy.dart`,
+`catalog_persistence.dart`, `taxonomy.dart` and `hayer_session_endpoint.dart`
+are unchanged.
+
+**Decisions.**
+
+- Requirement 4's unmapped-type frequencies will be computed when M9-E's report
+  reads the catalog, through the same `primary_type_key` and alias map, rather
+  than written by every browse.
+- Unknown category ids stay a `bad_request`. Kept links strip ids missing from
+  the published tree before calling.
+
+**Test databases.** The shared `hayer_test` still carries the draft's M9-C
+schema, recorded as applied, and this session's auto-mode permission check
+refused resetting it. The suite therefore ran against `hayer_test_m9c_fresh`,
+built from the final `definition.sql`:
+`HAYER_TEST_DB_NAME=hayer_test_m9c_fresh scripts/test-integration-remote.sh`.
+`hayer_test_m9c`, `hayer_test_m9c_upgrade` and `hayer_test_m9c_compare` are
+disposable leftovers of this checkpoint. Reset `hayer_test` and drop the others
+when convenient.
+
+Verification: pinned full preflight passed generation, formatting, all
+fatal-info analyses, 176 server tests, 279 app tests and 51 admin tests.
+`scripts/test-integration-remote.sh` against `hayer_test_m9c_fresh` passed all
+86 PostGIS tests, including the 31 new Discover cases. The signed `0.2.1+7` APK
+and its alias are 107,122,415 bytes at SHA-256
+`d5aaca0b71174fc3d93d64699b2706e62fcf83fdaaa23e5912de60a6967a14a5`, the same
+bytes as the M9-B build because this checkpoint changes no app code. APK
+Signature Scheme v2 verifies with the existing signer.
 
 ### M9-B policy, configuration and Discover taxonomy — complete (2026-09-14)
 
@@ -713,6 +872,22 @@ both manifests and APK Signature Scheme v2 verify. The backend-only change
 correctly leaves the APK bytes unchanged from the prior P06 build.
 
 ## Open handoffs to the front-end lane
+
+### M9-C discovery query — implemented 2026-09-15
+
+`browse`, `facets` and `placeContext` now run against the catalog, still dark
+behind `discoveryEnabled`. The generated client is unchanged, so the front end
+needs no regeneration. What the implementation settled is in
+`backend/discovery-contracts.md` §"Query behavior as implemented (M9-C)".
+Points that touch existing front-end code:
+
+- A statement timeout arrives as `rate_limited` with a 5-second wait, which
+  G2's rate-limit handling already covers.
+- `placeContext` has its own budget, so G4's re-reads after each first page no
+  longer spend the browse allowance.
+- Unknown category ids are a `bad_request`; kept links already strip them.
+- `evaluatedAt` is issued at millisecond precision.
+- Facets still carry no hours-window or completeness counts, G3's optional ask.
 
 ### M9-E admin contracts — ready 2026-09-14
 

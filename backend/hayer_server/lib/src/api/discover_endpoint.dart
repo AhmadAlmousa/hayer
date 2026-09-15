@@ -3,6 +3,7 @@ import 'package:serverpod/serverpod.dart';
 import '../discovery/discovery_contract.dart';
 import '../discovery/discovery_taxonomy_service.dart';
 import '../generated/protocol.dart';
+import '../places/discovery_query.dart';
 
 class DiscoverEndpoint extends Endpoint {
   @override
@@ -22,7 +23,14 @@ class DiscoverEndpoint extends Endpoint {
     bool includeMap = true,
   }) async {
     await DiscoveryContract.requireEnabled(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryQuery.browse(
+      session,
+      query: query,
+      context: context,
+      cursor: cursor,
+      pageSize: pageSize,
+      includeMap: includeMap,
+    );
   }
 
   Future<DiscoverFacets> facets(
@@ -31,7 +39,7 @@ class DiscoverEndpoint extends Endpoint {
     required DiscoverQueryContext context,
   }) async {
     await DiscoveryContract.requireEnabled(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryQuery.facets(session, query: query, context: context);
   }
 
   Future<DiscoverPlaceContext> placeContext(
@@ -41,7 +49,12 @@ class DiscoverEndpoint extends Endpoint {
     required DiscoverQueryContext context,
   }) async {
     await DiscoveryContract.requireEnabled(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryQuery.placeContext(
+      session,
+      identity: identity,
+      query: query,
+      context: context,
+    );
   }
 
   Future<DiscoveryAreaReceipt> ensureArea(

@@ -8,12 +8,14 @@ The generated `hayer_client` types are ready for frontend development with
 on `main` (`d4b58b7`). Bring the frontend lane forward with
 `git merge --ff-only main` before building on these contracts.
 
-**Available now:** public `client.bootstrap.discoveryConfig()` returns a typed,
-disabled configuration. Every other new RPC below returns
-`ApiException(code: 'feature_disabled')` after its normal authentication or
-admin authorization check. There is no discovery query, taxonomy seed, detail
-refresh, catalog report write or harvest implementation yet. These are contract
-deliveries, not completed M9-B/C/D/E checkpoints or permission to enable discovery.
+**Available now (15 September 2026):** public
+`client.bootstrap.discoveryConfig()` reports the stored policy and tree
+revisions. `discover.taxonomy` (M9-B) and `browse`, `facets` and `placeContext`
+(M9-C) are implemented against the PostgreSQL catalog, but like every
+discovery method they return `ApiException(code: 'feature_disabled')` while
+the policy's `discoveryEnabled` is false. Detail refresh, catalog reporting,
+harvesting and the M9-E admin reads still return `feature_disabled`
+unconditionally. Enabling discovery remains the M9-K release decision.
 
 The implementation requirements remain in [the plan](../discovery_upgrade.md).
 Both modes must use the same Vela-derived non-API search adapter, cache-first
@@ -169,6 +171,52 @@ Publish must advance the taxonomy snapshot revision, configuration revision and
 facets context revision together. `otherCategoryId` is a synthetic bucket and
 must never equal a taxonomy node id. Empty roots mean unpublished; they do not
 authorize clearing category ids retained from a shared link.
+
+### Query behavior as implemented (M9-C)
+
+These points pin down what the contract above left to the implementation.
+
+- **Errors.** `invalid_area`: non-finite, unordered or out-of-range bounds,
+  or a span over 15 degrees. `unsupported_area`: a viewport centre outside the
+  supported countries, or a country hint that disagrees with it.
+  `bad_request`: page size outside 1–100, more than 50 category ids, text over
+  256 code points, price outside 1–4, minimum rating outside 0–5, a category
+  id the published tree lacks, or an invalid place identity. `query_changed`:
+  a cursor issued for another query, revision or instant, a changed policy or
+  taxonomy revision, or a context instant more than an hour old.
+- **Timeouts.** A statement that exceeds the policy's
+  `queryTimeoutMilliseconds` answers `rate_limited` with
+  `retryAfterSeconds: 5`. Keep the previous results and retry after the wait.
+- **Budgets.** Per user per minute: `browse` spends
+  `browseRequestsPerMinute`, `facets` spends `facetRequestsPerMinute`, and
+  `placeContext` has its own bucket with the browse allowance, so pin previews
+  cannot starve result pages.
+- **Instants.** `DiscoverQueryContext.evaluatedAt` is issued at millisecond
+  precision, and cursors bind to that instant.
+- **Categories.** Unknown ids are rejected rather than dropped, so strip ids
+  missing from the published tree first, as kept links already do. A selected
+  node covers its descendants; Other (`limits.otherCategoryId`) covers
+  unmapped and ambiguous types. Types match aliases after the same
+  normalization as the tree editor: trimmed, lowercased, whitespace collapsed,
+  Arabic unchanged.
+- **Text.** Normalized the same way. It matches names and descriptions, never
+  featured reviews, and `%` and `_` are literal. Descriptions remain visible on
+  stale places, so they remain searchable.
+- **Staleness.** A place older than the policy's `freshHours` at the context
+  instant hides the same fields as a stale Swipe card: rating, reviews, price,
+  hours, phone, status and featured review. It then fails rating-based sorts
+  and filters, never satisfies an hours window, and reports `openNow: null`.
+- **Exclusions.** Places whose status text states a permanent or temporary
+  closure, in English or Arabic, and quarantined places never appear in
+  results, counts, maps or place context.
+- **Map.** Aggregates are cells of a 40 × 40 grid over the viewport, placed at
+  the average position of their places; their counts sum to the total.
+- **Place context.** `ratingPercentile` is the share of other rated eligible
+  places rated strictly lower, times 100. `ordinal` counts ties in the Discover
+  order: sort value, then provider place id, then provider.
+- **Coverage.** Until M9-E, `coverage.eligibleCatalogCount` counts open,
+  unquarantined catalog places inside the viewport before filters, and
+  footprints and pending jobs are empty.
 
 ## Details, reporting and coverage
 

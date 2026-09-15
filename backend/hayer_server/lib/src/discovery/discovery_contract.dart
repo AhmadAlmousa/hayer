@@ -5,6 +5,10 @@ import 'discovery_policy_service.dart';
 import 'discovery_taxonomy_service.dart';
 
 abstract final class DiscoveryContract {
+  /// The synthetic category for unmapped or ambiguous primary types. It is
+  /// never a taxonomy node id.
+  static const otherCategoryId = 'other';
+
   static Never unavailable() => throw ApiException(
     code: 'feature_disabled',
     message: 'Discovery is not available yet. Please try again later.',
@@ -37,7 +41,7 @@ abstract final class DiscoveryContract {
         maximumCategoryIds: 50,
         maximumTextCodePoints: 256,
         maximumMapPoints: discovery.maximumMapPoints,
-        otherCategoryId: 'other',
+        otherCategoryId: otherCategoryId,
       ),
       amenitiesAvailable: false,
       reviewTextSearchAvailable: false,

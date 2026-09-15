@@ -125,6 +125,13 @@ Two agents develop this repository in parallel. They never share a working
 directory. Each commits from its own Git worktree and integrates through
 `main`.
 
+Temporary assignment (2026-09-15): Codex is paused on its usage limit, so the
+owner assigned the back-end lane to Claude as well until Codex returns. Claude
+works the back end from the primary worktree on `main`, continuing
+`lane-backend.md`, keeps the front end in `claude-lane`, and adds a pointer in
+`lane-frontend.md` for each back-end checkpoint. The ownership rules below
+resume as written when Codex is back.
+
 - Codex works in the primary worktree `/mnt/unraid/places_swiper/hayer` on
   branch `main`. Claude works in `.claude/worktrees/claude-lane` on branch
   `worktree-claude-lane`, and rebases onto `main` to pick up Codex's commits.
@@ -896,8 +903,9 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [x] M9-B — Flag, configuration and Discover taxonomy (back end). Typed
   policy storage, backward-compatible updates, public configuration, the
   shared flag guard, and the seeded/validated/audited tree lifecycle are live.
-- [~] M9-C — Catalog columns and discovery query (back end). Query, paging,
-  facet, map and place-context contracts delivered; SQL/migration remain open.
+- [x] M9-C — Catalog columns and discovery query (back end). Generated catalog
+  projections and the shared browse, facets and place-context SQL, with PostGIS
+  acceptance, recorded query plans and a timed populated upgrade.
 - [~] M9-D — Shared detail resolver and sessionless reporting (back end).
   Generated contracts delivered; shared resolver and report storage remain open.
 - [~] M9-E — Harvesting and coverage (back end, after F21). Consumer coverage
@@ -917,10 +925,11 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [ ] M9-K — Cross-mode verification and dark release (both lanes).
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
-Frontend prework was merged into main in `d4b58b7`. All new discovery data,
-detail and mutation RPCs still return `feature_disabled`; no checkpoint above
-is complete from contract availability. M9-A's shared observation writer is the
-next backend implementation slice after this owner-requested contract delivery.
+Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
+complete from contract availability alone. Discovery stays dark: data RPCs answer
+`feature_disabled` while `discoveryEnabled` is false, and detail, reporting,
+harvest and M9-E admin RPCs answer it unconditionally. M9-D and M9-E are the
+remaining back-end slices.
 
 ## Verification gates
 
@@ -1064,6 +1073,18 @@ next backend implementation slice after this owner-requested contract delivery.
   with clean analyses. Signed `0.2.1+7` built at SHA-256 `fa7ee73e219d6b30d14fb3179ceb2dc26e4707d99070f4815c966cf4836c746c` and verifies
   under APK Signature Scheme v2 with the existing signer. Discovery stays
   disabled. Details are in `lane-frontend.md`.
+- 2026-09-15: closed M9-C in the back-end lane, which the owner assigned to
+  Claude while Codex is paused. Discover browse, facets and place context run
+  on generated catalog projections through one SQL builder. On a 200,000-row
+  catalog the slowest recorded statement fell from 17.2 s in the uncommitted
+  draft to 0.65 s, and the populated upgrade takes 110.5 s, nearly all of it
+  one table rewrite. The 31 new PostGIS cases pass within 86/86 on a
+  disposable fresh-schema database, because the shared `hayer_test` still holds
+  the draft schema and needs a reset. Pinned full preflight passed 176 server,
+  279 app and 51 admin tests with clean analyses. Signed `0.2.1+7` built at
+  SHA-256 `d5aaca0b71174fc3d93d64699b2706e62fcf83fdaaa23e5912de60a6967a14a5`
+  and verifies under APK Signature Scheme v2 with the existing signer.
+  Discovery stays disabled. Details are in `lane-backend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

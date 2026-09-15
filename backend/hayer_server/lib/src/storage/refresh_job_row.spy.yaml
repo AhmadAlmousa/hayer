@@ -12,6 +12,7 @@ fields:
   startedAt: DateTime?
   completedAt: DateTime?
   errorCode: String?
+  planJson: String?
 indexes:
   hayer_refresh_job_id:
     fields: jobId
