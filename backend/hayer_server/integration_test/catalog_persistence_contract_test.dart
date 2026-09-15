@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
+import 'package:hayer_server/src/places/catalog_observation_writer.dart';
 import 'package:hayer_server/src/places/catalog_persistence.dart';
 import 'package:hayer_server/src/places/catalog_place_service.dart';
 import 'package:hayer_server/src/places/place_candidate.dart';
@@ -401,6 +402,109 @@ void main() {
           }
         },
       );
+
+      test(
+        'unevidenced observations grow only the shared catalog',
+        () async {
+          final session = sessionBuilder.build();
+          try {
+            final previous = DateTime.now().toUtc().subtract(
+              const Duration(minutes: 1),
+            );
+            final existing = _snapshot(
+              'existing-swipe-place',
+              categoryId: 'pizza',
+              checkedAt: previous,
+            );
+            await PoiCatalogRow.db.insertRow(
+              session,
+              PoiCatalogRow(
+                provider: 'google-web',
+                providerPlaceId: existing.placeId,
+                normalizedName: existing.name.toLowerCase(),
+                name: existing.name,
+                countryCode: 'SA',
+                latitude: existing.latitude,
+                longitude: existing.longitude,
+                categoryIds: existing.categoryIds,
+                snapshot: existing,
+                calibrationVersion: _calibrationVersion,
+                sourceCheckedAt: previous,
+                firstSeenAt: previous,
+                lastSeenAt: previous,
+              ),
+            );
+            await PoiCategoryRow.db.insertRow(
+              session,
+              PoiCategoryRow(
+                provider: 'google-web',
+                providerPlaceId: existing.placeId,
+                categoryId: 'pizza',
+                evidenceQuery:
+                    '${catalogEvidencePrefix(_calibrationVersion)}query:pizza restaurants',
+                firstSeenAt: previous,
+                lastSeenAt: previous,
+              ),
+            );
+            await PoiCoverageRow.db.insertRow(
+              session,
+              PoiCoverageRow(
+                coverageKey: 'existing-coverage',
+                queryKey: 'pizza,restaurant',
+                language: 'en',
+                countryCode: 'SA',
+                anchorLatitude: _latitude,
+                anchorLongitude: _longitude,
+                radiusMeters: 3000,
+                calibrationVersion: _calibrationVersion,
+                resultCount: 1,
+                refreshedAt: previous,
+                expiresAt: previous.add(const Duration(hours: 1)),
+              ),
+            );
+
+            final observedAt = DateTime.now().toUtc();
+            await const CatalogObservationWriter(
+              calibrationVersion: _calibrationVersion,
+            ).write(
+              session,
+              [
+                _snapshot(
+                  existing.placeId,
+                  categoryId: 'not-swipe-evidence',
+                  checkedAt: observedAt,
+                ),
+                _snapshot(
+                  'broad-only-place',
+                  categoryId: 'not-swipe-evidence',
+                  checkedAt: observedAt,
+                ),
+              ],
+              countryCode: 'SA',
+              observedAt: observedAt,
+            );
+
+            expect(await PoiCatalogRow.db.count(session), 2);
+            expect(await PoiCategoryRow.db.count(session), 1);
+            expect(await PoiCoverageRow.db.count(session), 1);
+            final retained = await PoiCatalogRow.db.findFirstRow(
+              session,
+              where: (table) => table.providerPlaceId.equals(existing.placeId),
+            );
+            expect(retained?.categoryIds, ['pizza']);
+            expect(retained?.snapshot.categoryIds, ['pizza']);
+            final broad = await PoiCatalogRow.db.findFirstRow(
+              session,
+              where: (table) =>
+                  table.providerPlaceId.equals('broad-only-place'),
+            );
+            expect(broad?.categoryIds, isEmpty);
+            expect(broad?.snapshot.categoryIds, isEmpty);
+          } finally {
+            await session.close();
+          }
+        },
+      );
     },
     rollbackDatabase: RollbackDatabase.disabled,
   );
@@ -582,6 +686,10 @@ TRUNCATE TABLE
   "hayer_poi_category",
   "hayer_poi_coverage",
   "hayer_poi_catalog",
+  "hayer_poi_detail_refresh",
+  "hayer_discovery_type_observation",
+  "hayer_discovery_harvest",
+  "hayer_discovery_coverage",
   "hayer_cache_settings",
   "hayer_taxonomy_version"
 CASCADE

@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../discovery/discovery_metrics.dart';
 import '../generated/protocol.dart';
+import 'catalog_observation_writer.dart';
 import 'catalog_persistence.dart';
 import 'catalog_spatial_query.dart';
 import 'google_web_place_source.dart';
@@ -167,6 +170,12 @@ class CatalogPlaceService {
     );
     if (!forceRefresh && coverageIsFresh && cachedDeck.length >= deckSize) {
       await _metric(session, 'cache_hit_rate', 1);
+      await DiscoveryMetrics.record(
+        session,
+        mode: DiscoveryMetricMode.swipe,
+        operation: DiscoveryMetricOperation.search,
+        cacheHits: 1,
+      );
       return CatalogDeckOutcome(
         deck: cachedDeck,
         origin: CatalogDeckOrigin.freshCache,
@@ -206,6 +215,12 @@ class CatalogPlaceService {
       );
       final live = await refresh;
       await _metric(session, 'cache_hit_rate', 0);
+      await DiscoveryMetrics.record(
+        session,
+        mode: DiscoveryMetricMode.swipe,
+        operation: DiscoveryMetricOperation.search,
+        cacheMisses: 1,
+      );
       await _metric(
         session,
         'source_success_rate',
@@ -270,63 +285,124 @@ class CatalogPlaceService {
       source: source,
       concurrency: settings.perCreationConcurrency,
     );
-    final live = await ProviderOperation.run(
-      () async {
-        final operation = ProviderOperation.current!;
-        PlaceSourceException? failure;
-        for (var attempt = 0; attempt < settings.extractorAttempts; attempt++) {
-          operation.check();
-          try {
-            return await liveSearch.buildDeckWithObservations(
-              categoryId: categoryId,
-              subcategoryIds: subcategoryIds,
-              latitude: latitude,
-              longitude: longitude,
-              radiusMeters: radiusMeters,
-              deckSize: deckSize,
-              maximumPriceLevel: maximumPriceLevel,
-              countryCode: countryCode,
-              queries: queries,
-            );
-          } on PlaceSourceException catch (error) {
-            failure = error;
-            if (error.code == 'rate_limited') break;
-          } on TimeoutException catch (error) {
-            failure = PlaceSourceException(
-              'place_source_unavailable',
-              'Place search exceeded the 30-second deadline.',
-              cause: error,
-            );
-            break;
+    ProviderOperation? sourceOperation;
+    try {
+      final live = await ProviderOperation.run(
+        () async {
+          final operation = ProviderOperation.current!;
+          PlaceSourceException? failure;
+          for (
+            var attempt = 0;
+            attempt < settings.extractorAttempts;
+            attempt++
+          ) {
+            operation.check();
+            try {
+              return await liveSearch.buildDeckWithObservations(
+                categoryId: categoryId,
+                subcategoryIds: subcategoryIds,
+                latitude: latitude,
+                longitude: longitude,
+                radiusMeters: radiusMeters,
+                deckSize: deckSize,
+                maximumPriceLevel: maximumPriceLevel,
+                countryCode: countryCode,
+                queries: queries,
+              );
+            } on PlaceSourceException catch (error) {
+              failure = error;
+              if (error.code == 'rate_limited') break;
+            } on TimeoutException catch (error) {
+              failure = PlaceSourceException(
+                'place_source_unavailable',
+                'Place search exceeded the 30-second deadline.',
+                cause: error,
+              );
+              break;
+            }
           }
-        }
-        throw failure ??
-            const PlaceSourceException(
-              'place_source_unavailable',
-              'Place search exceeded the 30-second deadline.',
-            );
-      },
-      onCreate: onProviderOperation,
-    );
-    // A completed source operation is persisted outside its cancellation
-    // scope, so the request keeps awaiting an already-started DB transaction.
-    await _persist(
-      session,
-      live.observed,
-      parentCategoryId: categoryId,
-      queries: queries,
-      countryCode: countryCode,
-      latitude: latitude,
-      longitude: longitude,
-      radiusMeters: radiusMeters,
-      now: now,
-      freshHours: settings.freshHours,
-      partialFailureCode: live.partialFailureCode,
-    );
-    return _LiveCatalogRefresh(
-      deck: live.deck,
-      partialFailureCode: live.partialFailureCode,
-    );
+          throw failure ??
+              const PlaceSourceException(
+                'place_source_unavailable',
+                'Place search exceeded the 30-second deadline.',
+              );
+        },
+        onCreate: (operation) {
+          sourceOperation = operation;
+          onProviderOperation?.call(operation);
+        },
+      );
+      // A completed source operation is persisted outside its cancellation
+      // scope, so the request keeps awaiting an already-started DB transaction.
+      await _persist(
+        session,
+        live.observed,
+        parentCategoryId: categoryId,
+        queries: queries,
+        countryCode: countryCode,
+        latitude: latitude,
+        longitude: longitude,
+        radiusMeters: radiusMeters,
+        now: now,
+        freshHours: settings.freshHours,
+        partialFailureCode: live.partialFailureCode,
+      );
+      // The provider can still return a place operators quarantined. Keep it
+      // out of new decks, as the cache does, by choosing from the fresh
+      // catalog rows this refresh just wrote.
+      var deck = live.deck;
+      if (deck.isNotEmpty &&
+          await PoiCatalogRow.db.count(
+                session,
+                where: (table) =>
+                    table.provider.equals('google-web') &
+                    table.providerPlaceId.inSet({
+                      for (final place in deck) place.placeId,
+                    }) &
+                    table.quarantinedAt.notEquals(null),
+              ) >
+              0) {
+        final freshAfter = now.subtract(Duration(hours: settings.freshHours));
+        final nearby = await _nearbyCatalog(
+          session,
+          latitude: latitude,
+          longitude: longitude,
+          radiusMeters: radiusMeters,
+          countryCode: countryCode,
+          seenAfter: now.subtract(Duration(days: settings.staleFallbackDays)),
+          requiredCategoryIds: subcategoryIds.isEmpty
+              ? {categoryId}
+              : subcategoryIds.toSet(),
+          maximumPriceLevel: maximumPriceLevel,
+        );
+        deck = policy.select(
+          candidates: nearby
+              .where((place) => !place.sourceCheckedAt.isBefore(freshAfter))
+              .toList(growable: false),
+          anchorLatitude: latitude,
+          anchorLongitude: longitude,
+          radiusMeters: radiusMeters,
+          deckSize: deckSize,
+          maximumPriceLevel: maximumPriceLevel,
+        );
+      }
+      return _LiveCatalogRefresh(
+        deck: deck,
+        partialFailureCode: live.partialFailureCode,
+      );
+    } finally {
+      if (sourceOperation case final operation?) {
+        await DiscoveryMetrics.record(
+          session,
+          mode: DiscoveryMetricMode.swipe,
+          operation: DiscoveryMetricOperation.search,
+          upstreamRequests: math.min(
+            operation.requestCount,
+            operation.maximumRequests,
+          ),
+        );
+      }
+    }
   }
 
   Future<List<PlaceCandidate>> _nearbyCatalog(
@@ -425,11 +501,10 @@ class CatalogPlaceService {
     required int freshHours,
     required String? partialFailureCode,
   }) async {
-    final queryByCategory = {
-      for (final query in queries) query.categoryId: query.query,
-    };
-    final queryKey = {parentCategoryId, ...queryByCategory.keys}.toList()
-      ..sort();
+    final queryKey = {
+      parentCategoryId,
+      ...queries.map((query) => query.categoryId),
+    }.toList()..sort();
     final coverageKey = _coverageKey(
       categoryIds: queryKey,
       countryCode: countryCode,
@@ -437,102 +512,33 @@ class CatalogPlaceService {
       longitude: longitude,
       radiusMeters: radiusMeters,
     );
-    final evidencePrefix = catalogEvidencePrefix(calibrationVersion);
-    final uniquePlaces = {
-      for (final place in places) place.placeId: place,
-    }.values.toList()..sort((a, b) => a.placeId.compareTo(b.placeId));
-    final catalogInput = <Map<String, Object?>>[];
-    final evidenceInput = <Map<String, Object?>>[];
-    var evidencedPlaceCount = 0;
-    for (final place in uniquePlaces) {
-      final directlyObserved =
-          place.categoryIds.where(queryByCategory.containsKey).toSet().toList()
-            ..sort();
-      if (directlyObserved.isEmpty) continue;
-      evidencedPlaceCount++;
-      final evidencedCategories = {
-        ...directlyObserved,
-        parentCategoryId,
-      }.toList()..sort();
-      final snapshot = place.copyWith(
-        categoryIds: evidencedCategories,
-        sourceCheckedAt: now,
-        isStale: false,
-      );
-      catalogInput.add({
-        'providerPlaceId': place.placeId,
-        'featureId': place.featureId,
-        'normalizedName': _normalizeName(place.name),
-        'name': place.name,
-        'countryCode': countryCode,
-        'latitude': place.latitude,
-        'longitude': place.longitude,
-        'categoryIds': evidencedCategories,
-        'snapshot': snapshot.toJson(),
-        'calibrationVersion': calibrationVersion,
-        'sourceCheckedAt': now.toIso8601String(),
-        'seenAt': now.toIso8601String(),
-      });
-      for (final categoryId in evidencedCategories) {
-        final isDirect = directlyObserved.contains(categoryId);
-        final evidenceDetail = isDirect
-            ? 'query:${queryByCategory[categoryId]}'
-            : 'parent:${directlyObserved.join(',')}';
-        evidenceInput.add({
-          'providerPlaceId': place.placeId,
-          'categoryId': categoryId,
-          'evidenceQuery': '$evidencePrefix$evidenceDetail',
-          'seenAt': now.toIso8601String(),
-        });
-      }
-    }
-    evidenceInput.sort((a, b) {
-      final byPlace = (a['providerPlaceId']! as String).compareTo(
-        b['providerPlaceId']! as String,
-      );
-      return byPlace != 0
-          ? byPlace
-          : (a['categoryId']! as String).compareTo(
-              b['categoryId']! as String,
-            );
-    });
-    await session.db.transaction((transaction) async {
-      if (catalogInput.isNotEmpty) {
-        await session.db.unsafeExecute(
-          catalogBatchUpsertSql,
-          parameters: QueryParameters.named({
-            'places': jsonEncode(catalogInput),
-          }),
-          transaction: transaction,
-        );
-        await session.db.unsafeExecute(
-          catalogEvidenceBatchUpsertSql,
-          parameters: QueryParameters.named({
-            'evidence': jsonEncode(evidenceInput),
-            'evidencePrefix': evidencePrefix,
-          }),
-          transaction: transaction,
-        );
-      }
-      await session.db.unsafeExecute(
-        catalogCoverageUpsertSql,
-        parameters: QueryParameters.named({
-          'coverageKey': coverageKey,
-          'queryKey': queryKey.join(','),
-          'countryCode': countryCode,
-          'latitude': latitude,
-          'longitude': longitude,
-          'radiusMeters': radiusMeters,
-          'calibrationVersion': calibrationVersion,
-          'resultCount': evidencedPlaceCount,
-          'refreshedAt': now,
-          'expiresAt': now.add(Duration(hours: freshHours)),
-          'lastFailureCode': partialFailureCode,
-          'invalidatedAt': partialFailureCode == null ? null : now,
-        }),
-        transaction: transaction,
-      );
-    });
+    await CatalogObservationWriter(
+      calibrationVersion: calibrationVersion,
+    ).write(
+      session,
+      places,
+      countryCode: countryCode,
+      observedAt: now,
+      evidence: CatalogObservationEvidence(
+        parentCategoryId: parentCategoryId,
+        queries: queries,
+      ),
+      coverage: CatalogObservationCoverage(
+        coverageKey: coverageKey,
+        queryKey: queryKey.join(','),
+        countryCode: countryCode,
+        latitude: latitude,
+        longitude: longitude,
+        radiusMeters: radiusMeters,
+        refreshedAt: now,
+        expiresAt: now.add(Duration(hours: freshHours)),
+        failureCode: partialFailureCode,
+      ),
+      metrics: const CatalogObservationMetrics(
+        mode: DiscoveryMetricMode.swipe,
+        operation: DiscoveryMetricOperation.search,
+      ),
+    );
   }
 
   PlaceCandidate _candidateFromRow(
@@ -604,23 +610,19 @@ class CatalogPlaceService {
     );
   }
 
-  String _normalizeName(String value) =>
-      value.toLowerCase().replaceAll(RegExp(r'\s+'), ' ').trim();
-
   String _coverageKey({
     required List<String> categoryIds,
     required String countryCode,
     required double latitude,
     required double longitude,
     required int radiusMeters,
-  }) => sha256
-      .convert(
-        '${countryCode}_${latitude.toStringAsFixed(3)}_'
-                '${longitude.toStringAsFixed(3)}_${radiusMeters}_'
-                '${categoryIds.join(',')}'
-            .codeUnits,
-      )
-      .toString();
+  }) => catalogCoverageKey(
+    categoryIds: categoryIds,
+    countryCode: countryCode,
+    latitude: latitude,
+    longitude: longitude,
+    radiusMeters: radiusMeters,
+  );
 }
 
 enum CatalogDeckOrigin { freshCache, live, partialLive, staleFallback }
@@ -646,6 +648,23 @@ class _LiveCatalogRefresh {
   final List<PlaceSnapshot> deck;
   final String? partialFailureCode;
 }
+
+/// The Swipe coverage key for sorted [categoryIds] around an anchor. Discover
+/// harvests reuse it to write coverage Swipe reads.
+String catalogCoverageKey({
+  required List<String> categoryIds,
+  required String countryCode,
+  required double latitude,
+  required double longitude,
+  required int radiusMeters,
+}) => sha256
+    .convert(
+      '${countryCode}_${latitude.toStringAsFixed(3)}_'
+              '${longitude.toStringAsFixed(3)}_${radiusMeters}_'
+              '${categoryIds.join(',')}'
+          .codeUnits,
+    )
+    .toString();
 
 String catalogRefreshKey({
   required String calibrationVersion,

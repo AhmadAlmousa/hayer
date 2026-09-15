@@ -34,6 +34,20 @@ abstract final class PoiIssuePolicy {
     if (placeId.isEmpty || placeId.length > 256) {
       throw const FormatException('The place identifier is invalid.');
     }
+    validateIdempotencyKey(idempotencyKey);
+  }
+
+  static void validateCatalogRequest({
+    required int catalogId,
+    required String idempotencyKey,
+  }) {
+    if (catalogId < 1) {
+      throw const FormatException('The catalog identifier is invalid.');
+    }
+    validateIdempotencyKey(idempotencyKey);
+  }
+
+  static void validateIdempotencyKey(String idempotencyKey) {
     if (idempotencyKey.length < 8 || idempotencyKey.length > 128) {
       throw const FormatException('The retry key is invalid.');
     }

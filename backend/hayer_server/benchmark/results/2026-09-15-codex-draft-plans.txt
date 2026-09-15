@@ -1,0 +1,1032 @@
+Discover query plans — 2026-09-15 00:11:41.214230Z
+{version: PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit, work_mem: 4MB, shared_buffers: 128MB, parallel_workers: 2, catalog_rows: 200000, catalog_size: 327 MB}
+fixture load: 123046 ms; vacuum analyze: 1300 ms
+
+=== browse Best, Riyadh city view, first page with map
+endpoint: 10988 ms; total 92570, 50 rows, map aggregates (0 points, 1600 cells)
+Result  (cost=1129758.44..1129758.47 rows=1 width=80) (actual time=10801.545..10804.059 rows=1 loops=1)
+  Buffers: shared hit=1286 read=29611 written=3, temp read=115674 written=83430
+  CTE spatial
+    ->  Gather  (cost=2833.56..253288.06 rows=50555 width=1143) (actual time=29.207..305.839 rows=116697 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1286 read=29611 written=3
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1833.56..247232.56 rows=21065 width=1143) (actual time=208.736..419.763 rows=38899 loops=3)
+                Recheck Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                Rows Removed by Filter: 785
+                Heap Blocks: exact=12772
+                Buffers: shared hit=1286 read=29611 written=3
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..1820.92 rows=41264 width=0) (actual time=25.190..25.191 rows=119068 loops=1)
+                      Index Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                      Buffers: shared read=1047
+  CTE eligible
+    ->  Hash Left Join  (cost=842162.21..870142.19 rows=16684 width=608) (actual time=5801.745..8623.178 rows=92570 loops=1)
+          Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+          Buffers: shared hit=1286 read=29611 written=3, temp read=49925 written=49948
+          ->  Hash Right Join  (cost=842159.96..869472.58 rows=16684 width=563) (actual time=5801.626..6965.763 rows=92570 loops=1)
+                Hash Cond: (hours_by_place.catalog_row_id = spatial.id)
+                Buffers: shared hit=1286 read=29611 written=3, temp read=49925 written=49948
+                ->  Subquery Scan on hours_by_place  (cost=839623.92..865158.20 rows=200 width=20) (actual time=5256.964..6221.245 rows=81480 loops=1)
+                      Buffers: temp read=33063 written=17193
+                      ->  GroupAggregate  (cost=839623.92..865156.20 rows=200 width=20) (actual time=5256.960..6215.256 rows=81480 loops=1)
+                            Group Key: spatial_1.id
+                            Buffers: temp read=33063 written=17193
+                            ->  Sort  (cost=839623.92..839750.31 rows=50555 width=48) (actual time=5256.879..5331.525 rows=570360 loops=1)
+                                  Sort Key: spatial_1.id
+                                  Sort Method: external merge  Disk: 68696kB
+                                  Buffers: temp read=33063 written=17193
+                                  ->  Nested Loop  (cost=0.02..835674.17 rows=50555 width=48) (actual time=0.135..4921.269 rows=570360 loops=1)
+                                        Buffers: temp read=15894 written=1
+                                        ->  CTE Scan on spatial spatial_1  (cost=0.00..1011.10 rows=50555 width=48) (actual time=0.018..76.893 rows=116697 loops=1)
+                                              Buffers: temp read=15894 written=1
+                                        ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.025..0.041 rows=5 loops=116697)
+                                              Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+                ->  Hash  (cost=1137.49..1137.49 rows=16684 width=559) (actual time=544.371..544.372 rows=92570 loops=1)
+                      Buckets: 16384 (originally 16384)  Batches: 16 (originally 2)  Memory Usage: 8065kB
+                      Buffers: shared hit=1286 read=29611 written=3, temp written=27910
+                      ->  CTE Scan on spatial  (cost=0.00..1137.49 rows=16684 width=559) (actual time=29.214..464.145 rows=92570 loops=1)
+                            Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint))
+                            Rows Removed by Filter: 24127
+                            Buffers: shared hit=1286 read=29611 written=3, temp written=15893
+          ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.052..0.053 rows=38 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.034..0.037 rows=38 loops=1)
+  InitPlan 3 (returns $4)
+    ->  Aggregate  (cost=1508.00..1508.01 rows=1 width=32) (actual time=9063.706..9063.710 rows=1 loops=1)
+          Buffers: shared hit=1286 read=29611 written=3, temp read=60624 written=83429
+          ->  Sort  (cost=1507.36..1507.49 rows=51 width=130) (actual time=9061.677..9061.683 rows=51 loops=1)
+                Sort Key: page_rows.ordinal
+                Sort Method: quicksort  Memory: 69kB
+                Buffers: shared hit=1286 read=29611 written=3, temp read=60624 written=83429
+                ->  Subquery Scan on page_rows  (cost=1503.74..1505.91 rows=51 width=130) (actual time=9061.620..9061.653 rows=51 loops=1)
+                      Buffers: shared hit=1286 read=29611 written=3, temp read=60624 written=83429
+                      ->  Limit  (cost=1503.74..1505.40 rows=51 width=616) (actual time=9061.616..9061.645 rows=51 loops=1)
+                            Buffers: shared hit=1286 read=29611 written=3, temp read=60624 written=83429
+                            ->  WindowAgg  (cost=1503.74..1879.13 rows=16684 width=616) (actual time=9061.607..9061.633 rows=51 loops=1)
+                                  Buffers: shared hit=1286 read=29611 written=3, temp read=60624 written=83429
+                                  ->  Sort  (cost=1503.74..1545.45 rows=16684 width=122) (actual time=9061.578..9061.590 rows=51 loops=1)
+                                        Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                                        Sort Method: external merge  Disk: 81656kB
+                                        Buffers: shared hit=1286 read=29611 written=3, temp read=60624 written=83429
+                                        ->  CTE Scan on eligible  (cost=0.00..333.68 rows=16684 width=122) (actual time=5801.755..8805.250 rows=92570 loops=1)
+                                              Buffers: shared hit=1286 read=29611 written=3, temp read=49925 written=62999
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=375.39..375.40 rows=1 width=8) (actual time=37.694..37.695 rows=1 loops=1)
+          Buffers: temp read=13052 written=1
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..333.68 rows=16684 width=0) (actual time=0.012..34.556 rows=92570 loops=1)
+                Buffers: temp read=13052 written=1
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=1137.49..1137.50 rows=1 width=8) (actual time=57.271..57.272 rows=1 loops=1)
+          Buffers: temp read=15894
+          ->  CTE Scan on spatial spatial_2  (cost=0.00..1011.10 rows=50555 width=0) (actual time=0.005..51.071 rows=116697 loops=1)
+                Buffers: temp read=15894
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=375.39..375.40 rows=1 width=8) (actual time=43.903..43.904 rows=1 loops=1)
+          Buffers: temp read=13052
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..333.68 rows=16684 width=0) (actual time=0.005..39.311 rows=92570 loops=1)
+                Buffers: temp read=13052
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=1628.88..1628.89 rows=1 width=32) (never executed)
+          ->  Sort  (cost=1503.74..1545.45 rows=16684 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..333.68 rows=16684 width=129) (never executed)
+  InitPlan 8 (returns $9)
+    ->  Aggregate  (cost=1302.99..1303.00 rows=1 width=32) (actual time=103.679..103.680 rows=1 loops=1)
+          Buffers: temp read=13052
+          ->  Sort  (cost=1207.08..1211.25 rows=1668 width=32) (actual time=90.235..90.393 rows=1600 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 136kB
+                Buffers: temp read=13052
+                ->  HashAggregate  (cost=1042.75..1117.81 rows=1668 width=32) (actual time=89.554..89.750 rows=1600 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 577kB
+                      Buffers: temp read=13052
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..834.20 rows=16684 width=24) (actual time=0.013..60.260 rows=92570 loops=1)
+                            Buffers: temp read=13052
+Planning:
+  Buffers: shared read=2
+Planning Time: 6.127 ms
+JIT:
+  Functions: 79
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 19.985 ms, Inlining 162.841 ms, Optimization 1065.964 ms, Emission 830.338 ms, Total 2079.127 ms
+Execution Time: 10870.452 ms
+
+=== browse Best, Riyadh city view, second page without map
+endpoint: 10465 ms; total 92570, 50 rows, map omitted (0 points, 0 cells)
+Result  (cost=1126456.29..1126456.30 rows=1 width=80) (actual time=10543.837..10545.183 rows=1 loops=1)
+  Buffers: shared hit=1285 read=29612, temp read=89570 written=83430
+  CTE spatial
+    ->  Gather  (cost=2833.56..253288.06 rows=50555 width=1143) (actual time=25.352..317.864 rows=116697 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1285 read=29612
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1833.56..247232.56 rows=21065 width=1143) (actual time=238.712..453.120 rows=38899 loops=3)
+                Recheck Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                Rows Removed by Filter: 785
+                Heap Blocks: exact=11208
+                Buffers: shared hit=1285 read=29612
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..1820.92 rows=41264 width=0) (actual time=21.333..21.333 rows=119068 loops=1)
+                      Index Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                      Buffers: shared read=1047
+  CTE eligible
+    ->  Hash Left Join  (cost=842162.21..870142.19 rows=16684 width=608) (actual time=5731.734..8680.001 rows=92570 loops=1)
+          Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+          Buffers: shared hit=1285 read=29612, temp read=49925 written=49948
+          ->  Hash Right Join  (cost=842159.96..869472.58 rows=16684 width=563) (actual time=5731.645..6926.878 rows=92570 loops=1)
+                Hash Cond: (hours_by_place.catalog_row_id = spatial.id)
+                Buffers: shared hit=1285 read=29612, temp read=49925 written=49948
+                ->  Subquery Scan on hours_by_place  (cost=839623.92..865158.20 rows=200 width=20) (actual time=5143.757..6132.420 rows=81480 loops=1)
+                      Buffers: temp read=33063 written=17193
+                      ->  GroupAggregate  (cost=839623.92..865156.20 rows=200 width=20) (actual time=5143.753..6125.906 rows=81480 loops=1)
+                            Group Key: spatial_1.id
+                            Buffers: temp read=33063 written=17193
+                            ->  Sort  (cost=839623.92..839750.31 rows=50555 width=48) (actual time=5143.692..5220.004 rows=570360 loops=1)
+                                  Sort Key: spatial_1.id
+                                  Sort Method: external merge  Disk: 68696kB
+                                  Buffers: temp read=33063 written=17193
+                                  ->  Nested Loop  (cost=0.02..835674.17 rows=50555 width=48) (actual time=0.096..4820.384 rows=570360 loops=1)
+                                        Buffers: temp read=15894 written=1
+                                        ->  CTE Scan on spatial spatial_1  (cost=0.00..1011.10 rows=50555 width=48) (actual time=0.009..75.441 rows=116697 loops=1)
+                                              Buffers: temp read=15894 written=1
+                                        ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.025..0.040 rows=5 loops=116697)
+                                              Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+                ->  Hash  (cost=1137.49..1137.49 rows=16684 width=559) (actual time=587.675..587.675 rows=92570 loops=1)
+                      Buckets: 16384 (originally 16384)  Batches: 16 (originally 2)  Memory Usage: 8065kB
+                      Buffers: shared hit=1285 read=29612, temp written=27910
+                      ->  CTE Scan on spatial  (cost=0.00..1137.49 rows=16684 width=559) (actual time=25.359..494.637 rows=92570 loops=1)
+                            Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint))
+                            Rows Removed by Filter: 24127
+                            Buffers: shared hit=1285 read=29612, temp written=15893
+          ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.038..0.039 rows=38 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.025..0.027 rows=38 loops=1)
+  InitPlan 3 (returns $4)
+    ->  Aggregate  (cost=1513.14..1513.15 rows=1 width=32) (actual time=9193.321..9193.324 rows=1 loops=1)
+          Buffers: shared hit=1285 read=29612, temp read=60624 written=83429
+          ->  Sort  (cost=1512.50..1512.62 rows=51 width=130) (actual time=9189.885..9189.899 rows=51 loops=1)
+                Sort Key: page_rows.ordinal
+                Sort Method: quicksort  Memory: 69kB
+                Buffers: shared hit=1285 read=29612, temp read=60624 written=83429
+                ->  Subquery Scan on page_rows  (cost=1503.74..1511.05 rows=51 width=130) (actual time=9189.783..9189.849 rows=51 loops=1)
+                      Buffers: shared hit=1285 read=29612, temp read=60624 written=83429
+                      ->  Limit  (cost=1503.74..1510.54 rows=51 width=616) (actual time=9189.777..9189.837 rows=51 loops=1)
+                            Buffers: shared hit=1285 read=29612, temp read=60624 written=83429
+                            ->  Subquery Scan on ranked  (cost=1503.74..2254.52 rows=5635 width=616) (actual time=9189.765..9189.820 rows=51 loops=1)
+                                  Filter: ((ranked.sort_value < '24.346733119351104'::double precision) OR (ranked.sort_value IS NULL) OR ((ranked.sort_value = '24.346733119351104'::double precision) AND ((ranked."providerPlaceId" > 'bench-0063450'::text) OR ((ranked."providerPlaceId" = 'bench-0063450'::text) AND (ranked.provider > 'google-web'::text)))))
+                                  Rows Removed by Filter: 50
+                                  Buffers: shared hit=1285 read=29612, temp read=60624 written=83429
+                                  ->  WindowAgg  (cost=1503.74..1879.13 rows=16684 width=616) (actual time=9189.701..9189.790 rows=101 loops=1)
+                                        Buffers: shared hit=1285 read=29612, temp read=60624 written=83429
+                                        ->  Sort  (cost=1503.74..1545.45 rows=16684 width=122) (actual time=9189.667..9189.711 rows=101 loops=1)
+                                              Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                                              Sort Method: external merge  Disk: 81656kB
+                                              Buffers: shared hit=1285 read=29612, temp read=60624 written=83429
+                                              ->  CTE Scan on eligible  (cost=0.00..333.68 rows=16684 width=122) (actual time=5731.743..8875.659 rows=92570 loops=1)
+                                                    Buffers: shared hit=1285 read=29612, temp read=49925 written=62999
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=375.39..375.40 rows=1 width=8) (actual time=40.447..40.448 rows=1 loops=1)
+          Buffers: temp read=13052 written=1
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..333.68 rows=16684 width=0) (actual time=0.019..36.905 rows=92570 loops=1)
+                Buffers: temp read=13052 written=1
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=1137.49..1137.50 rows=1 width=8) (actual time=46.654..46.654 rows=1 loops=1)
+          Buffers: temp read=15894
+          ->  CTE Scan on spatial spatial_2  (cost=0.00..1011.10 rows=50555 width=0) (actual time=0.004..42.190 rows=116697 loops=1)
+                Buffers: temp read=15894
+Planning:
+  Buffers: shared read=2
+Planning Time: 3.753 ms
+JIT:
+  Functions: 65
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 14.695 ms, Inlining 160.814 ms, Optimization 1020.329 ms, Emission 737.243 ms, Total 1933.080 ms
+Execution Time: 10614.050 ms
+
+=== browse Best, Riyadh district view, first page with map
+endpoint: 2861 ms; total 621, 50 rows, map points (621 points, 0 cells)
+Result  (cost=40.20..40.23 rows=1 width=80) (actual time=2730.974..2731.194 rows=1 loops=1)
+  Buffers: shared hit=1053
+  CTE spatial
+    ->  Index Scan using hayer_poi_location_gist on hayer_poi_catalog catalog  (cost=0.28..20.82 rows=1 width=1143) (actual time=0.110..6.347 rows=759 loops=1)
+          Index Cond: ((location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography) AND (location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography))
+          Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography))
+          Rows Removed by Filter: 160
+          Buffers: shared hit=1053
+  CTE eligible
+    ->  Nested Loop Left Join  (cost=16.60..18.93 rows=1 width=608) (actual time=51.591..2710.267 rows=621 loops=1)
+          Join Filter: (spatial_1.id = spatial.id)
+          Rows Removed by Join Filter: 209711
+          Buffers: shared hit=1053
+          ->  Hash Right Join  (cost=0.04..1.80 rows=1 width=591) (actual time=11.196..16.722 rows=621 loops=1)
+                Hash Cond: (aliases.alias = lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)))
+                Buffers: shared hit=1053
+                ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.025..0.052 rows=38 loops=1)
+                ->  Hash  (cost=0.02..0.02 rows=1 width=559) (actual time=11.160..11.162 rows=621 loops=1)
+                      Buckets: 1024  Batches: 1  Memory Usage: 697kB
+                      Buffers: shared hit=1053
+                      ->  CTE Scan on spatial  (cost=0.00..0.02 rows=1 width=559) (actual time=0.117..8.924 rows=621 loops=1)
+                            Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint))
+                            Rows Removed by Filter: 138
+                            Buffers: shared hit=1053
+          ->  GroupAggregate  (cost=16.56..17.08 rows=1 width=20) (actual time=0.072..4.290 rows=338 loops=621)
+                Group Key: spatial_1.id
+                ->  Sort  (cost=16.56..16.57 rows=1 width=48) (actual time=0.057..0.179 rows=2369 loops=621)
+                      Sort Key: spatial_1.id
+                      Sort Method: quicksort  Memory: 598kB
+                      ->  Nested Loop  (cost=0.02..16.55 rows=1 width=48) (actual time=0.086..33.827 rows=3563 loops=1)
+                            ->  CTE Scan on spatial spatial_1  (cost=0.00..0.02 rows=1 width=48) (actual time=0.001..0.227 rows=759 loops=1)
+                            ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.028..0.043 rows=5 loops=759)
+                                  Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+  InitPlan 3 (returns $3)
+    ->  Aggregate  (cost=0.10..0.11 rows=1 width=32) (actual time=2721.358..2721.362 rows=1 loops=1)
+          Buffers: shared hit=1053
+          ->  Sort  (cost=0.09..0.09 rows=1 width=130) (actual time=2717.928..2717.940 rows=51 loops=1)
+                Sort Key: page_rows.ordinal
+                Sort Method: quicksort  Memory: 69kB
+                Buffers: shared hit=1053
+                ->  Subquery Scan on page_rows  (cost=0.03..0.07 rows=1 width=130) (actual time=2717.814..2717.869 rows=51 loops=1)
+                      Buffers: shared hit=1053
+                      ->  Limit  (cost=0.03..0.07 rows=1 width=616) (actual time=2717.813..2717.861 rows=51 loops=1)
+                            Buffers: shared hit=1053
+                            ->  WindowAgg  (cost=0.03..0.06 rows=1 width=616) (actual time=2717.811..2717.855 rows=51 loops=1)
+                                  Buffers: shared hit=1053
+                                  ->  Sort  (cost=0.03..0.04 rows=1 width=122) (actual time=2717.773..2717.780 rows=51 loops=1)
+                                        Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                                        Sort Method: quicksort  Memory: 575kB
+                                        Buffers: shared hit=1053
+                                        ->  CTE Scan on eligible  (cost=0.00..0.02 rows=1 width=122) (actual time=51.596..2715.880 rows=621 loops=1)
+                                              Buffers: shared hit=1053
+  InitPlan 4 (returns $4)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.241..0.241 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..0.02 rows=1 width=0) (actual time=0.002..0.199 rows=621 loops=1)
+  InitPlan 5 (returns $5)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.248..0.249 rows=1 loops=1)
+          ->  CTE Scan on spatial spatial_2  (cost=0.00..0.02 rows=1 width=0) (actual time=0.001..0.200 rows=759 loops=1)
+  InitPlan 6 (returns $6)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.185..0.186 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..0.02 rows=1 width=0) (actual time=0.001..0.149 rows=621 loops=1)
+  InitPlan 7 (returns $7)
+    ->  Aggregate  (cost=0.04..0.05 rows=1 width=32) (actual time=5.862..5.863 rows=1 loops=1)
+          ->  Sort  (cost=0.03..0.04 rows=1 width=129) (actual time=0.944..0.987 rows=621 loops=1)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                Sort Method: quicksort  Memory: 93kB
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..0.02 rows=1 width=129) (actual time=0.003..0.300 rows=621 loops=1)
+  InitPlan 8 (returns $8)
+    ->  Aggregate  (cost=0.18..0.19 rows=1 width=32) (never executed)
+          ->  Sort  (cost=0.12..0.12 rows=1 width=32) (never executed)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.69'::double precision) / '0.0007499999999999396'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.66'::double precision) / '0.0010000000000001564'::double precision)))::integer)))
+                ->  HashAggregate  (cost=0.06..0.11 rows=1 width=32) (never executed)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.66'::double precision) / '0.0010000000000001564'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.69'::double precision) / '0.0007499999999999396'::double precision)))::integer))
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..0.05 rows=1 width=24) (never executed)
+Planning:
+  Buffers: shared hit=2
+Planning Time: 5.016 ms
+Execution Time: 2732.745 ms
+
+=== browse Top rated + Open now, Riyadh city view, with map
+endpoint: 10176 ms; total 4715, 50 rows, map aggregates (0 points, 1507 cells)
+Result  (cost=1126670.20..1126670.22 rows=1 width=80) (actual time=10284.210..10285.816 rows=1 loops=1)
+  Buffers: shared hit=1285 read=29611, temp read=68424 written=51302
+  CTE spatial
+    ->  Gather  (cost=2833.56..253288.06 rows=50555 width=1143) (actual time=35.234..361.393 rows=116697 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1285 read=29611
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1833.56..247232.56 rows=21065 width=1143) (actual time=268.311..516.808 rows=38899 loops=3)
+                Recheck Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                Rows Removed by Filter: 785
+                Heap Blocks: exact=12639
+                Buffers: shared hit=1285 read=29611
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..1820.92 rows=41264 width=0) (actual time=30.044..30.044 rows=119052 loops=1)
+                      Index Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                      Buffers: shared read=1047
+  CTE eligible
+    ->  Hash Left Join  (cost=842169.25..869721.51 rows=8384 width=608) (actual time=6779.336..8171.696 rows=4715 loops=1)
+          Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+          Buffers: shared hit=1285 read=29611, temp read=49925 written=49948
+          ->  Hash Right Join  (cost=842167.00..869488.69 rows=8384 width=563) (actual time=6779.267..8157.266 rows=4715 loops=1)
+                Hash Cond: (hours_by_place.catalog_row_id = spatial.id)
+                Filter: (CASE WHEN spatial.is_stale THEN NULL::boolean ELSE hours_by_place.open_now END IS TRUE)
+                Rows Removed by Filter: 87855
+                Buffers: shared hit=1285 read=29611, temp read=49925 written=49948
+                ->  Subquery Scan on hours_by_place  (cost=839623.92..865158.20 rows=200 width=20) (actual time=6099.657..7256.580 rows=81480 loops=1)
+                      Buffers: temp read=33063 written=17193
+                      ->  GroupAggregate  (cost=839623.92..865156.20 rows=200 width=20) (actual time=6099.653..7249.199 rows=81480 loops=1)
+                            Group Key: spatial_1.id
+                            Buffers: temp read=33063 written=17193
+                            ->  Sort  (cost=839623.92..839750.31 rows=50555 width=48) (actual time=6099.585..6189.747 rows=570360 loops=1)
+                                  Sort Key: spatial_1.id
+                                  Sort Method: external merge  Disk: 68696kB
+                                  Buffers: temp read=33063 written=17193
+                                  ->  Nested Loop  (cost=0.02..835674.17 rows=50555 width=48) (actual time=0.159..5668.623 rows=570360 loops=1)
+                                        Buffers: temp read=15894 written=1
+                                        ->  CTE Scan on spatial spatial_1  (cost=0.00..1011.10 rows=50555 width=48) (actual time=0.025..93.221 rows=116697 loops=1)
+                                              Buffers: temp read=15894 written=1
+                                        ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.029..0.047 rows=5 loops=116697)
+                                              Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+                ->  Hash  (cost=1137.49..1137.49 rows=16767 width=559) (actual time=679.376..679.376 rows=92570 loops=1)
+                      Buckets: 16384 (originally 16384)  Batches: 16 (originally 2)  Memory Usage: 8066kB
+                      Buffers: shared hit=1285 read=29611, temp written=27911
+                      ->  CTE Scan on spatial  (cost=0.00..1137.49 rows=16767 width=559) (actual time=35.243..569.197 rows=92570 loops=1)
+                            Filter: ((effective_rating IS NOT NULL) AND (COALESCE(effective_reviews, '0'::bigint) >= '0'::bigint))
+                            Rows Removed by Filter: 24127
+                            Buffers: shared hit=1285 read=29611, temp written=15893
+          ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.040..0.041 rows=38 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.027..0.029 rows=38 loops=1)
+  InitPlan 3 (returns $4)
+    ->  Aggregate  (cost=718.30..718.31 rows=1 width=32) (actual time=8203.210..8203.212 rows=1 loops=1)
+          Buffers: shared hit=1285 read=29611, temp read=50283 written=51301
+          ->  Sort  (cost=717.66..717.78 rows=51 width=130) (actual time=8200.418..8200.425 rows=51 loops=1)
+                Sort Key: page_rows.ordinal
+                Sort Method: quicksort  Memory: 77kB
+                Buffers: shared hit=1285 read=29611, temp read=50283 written=51301
+                ->  Subquery Scan on page_rows  (cost=714.04..716.21 rows=51 width=130) (actual time=8200.337..8200.388 rows=51 loops=1)
+                      Buffers: shared hit=1285 read=29611, temp read=50283 written=51301
+                      ->  Limit  (cost=714.04..715.70 rows=51 width=616) (actual time=8200.332..8200.378 rows=51 loops=1)
+                            Buffers: shared hit=1285 read=29611, temp read=50283 written=51301
+                            ->  WindowAgg  (cost=714.04..902.68 rows=8384 width=616) (actual time=8200.322..8200.363 rows=51 loops=1)
+                                  Buffers: shared hit=1285 read=29611, temp read=50283 written=51301
+                                  ->  Sort  (cost=714.04..735.00 rows=8384 width=122) (actual time=8200.294..8200.315 rows=51 loops=1)
+                                        Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                                        Sort Method: external merge  Disk: 4832kB
+                                        Buffers: shared hit=1285 read=29611, temp read=50283 written=51301
+                                        ->  CTE Scan on eligible  (cost=0.00..167.68 rows=8384 width=122) (actual time=6779.344..8183.253 rows=4715 loops=1)
+                                              Buffers: shared hit=1285 read=29611, temp read=49925 written=50696
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=188.64..188.65 rows=1 width=8) (actual time=2.789..2.790 rows=1 loops=1)
+          Buffers: temp read=749 written=1
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..167.68 rows=8384 width=0) (actual time=0.015..2.525 rows=4715 loops=1)
+                Buffers: temp read=749 written=1
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=1137.49..1137.50 rows=1 width=8) (actual time=46.244..46.245 rows=1 loops=1)
+          Buffers: temp read=15894
+          ->  CTE Scan on spatial spatial_2  (cost=0.00..1011.10 rows=50555 width=0) (actual time=0.006..41.851 rows=116697 loops=1)
+                Buffers: temp read=15894
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=188.64..188.65 rows=1 width=8) (actual time=1.784..1.785 rows=1 loops=1)
+          Buffers: temp read=749
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..167.68 rows=8384 width=0) (actual time=0.003..1.604 rows=4715 loops=1)
+                Buffers: temp read=749
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=776.92..776.93 rows=1 width=32) (never executed)
+          ->  Sort  (cost=714.04..735.00 rows=8384 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..167.68 rows=8384 width=129) (never executed)
+  InitPlan 8 (returns $9)
+    ->  Aggregate  (cost=650.59..650.60 rows=1 width=32) (actual time=14.067..14.067 rows=1 loops=1)
+          Buffers: temp read=749
+          ->  Sort  (cost=602.40..604.49 rows=838 width=32) (actual time=3.753..3.835 rows=1507 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 131kB
+                Buffers: temp read=749
+                ->  HashAggregate  (cost=524.00..561.71 rows=838 width=32) (actual time=3.168..3.342 rows=1507 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 577kB
+                      Buffers: temp read=749
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..419.20 rows=8384 width=24) (actual time=0.007..2.090 rows=4715 loops=1)
+                            Buffers: temp read=749
+Planning:
+  Buffers: shared read=2
+Planning Time: 4.571 ms
+JIT:
+  Functions: 81
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 13.445 ms, Inlining 253.737 ms, Optimization 1401.828 ms, Emission 1086.478 ms, Total 2755.488 ms
+Execution Time: 10325.244 ms
+
+=== browse Most reviewed + text "coffee", Riyadh city view
+endpoint: 10655 ms; total 33472, 50 rows, map aggregates (0 points, 1600 cells)
+Result  (cost=1120861.77..1120861.80 rows=1 width=80) (actual time=10871.486..10873.472 rows=1 loops=1)
+  Buffers: shared hit=1285 read=29611, temp read=68482 written=46216
+  CTE spatial
+    ->  Gather  (cost=2833.56..253288.06 rows=50555 width=1143) (actual time=26.438..297.296 rows=116697 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1285 read=29611
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1833.56..247232.56 rows=21065 width=1143) (actual time=294.346..563.147 rows=38899 loops=3)
+                Recheck Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                Rows Removed by Filter: 785
+                Heap Blocks: exact=7202
+                Buffers: shared hit=1285 read=29611
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..1820.92 rows=41264 width=0) (actual time=21.875..21.876 rows=119052 loops=1)
+                      Index Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                      Buffers: shared read=1047
+  CTE eligible
+    ->  Hash Left Join  (cost=840890.60..866426.46 rows=24 width=608) (actual time=7604.969..8888.769 rows=33472 loops=1)
+          Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+          Buffers: shared hit=1285 read=29611, temp read=37748 written=37780
+          ->  Merge Left Join  (cost=840888.35..866423.49 rows=24 width=563) (actual time=7604.887..8782.559 rows=33472 loops=1)
+                Merge Cond: (spatial.id = spatial_1.id)
+                Buffers: shared hit=1285 read=29611, temp read=37748 written=37780
+                ->  Sort  (cost=1264.43..1264.49 rows=24 width=559) (actual time=812.685..841.514 rows=33472 loops=1)
+                      Sort Key: spatial.id
+                      Sort Method: external merge  Disk: 37480kB
+                      Buffers: shared hit=1285 read=29611, temp read=4685 written=20587
+                      ->  CTE Scan on spatial  (cost=0.00..1263.88 rows=24 width=559) (actual time=26.595..731.955 rows=33472 loops=1)
+                            Filter: (("normalizedName" ~~* '%coffee%'::text) OR ((NOT is_stale) AND (search_text ~~* '%coffee%'::text)))
+                            Rows Removed by Filter: 83225
+                            Buffers: shared hit=1285 read=29611, temp written=15893
+                ->  GroupAggregate  (cost=839623.92..865156.20 rows=200 width=20) (actual time=6792.125..7918.927 rows=81480 loops=1)
+                      Group Key: spatial_1.id
+                      Buffers: temp read=33063 written=17193
+                      ->  Sort  (cost=839623.92..839750.31 rows=50555 width=48) (actual time=6792.038..6878.761 rows=570360 loops=1)
+                            Sort Key: spatial_1.id
+                            Sort Method: external merge  Disk: 68696kB
+                            Buffers: temp read=33063 written=17193
+                            ->  Nested Loop  (cost=0.02..835674.17 rows=50555 width=48) (actual time=0.142..6414.723 rows=570360 loops=1)
+                                  Buffers: temp read=15894 written=1
+                                  ->  CTE Scan on spatial spatial_1  (cost=0.00..1011.10 rows=50555 width=48) (actual time=0.020..100.891 rows=116697 loops=1)
+                                        Buffers: temp read=15894 written=1
+                                  ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.035..0.053 rows=5 loops=116697)
+                                        Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+          ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.050..0.051 rows=38 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.027..0.029 rows=38 loops=1)
+  InitPlan 3 (returns $4)
+    ->  Aggregate  (cost=2.90..2.91 rows=1 width=32) (actual time=9072.758..9072.760 rows=1 loops=1)
+          Buffers: shared hit=1285 read=29611, temp read=38236 written=46215
+          ->  Sort  (cost=2.60..2.66 rows=24 width=130) (actual time=9069.390..9069.402 rows=51 loops=1)
+                Sort Key: page_rows.ordinal
+                Sort Method: quicksort  Memory: 70kB
+                Buffers: shared hit=1285 read=29611, temp read=38236 written=46215
+                ->  Subquery Scan on page_rows  (cost=1.03..2.05 rows=24 width=130) (actual time=9069.278..9069.340 rows=51 loops=1)
+                      Buffers: shared hit=1285 read=29611, temp read=38236 written=46215
+                      ->  Limit  (cost=1.03..1.81 rows=24 width=616) (actual time=9069.269..9069.326 rows=51 loops=1)
+                            Buffers: shared hit=1285 read=29611, temp read=38236 written=46215
+                            ->  WindowAgg  (cost=1.03..1.57 rows=24 width=616) (actual time=9069.261..9069.313 rows=51 loops=1)
+                                  Buffers: shared hit=1285 read=29611, temp read=38236 written=46215
+                                  ->  Sort  (cost=1.03..1.09 rows=24 width=122) (actual time=9069.187..9069.213 rows=51 loops=1)
+                                        Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                                        Sort Method: external merge  Disk: 29160kB
+                                        Buffers: shared hit=1285 read=29611, temp read=38236 written=46215
+                                        ->  CTE Scan on eligible  (cost=0.00..0.48 rows=24 width=122) (actual time=7604.977..8977.888 rows=33472 loops=1)
+                                              Buffers: shared hit=1285 read=29611, temp read=37748 written=42563
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=0.54..0.55 rows=1 width=8) (actual time=16.191..16.192 rows=1 loops=1)
+          Buffers: temp read=4784 written=1
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..0.48 rows=24 width=0) (actual time=0.019..14.857 rows=33472 loops=1)
+                Buffers: temp read=4784 written=1
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=1137.49..1137.50 rows=1 width=8) (actual time=46.158..46.159 rows=1 loops=1)
+          Buffers: temp read=15894
+          ->  CTE Scan on spatial spatial_2  (cost=0.00..1011.10 rows=50555 width=0) (actual time=0.005..41.630 rows=116697 loops=1)
+                Buffers: temp read=15894
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=0.54..0.55 rows=1 width=8) (actual time=13.066..13.067 rows=1 loops=1)
+          Buffers: temp read=4784
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..0.48 rows=24 width=0) (actual time=0.004..11.822 rows=33472 loops=1)
+                Buffers: temp read=4784
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=1.21..1.22 rows=1 width=32) (never executed)
+          ->  Sort  (cost=1.03..1.09 rows=24 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..0.48 rows=24 width=129) (never executed)
+  InitPlan 8 (returns $9)
+    ->  Aggregate  (cost=4.51..4.52 rows=1 width=32) (actual time=34.749..34.751 rows=1 loops=1)
+          Buffers: temp read=4784
+          ->  Sort  (cost=3.13..3.19 rows=24 width=32) (actual time=22.933..23.176 rows=1600 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 136kB
+                Buffers: temp read=4784
+                ->  HashAggregate  (cost=1.50..2.58 rows=24 width=32) (actual time=22.103..22.385 rows=1600 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 601kB
+                      Buffers: temp read=4784
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..1.20 rows=24 width=24) (actual time=0.007..16.069 rows=33472 loops=1)
+                            Buffers: temp read=4784
+Planning:
+  Buffers: shared read=2
+Planning Time: 5.944 ms
+JIT:
+  Functions: 76
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 13.348 ms, Inlining 195.792 ms, Optimization 1365.110 ms, Emission 939.391 ms, Total 2513.641 ms
+Execution Time: 10925.840 ms
+
+=== browse Hidden gems + Cafes + 100–249 reviews, Riyadh city view
+endpoint: 10737 ms; total 184, 50 rows, map points (184 points, 0 cells)
+Result  (cost=1121240.33..1121240.35 rows=1 width=80) (actual time=10701.655..10703.358 rows=1 loops=1)
+  Buffers: shared hit=1285 read=29611, temp read=48957 written=33086
+  CTE spatial
+    ->  Gather  (cost=2833.56..253288.06 rows=50555 width=1143) (actual time=47.334..440.062 rows=116697 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1285 read=29611
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1833.56..247232.56 rows=21065 width=1143) (actual time=303.374..566.125 rows=38899 loops=3)
+                Recheck Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                Rows Removed by Filter: 785
+                Heap Blocks: exact=13169
+                Buffers: shared hit=1285 read=29611
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..1820.92 rows=41264 width=0) (actual time=41.193..41.194 rows=119052 loops=1)
+                      Index Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                      Buffers: shared read=1047
+  CTE eligible
+    ->  Merge Left Join  (cost=841270.90..866806.31 rows=21 width=608) (actual time=7453.069..8486.303 rows=184 loops=1)
+          Merge Cond: (spatial.id = spatial_1.id)
+          Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+          ->  Sort  (cost=1646.98..1647.03 rows=21 width=591) (actual time=740.435..740.516 rows=184 loops=1)
+                Sort Key: spatial.id
+                Sort Method: quicksort  Memory: 231kB
+                Buffers: shared hit=1285 read=29611, temp written=15893
+                ->  Hash Join  (cost=2.65..1646.52 rows=21 width=591) (actual time=122.986..739.625 rows=184 loops=1)
+                      Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+                      Buffers: shared hit=1285 read=29611, temp written=15893
+                      ->  CTE Scan on spatial  (cost=0.00..1643.04 rows=83 width=559) (actual time=48.158..658.066 rows=1579 loops=1)
+                            Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_rating >= '4.5'::double precision) AND (effective_reviews >= '1'::bigint) AND (effective_reviews < '500'::bigint) AND (effective_reviews >= 100) AND (effective_reviews <= 249))
+                            Rows Removed by Filter: 115118
+                            Buffers: shared hit=1285 read=29611, temp written=15893
+                      ->  Hash  (cost=2.02..2.02 rows=50 width=64) (actual time=73.433..73.434 rows=5 loops=1)
+                            Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                            ->  Function Scan on jsonb_each_text aliases  (cost=0.77..2.02 rows=50 width=64) (actual time=73.403..73.412 rows=5 loops=1)
+                                  Filter: (hashed SubPlan 2)
+                                  Rows Removed by Filter: 33
+                                  SubPlan 2
+                                    ->  ProjectSet  (cost=0.00..0.52 rows=100 width=32) (actual time=73.064..73.066 rows=1 loops=1)
+                                          ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=73.047..73.048 rows=1 loops=1)
+          ->  GroupAggregate  (cost=839623.92..865156.20 rows=200 width=20) (actual time=6711.020..7740.117 rows=81293 loops=1)
+                Group Key: spatial_1.id
+                Buffers: temp read=33063 written=17193
+                ->  Sort  (cost=839623.92..839750.31 rows=50555 width=48) (actual time=6710.947..6787.781 rows=569052 loops=1)
+                      Sort Key: spatial_1.id
+                      Sort Method: external merge  Disk: 68696kB
+                      Buffers: temp read=33063 written=17193
+                      ->  Nested Loop  (cost=0.02..835674.17 rows=50555 width=48) (actual time=0.112..6340.177 rows=570360 loops=1)
+                            Buffers: temp read=15894 written=1
+                            ->  CTE Scan on spatial spatial_1  (cost=0.00..1011.10 rows=50555 width=48) (actual time=0.018..95.252 rows=116697 loops=1)
+                                  Buffers: temp read=15894 written=1
+                            ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.035..0.052 rows=5 loops=116697)
+                                  Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=2.50..2.51 rows=1 width=32) (actual time=8492.980..8492.983 rows=1 loops=1)
+          Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+          ->  Sort  (cost=2.23..2.29 rows=21 width=130) (actual time=8488.105..8488.119 rows=51 loops=1)
+                Sort Key: page_rows.ordinal
+                Sort Method: quicksort  Memory: 72kB
+                Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+                ->  Subquery Scan on page_rows  (cost=0.88..1.77 rows=21 width=130) (actual time=8487.988..8488.036 rows=51 loops=1)
+                      Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+                      ->  Limit  (cost=0.88..1.56 rows=21 width=616) (actual time=8487.982..8488.023 rows=51 loops=1)
+                            Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+                            ->  WindowAgg  (cost=0.88..1.35 rows=21 width=616) (actual time=8487.968..8488.005 rows=51 loops=1)
+                                  Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+                                  ->  Sort  (cost=0.88..0.93 rows=21 width=122) (actual time=8487.936..8487.940 rows=51 loops=1)
+                                        Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                                        Sort Method: quicksort  Memory: 192kB
+                                        Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+                                        ->  CTE Scan on eligible  (cost=0.00..0.42 rows=21 width=122) (actual time=7453.077..8487.118 rows=184 loops=1)
+                                              Buffers: shared hit=1285 read=29611, temp read=33063 written=33086
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=0.47..0.48 rows=1 width=8) (actual time=0.101..0.101 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..0.42 rows=21 width=0) (actual time=0.002..0.059 rows=184 loops=1)
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=1137.49..1137.50 rows=1 width=8) (actual time=59.611..59.612 rows=1 loops=1)
+          Buffers: temp read=15894
+          ->  CTE Scan on spatial spatial_2  (cost=0.00..1011.10 rows=50555 width=0) (actual time=0.008..53.310 rows=116697 loops=1)
+                Buffers: temp read=15894
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=0.47..0.48 rows=1 width=8) (actual time=0.054..0.055 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..0.42 rows=21 width=0) (actual time=0.001..0.040 rows=184 loops=1)
+  InitPlan 8 (returns $9)
+    ->  Aggregate  (cost=1.04..1.05 rows=1 width=32) (actual time=1.685..1.685 rows=1 loops=1)
+          ->  Sort  (cost=0.88..0.93 rows=21 width=129) (actual time=0.117..0.128 rows=184 loops=1)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                Sort Method: quicksort  Memory: 44kB
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..0.42 rows=21 width=129) (actual time=0.006..0.037 rows=184 loops=1)
+  InitPlan 9 (returns $10)
+    ->  Aggregate  (cost=3.93..3.94 rows=1 width=32) (never executed)
+          ->  Sort  (cost=2.72..2.77 rows=21 width=32) (never executed)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                ->  HashAggregate  (cost=1.31..2.26 rows=21 width=32) (never executed)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..1.05 rows=21 width=24) (never executed)
+Planning:
+  Buffers: shared read=2
+Planning Time: 5.648 ms
+JIT:
+  Functions: 92
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 20.683 ms, Inlining 284.425 ms, Optimization 1670.438 ms, Emission 1082.056 ms, Total 3057.601 ms
+Execution Time: 10748.214 ms
+
+=== browse Recently discovered, whole-country view, with map
+endpoint: 17845 ms; total 195095, 50 rows, map aggregates (0 points, 1122 cells)
+Result  (cost=4546436.02..4546436.05 rows=1 width=80) (actual time=17121.846..17124.400 rows=1 loops=1)
+  Buffers: shared hit=1349 read=28731, temp read=199344 written=139291
+  CTE spatial
+    ->  Gather  (cost=2723.97..1089381.59 rows=195087 width=1143) (actual time=15.427..145.592 rows=195095 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1349 read=28731
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1723.97..1068872.89 rows=81286 width=1143) (actual time=203.745..605.995 rows=65032 loops=3)
+                Recheck Cond: ("quarantinedAt" IS NULL)
+                Filter: ((location && '0103000020E610000001000000050000000000000000004240000000000080304000000000000042400000000000003F4000000000004049400000000000003F400000000000404940000000000080304000000000000042400000000000803040'::geography) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000004240000000000080304000000000000042400000000000003F4000000000004049400000000000003F400000000000404940000000000080304000000000000042400000000000803040'::geography))
+                Rows Removed by Filter: 1302
+                Heap Blocks: exact=560
+                Buffers: shared hit=1349 read=28731
+                ->  Bitmap Index Scan on hayer_discovery_primary_type  (cost=0.00..1675.20 rows=198980 width=0) (actual time=11.659..11.659 rows=199016 loops=1)
+                      Buffers: shared read=169
+  CTE eligible
+    ->  Hash Left Join  (cost=3346460.38..3356737.68 rows=195087 width=632) (actual time=12905.329..13876.348 rows=195095 loops=1)
+          Hash Cond: (spatial.id = hours_by_place.catalog_row_id)
+          Buffers: shared hit=1349 read=28731, temp read=69107 written=69146
+          ->  Hash Left Join  (cost=2.25..6342.59 rows=195087 width=591) (actual time=15.520..620.662 rows=195095 loops=1)
+                Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+                Buffers: shared read=171, temp read=26576 written=1
+                ->  CTE Scan on spatial  (cost=0.00..3901.74 rows=195087 width=559) (actual time=15.431..129.053 rows=195095 loops=1)
+                      Buffers: shared read=171, temp read=26576 written=1
+                ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.051..0.052 rows=38 loops=1)
+                      Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                      ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.025..0.027 rows=38 loops=1)
+          ->  Hash  (cost=3346455.63..3346455.63 rows=200 width=20) (actual time=12889.770..12889.772 rows=136282 loops=1)
+                Buckets: 262144 (originally 1024)  Batches: 2 (originally 1)  Memory Usage: 6657kB
+                Buffers: shared hit=1349 read=28560, temp read=28715 written=55660
+                ->  Subquery Scan on hours_by_place  (cost=3247932.69..3346455.63 rows=200 width=20) (actual time=11174.253..12845.178 rows=136282 loops=1)
+                      Buffers: shared hit=1349 read=28560, temp read=28715 written=55329
+                      ->  GroupAggregate  (cost=3247932.69..3346453.63 rows=200 width=20) (actual time=11174.250..12834.441 rows=136282 loops=1)
+                            Group Key: spatial_1.id
+                            Buffers: shared hit=1349 read=28560, temp read=28715 written=55329
+                            ->  Sort  (cost=3247932.69..3248420.41 rows=195087 width=48) (actual time=11174.180..11305.173 rows=953974 loops=1)
+                                  Sort Key: spatial_1.id
+                                  Sort Method: external merge  Disk: 114888kB
+                                  Buffers: shared hit=1349 read=28560, temp read=28715 written=55329
+                                  ->  Nested Loop  (cost=0.02..3224788.13 rows=195087 width=48) (actual time=0.064..10584.299 rows=953974 loops=1)
+                                        Buffers: shared hit=1349 read=28560, temp written=26575
+                                        ->  CTE Scan on spatial spatial_1  (cost=0.00..3901.74 rows=195087 width=48) (actual time=0.000..407.886 rows=195095 loops=1)
+                                              Buffers: shared hit=1349 read=28560, temp written=26575
+                                        ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.034..0.051 rows=5 loops=195095)
+                                              Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+  InitPlan 3 (returns $4)
+    ->  Aggregate  (cost=35720.05..35720.06 rows=1 width=32) (actual time=14854.826..14854.828 rows=1 loops=1)
+          Buffers: shared hit=1349 read=28731, temp read=90946 written=139290
+          ->  Sort  (cost=35719.41..35719.54 rows=51 width=154) (actual time=14852.843..14852.849 rows=51 loops=1)
+                Sort Key: page_rows.ordinal
+                Sort Method: quicksort  Memory: 70kB
+                Buffers: shared hit=1349 read=28731, temp read=90946 written=139290
+                ->  Subquery Scan on page_rows  (cost=35715.80..35717.97 rows=51 width=154) (actual time=14852.754..14852.812 rows=51 loops=1)
+                      Buffers: shared hit=1349 read=28731, temp read=90946 written=139290
+                      ->  Limit  (cost=35715.80..35717.46 rows=51 width=640) (actual time=14852.747..14852.798 rows=51 loops=1)
+                            Buffers: shared hit=1349 read=28731, temp read=90946 written=139290
+                            ->  WindowAgg  (cost=35715.80..40105.26 rows=195087 width=640) (actual time=14852.738..14852.786 rows=51 loops=1)
+                                  Buffers: shared hit=1349 read=28731, temp read=90946 written=139290
+                                  ->  Sort  (cost=35715.80..36203.52 rows=195087 width=146) (actual time=14852.686..14852.711 rows=51 loops=1)
+                                        Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                                        Sort Method: external merge  Disk: 171312kB
+                                        Buffers: shared hit=1349 read=28731, temp read=90946 written=139290
+                                        ->  CTE Scan on eligible  (cost=0.00..3901.74 rows=195087 width=146) (actual time=12905.338..14262.838 rows=195095 loops=1)
+                                              Buffers: shared hit=1349 read=28731, temp read=69107 written=96419
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=4389.46..4389.47 rows=1 width=8) (actual time=85.115..85.116 rows=1 loops=1)
+          Buffers: temp read=27274 written=1
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..3901.74 rows=195087 width=0) (actual time=0.012..77.635 rows=195095 loops=1)
+                Buffers: temp read=27274 written=1
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=4389.46..4389.47 rows=1 width=8) (actual time=76.540..76.540 rows=1 loops=1)
+          Buffers: temp read=26576
+          ->  CTE Scan on spatial spatial_2  (cost=0.00..3901.74 rows=195087 width=0) (actual time=0.004..69.388 rows=195095 loops=1)
+                Buffers: temp read=26576
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=4389.46..4389.47 rows=1 width=8) (actual time=73.305..73.305 rows=1 loops=1)
+          Buffers: temp read=27274
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..3901.74 rows=195087 width=0) (actual time=0.004..65.990 rows=195095 loops=1)
+                Buffers: temp read=27274
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=35845.45..35845.46 rows=1 width=32) (never executed)
+          ->  Sort  (cost=34382.30..34870.02 rows=195087 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..3901.74 rows=195087 width=129) (never executed)
+  InitPlan 8 (returns $9)
+    ->  Aggregate  (cost=15582.81..15582.82 rows=1 width=32) (actual time=162.857..162.858 rows=1 loops=1)
+          Buffers: temp read=27274
+          ->  Sort  (cost=14461.04..14509.81 rows=19509 width=32) (actual time=148.811..148.985 rows=1122 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '16.5'::double precision) / '0.3625'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '36'::double precision) / '0.3625'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 110kB
+                Buffers: temp read=27274
+                ->  HashAggregate  (cost=12192.94..13070.84 rows=19509 width=32) (actual time=147.830..148.303 rows=1122 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '36'::double precision) / '0.3625'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '16.5'::double precision) / '0.3625'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 1297kB
+                      Buffers: temp read=27274
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..9754.35 rows=195087 width=24) (actual time=0.011..107.360 rows=195095 loops=1)
+                            Buffers: temp read=27274
+Planning:
+  Buffers: shared read=2
+Planning Time: 4.812 ms
+JIT:
+  Functions: 79
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 15.849 ms, Inlining 198.686 ms, Optimization 1290.864 ms, Emission 944.143 ms, Total 2449.541 ms
+Execution Time: 17237.193 ms
+
+=== facets, Riyadh city view, Food + exact price 2 draft
+endpoint: 14945 ms; total 6593, 41 types, unknown rating 0
+Aggregate  (cost=1128392.87..1128392.95 rows=1 width=176) (actual time=14840.192..14841.390 rows=1 loops=1)
+  Buffers: shared hit=1286 read=29610, temp read=105827 written=50319
+  CTE spatial
+    ->  Gather  (cost=2833.56..253288.06 rows=50555 width=1143) (actual time=4326.109..4400.747 rows=116697 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1286 read=29610
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1833.56..247232.56 rows=21065 width=1143) (actual time=1740.255..2001.276 rows=38899 loops=3)
+                Recheck Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                Rows Removed by Filter: 785
+                Heap Blocks: exact=1
+                Buffers: shared hit=1286 read=29610
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..1820.92 rows=41264 width=0) (actual time=29.572..29.572 rows=119052 loops=1)
+                      Index Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                      Buffers: shared read=1047
+  CTE prepared
+    ->  Hash Left Join  (cost=865162.95..868331.78 rows=50555 width=608) (actual time=12100.087..14221.224 rows=116697 loops=1)
+          Hash Cond: (spatial.id = hours_by_place.catalog_row_id)
+          Buffers: shared hit=1286 read=29610, temp read=33063 written=33086
+          ->  Hash Left Join  (cost=2.25..1645.30 rows=50555 width=591) (actual time=4326.246..4736.269 rows=116697 loops=1)
+                Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+                Buffers: shared hit=1 read=1047, temp read=15894 written=1
+                ->  CTE Scan on spatial  (cost=0.00..1011.10 rows=50555 width=559) (actual time=4326.115..4402.128 rows=116697 loops=1)
+                      Buffers: shared hit=1 read=1047, temp read=15894 written=1
+                ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.071..0.072 rows=38 loops=1)
+                      Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                      ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.040..0.044 rows=38 loops=1)
+          ->  Hash  (cost=865158.20..865158.20 rows=200 width=20) (actual time=7773.781..7773.783 rows=81480 loops=1)
+                Buckets: 131072 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 5162kB
+                Buffers: shared hit=1285 read=28563, temp read=17169 written=33085
+                ->  Subquery Scan on hours_by_place  (cost=839623.92..865158.20 rows=200 width=20) (actual time=6733.029..7750.128 rows=81480 loops=1)
+                      Buffers: shared hit=1285 read=28563, temp read=17169 written=33085
+                      ->  GroupAggregate  (cost=839623.92..865156.20 rows=200 width=20) (actual time=6733.026..7743.775 rows=81480 loops=1)
+                            Group Key: spatial_1.id
+                            Buffers: shared hit=1285 read=28563, temp read=17169 written=33085
+                            ->  Sort  (cost=839623.92..839750.31 rows=50555 width=48) (actual time=6732.954..6810.016 rows=570360 loops=1)
+                                  Sort Key: spatial_1.id
+                                  Sort Method: external merge  Disk: 68696kB
+                                  Buffers: shared hit=1285 read=28563, temp read=17169 written=33085
+                                  ->  Nested Loop  (cost=0.02..835674.17 rows=50555 width=48) (actual time=0.092..6380.052 rows=570360 loops=1)
+                                        Buffers: shared hit=1285 read=28563, temp written=15893
+                                        ->  CTE Scan on spatial spatial_1  (cost=0.00..1011.10 rows=50555 width=48) (actual time=0.005..236.826 rows=116697 loops=1)
+                                              Buffers: shared hit=1285 read=28563, temp written=15893
+                                        ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.034..0.052 rows=5 loops=116697)
+                                              Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+  CTE rating_scope
+    ->  CTE Scan on prepared prepared_1  (cost=0.77..1391.03 rows=42 width=608) (actual time=17.813..69.809 rows=6593 loops=1)
+          Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint) AND (hashed SubPlan 3) AND (effective_price = '2'::smallint))
+          Rows Removed by Filter: 110104
+          Buffers: temp read=16275
+          SubPlan 3
+            ->  ProjectSet  (cost=0.00..0.52 rows=100 width=32) (actual time=17.603..17.604 rows=8 loops=1)
+                  ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=17.584..17.584 rows=1 loops=1)
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=1391.14..1391.15 rows=1 width=8) (actual time=92.442..92.444 rows=1 loops=1)
+          Buffers: temp read=16275 written=1
+          ->  CTE Scan on prepared prepared_2  (cost=0.77..1391.03 rows=42 width=0) (actual time=23.555..91.943 rows=6593 loops=1)
+                Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint) AND (hashed SubPlan 5) AND (effective_price = '2'::smallint))
+                Rows Removed by Filter: 110104
+                Buffers: temp read=16275 written=1
+                SubPlan 5
+                  ->  ProjectSet  (cost=0.00..0.52 rows=100 width=32) (actual time=23.295..23.298 rows=8 loops=1)
+                        ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=23.272..23.273 rows=1 loops=1)
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=1271.39..1271.40 rows=1 width=32) (actual time=48.976..48.977 rows=1 loops=1)
+          Buffers: temp read=16275
+          ->  Sort  (cost=1270.78..1270.98 rows=82 width=72) (actual time=48.843..48.846 rows=41 loops=1)
+                Sort Key: (count(*)) DESC, prepared_3.primary_type
+                Sort Method: quicksort  Memory: 27kB
+                Buffers: temp read=16275
+                ->  GroupAggregate  (cost=1266.52..1268.17 rows=82 width=72) (actual time=47.187..48.822 rows=41 loops=1)
+                      Group Key: prepared_3.primary_type, prepared_3.mapped_node
+                      Buffers: temp read=16275
+                      ->  Sort  (cost=1266.52..1266.73 rows=83 width=64) (actual time=47.117..47.661 rows=12796 loops=1)
+                            Sort Key: prepared_3.primary_type, prepared_3.mapped_node
+                            Sort Method: quicksort  Memory: 973kB
+                            Buffers: temp read=16275
+                            ->  CTE Scan on prepared prepared_3  (cost=0.00..1263.88 rows=83 width=64) (actual time=0.016..42.751 rows=12796 loops=1)
+                                  Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint) AND (effective_price = '2'::smallint))
+                                  Rows Removed by Filter: 103901
+                                  Buffers: temp read=16275
+  InitPlan 9 (returns $10)
+    ->  Aggregate  (cost=1317.50..1317.51 rows=1 width=32) (actual time=76.326..76.329 rows=1 loops=1)
+          Buffers: temp read=16275
+          ->  Sort  (cost=1316.00..1316.50 rows=200 width=10) (actual time=76.286..76.289 rows=5 loops=1)
+                Sort Key: prepared_4.effective_price
+                Sort Method: quicksort  Memory: 25kB
+                Buffers: temp read=16275
+                ->  HashAggregate  (cost=1306.35..1308.35 rows=200 width=10) (actual time=76.268..76.271 rows=5 loops=1)
+                      Group Key: prepared_4.effective_price
+                      Batches: 1  Memory Usage: 40kB
+                      Buffers: temp read=16275
+                      ->  CTE Scan on prepared prepared_4  (cost=0.77..1264.64 rows=8342 width=2) (actual time=17.169..71.530 rows=48229 loops=1)
+                            Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint) AND (hashed SubPlan 8))
+                            Rows Removed by Filter: 68468
+                            Buffers: temp read=16275
+                            SubPlan 8
+                              ->  ProjectSet  (cost=0.00..0.52 rows=100 width=32) (actual time=16.951..16.953 rows=8 loops=1)
+                                    ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=16.936..16.936 rows=1 loops=1)
+  InitPlan 10 (returns $11)
+    ->  Aggregate  (cost=1.05..1.06 rows=1 width=8) (actual time=75.073..75.074 rows=1 loops=1)
+          Buffers: temp read=16275 written=957
+          ->  CTE Scan on rating_scope  (cost=0.00..1.05 rows=1 width=0) (actual time=75.051..75.051 rows=0 loops=1)
+                Filter: ((effective_rating >= '0'::double precision) AND (effective_rating < '1'::double precision))
+                Rows Removed by Filter: 6593
+                Buffers: temp read=16275 written=957
+  InitPlan 11 (returns $12)
+    ->  Aggregate  (cost=1.05..1.06 rows=1 width=8) (actual time=2.954..2.955 rows=1 loops=1)
+          Buffers: temp read=958 written=1
+          ->  CTE Scan on rating_scope rating_scope_1  (cost=0.00..1.05 rows=1 width=0) (actual time=2.933..2.933 rows=0 loops=1)
+                Filter: ((effective_rating >= '1'::double precision) AND (effective_rating < '2'::double precision))
+                Rows Removed by Filter: 6593
+                Buffers: temp read=958 written=1
+  InitPlan 12 (returns $13)
+    ->  Aggregate  (cost=1.05..1.06 rows=1 width=8) (actual time=2.559..2.559 rows=1 loops=1)
+          Buffers: temp read=958
+          ->  CTE Scan on rating_scope rating_scope_2  (cost=0.00..1.05 rows=1 width=0) (actual time=2.539..2.539 rows=0 loops=1)
+                Filter: ((effective_rating >= '2'::double precision) AND (effective_rating < '3'::double precision))
+                Rows Removed by Filter: 6593
+                Buffers: temp read=958
+  InitPlan 13 (returns $14)
+    ->  Aggregate  (cost=1.05..1.06 rows=1 width=8) (actual time=2.719..2.719 rows=1 loops=1)
+          Buffers: temp read=958
+          ->  CTE Scan on rating_scope rating_scope_3  (cost=0.00..1.05 rows=1 width=0) (actual time=0.007..2.577 rows=2997 loops=1)
+                Filter: ((effective_rating >= '3'::double precision) AND (effective_rating < '4'::double precision))
+                Rows Removed by Filter: 3596
+                Buffers: temp read=958
+  InitPlan 14 (returns $15)
+    ->  Aggregate  (cost=1.05..1.06 rows=1 width=8) (actual time=2.824..2.824 rows=1 loops=1)
+          Buffers: temp read=958
+          ->  CTE Scan on rating_scope rating_scope_4  (cost=0.00..1.05 rows=1 width=0) (actual time=0.007..2.658 rows=3596 loops=1)
+                Filter: ((effective_rating >= '4'::double precision) AND (effective_rating < '5.01'::double precision))
+                Rows Removed by Filter: 2997
+                Buffers: temp read=958
+  InitPlan 15 (returns $16)
+    ->  Aggregate  (cost=0.98..0.99 rows=1 width=8) (actual time=2.804..2.804 rows=1 loops=1)
+          Buffers: temp read=958
+          ->  CTE Scan on rating_scope rating_scope_5  (cost=0.00..0.94 rows=14 width=0) (actual time=0.012..2.587 rows=5301 loops=1)
+                Filter: (effective_rating >= '3.5'::double precision)
+                Rows Removed by Filter: 1292
+                Buffers: temp read=958
+  InitPlan 16 (returns $17)
+    ->  Aggregate  (cost=0.98..0.99 rows=1 width=8) (actual time=2.580..2.580 rows=1 loops=1)
+          Buffers: temp read=958
+          ->  CTE Scan on rating_scope rating_scope_6  (cost=0.00..0.94 rows=14 width=0) (actual time=0.007..2.425 rows=3596 loops=1)
+                Filter: (effective_rating >= '4'::double precision)
+                Rows Removed by Filter: 2997
+                Buffers: temp read=958
+  InitPlan 17 (returns $18)
+    ->  Aggregate  (cost=0.98..0.99 rows=1 width=8) (actual time=2.379..2.380 rows=1 loops=1)
+          Buffers: temp read=958
+          ->  CTE Scan on rating_scope rating_scope_7  (cost=0.00..0.94 rows=14 width=0) (actual time=0.007..2.282 rows=1865 loops=1)
+                Filter: (effective_rating >= '4.5'::double precision)
+                Rows Removed by Filter: 4728
+                Buffers: temp read=958
+  InitPlan 18 (returns $19)
+    ->  Aggregate  (cost=0.84..0.85 rows=1 width=8) (actual time=2.232..2.233 rows=1 loops=1)
+          Buffers: temp read=958
+          ->  CTE Scan on rating_scope rating_scope_8  (cost=0.00..0.84 rows=1 width=0) (actual time=2.221..2.221 rows=0 loops=1)
+                Filter: (effective_rating IS NULL)
+                Rows Removed by Filter: 6593
+                Buffers: temp read=958
+  ->  CTE Scan on prepared  (cost=0.77..1391.03 rows=42 width=8) (actual time=12117.930..14523.838 rows=6593 loops=1)
+        Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint) AND (hashed SubPlan 19) AND (effective_price = '2'::smallint))
+        Rows Removed by Filter: 110104
+        Buffers: shared hit=1286 read=29610, temp read=33063 written=49360
+        SubPlan 19
+          ->  ProjectSet  (cost=0.00..0.52 rows=100 width=32) (actual time=17.307..17.309 rows=8 loops=1)
+                ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=17.293..17.294 rows=1 loops=1)
+Planning:
+  Buffers: shared read=2
+Planning Time: 6.235 ms
+JIT:
+  Functions: 160
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 30.791 ms, Inlining 337.032 ms, Optimization 2922.306 ms, Emission 1963.774 ms, Total 5253.904 ms
+Execution Time: 14907.921 ms
+
+=== placeContext, Riyadh city view, Best
+endpoint: 13114 ms; eligible true, ordinal 50, percentile 92.3
+Result  (cost=1132988.54..1132988.57 rows=1 width=88) (actual time=12847.181..12850.024 rows=1 loops=1)
+  Buffers: shared hit=1285 read=29611, temp read=167514 written=89255
+  CTE spatial
+    ->  Gather  (cost=2833.56..253288.06 rows=50555 width=1143) (actual time=29.009..309.217 rows=116697 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=1285 read=29611
+          ->  Parallel Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=1833.56..247232.56 rows=21065 width=1143) (actual time=208.364..409.103 rows=38899 loops=3)
+                Recheck Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: (("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND st_intersects(location, '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                Rows Removed by Filter: 785
+                Heap Blocks: exact=14131
+                Buffers: shared hit=1285 read=29611
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..1820.92 rows=41264 width=0) (actual time=24.172..24.172 rows=119052 loops=1)
+                      Index Cond: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography))
+                      Buffers: shared read=1047
+  CTE eligible
+    ->  Hash Left Join  (cost=842162.21..870142.19 rows=16684 width=608) (actual time=6251.906..9566.341 rows=92570 loops=1)
+          Hash Cond: (lower(regexp_replace(btrim(spatial.primary_type), '\s+'::text, ' '::text, 'g'::text)) = aliases.alias)
+          Buffers: shared hit=1285 read=29611, temp read=49925 written=49948
+          ->  Hash Right Join  (cost=842159.96..869472.58 rows=16684 width=563) (actual time=6251.763..7611.892 rows=92570 loops=1)
+                Hash Cond: (hours_by_place.catalog_row_id = spatial.id)
+                Buffers: shared hit=1285 read=29611, temp read=49925 written=49948
+                ->  Subquery Scan on hours_by_place  (cost=839623.92..865158.20 rows=200 width=20) (actual time=5726.056..6835.530 rows=81480 loops=1)
+                      Buffers: temp read=33063 written=17193
+                      ->  GroupAggregate  (cost=839623.92..865156.20 rows=200 width=20) (actual time=5726.051..6828.044 rows=81480 loops=1)
+                            Group Key: spatial_1.id
+                            Buffers: temp read=33063 written=17193
+                            ->  Sort  (cost=839623.92..839750.31 rows=50555 width=48) (actual time=5725.917..5810.266 rows=570360 loops=1)
+                                  Sort Key: spatial_1.id
+                                  Sort Method: external merge  Disk: 68696kB
+                                  Buffers: temp read=33063 written=17193
+                                  ->  Nested Loop  (cost=0.02..835674.17 rows=50555 width=48) (actual time=0.096..5286.215 rows=570360 loops=1)
+                                        Buffers: temp read=15894 written=1
+                                        ->  CTE Scan on spatial spatial_1  (cost=0.00..1011.10 rows=50555 width=48) (actual time=0.009..86.023 rows=116697 loops=1)
+                                              Buffers: temp read=15894 written=1
+                                        ->  Function Scan on jsonb_array_elements period  (cost=0.02..16.52 rows=1 width=32) (actual time=0.027..0.044 rows=5 loops=116697)
+                                              Filter: ((jsonb_typeof(value) = 'object'::text) AND (jsonb_typeof((value -> 'day'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'openMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'closeMinutes'::text)) = 'number'::text) AND (jsonb_typeof((value -> 'overnight'::text)) = 'boolean'::text) AND (((value ->> 'day'::text))::numeric >= '1'::numeric) AND (((value ->> 'day'::text))::numeric <= '7'::numeric) AND (((value ->> 'openMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'openMinutes'::text))::numeric <= '1439'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric >= '0'::numeric) AND (((value ->> 'closeMinutes'::text))::numeric <= '1440'::numeric) AND (trunc(((value ->> 'day'::text))::numeric, 0) = ((value ->> 'day'::text))::numeric) AND (trunc(((value ->> 'openMinutes'::text))::numeric, 0) = ((value ->> 'openMinutes'::text))::numeric) AND (trunc(((value ->> 'closeMinutes'::text))::numeric, 0) = ((value ->> 'closeMinutes'::text))::numeric))
+                ->  Hash  (cost=1137.49..1137.49 rows=16684 width=559) (actual time=525.325..525.326 rows=92570 loops=1)
+                      Buckets: 16384 (originally 16384)  Batches: 16 (originally 2)  Memory Usage: 8066kB
+                      Buffers: shared hit=1285 read=29611, temp written=27911
+                      ->  CTE Scan on spatial  (cost=0.00..1137.49 rows=16684 width=559) (actual time=29.016..452.489 rows=92570 loops=1)
+                            Filter: ((effective_rating IS NOT NULL) AND (effective_reviews IS NOT NULL) AND (effective_reviews >= '1'::bigint))
+                            Rows Removed by Filter: 24127
+                            Buffers: shared hit=1285 read=29611, temp written=15893
+          ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.054..0.055 rows=38 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.035..0.039 rows=38 loops=1)
+  CTE target
+    ->  Subquery Scan on ranked  (cost=6011.74..6637.39 rows=1 width=616) (actual time=429.073..516.021 rows=1 loops=1)
+          Filter: ((ranked.provider = 'google-web'::text) AND (ranked."providerPlaceId" = 'bench-0063450'::text))
+          Rows Removed by Filter: 92569
+          Buffers: temp read=39277 written=26256
+          ->  WindowAgg  (cost=6011.74..6387.13 rows=16684 width=616) (actual time=429.014..508.309 rows=92570 loops=1)
+                Buffers: temp read=39277 written=26256
+                ->  Sort  (cost=6011.74..6053.45 rows=16684 width=608) (actual time=428.978..478.573 rows=92570 loops=1)
+                      Sort Key: eligible.sort_value DESC NULLS LAST, eligible."providerPlaceId", eligible.provider
+                      Sort Method: external merge  Disk: 104920kB
+                      Buffers: temp read=39277 written=26256
+                      ->  CTE Scan on eligible  (cost=0.00..333.68 rows=16684 width=608) (actual time=0.020..62.621 rows=92570 loops=1)
+                            Buffers: temp read=13052 written=1
+  CTE rating_stats
+    ->  Aggregate  (cost=458.83..458.84 rows=1 width=16) (actual time=40.448..40.449 rows=1 loops=1)
+          Buffers: temp read=13052
+          InitPlan 4 (returns $5)
+            ->  CTE Scan on target  (cost=0.00..0.02 rows=1 width=8) (actual time=0.004..0.005 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..333.68 rows=16684 width=8) (actual time=0.004..31.333 rows=92570 loops=1)
+                Buffers: temp read=13052
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=375.39..375.40 rows=1 width=8) (actual time=9790.398..9790.399 rows=1 loops=1)
+          Buffers: shared hit=1285 read=29611, temp read=49925 written=62999
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..333.68 rows=16684 width=0) (actual time=6251.912..9782.945 rows=92570 loops=1)
+                Buffers: shared hit=1285 read=29611, temp read=49925 written=62999
+  InitPlan 7 (returns $8)
+    ->  CTE Scan on target target_1  (cost=0.00..0.03 rows=1 width=32) (actual time=429.126..516.073 rows=1 loops=1)
+          Buffers: temp read=39277 written=26256
+  InitPlan 8 (returns $9)
+    ->  CTE Scan on rating_stats  (cost=0.00..0.02 rows=1 width=8) (actual time=40.453..40.454 rows=1 loops=1)
+          Buffers: temp read=13052
+  InitPlan 9 (returns $10)
+    ->  CTE Scan on rating_stats rating_stats_1  (cost=0.00..0.02 rows=1 width=8) (actual time=0.003..0.003 rows=1 loops=1)
+  InitPlan 10 (returns $11)
+    ->  Aggregate  (cost=417.31..417.32 rows=1 width=8) (actual time=36.312..36.313 rows=1 loops=1)
+          Buffers: temp read=13052
+          ->  CTE Scan on eligible eligible_3  (cost=0.00..417.10 rows=83 width=0) (actual time=36.289..36.289 rows=0 loops=1)
+                Filter: ((effective_rating >= '0'::double precision) AND (effective_rating < '1'::double precision))
+                Rows Removed by Filter: 92570
+                Buffers: temp read=13052
+  InitPlan 11 (returns $12)
+    ->  Aggregate  (cost=417.31..417.32 rows=1 width=8) (actual time=34.856..34.857 rows=1 loops=1)
+          Buffers: temp read=13052
+          ->  CTE Scan on eligible eligible_4  (cost=0.00..417.10 rows=83 width=0) (actual time=34.833..34.833 rows=0 loops=1)
+                Filter: ((effective_rating >= '1'::double precision) AND (effective_rating < '2'::double precision))
+                Rows Removed by Filter: 92570
+                Buffers: temp read=13052
+  InitPlan 12 (returns $13)
+    ->  Aggregate  (cost=417.31..417.32 rows=1 width=8) (actual time=34.124..34.125 rows=1 loops=1)
+          Buffers: temp read=13052
+          ->  CTE Scan on eligible eligible_5  (cost=0.00..417.10 rows=83 width=0) (actual time=34.102..34.102 rows=0 loops=1)
+                Filter: ((effective_rating >= '2'::double precision) AND (effective_rating < '3'::double precision))
+                Rows Removed by Filter: 92570
+                Buffers: temp read=13052
+  InitPlan 13 (returns $14)
+    ->  Aggregate  (cost=417.31..417.32 rows=1 width=8) (actual time=39.889..39.889 rows=1 loops=1)
+          Buffers: temp read=13052
+          ->  CTE Scan on eligible eligible_6  (cost=0.00..417.10 rows=83 width=0) (actual time=0.007..38.039 rows=42363 loops=1)
+                Filter: ((effective_rating >= '3'::double precision) AND (effective_rating < '4'::double precision))
+                Rows Removed by Filter: 50207
+                Buffers: temp read=13052
+  InitPlan 14 (returns $15)
+    ->  Aggregate  (cost=417.31..417.32 rows=1 width=8) (actual time=49.508..49.509 rows=1 loops=1)
+          Buffers: temp read=13052
+          ->  CTE Scan on eligible eligible_7  (cost=0.00..417.10 rows=83 width=0) (actual time=0.008..47.008 rows=50207 loops=1)
+                Filter: ((effective_rating >= '4'::double precision) AND (effective_rating < '5.01'::double precision))
+                Rows Removed by Filter: 42363
+                Buffers: temp read=13052
+Planning:
+  Buffers: shared read=2
+Planning Time: 3.250 ms
+JIT:
+  Functions: 88
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 14.965 ms, Inlining 144.284 ms, Optimization 1633.568 ms, Emission 1084.405 ms, Total 2877.222 ms
+Execution Time: 12924.531 ms

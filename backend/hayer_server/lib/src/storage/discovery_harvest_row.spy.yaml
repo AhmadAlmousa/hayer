@@ -1,0 +1,46 @@
+class: DiscoveryHarvestRow
+serverOnly: true
+table: hayer_discovery_harvest
+fields:
+  # The hayer_refresh_job whose lease runs this harvest.
+  jobId: String
+  # Country, cell, radius, manifest revision and calibration version.
+  harvestKey: String
+  requester: DiscoveryHarvestRequester
+  requestedBy: String
+  trigger: DiscoveryHarvestTrigger
+  countryCode: String
+  cellId: String
+  radiusMeters: int
+  centerLatitude: double
+  centerLongitude: double
+  south: double
+  west: double
+  north: double
+  east: double
+  manifestVersion: String
+  manifestRevision: int
+  calibrationVersion: String
+  state: DiscoveryHarvestState
+  queryOutcomes: List<DiscoveryHarvestQueryOutcome>
+  attemptedQueries: int
+  completedQueries: int
+  totalQueries: int
+  observedPlaces: int
+  upstreamRequests: int
+  createdAt: DateTime
+  startedAt: DateTime?
+  completedAt: DateTime?
+  failureCode: String?
+indexes:
+  hayer_discovery_harvest_job:
+    fields: jobId
+    unique: true
+  hayer_discovery_harvest_key_state:
+    fields: harvestKey, state
+  hayer_discovery_harvest_cell_completed:
+    fields: countryCode, cellId, radiusMeters, completedAt
+  hayer_discovery_harvest_state_created:
+    fields: state, createdAt
+  hayer_discovery_harvest_created:
+    fields: createdAt

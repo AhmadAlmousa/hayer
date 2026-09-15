@@ -10,6 +10,11 @@ abstract final class PlaceAvailability {
     'OM': 4,
   };
 
+  /// Whole-hour UTC offset used for place-local time. Supported GCC countries
+  /// observe no daylight saving; anything else falls back to Saudi time.
+  static int utcOffsetHours(String countryCode) =>
+      _utcOffsetHours[countryCode] ?? 3;
+
   /// Unknown hours remain eligible; only known-closed places are excluded.
   static bool isOpenAt(
     PlaceSnapshot place, {
@@ -28,7 +33,7 @@ abstract final class PlaceAvailability {
   }) {
     if (hours.isEmpty) return true;
     final local = visitAt.toUtc().add(
-      Duration(hours: _utcOffsetHours[countryCode] ?? 3),
+      Duration(hours: utcOffsetHours(countryCode)),
     );
     final weekday = local.weekday;
     final minute = local.hour * 60 + local.minute;

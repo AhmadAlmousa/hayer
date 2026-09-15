@@ -1,0 +1,24 @@
+class: PoiDetailRefreshRow
+serverOnly: true
+table: hayer_poi_detail_refresh
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  provider: String
+  providerPlaceId: String
+  # The last refresh outcome, or refreshing while a lease is held.
+  state: PlaceDetailRefreshState
+  leaseToken: String?
+  leaseExpiresAt: DateTime?
+  # Every leased attempt, including ones the provider never answered.
+  lastAttemptAt: DateTime?
+  # The provider last answered, with or without an exact match.
+  lastCheckedAt: DateTime?
+  lastSuccessAt: DateTime?
+  retryAfter: DateTime?
+  lastFailureCode: String?
+  attemptCount: int
+  updatedAt: DateTime
+indexes:
+  hayer_poi_detail_refresh_identity:
+    fields: provider, providerPlaceId
+    unique: true

@@ -87,7 +87,12 @@ ON CONFLICT ("provider", "providerPlaceId") DO UPDATE SET
   END,
   "snapshot" = CASE
     WHEN EXCLUDED."sourceCheckedAt" >= catalog."sourceCheckedAt"
-      THEN EXCLUDED."snapshot"
+      THEN jsonb_set(
+        EXCLUDED."snapshot"::jsonb,
+        '{categoryIds}',
+        catalog."categoryIds"::jsonb,
+        true
+      )::json
     ELSE catalog."snapshot"
   END,
   "calibrationVersion" = CASE

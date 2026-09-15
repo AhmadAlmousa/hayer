@@ -18,6 +18,30 @@ fields:
   routeEstimateCacheMinutes: int, default=10
   routeRequestsPerMinute: int, default=30
   routeBurst: int, default=6
+  discoveryEnabled: bool, default=false
+  discoveryBestFormula: DiscoveryBestFormula, default=popularityWeighted
+  discoveryGemMinimumRating: double, default=4.5
+  discoveryGemMinimumReviews: int, default=1
+  discoveryGemMaximumReviewsExclusive: int, default=500
+  discoveryBayesianPriorReviews: int, default=100
+  discoveryBayesianMeanRating: double, default=4.0
+  discoveryBestMinimumReviews: int, default=1
+  discoveryTopRatedMinimumReviews: int, default=0
+  discoveryWorstRatedMinimumReviews: int, default=0
+  discoveryRecentlyAddedDays: int, default=45
+  discoveryHarvestMaximumRequests: int, default=24
+  discoveryHarvestDesiredCandidatesPerQuery: int, default=50
+  discoveryHarvestMaximumSeconds: int, default=300
+  discoveryHarvestCooldownMinutes: int, default=60
+  discoveryUserHarvestsPerHour: int, default=3
+  discoveryBrowseRequestsPerMinute: int, default=30
+  discoveryFacetRequestsPerMinute: int, default=60
+  discoveryQueryTimeoutMilliseconds: int, default=2000
+  discoveryMaximumPageSize: int, default=100
+  discoveryMaximumMapPoints: int, default=2000
+  detailRefreshMaximumRequests: int, default=3
+  detailRefreshMaximumSeconds: int, default=20
+  detailRefreshCooldownMinutes: int, default=60
   updatedBy: String
   updatedAt: DateTime
 indexes:

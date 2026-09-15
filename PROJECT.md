@@ -125,6 +125,13 @@ Two agents develop this repository in parallel. They never share a working
 directory. Each commits from its own Git worktree and integrates through
 `main`.
 
+Temporary assignment (2026-09-15): Codex is paused on its usage limit, so the
+owner assigned the back-end lane to Claude as well until Codex returns. Claude
+works the back end from the primary worktree on `main`, continuing
+`lane-backend.md`, keeps the front end in `claude-lane`, and adds a pointer in
+`lane-frontend.md` for each back-end checkpoint. The ownership rules below
+resume as written when Codex is back.
+
 - Codex works in the primary worktree `/mnt/unraid/places_swiper/hayer` on
   branch `main`. Claude works in `.claude/worktrees/claude-lane` on branch
   `worktree-claude-lane`, and rebases onto `main` to pick up Codex's commits.
@@ -890,18 +897,24 @@ ships dark behind `discoveryEnabled`. Scope, ownership, contracts and
 dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 §"Implementation plan"; each lane log holds its evidence.
 
-- [ ] M9-A — Shared source and observation writer (back end, after F08).
-- [~] M9-B — Flag, configuration and Discover taxonomy (back end). Public
-  disabled config and generated policy/tree contracts delivered; persistence,
-  seed, validation and lifecycle implementation remain open.
-- [~] M9-C — Catalog columns and discovery query (back end). Query, paging,
-  facet, map and place-context contracts delivered; SQL/migration remain open.
-- [~] M9-D — Shared detail resolver and sessionless reporting (back end).
-  Generated contracts delivered; shared resolver and report storage remain open.
-- [~] M9-E — Harvesting and coverage (back end, after F21). Consumer coverage
-  and admin manifest/job/unmapped-type/growth contracts plus web path rewrites
-  delivered; workers and persistent manifest, coverage and metrics storage
-  remain open. Hosting deployment pending.
+- [x] M9-A — Shared source and observation writer (back end). Raw provider
+  pages are evidence-neutral; Swipe adds its query evidence in its adapter,
+  while the shared writer persists broad/detail observations independently.
+- [x] M9-B — Flag, configuration and Discover taxonomy (back end). Typed
+  policy storage, backward-compatible updates, public configuration, the
+  shared flag guard, and the seeded/validated/audited tree lifecycle are live.
+- [x] M9-C — Catalog columns and discovery query (back end). Generated catalog
+  projections and the shared browse, facets and place-context SQL, with PostGIS
+  acceptance, recorded query plans and a timed populated upgrade.
+- [x] M9-D — Shared detail resolver and sessionless reporting (back end).
+  One cache-first resolver serves both modes' details, refreshing a place once
+  under a database lease and cooldown, and Discover reports share session
+  reporting's validation, dedupe, quotas and moderation storage.
+- [x] M9-E — Harvesting and coverage (back end, after F21). Committed searches
+  and Deepen enqueue one bounded, deduplicated harvest per canonical cell
+  through the shared source and writer, with honest coverage, a versioned
+  broad-query manifest, admin job, unmapped-type and growth reads, and a
+  measured admission load benchmark. Hosting deployment pending.
 - [x] M9-F — Entry, configuration and links (front end). Prework in `bb212d7`;
   the configuration read and kept disabled links landed on 2026-09-13. Device
   App Link checks belong to M9-K.
@@ -923,10 +936,12 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [ ] M9-K — Cross-mode verification and dark release (both lanes).
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
-Frontend prework was merged into main in `d4b58b7`. All new discovery data,
-detail and mutation RPCs still return `feature_disabled`; no checkpoint above
-is complete from contract availability. M9-A's shared observation writer is the
-next backend implementation slice after this owner-requested contract delivery.
+Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
+complete from contract availability alone. Discovery stays dark: data, harvest and
+catalog-report RPCs answer `feature_disabled` while `discoveryEnabled` is
+false. Shared place details answer in both modes whatever the flag, and the
+M9-E admin reads answer authorized operators. Every back-end M9 slice is
+implemented; M9-K remains.
 
 ## Verification gates
 
@@ -1096,6 +1111,54 @@ next backend implementation slice after this owner-requested contract delivery.
   `7a4bfa45ba154620f3187bccab7ac881a2455634a7ea8d2e6f28e2d88d0c4be8`
   and verifies under APK Signature Scheme v2 with the existing signer.
   Discovery stays disabled. Details are in `lane-frontend.md`.
+- 2026-09-15: closed M9-C in the back-end lane, which the owner assigned to
+  Claude while Codex is paused. Discover browse, facets and place context run
+  on generated catalog projections through one SQL builder. On a 200,000-row
+  catalog the slowest recorded statement fell from 17.2 s in the uncommitted
+  draft to 0.65 s, and the populated upgrade takes 110.5 s, nearly all of it
+  one table rewrite. The 31 new PostGIS cases pass within 86/86 on a
+  disposable fresh-schema database, because the shared `hayer_test` still holds
+  the draft schema and needs a reset. Pinned full preflight passed 176 server,
+  279 app and 51 admin tests with clean analyses. Signed `0.2.1+7` built at
+  SHA-256 `d5aaca0b71174fc3d93d64699b2706e62fcf83fdaaa23e5912de60a6967a14a5`
+  and verifies under APK Signature Scheme v2 with the existing signer.
+  Discovery stays disabled. Details are in `lane-backend.md`.
+- 2026-09-15: closed M9-D in the back-end lane. `place.details` resolves both
+  modes' detail reads from the shared catalog. It runs one focused
+  Vela-derived search under a per-place database lease only when a record is
+  stale or its missing fields are unchecked, with shared cooldowns, and it
+  answers whether or not Discover is enabled. `place.reportCatalogIssue` files
+  sessionless Discover reports through the session pipeline, sharing its
+  dedupe and quotas, and admin issue rows carry their source. The migration
+  makes a report's session nullable with a `source` backfill and adds refresh
+  metadata. It also restores a report constraint that fresh definitions had
+  lost. The 14 new PostGIS cases pass within 101/101 on a disposable
+  fresh-schema database, and the upgraded and fresh schemas fingerprint
+  identically. Pinned full preflight passed 181 server,
+  279 app and 51 admin tests with clean analyses. Signed
+  `0.2.1+7` built at SHA-256 `eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f` and verifies under APK Signature
+  Scheme v2 with the existing signer. Discovery stays disabled. Details are in
+  `lane-backend.md`.
+- 2026-09-15: closed M9-E in the back-end lane. A committed Discover search or
+  Deepen resolves to one canonical harvest cell. Under an advisory lock the
+  request joins its active job, returns fresh coverage or a cooldown, or
+  spends the user's quota to enqueue one bounded harvest. The existing worker
+  runs it through the shared source and writer, with a heartbeat lease, flag
+  and operator cancellation, and a scheduler that reaches every broad domain
+  and Swipe compatibility query before continuation, retries and Arabic
+  fallbacks. Compatibility results carry genuine Swipe evidence and coverage.
+  Harvests yield to interactive requests inside the shared provider limiter.
+  In a simulated-latency load benchmark, that brought Swipe search latency
+  under a 24-page harvest from a 12.6 s p50 with first-come admission back to
+  its 1.2 s baseline. Coverage footprints, the versioned broad-query manifest and the admin job,
+  unmapped-type and growth reads are live behind the flag. The 14 new PostGIS
+  cases pass within 115/115 on a disposable fresh-schema database, and the
+  populated upgrade fingerprints identically to a fresh one. Pinned full
+  preflight passed 199 server, 279 app and
+  51 admin tests with clean analyses. Signed `0.2.1+7` built at
+  SHA-256 `eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f`, unchanged from M9-D because the app did not
+  change, and verifies under APK Signature Scheme v2 with the existing
+  signer. Discovery stays disabled. Details are in `lane-backend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

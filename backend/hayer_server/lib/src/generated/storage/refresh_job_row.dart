@@ -27,6 +27,8 @@ abstract class RefreshJobRow
     this.startedAt,
     this.completedAt,
     this.errorCode,
+    this.planJson,
+    this.heartbeatAt,
   });
 
   factory RefreshJobRow({
@@ -40,6 +42,8 @@ abstract class RefreshJobRow
     DateTime? startedAt,
     DateTime? completedAt,
     String? errorCode,
+    String? planJson,
+    DateTime? heartbeatAt,
   }) = _RefreshJobRowImpl;
 
   factory RefreshJobRow.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -64,6 +68,12 @@ abstract class RefreshJobRow
               jsonSerialization['completedAt'],
             ),
       errorCode: jsonSerialization['errorCode'] as String?,
+      planJson: jsonSerialization['planJson'] as String?,
+      heartbeatAt: jsonSerialization['heartbeatAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['heartbeatAt'],
+            ),
     );
   }
 
@@ -92,6 +102,10 @@ abstract class RefreshJobRow
 
   String? errorCode;
 
+  String? planJson;
+
+  DateTime? heartbeatAt;
+
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
@@ -109,6 +123,8 @@ abstract class RefreshJobRow
     DateTime? startedAt,
     DateTime? completedAt,
     String? errorCode,
+    String? planJson,
+    DateTime? heartbeatAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -124,6 +140,8 @@ abstract class RefreshJobRow
       if (startedAt != null) 'startedAt': startedAt?.toJson(),
       if (completedAt != null) 'completedAt': completedAt?.toJson(),
       if (errorCode != null) 'errorCode': errorCode,
+      if (planJson != null) 'planJson': planJson,
+      if (heartbeatAt != null) 'heartbeatAt': heartbeatAt?.toJson(),
     };
   }
 
@@ -176,6 +194,8 @@ class _RefreshJobRowImpl extends RefreshJobRow {
     DateTime? startedAt,
     DateTime? completedAt,
     String? errorCode,
+    String? planJson,
+    DateTime? heartbeatAt,
   }) : super._(
          id: id,
          jobId: jobId,
@@ -187,6 +207,8 @@ class _RefreshJobRowImpl extends RefreshJobRow {
          startedAt: startedAt,
          completedAt: completedAt,
          errorCode: errorCode,
+         planJson: planJson,
+         heartbeatAt: heartbeatAt,
        );
 
   /// Returns a shallow copy of this [RefreshJobRow]
@@ -204,6 +226,8 @@ class _RefreshJobRowImpl extends RefreshJobRow {
     Object? startedAt = _Undefined,
     Object? completedAt = _Undefined,
     Object? errorCode = _Undefined,
+    Object? planJson = _Undefined,
+    Object? heartbeatAt = _Undefined,
   }) {
     return RefreshJobRow(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -216,6 +240,8 @@ class _RefreshJobRowImpl extends RefreshJobRow {
       startedAt: startedAt is DateTime? ? startedAt : this.startedAt,
       completedAt: completedAt is DateTime? ? completedAt : this.completedAt,
       errorCode: errorCode is String? ? errorCode : this.errorCode,
+      planJson: planJson is String? ? planJson : this.planJson,
+      heartbeatAt: heartbeatAt is DateTime? ? heartbeatAt : this.heartbeatAt,
     );
   }
 }
@@ -271,6 +297,17 @@ class RefreshJobRowUpdateTable extends _i1.UpdateTable<RefreshJobRowTable> {
     table.errorCode,
     value,
   );
+
+  _i1.ColumnValue<String, String> planJson(String? value) => _i1.ColumnValue(
+    table.planJson,
+    value,
+  );
+
+  _i1.ColumnValue<DateTime, DateTime> heartbeatAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.heartbeatAt,
+        value,
+      );
 }
 
 class RefreshJobRowTable extends _i1.Table<_i1.UuidValue?> {
@@ -314,6 +351,14 @@ class RefreshJobRowTable extends _i1.Table<_i1.UuidValue?> {
       'errorCode',
       this,
     );
+    planJson = _i1.ColumnString(
+      'planJson',
+      this,
+    );
+    heartbeatAt = _i1.ColumnDateTime(
+      'heartbeatAt',
+      this,
+    );
   }
 
   late final RefreshJobRowUpdateTable updateTable;
@@ -336,6 +381,10 @@ class RefreshJobRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnString errorCode;
 
+  late final _i1.ColumnString planJson;
+
+  late final _i1.ColumnDateTime heartbeatAt;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -348,6 +397,8 @@ class RefreshJobRowTable extends _i1.Table<_i1.UuidValue?> {
     startedAt,
     completedAt,
     errorCode,
+    planJson,
+    heartbeatAt,
   ];
 }
 

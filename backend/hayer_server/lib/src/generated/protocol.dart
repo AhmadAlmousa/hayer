@@ -137,43 +137,49 @@ import 'storage/admin_audit_row.dart' as _i121;
 import 'storage/cache_settings_row.dart' as _i122;
 import 'storage/calibration_row.dart' as _i123;
 import 'storage/city_resolution_row.dart' as _i124;
-import 'storage/hayer_session_row.dart' as _i125;
-import 'storage/idempotency_row.dart' as _i126;
-import 'storage/operational_metric_row.dart' as _i127;
-import 'storage/participant_row.dart' as _i128;
-import 'storage/poi_catalog_row.dart' as _i129;
-import 'storage/poi_category_row.dart' as _i130;
-import 'storage/poi_coverage_row.dart' as _i131;
-import 'storage/poi_issue_report_row.dart' as _i132;
-import 'storage/product_analytics_event_row.dart' as _i133;
-import 'storage/product_analytics_hour_row.dart' as _i134;
-import 'storage/rate_limit_row.dart' as _i135;
-import 'storage/refresh_job_row.dart' as _i136;
-import 'storage/session_place_row.dart' as _i137;
-import 'storage/swipe_row.dart' as _i138;
-import 'storage/taxonomy_version_row.dart' as _i139;
-import 'swipe_command.dart' as _i140;
-import 'taxonomy_canary_sample.dart' as _i141;
-import 'taxonomy_item.dart' as _i142;
-import 'taxonomy_kind.dart' as _i143;
-import 'taxonomy_snapshot.dart' as _i144;
-import 'taxonomy_status.dart' as _i145;
-import 'taxonomy_validation.dart' as _i146;
-import 'package:hayer_server/src/generated/location_suggestion.dart' as _i147;
+import 'storage/discovery_coverage_row.dart' as _i125;
+import 'storage/discovery_harvest_manifest_row.dart' as _i126;
+import 'storage/discovery_harvest_row.dart' as _i127;
+import 'storage/discovery_taxonomy_version_row.dart' as _i128;
+import 'storage/discovery_type_observation_row.dart' as _i129;
+import 'storage/hayer_session_row.dart' as _i130;
+import 'storage/idempotency_row.dart' as _i131;
+import 'storage/operational_metric_row.dart' as _i132;
+import 'storage/participant_row.dart' as _i133;
+import 'storage/poi_catalog_row.dart' as _i134;
+import 'storage/poi_category_row.dart' as _i135;
+import 'storage/poi_coverage_row.dart' as _i136;
+import 'storage/poi_detail_refresh_row.dart' as _i137;
+import 'storage/poi_issue_report_row.dart' as _i138;
+import 'storage/product_analytics_event_row.dart' as _i139;
+import 'storage/product_analytics_hour_row.dart' as _i140;
+import 'storage/rate_limit_row.dart' as _i141;
+import 'storage/refresh_job_row.dart' as _i142;
+import 'storage/session_place_row.dart' as _i143;
+import 'storage/swipe_row.dart' as _i144;
+import 'storage/taxonomy_version_row.dart' as _i145;
+import 'swipe_command.dart' as _i146;
+import 'taxonomy_canary_sample.dart' as _i147;
+import 'taxonomy_item.dart' as _i148;
+import 'taxonomy_kind.dart' as _i149;
+import 'taxonomy_snapshot.dart' as _i150;
+import 'taxonomy_status.dart' as _i151;
+import 'taxonomy_validation.dart' as _i152;
+import 'package:hayer_server/src/generated/location_suggestion.dart' as _i153;
 import 'package:hayer_server/src/generated/admin_discovery_taxonomy_version.dart'
-    as _i148;
+    as _i154;
 import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
-    as _i149;
+    as _i155;
 import 'package:hayer_server/src/generated/admin_discovery_harvest_manifest_version.dart'
-    as _i150;
+    as _i156;
 import 'package:hayer_server/src/generated/discovery_harvest_manifest_entry.dart'
-    as _i151;
+    as _i157;
 import 'package:hayer_server/src/generated/admin_taxonomy_version.dart'
-    as _i152;
-import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i153;
-import 'package:hayer_server/src/generated/metric_point.dart' as _i154;
-import 'package:hayer_server/src/generated/session_result.dart' as _i155;
-import 'dart:typed_data' as _i156;
+    as _i158;
+import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i159;
+import 'package:hayer_server/src/generated/metric_point.dart' as _i160;
+import 'package:hayer_server/src/generated/session_result.dart' as _i161;
+import 'dart:typed_data' as _i162;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -294,6 +300,11 @@ export 'storage/admin_audit_row.dart';
 export 'storage/cache_settings_row.dart';
 export 'storage/calibration_row.dart';
 export 'storage/city_resolution_row.dart';
+export 'storage/discovery_coverage_row.dart';
+export 'storage/discovery_harvest_manifest_row.dart';
+export 'storage/discovery_harvest_row.dart';
+export 'storage/discovery_taxonomy_version_row.dart';
+export 'storage/discovery_type_observation_row.dart';
 export 'storage/hayer_session_row.dart';
 export 'storage/idempotency_row.dart';
 export 'storage/operational_metric_row.dart';
@@ -301,6 +312,7 @@ export 'storage/participant_row.dart';
 export 'storage/poi_catalog_row.dart';
 export 'storage/poi_category_row.dart';
 export 'storage/poi_coverage_row.dart';
+export 'storage/poi_detail_refresh_row.dart';
 export 'storage/poi_issue_report_row.dart';
 export 'storage/product_analytics_event_row.dart';
 export 'storage/product_analytics_hour_row.dart';
@@ -551,6 +563,174 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'int',
           columnDefault: '6',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryEnabled',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBestFormula',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:DiscoveryBestFormula',
+          columnDefault: '\'popularityWeighted\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryGemMinimumRating',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+          columnDefault: '4.5',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryGemMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '1',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryGemMaximumReviewsExclusive',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '500',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBayesianPriorReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '100',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBayesianMeanRating',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+          columnDefault: '4.0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBestMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '1',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryTopRatedMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryWorstRatedMinimumReviews',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryRecentlyAddedDays',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '45',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestMaximumRequests',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '24',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestDesiredCandidatesPerQuery',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '50',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestMaximumSeconds',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '300',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryHarvestCooldownMinutes',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '60',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryUserHarvestsPerHour',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '3',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryBrowseRequestsPerMinute',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '30',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryFacetRequestsPerMinute',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '60',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryQueryTimeoutMilliseconds',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '2000',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryMaximumPageSize',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '100',
+        ),
+        _i2.ColumnDefinition(
+          name: 'discoveryMaximumMapPoints',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '2000',
+        ),
+        _i2.ColumnDefinition(
+          name: 'detailRefreshMaximumRequests',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '3',
+        ),
+        _i2.ColumnDefinition(
+          name: 'detailRefreshMaximumSeconds',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '20',
+        ),
+        _i2.ColumnDefinition(
+          name: 'detailRefreshCooldownMinutes',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '60',
         ),
         _i2.ColumnDefinition(
           name: 'updatedBy',
@@ -809,6 +989,785 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'hayer_discovery_coverage',
+      dartName: 'DiscoveryCoverageRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'hayer_discovery_coverage_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'countryCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'cellId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'radiusMeters',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'centerLatitude',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'centerLongitude',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'south',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'west',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'north',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'east',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'manifestRevision',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'queryCompletedAt',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'Map<String,DateTime>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastAttemptAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastSuccessAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastJobId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastFailureCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_coverage_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_coverage_cell',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'countryCode',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'cellId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'radiusMeters',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_coverage_bounds',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'countryCode',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'south',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'north',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'hayer_discovery_harvest',
+      dartName: 'DiscoveryHarvestRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'hayer_discovery_harvest_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'jobId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'harvestKey',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'requester',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:DiscoveryHarvestRequester',
+        ),
+        _i2.ColumnDefinition(
+          name: 'requestedBy',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'trigger',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:DiscoveryHarvestTrigger',
+        ),
+        _i2.ColumnDefinition(
+          name: 'countryCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'cellId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'radiusMeters',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'centerLatitude',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'centerLongitude',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'south',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'west',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'north',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'east',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'manifestVersion',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'manifestRevision',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'calibrationVersion',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'state',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:DiscoveryHarvestState',
+        ),
+        _i2.ColumnDefinition(
+          name: 'queryOutcomes',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<protocol:DiscoveryHarvestQueryOutcome>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'attemptedQueries',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'completedQueries',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'totalQueries',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'observedPlaces',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'upstreamRequests',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'startedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'completedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'failureCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_harvest_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_harvest_job',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'jobId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_harvest_key_state',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'harvestKey',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'state',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_harvest_cell_completed',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'countryCode',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'cellId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'radiusMeters',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'completedAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_harvest_state_created',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'state',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_harvest_created',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'hayer_discovery_harvest_manifest',
+      dartName: 'DiscoveryHarvestManifestRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'hayer_discovery_harvest_manifest_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'version',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'revision',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:DiscoveryManifestStatus',
+        ),
+        _i2.ColumnDefinition(
+          name: 'entries',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<protocol:DiscoveryHarvestManifestEntry>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validationPassed',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validationErrors',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'publishedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_harvest_manifest_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_manifest_version_key',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'version',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_manifest_status',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'publishedAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'hayer_discovery_taxonomy',
+      dartName: 'DiscoveryTaxonomyVersionRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'hayer_discovery_taxonomy_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'version',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'revision',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:TaxonomyStatus',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentJson',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validationPassed',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validationErrors',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'validatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'publishedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_taxonomy_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_taxonomy_version_key',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'version',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_taxonomy_status',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'publishedAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'hayer_discovery_type_observation',
+      dartName: 'DiscoveryTypeObservationRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'hayer_discovery_type_observation_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'typeKey',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'primaryType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'observationCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'firstObservedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastObservedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_type_observation_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_discovery_type_observation_key',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'typeKey',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
           isPrimary: false,
         ),
       ],
@@ -1620,6 +2579,127 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'hayer_poi_detail_refresh',
+      dartName: 'PoiDetailRefreshRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'provider',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'providerPlaceId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'state',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:PlaceDetailRefreshState',
+        ),
+        _i2.ColumnDefinition(
+          name: 'leaseToken',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'leaseExpiresAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastAttemptAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastCheckedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastSuccessAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'retryAfter',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastFailureCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'attemptCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_poi_detail_refresh_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_poi_detail_refresh_identity',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'provider',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'providerPlaceId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'hayer_poi_issue_report',
       dartName: 'PoiIssueReportRow',
       schema: 'public',
@@ -1653,8 +2733,15 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'sessionId',
           columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'source',
+          columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'String',
+          dartType: 'protocol:PoiIssueSource',
+          columnDefault: '\'session\'::text',
         ),
         _i2.ColumnDefinition(
           name: 'placeId',
@@ -2435,6 +3522,18 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'planJson',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'heartbeatAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
         ),
       ],
       foreignKeys: [],
@@ -3493,71 +4592,89 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i124.CityResolutionRow) {
       return _i124.CityResolutionRow.fromJson(data) as T;
     }
-    if (t == _i125.HayerSessionRow) {
-      return _i125.HayerSessionRow.fromJson(data) as T;
+    if (t == _i125.DiscoveryCoverageRow) {
+      return _i125.DiscoveryCoverageRow.fromJson(data) as T;
     }
-    if (t == _i126.IdempotencyRow) {
-      return _i126.IdempotencyRow.fromJson(data) as T;
+    if (t == _i126.DiscoveryHarvestManifestRow) {
+      return _i126.DiscoveryHarvestManifestRow.fromJson(data) as T;
     }
-    if (t == _i127.OperationalMetricRow) {
-      return _i127.OperationalMetricRow.fromJson(data) as T;
+    if (t == _i127.DiscoveryHarvestRow) {
+      return _i127.DiscoveryHarvestRow.fromJson(data) as T;
     }
-    if (t == _i128.ParticipantRow) {
-      return _i128.ParticipantRow.fromJson(data) as T;
+    if (t == _i128.DiscoveryTaxonomyVersionRow) {
+      return _i128.DiscoveryTaxonomyVersionRow.fromJson(data) as T;
     }
-    if (t == _i129.PoiCatalogRow) {
-      return _i129.PoiCatalogRow.fromJson(data) as T;
+    if (t == _i129.DiscoveryTypeObservationRow) {
+      return _i129.DiscoveryTypeObservationRow.fromJson(data) as T;
     }
-    if (t == _i130.PoiCategoryRow) {
-      return _i130.PoiCategoryRow.fromJson(data) as T;
+    if (t == _i130.HayerSessionRow) {
+      return _i130.HayerSessionRow.fromJson(data) as T;
     }
-    if (t == _i131.PoiCoverageRow) {
-      return _i131.PoiCoverageRow.fromJson(data) as T;
+    if (t == _i131.IdempotencyRow) {
+      return _i131.IdempotencyRow.fromJson(data) as T;
     }
-    if (t == _i132.PoiIssueReportRow) {
-      return _i132.PoiIssueReportRow.fromJson(data) as T;
+    if (t == _i132.OperationalMetricRow) {
+      return _i132.OperationalMetricRow.fromJson(data) as T;
     }
-    if (t == _i133.ProductAnalyticsEventRow) {
-      return _i133.ProductAnalyticsEventRow.fromJson(data) as T;
+    if (t == _i133.ParticipantRow) {
+      return _i133.ParticipantRow.fromJson(data) as T;
     }
-    if (t == _i134.ProductAnalyticsHourRow) {
-      return _i134.ProductAnalyticsHourRow.fromJson(data) as T;
+    if (t == _i134.PoiCatalogRow) {
+      return _i134.PoiCatalogRow.fromJson(data) as T;
     }
-    if (t == _i135.RateLimitRow) {
-      return _i135.RateLimitRow.fromJson(data) as T;
+    if (t == _i135.PoiCategoryRow) {
+      return _i135.PoiCategoryRow.fromJson(data) as T;
     }
-    if (t == _i136.RefreshJobRow) {
-      return _i136.RefreshJobRow.fromJson(data) as T;
+    if (t == _i136.PoiCoverageRow) {
+      return _i136.PoiCoverageRow.fromJson(data) as T;
     }
-    if (t == _i137.SessionPlaceRow) {
-      return _i137.SessionPlaceRow.fromJson(data) as T;
+    if (t == _i137.PoiDetailRefreshRow) {
+      return _i137.PoiDetailRefreshRow.fromJson(data) as T;
     }
-    if (t == _i138.SwipeRow) {
-      return _i138.SwipeRow.fromJson(data) as T;
+    if (t == _i138.PoiIssueReportRow) {
+      return _i138.PoiIssueReportRow.fromJson(data) as T;
     }
-    if (t == _i139.TaxonomyVersionRow) {
-      return _i139.TaxonomyVersionRow.fromJson(data) as T;
+    if (t == _i139.ProductAnalyticsEventRow) {
+      return _i139.ProductAnalyticsEventRow.fromJson(data) as T;
     }
-    if (t == _i140.SwipeCommand) {
-      return _i140.SwipeCommand.fromJson(data) as T;
+    if (t == _i140.ProductAnalyticsHourRow) {
+      return _i140.ProductAnalyticsHourRow.fromJson(data) as T;
     }
-    if (t == _i141.TaxonomyCanarySample) {
-      return _i141.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _i141.RateLimitRow) {
+      return _i141.RateLimitRow.fromJson(data) as T;
     }
-    if (t == _i142.TaxonomyItem) {
-      return _i142.TaxonomyItem.fromJson(data) as T;
+    if (t == _i142.RefreshJobRow) {
+      return _i142.RefreshJobRow.fromJson(data) as T;
     }
-    if (t == _i143.TaxonomyKind) {
-      return _i143.TaxonomyKind.fromJson(data) as T;
+    if (t == _i143.SessionPlaceRow) {
+      return _i143.SessionPlaceRow.fromJson(data) as T;
     }
-    if (t == _i144.TaxonomySnapshot) {
-      return _i144.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i144.SwipeRow) {
+      return _i144.SwipeRow.fromJson(data) as T;
     }
-    if (t == _i145.TaxonomyStatus) {
-      return _i145.TaxonomyStatus.fromJson(data) as T;
+    if (t == _i145.TaxonomyVersionRow) {
+      return _i145.TaxonomyVersionRow.fromJson(data) as T;
     }
-    if (t == _i146.TaxonomyValidation) {
-      return _i146.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i146.SwipeCommand) {
+      return _i146.SwipeCommand.fromJson(data) as T;
+    }
+    if (t == _i147.TaxonomyCanarySample) {
+      return _i147.TaxonomyCanarySample.fromJson(data) as T;
+    }
+    if (t == _i148.TaxonomyItem) {
+      return _i148.TaxonomyItem.fromJson(data) as T;
+    }
+    if (t == _i149.TaxonomyKind) {
+      return _i149.TaxonomyKind.fromJson(data) as T;
+    }
+    if (t == _i150.TaxonomySnapshot) {
+      return _i150.TaxonomySnapshot.fromJson(data) as T;
+    }
+    if (t == _i151.TaxonomyStatus) {
+      return _i151.TaxonomyStatus.fromJson(data) as T;
+    }
+    if (t == _i152.TaxonomyValidation) {
+      return _i152.TaxonomyValidation.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.AdminAnalyticsOverview?>()) {
       return (data != null ? _i5.AdminAnalyticsOverview.fromJson(data) : null)
@@ -4017,81 +5134,111 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i124.CityResolutionRow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i125.HayerSessionRow?>()) {
-      return (data != null ? _i125.HayerSessionRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i126.IdempotencyRow?>()) {
-      return (data != null ? _i126.IdempotencyRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i127.OperationalMetricRow?>()) {
-      return (data != null ? _i127.OperationalMetricRow.fromJson(data) : null)
+    if (t == _i1.getType<_i125.DiscoveryCoverageRow?>()) {
+      return (data != null ? _i125.DiscoveryCoverageRow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i128.ParticipantRow?>()) {
-      return (data != null ? _i128.ParticipantRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i129.PoiCatalogRow?>()) {
-      return (data != null ? _i129.PoiCatalogRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i130.PoiCategoryRow?>()) {
-      return (data != null ? _i130.PoiCategoryRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i131.PoiCoverageRow?>()) {
-      return (data != null ? _i131.PoiCoverageRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i132.PoiIssueReportRow?>()) {
-      return (data != null ? _i132.PoiIssueReportRow.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i133.ProductAnalyticsEventRow?>()) {
+    if (t == _i1.getType<_i126.DiscoveryHarvestManifestRow?>()) {
       return (data != null
-              ? _i133.ProductAnalyticsEventRow.fromJson(data)
+              ? _i126.DiscoveryHarvestManifestRow.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i134.ProductAnalyticsHourRow?>()) {
+    if (t == _i1.getType<_i127.DiscoveryHarvestRow?>()) {
+      return (data != null ? _i127.DiscoveryHarvestRow.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i128.DiscoveryTaxonomyVersionRow?>()) {
       return (data != null
-              ? _i134.ProductAnalyticsHourRow.fromJson(data)
+              ? _i128.DiscoveryTaxonomyVersionRow.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i135.RateLimitRow?>()) {
-      return (data != null ? _i135.RateLimitRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i136.RefreshJobRow?>()) {
-      return (data != null ? _i136.RefreshJobRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i137.SessionPlaceRow?>()) {
-      return (data != null ? _i137.SessionPlaceRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i138.SwipeRow?>()) {
-      return (data != null ? _i138.SwipeRow.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i139.TaxonomyVersionRow?>()) {
-      return (data != null ? _i139.TaxonomyVersionRow.fromJson(data) : null)
+    if (t == _i1.getType<_i129.DiscoveryTypeObservationRow?>()) {
+      return (data != null
+              ? _i129.DiscoveryTypeObservationRow.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i140.SwipeCommand?>()) {
-      return (data != null ? _i140.SwipeCommand.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i130.HayerSessionRow?>()) {
+      return (data != null ? _i130.HayerSessionRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i141.TaxonomyCanarySample?>()) {
-      return (data != null ? _i141.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _i1.getType<_i131.IdempotencyRow?>()) {
+      return (data != null ? _i131.IdempotencyRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i132.OperationalMetricRow?>()) {
+      return (data != null ? _i132.OperationalMetricRow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i142.TaxonomyItem?>()) {
-      return (data != null ? _i142.TaxonomyItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i133.ParticipantRow?>()) {
+      return (data != null ? _i133.ParticipantRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i143.TaxonomyKind?>()) {
-      return (data != null ? _i143.TaxonomyKind.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i134.PoiCatalogRow?>()) {
+      return (data != null ? _i134.PoiCatalogRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i144.TaxonomySnapshot?>()) {
-      return (data != null ? _i144.TaxonomySnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i135.PoiCategoryRow?>()) {
+      return (data != null ? _i135.PoiCategoryRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i145.TaxonomyStatus?>()) {
-      return (data != null ? _i145.TaxonomyStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i136.PoiCoverageRow?>()) {
+      return (data != null ? _i136.PoiCoverageRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i146.TaxonomyValidation?>()) {
-      return (data != null ? _i146.TaxonomyValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i137.PoiDetailRefreshRow?>()) {
+      return (data != null ? _i137.PoiDetailRefreshRow.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i138.PoiIssueReportRow?>()) {
+      return (data != null ? _i138.PoiIssueReportRow.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i139.ProductAnalyticsEventRow?>()) {
+      return (data != null
+              ? _i139.ProductAnalyticsEventRow.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i140.ProductAnalyticsHourRow?>()) {
+      return (data != null
+              ? _i140.ProductAnalyticsHourRow.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i141.RateLimitRow?>()) {
+      return (data != null ? _i141.RateLimitRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i142.RefreshJobRow?>()) {
+      return (data != null ? _i142.RefreshJobRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i143.SessionPlaceRow?>()) {
+      return (data != null ? _i143.SessionPlaceRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i144.SwipeRow?>()) {
+      return (data != null ? _i144.SwipeRow.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i145.TaxonomyVersionRow?>()) {
+      return (data != null ? _i145.TaxonomyVersionRow.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i146.SwipeCommand?>()) {
+      return (data != null ? _i146.SwipeCommand.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i147.TaxonomyCanarySample?>()) {
+      return (data != null ? _i147.TaxonomyCanarySample.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i148.TaxonomyItem?>()) {
+      return (data != null ? _i148.TaxonomyItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i149.TaxonomyKind?>()) {
+      return (data != null ? _i149.TaxonomyKind.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i150.TaxonomySnapshot?>()) {
+      return (data != null ? _i150.TaxonomySnapshot.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i151.TaxonomyStatus?>()) {
+      return (data != null ? _i151.TaxonomyStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i152.TaxonomyValidation?>()) {
+      return (data != null ? _i152.TaxonomyValidation.fromJson(data) : null)
           as T;
     }
     if (t == List<_i26.AnalyticsKpi>) {
@@ -4331,72 +5478,79 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i142.TaxonomyItem>) {
+    if (t == Map<String, DateTime>) {
+      return (data as Map).map(
+            (k, v) =>
+                MapEntry(deserialize<String>(k), deserialize<DateTime>(v)),
+          )
+          as T;
+    }
+    if (t == List<_i148.TaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i142.TaxonomyItem>(e))
+              .map((e) => deserialize<_i148.TaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i141.TaxonomyCanarySample>) {
+    if (t == List<_i147.TaxonomyCanarySample>) {
       return (data as List)
-              .map((e) => deserialize<_i141.TaxonomyCanarySample>(e))
+              .map((e) => deserialize<_i147.TaxonomyCanarySample>(e))
               .toList()
           as T;
     }
-    if (t == List<_i147.LocationSuggestion>) {
+    if (t == List<_i153.LocationSuggestion>) {
       return (data as List)
-              .map((e) => deserialize<_i147.LocationSuggestion>(e))
+              .map((e) => deserialize<_i153.LocationSuggestion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i148.AdminDiscoveryTaxonomyVersion>) {
+    if (t == List<_i154.AdminDiscoveryTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i148.AdminDiscoveryTaxonomyVersion>(e))
+              .map((e) => deserialize<_i154.AdminDiscoveryTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i149.DiscoveryTaxonomyNode>) {
+    if (t == List<_i155.DiscoveryTaxonomyNode>) {
       return (data as List)
-              .map((e) => deserialize<_i149.DiscoveryTaxonomyNode>(e))
+              .map((e) => deserialize<_i155.DiscoveryTaxonomyNode>(e))
               .toList()
           as T;
     }
-    if (t == List<_i150.AdminDiscoveryHarvestManifestVersion>) {
+    if (t == List<_i156.AdminDiscoveryHarvestManifestVersion>) {
       return (data as List)
               .map(
                 (e) =>
-                    deserialize<_i150.AdminDiscoveryHarvestManifestVersion>(e),
+                    deserialize<_i156.AdminDiscoveryHarvestManifestVersion>(e),
               )
               .toList()
           as T;
     }
-    if (t == List<_i151.DiscoveryHarvestManifestEntry>) {
+    if (t == List<_i157.DiscoveryHarvestManifestEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i151.DiscoveryHarvestManifestEntry>(e))
+              .map((e) => deserialize<_i157.DiscoveryHarvestManifestEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i152.AdminTaxonomyVersion>) {
+    if (t == List<_i158.AdminTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i152.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_i158.AdminTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i153.AdminTaxonomyItem>) {
+    if (t == List<_i159.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i153.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i159.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i154.MetricPoint>) {
+    if (t == List<_i160.MetricPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i154.MetricPoint>(e))
+              .map((e) => deserialize<_i160.MetricPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i155.SessionResult>) {
+    if (t == List<_i161.SessionResult>) {
       return (data as List)
-              .map((e) => deserialize<_i155.SessionResult>(e))
+              .map((e) => deserialize<_i161.SessionResult>(e))
               .toList()
           as T;
     }
@@ -4409,9 +5563,9 @@ class Protocol extends _i1.SerializationManagerServer {
           )
           as T;
     }
-    if (t == _i1.getType<({_i156.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i162.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i156.ByteData>(
+            challenge: deserialize<_i162.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -4554,28 +5708,34 @@ class Protocol extends _i1.SerializationManagerServer {
       _i122.CacheSettingsRow => 'CacheSettingsRow',
       _i123.CalibrationRow => 'CalibrationRow',
       _i124.CityResolutionRow => 'CityResolutionRow',
-      _i125.HayerSessionRow => 'HayerSessionRow',
-      _i126.IdempotencyRow => 'IdempotencyRow',
-      _i127.OperationalMetricRow => 'OperationalMetricRow',
-      _i128.ParticipantRow => 'ParticipantRow',
-      _i129.PoiCatalogRow => 'PoiCatalogRow',
-      _i130.PoiCategoryRow => 'PoiCategoryRow',
-      _i131.PoiCoverageRow => 'PoiCoverageRow',
-      _i132.PoiIssueReportRow => 'PoiIssueReportRow',
-      _i133.ProductAnalyticsEventRow => 'ProductAnalyticsEventRow',
-      _i134.ProductAnalyticsHourRow => 'ProductAnalyticsHourRow',
-      _i135.RateLimitRow => 'RateLimitRow',
-      _i136.RefreshJobRow => 'RefreshJobRow',
-      _i137.SessionPlaceRow => 'SessionPlaceRow',
-      _i138.SwipeRow => 'SwipeRow',
-      _i139.TaxonomyVersionRow => 'TaxonomyVersionRow',
-      _i140.SwipeCommand => 'SwipeCommand',
-      _i141.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i142.TaxonomyItem => 'TaxonomyItem',
-      _i143.TaxonomyKind => 'TaxonomyKind',
-      _i144.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i145.TaxonomyStatus => 'TaxonomyStatus',
-      _i146.TaxonomyValidation => 'TaxonomyValidation',
+      _i125.DiscoveryCoverageRow => 'DiscoveryCoverageRow',
+      _i126.DiscoveryHarvestManifestRow => 'DiscoveryHarvestManifestRow',
+      _i127.DiscoveryHarvestRow => 'DiscoveryHarvestRow',
+      _i128.DiscoveryTaxonomyVersionRow => 'DiscoveryTaxonomyVersionRow',
+      _i129.DiscoveryTypeObservationRow => 'DiscoveryTypeObservationRow',
+      _i130.HayerSessionRow => 'HayerSessionRow',
+      _i131.IdempotencyRow => 'IdempotencyRow',
+      _i132.OperationalMetricRow => 'OperationalMetricRow',
+      _i133.ParticipantRow => 'ParticipantRow',
+      _i134.PoiCatalogRow => 'PoiCatalogRow',
+      _i135.PoiCategoryRow => 'PoiCategoryRow',
+      _i136.PoiCoverageRow => 'PoiCoverageRow',
+      _i137.PoiDetailRefreshRow => 'PoiDetailRefreshRow',
+      _i138.PoiIssueReportRow => 'PoiIssueReportRow',
+      _i139.ProductAnalyticsEventRow => 'ProductAnalyticsEventRow',
+      _i140.ProductAnalyticsHourRow => 'ProductAnalyticsHourRow',
+      _i141.RateLimitRow => 'RateLimitRow',
+      _i142.RefreshJobRow => 'RefreshJobRow',
+      _i143.SessionPlaceRow => 'SessionPlaceRow',
+      _i144.SwipeRow => 'SwipeRow',
+      _i145.TaxonomyVersionRow => 'TaxonomyVersionRow',
+      _i146.SwipeCommand => 'SwipeCommand',
+      _i147.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _i148.TaxonomyItem => 'TaxonomyItem',
+      _i149.TaxonomyKind => 'TaxonomyKind',
+      _i150.TaxonomySnapshot => 'TaxonomySnapshot',
+      _i151.TaxonomyStatus => 'TaxonomyStatus',
+      _i152.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -4830,49 +5990,61 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'CalibrationRow';
       case _i124.CityResolutionRow():
         return 'CityResolutionRow';
-      case _i125.HayerSessionRow():
+      case _i125.DiscoveryCoverageRow():
+        return 'DiscoveryCoverageRow';
+      case _i126.DiscoveryHarvestManifestRow():
+        return 'DiscoveryHarvestManifestRow';
+      case _i127.DiscoveryHarvestRow():
+        return 'DiscoveryHarvestRow';
+      case _i128.DiscoveryTaxonomyVersionRow():
+        return 'DiscoveryTaxonomyVersionRow';
+      case _i129.DiscoveryTypeObservationRow():
+        return 'DiscoveryTypeObservationRow';
+      case _i130.HayerSessionRow():
         return 'HayerSessionRow';
-      case _i126.IdempotencyRow():
+      case _i131.IdempotencyRow():
         return 'IdempotencyRow';
-      case _i127.OperationalMetricRow():
+      case _i132.OperationalMetricRow():
         return 'OperationalMetricRow';
-      case _i128.ParticipantRow():
+      case _i133.ParticipantRow():
         return 'ParticipantRow';
-      case _i129.PoiCatalogRow():
+      case _i134.PoiCatalogRow():
         return 'PoiCatalogRow';
-      case _i130.PoiCategoryRow():
+      case _i135.PoiCategoryRow():
         return 'PoiCategoryRow';
-      case _i131.PoiCoverageRow():
+      case _i136.PoiCoverageRow():
         return 'PoiCoverageRow';
-      case _i132.PoiIssueReportRow():
+      case _i137.PoiDetailRefreshRow():
+        return 'PoiDetailRefreshRow';
+      case _i138.PoiIssueReportRow():
         return 'PoiIssueReportRow';
-      case _i133.ProductAnalyticsEventRow():
+      case _i139.ProductAnalyticsEventRow():
         return 'ProductAnalyticsEventRow';
-      case _i134.ProductAnalyticsHourRow():
+      case _i140.ProductAnalyticsHourRow():
         return 'ProductAnalyticsHourRow';
-      case _i135.RateLimitRow():
+      case _i141.RateLimitRow():
         return 'RateLimitRow';
-      case _i136.RefreshJobRow():
+      case _i142.RefreshJobRow():
         return 'RefreshJobRow';
-      case _i137.SessionPlaceRow():
+      case _i143.SessionPlaceRow():
         return 'SessionPlaceRow';
-      case _i138.SwipeRow():
+      case _i144.SwipeRow():
         return 'SwipeRow';
-      case _i139.TaxonomyVersionRow():
+      case _i145.TaxonomyVersionRow():
         return 'TaxonomyVersionRow';
-      case _i140.SwipeCommand():
+      case _i146.SwipeCommand():
         return 'SwipeCommand';
-      case _i141.TaxonomyCanarySample():
+      case _i147.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i142.TaxonomyItem():
+      case _i148.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i143.TaxonomyKind():
+      case _i149.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i144.TaxonomySnapshot():
+      case _i150.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i145.TaxonomyStatus():
+      case _i151.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i146.TaxonomyValidation():
+      case _i152.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -5258,71 +6430,89 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'CityResolutionRow') {
       return deserialize<_i124.CityResolutionRow>(data['data']);
     }
+    if (dataClassName == 'DiscoveryCoverageRow') {
+      return deserialize<_i125.DiscoveryCoverageRow>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryHarvestManifestRow') {
+      return deserialize<_i126.DiscoveryHarvestManifestRow>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryHarvestRow') {
+      return deserialize<_i127.DiscoveryHarvestRow>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryTaxonomyVersionRow') {
+      return deserialize<_i128.DiscoveryTaxonomyVersionRow>(data['data']);
+    }
+    if (dataClassName == 'DiscoveryTypeObservationRow') {
+      return deserialize<_i129.DiscoveryTypeObservationRow>(data['data']);
+    }
     if (dataClassName == 'HayerSessionRow') {
-      return deserialize<_i125.HayerSessionRow>(data['data']);
+      return deserialize<_i130.HayerSessionRow>(data['data']);
     }
     if (dataClassName == 'IdempotencyRow') {
-      return deserialize<_i126.IdempotencyRow>(data['data']);
+      return deserialize<_i131.IdempotencyRow>(data['data']);
     }
     if (dataClassName == 'OperationalMetricRow') {
-      return deserialize<_i127.OperationalMetricRow>(data['data']);
+      return deserialize<_i132.OperationalMetricRow>(data['data']);
     }
     if (dataClassName == 'ParticipantRow') {
-      return deserialize<_i128.ParticipantRow>(data['data']);
+      return deserialize<_i133.ParticipantRow>(data['data']);
     }
     if (dataClassName == 'PoiCatalogRow') {
-      return deserialize<_i129.PoiCatalogRow>(data['data']);
+      return deserialize<_i134.PoiCatalogRow>(data['data']);
     }
     if (dataClassName == 'PoiCategoryRow') {
-      return deserialize<_i130.PoiCategoryRow>(data['data']);
+      return deserialize<_i135.PoiCategoryRow>(data['data']);
     }
     if (dataClassName == 'PoiCoverageRow') {
-      return deserialize<_i131.PoiCoverageRow>(data['data']);
+      return deserialize<_i136.PoiCoverageRow>(data['data']);
+    }
+    if (dataClassName == 'PoiDetailRefreshRow') {
+      return deserialize<_i137.PoiDetailRefreshRow>(data['data']);
     }
     if (dataClassName == 'PoiIssueReportRow') {
-      return deserialize<_i132.PoiIssueReportRow>(data['data']);
+      return deserialize<_i138.PoiIssueReportRow>(data['data']);
     }
     if (dataClassName == 'ProductAnalyticsEventRow') {
-      return deserialize<_i133.ProductAnalyticsEventRow>(data['data']);
+      return deserialize<_i139.ProductAnalyticsEventRow>(data['data']);
     }
     if (dataClassName == 'ProductAnalyticsHourRow') {
-      return deserialize<_i134.ProductAnalyticsHourRow>(data['data']);
+      return deserialize<_i140.ProductAnalyticsHourRow>(data['data']);
     }
     if (dataClassName == 'RateLimitRow') {
-      return deserialize<_i135.RateLimitRow>(data['data']);
+      return deserialize<_i141.RateLimitRow>(data['data']);
     }
     if (dataClassName == 'RefreshJobRow') {
-      return deserialize<_i136.RefreshJobRow>(data['data']);
+      return deserialize<_i142.RefreshJobRow>(data['data']);
     }
     if (dataClassName == 'SessionPlaceRow') {
-      return deserialize<_i137.SessionPlaceRow>(data['data']);
+      return deserialize<_i143.SessionPlaceRow>(data['data']);
     }
     if (dataClassName == 'SwipeRow') {
-      return deserialize<_i138.SwipeRow>(data['data']);
+      return deserialize<_i144.SwipeRow>(data['data']);
     }
     if (dataClassName == 'TaxonomyVersionRow') {
-      return deserialize<_i139.TaxonomyVersionRow>(data['data']);
+      return deserialize<_i145.TaxonomyVersionRow>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i140.SwipeCommand>(data['data']);
+      return deserialize<_i146.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i141.TaxonomyCanarySample>(data['data']);
+      return deserialize<_i147.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i142.TaxonomyItem>(data['data']);
+      return deserialize<_i148.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i143.TaxonomyKind>(data['data']);
+      return deserialize<_i149.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i144.TaxonomySnapshot>(data['data']);
+      return deserialize<_i150.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i145.TaxonomyStatus>(data['data']);
+      return deserialize<_i151.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i146.TaxonomyValidation>(data['data']);
+      return deserialize<_i152.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -5368,36 +6558,48 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i123.CalibrationRow.t;
       case _i124.CityResolutionRow:
         return _i124.CityResolutionRow.t;
-      case _i125.HayerSessionRow:
-        return _i125.HayerSessionRow.t;
-      case _i126.IdempotencyRow:
-        return _i126.IdempotencyRow.t;
-      case _i127.OperationalMetricRow:
-        return _i127.OperationalMetricRow.t;
-      case _i128.ParticipantRow:
-        return _i128.ParticipantRow.t;
-      case _i129.PoiCatalogRow:
-        return _i129.PoiCatalogRow.t;
-      case _i130.PoiCategoryRow:
-        return _i130.PoiCategoryRow.t;
-      case _i131.PoiCoverageRow:
-        return _i131.PoiCoverageRow.t;
-      case _i132.PoiIssueReportRow:
-        return _i132.PoiIssueReportRow.t;
-      case _i133.ProductAnalyticsEventRow:
-        return _i133.ProductAnalyticsEventRow.t;
-      case _i134.ProductAnalyticsHourRow:
-        return _i134.ProductAnalyticsHourRow.t;
-      case _i135.RateLimitRow:
-        return _i135.RateLimitRow.t;
-      case _i136.RefreshJobRow:
-        return _i136.RefreshJobRow.t;
-      case _i137.SessionPlaceRow:
-        return _i137.SessionPlaceRow.t;
-      case _i138.SwipeRow:
-        return _i138.SwipeRow.t;
-      case _i139.TaxonomyVersionRow:
-        return _i139.TaxonomyVersionRow.t;
+      case _i125.DiscoveryCoverageRow:
+        return _i125.DiscoveryCoverageRow.t;
+      case _i126.DiscoveryHarvestManifestRow:
+        return _i126.DiscoveryHarvestManifestRow.t;
+      case _i127.DiscoveryHarvestRow:
+        return _i127.DiscoveryHarvestRow.t;
+      case _i128.DiscoveryTaxonomyVersionRow:
+        return _i128.DiscoveryTaxonomyVersionRow.t;
+      case _i129.DiscoveryTypeObservationRow:
+        return _i129.DiscoveryTypeObservationRow.t;
+      case _i130.HayerSessionRow:
+        return _i130.HayerSessionRow.t;
+      case _i131.IdempotencyRow:
+        return _i131.IdempotencyRow.t;
+      case _i132.OperationalMetricRow:
+        return _i132.OperationalMetricRow.t;
+      case _i133.ParticipantRow:
+        return _i133.ParticipantRow.t;
+      case _i134.PoiCatalogRow:
+        return _i134.PoiCatalogRow.t;
+      case _i135.PoiCategoryRow:
+        return _i135.PoiCategoryRow.t;
+      case _i136.PoiCoverageRow:
+        return _i136.PoiCoverageRow.t;
+      case _i137.PoiDetailRefreshRow:
+        return _i137.PoiDetailRefreshRow.t;
+      case _i138.PoiIssueReportRow:
+        return _i138.PoiIssueReportRow.t;
+      case _i139.ProductAnalyticsEventRow:
+        return _i139.ProductAnalyticsEventRow.t;
+      case _i140.ProductAnalyticsHourRow:
+        return _i140.ProductAnalyticsHourRow.t;
+      case _i141.RateLimitRow:
+        return _i141.RateLimitRow.t;
+      case _i142.RefreshJobRow:
+        return _i142.RefreshJobRow.t;
+      case _i143.SessionPlaceRow:
+        return _i143.SessionPlaceRow.t;
+      case _i144.SwipeRow:
+        return _i144.SwipeRow.t;
+      case _i145.TaxonomyVersionRow:
+        return _i145.TaxonomyVersionRow.t;
     }
     return null;
   }
@@ -5426,7 +6628,7 @@ class Protocol extends _i1.SerializationManagerServer {
         },
       };
     }
-    if (record is ({_i156.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i162.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),

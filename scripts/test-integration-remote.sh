@@ -2,10 +2,11 @@
 # Run the PostGIS integration suite against a database this host can reach,
 # instead of the local Docker Compose stack in test-server-integration.sh.
 #
-# The suite is destructive: integration_test truncates hayer_poi_catalog,
-# hayer_poi_coverage, hayer_poi_category, hayer_cache_settings,
-# hayer_taxonomy_version and hayer_operational_metric in setUp and tearDown.
-# Point it only at a disposable database.
+# The suite is destructive: in setUp and tearDown, integration_test truncates
+# the shared catalog with its coverage, category evidence and detail-refresh
+# tables; sessions, reports, jobs, rate limits, audits and metrics; the Swipe
+# and Discover policy and taxonomy; and Discover's harvest, area coverage,
+# manifest and type-observation tables. Point it only at a disposable database.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

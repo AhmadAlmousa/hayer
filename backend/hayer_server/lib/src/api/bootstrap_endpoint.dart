@@ -10,7 +10,7 @@ class BootstrapEndpoint extends Endpoint {
   bool get requireLogin => false;
 
   Future<DiscoveryConfig> discoveryConfig(Session session) async =>
-      DiscoveryContract.configuration();
+      DiscoveryContract.configuration(session);
 
   Future<BootstrapInfo> getInfo(Session session, {required int build}) async {
     const minimumBuild = 5;

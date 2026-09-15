@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 
+import '../discovery/discovery_harvest_service.dart';
 import '../generated/protocol.dart';
 import '../places/catalog_place_service.dart';
 import '../places/place_services.dart';
@@ -21,7 +22,7 @@ abstract final class RefreshJobService {
     _running = true;
     final session = await pod.createSession(enableLogging: true);
     try {
-      await _recoverInterruptedJobs(session);
+      await recoverInterruptedJobs(session);
       for (var count = 0; count < 3; count++) {
         final job = await claimNext(session);
         if (job == null) break;
@@ -40,20 +41,34 @@ abstract final class RefreshJobService {
     }
   }
 
-  static Future<void> _recoverInterruptedJobs(Session session) async {
-    final staleStart = DateTime.now().toUtc().subtract(
+  /// Returns running jobs whose heartbeat went quiet, and their harvests, to
+  /// the queue. A live worker renews the heartbeat, so a long harvest is
+  /// never recovered while it still runs.
+  static Future<void> recoverInterruptedJobs(Session session) async {
+    final staleBefore = DateTime.now().toUtc().subtract(
       const Duration(minutes: 5),
     );
-    await RefreshJobRow.db.updateWhere(
-      session,
-      where: (table) =>
-          table.status.equals(JobStatus.running) &
-          (table.startedAt.equals(null) | (table.startedAt < staleStart)),
-      columnValues: (table) => [
-        table.status(JobStatus.pending),
-        table.startedAt(null),
-        table.errorCode(null),
-      ],
+    await session.db.unsafeExecute(
+      '''
+WITH recovered AS (
+  UPDATE "hayer_refresh_job"
+  SET "status" = 'pending', "startedAt" = NULL, "heartbeatAt" = NULL,
+    "errorCode" = NULL
+  WHERE "status" = 'running'
+    AND (
+      "startedAt" IS NULL
+      OR COALESCE("heartbeatAt", "startedAt") < CAST(@staleBefore AS timestamp)
+    )
+  RETURNING "jobId"
+)
+UPDATE "hayer_discovery_harvest" AS harvest
+SET "state" = 'pending', "startedAt" = NULL
+FROM recovered
+WHERE harvest."jobId" = recovered."jobId" AND harvest."state" = 'running'
+''',
+      parameters: QueryParameters.named({
+        'staleBefore': staleBefore.toIso8601String(),
+      }),
     );
   }
 
@@ -71,6 +86,7 @@ abstract final class RefreshJobService {
         if (job == null) return null;
         job.status = JobStatus.running;
         job.startedAt = DateTime.now().toUtc();
+        job.heartbeatAt = job.startedAt;
         job.completedAt = null;
         job.errorCode = null;
         return RefreshJobRow.db.updateRow(
@@ -87,6 +103,10 @@ abstract final class RefreshJobService {
     RefreshJobRow job, {
     RefreshJobAction? refresh,
   }) async {
+    if (job.planJson != null) {
+      await _executeHarvest(session, job);
+      return;
+    }
     ProviderOperation? activeOperation;
     final coverage = await PoiCoverageRow.db.findFirstRow(
       session,
@@ -141,6 +161,50 @@ abstract final class RefreshJobService {
           : 'refresh_failed';
       await _recordCoverageFailure(session, coverage, code);
       await _fail(session, job, code);
+    } finally {
+      if (identical(_activeOperations[job.jobId], activeOperation)) {
+        _activeOperations.remove(job.jobId);
+      }
+      _cancelledJobs.remove(job.jobId);
+    }
+  }
+
+  static Future<void> _executeHarvest(
+    Session session,
+    RefreshJobRow job,
+  ) async {
+    ProviderOperation? activeOperation;
+    try {
+      await DiscoveryHarvestService.execute(
+        session,
+        job,
+        _HarvestControl(session, job, (operation) {
+          activeOperation = operation;
+          _registerOperation(job.jobId, operation);
+        }),
+      );
+    } catch (error, stackTrace) {
+      session.log(
+        'A discovery harvest failed.',
+        level: LogLevel.error,
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      if (await _ownsLease(session, job)) {
+        await _fail(session, job, 'harvest_failed');
+        await DiscoveryHarvestRow.db.updateWhere(
+          session,
+          where: (table) =>
+              table.jobId.equals(job.jobId) &
+              (table.state.equals(DiscoveryHarvestState.pending) |
+                  table.state.equals(DiscoveryHarvestState.running)),
+          columnValues: (table) => [
+            table.state(DiscoveryHarvestState.failed),
+            table.completedAt(DateTime.now().toUtc()),
+            table.failureCode('harvest_failed'),
+          ],
+        );
+      }
     } finally {
       if (identical(_activeOperations[job.jobId], activeOperation)) {
         _activeOperations.remove(job.jobId);
@@ -288,6 +352,38 @@ abstract final class RefreshJobService {
             min(normalized.length, 80),
           );
   }
+}
+
+final class _HarvestControl implements HarvestJobControl {
+  _HarvestControl(this._session, this._job, this._register);
+
+  final Session _session;
+  final RefreshJobRow _job;
+  final void Function(ProviderOperation operation) _register;
+
+  @override
+  Future<bool> ownsLease() => RefreshJobService._ownsLease(_session, _job);
+
+  @override
+  Future<void> heartbeat() async {
+    final startedAt = _job.startedAt;
+    if (startedAt == null) return;
+    await RefreshJobRow.db.updateWhere(
+      _session,
+      where: (table) =>
+          table.jobId.equals(_job.jobId) &
+          table.status.equals(JobStatus.running) &
+          table.startedAt.equals(startedAt),
+      columnValues: (table) => [table.heartbeatAt(DateTime.now().toUtc())],
+    );
+  }
+
+  @override
+  Future<void> finish(JobStatus status, [String? code]) =>
+      RefreshJobService._finish(_session, _job, status, code);
+
+  @override
+  void registerOperation(ProviderOperation operation) => _register(operation);
 }
 
 typedef RefreshJobAction = Future<CatalogDeckOutcome> Function(

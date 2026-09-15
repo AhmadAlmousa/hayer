@@ -9,6 +9,65 @@ import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 
 void main() {
+  group('interactive priority', () {
+    test(
+      'background requests leave half the burst to interactive ones',
+      () async {
+        final gate = ProviderAdmission(burst: 4, requestsPerMinute: 1);
+        final harvest = ProviderOperation(background: true);
+        final search = ProviderOperation();
+        addTearDown(() {
+          harvest.cancel();
+          search.cancel();
+        });
+        (await gate.acquire(harvest)).release();
+        (await gate.acquire(harvest)).release();
+        // Two tokens remain: the reserve a background request may not spend.
+        final waiting = gate.acquire(harvest);
+        expect(gate.queued, 1);
+        final first = await gate.acquire(search);
+        final second = await gate.acquire(search);
+        expect(gate.queued, 1);
+        first.release();
+        second.release();
+        harvest.cancel();
+        await expectLater(waiting, throwsA(isA<PlaceSourceException>()));
+        expect(gate.queued, 0);
+      },
+    );
+
+    test(
+      'an eligible interactive request is admitted before queued background work',
+      () async {
+        final gate = ProviderAdmission(maximumConcurrent: 1);
+        final holder = ProviderOperation();
+        final harvest = ProviderOperation(background: true);
+        final search = ProviderOperation();
+        addTearDown(() {
+          holder.cancel();
+          harvest.cancel();
+          search.cancel();
+        });
+        final held = await gate.acquire(holder);
+        final order = <String>[];
+        final background = gate.acquire(harvest).then((permit) {
+          order.add('harvest');
+          return permit;
+        });
+        final interactive = gate.acquire(search).then((permit) {
+          order.add('search');
+          return permit;
+        });
+        held.release();
+        final searchPermit = await interactive;
+        expect(order, ['search']);
+        searchPermit.release();
+        (await background).release();
+        expect(order, ['search', 'harvest']);
+      },
+    );
+  });
+
   group('provider admission', () {
     test(
       'bounds concurrency and rejects overload without retaining it',

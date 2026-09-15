@@ -1,0 +1,28 @@
+class: DiscoveryCoverageRow
+serverOnly: true
+table: hayer_discovery_coverage
+fields:
+  countryCode: String
+  cellId: String
+  radiusMeters: int
+  centerLatitude: double
+  centerLongitude: double
+  south: double
+  west: double
+  north: double
+  east: double
+  # The manifest revision queryCompletedAt refers to.
+  manifestRevision: int
+  # Manifest entry id to when that broad query last completed here.
+  queryCompletedAt: Map<String, DateTime>
+  lastAttemptAt: DateTime?
+  lastSuccessAt: DateTime?
+  lastJobId: String?
+  lastFailureCode: String?
+  updatedAt: DateTime
+indexes:
+  hayer_discovery_coverage_cell:
+    fields: countryCode, cellId, radiusMeters
+    unique: true
+  hayer_discovery_coverage_bounds:
+    fields: countryCode, south, north

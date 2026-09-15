@@ -1,0 +1,777 @@
+Discover query plans — 2026-09-15 00:54:12.592735Z
+{version: PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit, work_mem: 4MB, shared_buffers: 128MB, parallel_workers: 2, catalog_rows: 200000, catalog_size: 338 MB}
+fixture load: 127446 ms; vacuum analyze: 1089 ms
+
+=== browse Best, Riyadh city view, first page with map
+endpoint: 376 ms; total 92595, 50 rows, map aggregates (0 points, 1600 cells)
+Result  (cost=73178.51..73178.54 rows=1 width=84) (actual time=294.826..295.171 rows=1 loops=1)
+  Buffers: shared hit=6786 read=55136 written=91, temp read=3591 written=1197
+  CTE eligible
+    ->  Gather  (cost=1000.00..36048.28 rows=9369 width=84) (actual time=0.405..70.144 rows=92595 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=3243 read=27616
+          ->  Parallel Seq Scan on hayer_poi_catalog catalog  (cost=0.00..34111.38 rows=3904 width=84) (actual time=0.080..60.625 rows=30865 loops=3)
+                Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= '1'::bigint))
+                Rows Removed by Filter: 35802
+                Buffers: shared hit=3243 read=27616
+  InitPlan 2 (returns $2)
+    ->  Aggregate  (cost=210.80..210.81 rows=1 width=8) (actual time=99.671..99.672 rows=1 loops=1)
+          Buffers: shared hit=3243 read=27616, temp written=1196
+          ->  CTE Scan on eligible  (cost=0.00..187.38 rows=9369 width=0) (actual time=0.406..95.563 rows=92595 loops=1)
+                Buffers: shared hit=3243 read=27616, temp written=1196
+  InitPlan 3 (returns $4)
+    ->  Finalize Aggregate  (cost=34180.82..34180.83 rows=1 width=8) (actual time=93.831..93.874 rows=1 loops=1)
+          Buffers: shared hit=3339 read=27520 written=91
+          ->  Gather  (cost=34180.61..34180.82 rows=2 width=8) (actual time=93.714..93.869 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=3339 read=27520 written=91
+                ->  Partial Aggregate  (cost=33180.61..33180.62 rows=1 width=8) (actual time=70.447..70.448 rows=1 loops=3)
+                      Buffers: shared hit=3339 read=27520 written=91
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog_1  (cost=0.00..33151.03 rows=11830 width=0) (actual time=0.080..67.865 rows=38908 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                            Rows Removed by Filter: 27758
+                            Buffers: shared hit=3339 read=27520 written=91
+  InitPlan 4 (returns $6)
+    ->  Aggregate  (cost=924.18..924.19 rows=1 width=32) (actual time=36.988..36.990 rows=1 loops=1)
+          Buffers: shared hit=204, temp read=1197 written=1
+          ->  Nested Loop  (cost=500.37..922.90 rows=51 width=1017) (actual time=34.353..34.574 rows=51 loops=1)
+                Buffers: shared hit=204, temp read=1197 written=1
+                ->  Limit  (cost=499.95..500.08 rows=51 width=137) (actual time=34.316..34.327 rows=51 loops=1)
+                      Buffers: temp read=1197 written=1
+                      ->  Sort  (cost=499.95..523.37 rows=9369 width=137) (actual time=34.315..34.320 rows=51 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: top-N heapsort  Memory: 37kB
+                            Buffers: temp read=1197 written=1
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..187.38 rows=9369 width=137) (actual time=0.019..16.689 rows=92595 loops=1)
+                                  Buffers: temp read=1197 written=1
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.28 rows=1 width=944) (actual time=0.004..0.004 rows=1 loops=51)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=204
+  InitPlan 5 (returns $7)
+    ->  Aggregate  (cost=210.80..210.81 rows=1 width=8) (actual time=11.851..11.852 rows=1 loops=1)
+          Buffers: temp read=1197
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..187.38 rows=9369 width=0) (actual time=0.005..8.298 rows=92595 loops=1)
+                Buffers: temp read=1197
+  InitPlan 6 (returns $8)
+    ->  Aggregate  (cost=875.71..875.72 rows=1 width=32) (never executed)
+          ->  Sort  (cost=805.44..828.86 rows=9369 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..187.38 rows=9369 width=129) (never executed)
+  InitPlan 7 (returns $9)
+    ->  Aggregate  (cost=727.86..727.87 rows=1 width=32) (actual time=48.307..48.308 rows=1 loops=1)
+          Buffers: temp read=1197
+          ->  Sort  (cost=673.98..676.32 rows=937 width=32) (actual time=36.409..36.496 rows=1600 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 136kB
+                Buffers: temp read=1197
+                ->  HashAggregate  (cost=585.56..627.73 rows=937 width=32) (actual time=35.764..35.977 rows=1600 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 577kB
+                      Buffers: temp read=1197
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..468.45 rows=9369 width=24) (actual time=0.005..20.665 rows=92595 loops=1)
+                            Buffers: temp read=1197
+Planning:
+  Buffers: shared hit=4
+Planning Time: 2.849 ms
+Execution Time: 296.827 ms
+
+=== browse Best, Riyadh city view, second page without map
+endpoint: 282 ms; total 92595, 50 rows, map omitted (0 points, 0 cells)
+Result  (cost=71539.66..71539.67 rows=1 width=88) (actual time=207.519..207.667 rows=1 loops=1)
+  Buffers: shared hit=8028 read=53894 written=20, temp read=2394 written=1197
+  CTE eligible
+    ->  Gather  (cost=1000.00..36048.28 rows=9369 width=84) (actual time=0.401..62.451 rows=92595 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=3864 read=26995
+          ->  Parallel Seq Scan on hayer_poi_catalog catalog  (cost=0.00..34111.38 rows=3904 width=84) (actual time=0.057..55.430 rows=30865 loops=3)
+                Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= '1'::bigint))
+                Rows Removed by Filter: 35802
+                Buffers: shared hit=3864 read=26995
+  InitPlan 2 (returns $2)
+    ->  Aggregate  (cost=210.80..210.81 rows=1 width=8) (actual time=90.215..90.216 rows=1 loops=1)
+          Buffers: shared hit=3864 read=26995, temp written=1196
+          ->  CTE Scan on eligible  (cost=0.00..187.38 rows=9369 width=0) (actual time=0.402..86.459 rows=92595 loops=1)
+                Buffers: shared hit=3864 read=26995, temp written=1196
+  InitPlan 3 (returns $3)
+    ->  Aggregate  (cost=288.82..288.83 rows=1 width=8) (actual time=11.788..11.788 rows=1 loops=1)
+          Buffers: temp read=1197 written=1
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..281.07 rows=3102 width=0) (actual time=0.257..11.772 rows=50 loops=1)
+                Filter: ((sort_value IS NOT NULL) AND (sort_value >= '24.346733119351104'::double precision) AND ((sort_value <> '24.346733119351104'::double precision) OR (NOT (ROW("providerPlaceId", provider) > ROW('bench-0063450'::text, 'google-web'::text)))))
+                Rows Removed by Filter: 92545
+                Buffers: temp read=1197 written=1
+  InitPlan 4 (returns $5)
+    ->  Finalize Aggregate  (cost=34180.82..34180.83 rows=1 width=8) (actual time=71.189..71.238 rows=1 loops=1)
+          Buffers: shared hit=3960 read=26899 written=20
+          ->  Gather  (cost=34180.61..34180.82 rows=2 width=8) (actual time=71.082..71.233 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=3960 read=26899 written=20
+                ->  Partial Aggregate  (cost=33180.61..33180.62 rows=1 width=8) (actual time=51.726..51.727 rows=1 loops=3)
+                      Buffers: shared hit=3960 read=26899 written=20
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog_1  (cost=0.00..33151.03 rows=11830 width=0) (actual time=0.082..49.882 rows=38908 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                            Rows Removed by Filter: 27758
+                            Buffers: shared hit=3960 read=26899 written=20
+  InitPlan 5 (returns $7)
+    ->  Aggregate  (cost=810.89..810.90 rows=1 width=32) (actual time=33.937..33.938 rows=1 loops=1)
+          Buffers: shared hit=204, temp read=1197
+          ->  Nested Loop  (cost=387.08..809.61 rows=51 width=1017) (actual time=31.373..31.589 rows=51 loops=1)
+                Buffers: shared hit=204, temp read=1197
+                ->  Limit  (cost=386.66..386.79 rows=51 width=137) (actual time=31.341..31.350 rows=51 loops=1)
+                      Buffers: temp read=1197
+                      ->  Sort  (cost=386.66..394.57 rows=3165 width=137) (actual time=31.339..31.344 rows=51 loops=1)
+                            Sort Key: eligible_2.sort_value DESC NULLS LAST, eligible_2."providerPlaceId", eligible_2.provider
+                            Sort Method: top-N heapsort  Memory: 37kB
+                            Buffers: temp read=1197
+                            ->  CTE Scan on eligible eligible_2  (cost=0.00..281.07 rows=3165 width=137) (actual time=0.008..15.495 rows=92545 loops=1)
+                                  Filter: ((sort_value < '24.346733119351104'::double precision) OR (sort_value IS NULL) OR ((sort_value = '24.346733119351104'::double precision) AND (ROW("providerPlaceId", provider) > ROW('bench-0063450'::text, 'google-web'::text))))
+                                  Rows Removed by Filter: 50
+                                  Buffers: temp read=1197
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.28 rows=1 width=944) (actual time=0.004..0.004 rows=1 loops=51)
+                      Index Cond: ("catalogId" = eligible_2."catalogId")
+                      Buffers: shared hit=204
+Planning:
+  Buffers: shared hit=4
+Planning Time: 2.605 ms
+Execution Time: 209.133 ms
+
+=== browse Best, Riyadh district view, first page with map
+endpoint: 47 ms; total 621, 50 rows, map points (621 points, 0 cells)
+Result  (cost=1144.86..1144.89 rows=1 width=84) (actual time=13.809..13.959 rows=1 loops=1)
+  Buffers: shared hit=2280
+  CTE eligible
+    ->  Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=9.38..568.76 rows=1 width=84) (actual time=1.040..2.021 rows=621 loops=1)
+          Recheck Cond: ((location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography) AND ("quarantinedAt" IS NULL))
+          Filter: ((latitude >= '24.69'::double precision) AND (latitude <= '24.72'::double precision) AND (longitude >= '46.66'::double precision) AND (longitude <= '46.7'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:14.754'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:14.754'::timestamp without time zone) THEN review_count ELSE NULL::bigint END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:14.754'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= '1'::bigint))
+          Rows Removed by Filter: 298
+          Heap Blocks: exact=907
+          Buffers: shared hit=1038
+          ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..9.38 rows=146 width=0) (actual time=0.957..0.957 rows=919 loops=1)
+                Index Cond: (location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography)
+                Buffers: shared hit=131
+  InitPlan 2 (returns $1)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=2.260..2.261 rows=1 loops=1)
+          Buffers: shared hit=1038
+          ->  CTE Scan on eligible  (cost=0.00..0.02 rows=1 width=0) (actual time=1.043..2.231 rows=621 loops=1)
+                Buffers: shared hit=1038
+  InitPlan 3 (returns $2)
+    ->  Aggregate  (cost=567.27..567.28 rows=1 width=8) (actual time=1.529..1.530 rows=1 loops=1)
+          Buffers: shared hit=1038
+          ->  Bitmap Heap Scan on hayer_poi_catalog catalog_1  (cost=9.38..567.27 rows=1 width=0) (actual time=0.892..1.496 rows=759 loops=1)
+                Recheck Cond: ((location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: ((latitude >= '24.69'::double precision) AND (latitude <= '24.72'::double precision) AND (longitude >= '46.66'::double precision) AND (longitude <= '46.7'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                Rows Removed by Filter: 160
+                Heap Blocks: exact=907
+                Buffers: shared hit=1038
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..9.38 rows=146 width=0) (actual time=0.815..0.816 rows=919 loops=1)
+                      Index Cond: (location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography)
+                      Buffers: shared hit=131
+  InitPlan 4 (returns $4)
+    ->  Aggregate  (cost=8.51..8.52 rows=1 width=32) (actual time=2.821..2.823 rows=1 loops=1)
+          Buffers: shared hit=204
+          ->  Nested Loop  (cost=0.45..8.48 rows=1 width=1017) (actual time=0.222..0.427 rows=51 loops=1)
+                Buffers: shared hit=204
+                ->  Limit  (cost=0.03..0.04 rows=1 width=137) (actual time=0.205..0.214 rows=51 loops=1)
+                      ->  Sort  (cost=0.03..0.04 rows=1 width=137) (actual time=0.204..0.208 rows=51 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: top-N heapsort  Memory: 36kB
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..0.02 rows=1 width=137) (actual time=0.002..0.069 rows=621 loops=1)
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.44 rows=1 width=944) (actual time=0.003..0.003 rows=1 loops=51)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=204
+  InitPlan 5 (returns $5)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.054..0.055 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..0.02 rows=1 width=0) (actual time=0.000..0.032 rows=621 loops=1)
+  InitPlan 6 (returns $6)
+    ->  Aggregate  (cost=0.04..0.05 rows=1 width=32) (actual time=4.715..4.715 rows=1 loops=1)
+          ->  Sort  (cost=0.03..0.04 rows=1 width=129) (actual time=0.399..0.427 rows=621 loops=1)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                Sort Method: quicksort  Memory: 93kB
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..0.02 rows=1 width=129) (actual time=0.001..0.062 rows=621 loops=1)
+  InitPlan 7 (returns $7)
+    ->  Aggregate  (cost=0.18..0.19 rows=1 width=32) (never executed)
+          ->  Sort  (cost=0.12..0.12 rows=1 width=32) (never executed)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.69'::double precision) / '0.0007499999999999396'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.66'::double precision) / '0.0010000000000001564'::double precision)))::integer)))
+                ->  HashAggregate  (cost=0.06..0.11 rows=1 width=32) (never executed)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.66'::double precision) / '0.0010000000000001564'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.69'::double precision) / '0.0007499999999999396'::double precision)))::integer))
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..0.05 rows=1 width=24) (never executed)
+Planning:
+  Buffers: shared hit=4
+Planning Time: 2.637 ms
+Execution Time: 14.496 ms
+
+=== browse Top rated + Open now, Riyadh district view, with map
+endpoint: 33 ms; total 33, 33 rows, map points (33 points, 0 cells)
+Result  (cost=1145.22..1145.24 rows=1 width=84) (actual time=6.826..6.874 rows=1 loops=1)
+  Buffers: shared hit=2208
+  CTE eligible
+    ->  Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=9.38..569.11 rows=1 width=84) (actual time=1.117..2.172 rows=33 loops=1)
+          Recheck Cond: ((location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography) AND ("quarantinedAt" IS NULL))
+          Filter: ((latitude >= '24.69'::double precision) AND (latitude <= '24.72'::double precision) AND (longitude >= '46.66'::double precision) AND (longitude <= '46.7'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:14.861'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (COALESCE(CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:14.861'::timestamp without time zone) THEN review_count ELSE NULL::bigint END, '0'::bigint) >= '0'::bigint) AND COALESCE((CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:14.861'::timestamp without time zone) THEN opening_hours ELSE NULL::int4multirange END @> 1674), false))
+          Rows Removed by Filter: 886
+          Heap Blocks: exact=907
+          Buffers: shared hit=1038
+          ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..9.38 rows=146 width=0) (actual time=0.950..0.950 rows=919 loops=1)
+                Index Cond: (location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography)
+                Buffers: shared hit=131
+  InitPlan 2 (returns $1)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=2.202..2.202 rows=1 loops=1)
+          Buffers: shared hit=1038
+          ->  CTE Scan on eligible  (cost=0.00..0.02 rows=1 width=0) (actual time=1.121..2.195 rows=33 loops=1)
+                Buffers: shared hit=1038
+  InitPlan 3 (returns $2)
+    ->  Aggregate  (cost=567.27..567.28 rows=1 width=8) (actual time=1.754..1.755 rows=1 loops=1)
+          Buffers: shared hit=1038
+          ->  Bitmap Heap Scan on hayer_poi_catalog catalog_1  (cost=9.38..567.27 rows=1 width=0) (actual time=0.984..1.720 rows=759 loops=1)
+                Recheck Cond: ((location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography) AND ("quarantinedAt" IS NULL))
+                Filter: ((latitude >= '24.69'::double precision) AND (latitude <= '24.72'::double precision) AND (longitude >= '46.66'::double precision) AND (longitude <= '46.7'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                Rows Removed by Filter: 160
+                Heap Blocks: exact=907
+                Buffers: shared hit=1038
+                ->  Bitmap Index Scan on hayer_poi_location_gist  (cost=0.00..9.38 rows=146 width=0) (actual time=0.901..0.901 rows=919 loops=1)
+                      Index Cond: (location && '0103000020E6100000010000000500000014AE47E17A544740713D0AD7A3B0384014AE47E17A544740B81E85EB51B838409A99999999594740B81E85EB51B838409A99999999594740713D0AD7A3B0384014AE47E17A544740713D0AD7A3B03840'::geography)
+                      Buffers: shared hit=131
+  InitPlan 4 (returns $4)
+    ->  Aggregate  (cost=8.51..8.52 rows=1 width=32) (actual time=2.227..2.227 rows=1 loops=1)
+          Buffers: shared hit=132
+          ->  Nested Loop  (cost=0.45..8.48 rows=1 width=1017) (actual time=0.071..0.213 rows=33 loops=1)
+                Buffers: shared hit=132
+                ->  Limit  (cost=0.03..0.04 rows=1 width=137) (actual time=0.034..0.041 rows=33 loops=1)
+                      ->  Sort  (cost=0.03..0.04 rows=1 width=137) (actual time=0.033..0.036 rows=33 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: quicksort  Memory: 29kB
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..0.02 rows=1 width=137) (actual time=0.002..0.006 rows=33 loops=1)
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.44 rows=1 width=944) (actual time=0.004..0.004 rows=1 loops=33)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=132
+  InitPlan 5 (returns $5)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.006..0.006 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..0.02 rows=1 width=0) (actual time=0.000..0.002 rows=33 loops=1)
+  InitPlan 6 (returns $6)
+    ->  Aggregate  (cost=0.04..0.05 rows=1 width=32) (actual time=0.238..0.238 rows=1 loops=1)
+          ->  Sort  (cost=0.03..0.04 rows=1 width=129) (actual time=0.018..0.020 rows=33 loops=1)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                Sort Method: quicksort  Memory: 28kB
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..0.02 rows=1 width=129) (actual time=0.001..0.005 rows=33 loops=1)
+  InitPlan 7 (returns $7)
+    ->  Aggregate  (cost=0.18..0.19 rows=1 width=32) (never executed)
+          ->  Sort  (cost=0.12..0.12 rows=1 width=32) (never executed)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.69'::double precision) / '0.0007499999999999396'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.66'::double precision) / '0.0010000000000001564'::double precision)))::integer)))
+                ->  HashAggregate  (cost=0.06..0.11 rows=1 width=32) (never executed)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.66'::double precision) / '0.0010000000000001564'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.69'::double precision) / '0.0007499999999999396'::double precision)))::integer))
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..0.05 rows=1 width=24) (never executed)
+Planning:
+  Buffers: shared hit=4
+Planning Time: 3.038 ms
+Execution Time: 7.261 ms
+
+=== browse Best + selective text "12345", Riyadh city view
+endpoint: 144 ms; total 7, 7 rows, map points (7 points, 0 cells)
+Result  (cost=34311.61..34311.64 rows=1 width=84) (actual time=73.202..81.093 rows=1 loops=1)
+  Buffers: shared hit=5083 read=25816 written=3
+  CTE eligible
+    ->  Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=42.65..121.95 rows=1 width=84) (actual time=0.142..0.174 rows=7 loops=1)
+          Recheck Cond: ((search_text ~~* '%12345%'::text) AND ("quarantinedAt" IS NULL))
+          Filter: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:15.043'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:15.043'::timestamp without time zone) THEN review_count ELSE NULL::bigint END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:15.043'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= '1'::bigint))
+          Rows Removed by Filter: 5
+          Heap Blocks: exact=5
+          Buffers: shared hit=12
+          ->  Bitmap Index Scan on hayer_discovery_search_trgm  (cost=0.00..42.65 rows=20 width=0) (actual time=0.126..0.126 rows=12 loops=1)
+                Index Cond: (search_text ~~* '%12345%'::text)
+                Buffers: shared hit=7
+  InitPlan 2 (returns $1)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.184..0.185 rows=1 loops=1)
+          Buffers: shared hit=12
+          ->  CTE Scan on eligible  (cost=0.00..0.02 rows=1 width=0) (actual time=0.144..0.181 rows=7 loops=1)
+                Buffers: shared hit=12
+  InitPlan 3 (returns $3)
+    ->  Finalize Aggregate  (cost=34180.82..34180.83 rows=1 width=8) (actual time=72.416..80.288 rows=1 loops=1)
+          Buffers: shared hit=5043 read=25816 written=3
+          ->  Gather  (cost=34180.61..34180.82 rows=2 width=8) (actual time=72.263..80.283 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=5043 read=25816 written=3
+                ->  Partial Aggregate  (cost=33180.61..33180.62 rows=1 width=8) (actual time=52.050..52.050 rows=1 loops=3)
+                      Buffers: shared hit=5043 read=25816 written=3
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog_1  (cost=0.00..33151.03 rows=11830 width=0) (actual time=0.052..50.155 rows=38908 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                            Rows Removed by Filter: 27758
+                            Buffers: shared hit=5043 read=25816 written=3
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=8.51..8.52 rows=1 width=32) (actual time=0.448..0.450 rows=1 loops=1)
+          Buffers: shared hit=28
+          ->  Nested Loop  (cost=0.45..8.48 rows=1 width=1017) (actual time=0.069..0.099 rows=7 loops=1)
+                Buffers: shared hit=28
+                ->  Limit  (cost=0.03..0.04 rows=1 width=137) (actual time=0.039..0.042 rows=7 loops=1)
+                      ->  Sort  (cost=0.03..0.04 rows=1 width=137) (actual time=0.038..0.040 rows=7 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: quicksort  Memory: 25kB
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..0.02 rows=1 width=137) (actual time=0.003..0.005 rows=7 loops=1)
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.44 rows=1 width=944) (actual time=0.006..0.006 rows=1 loops=7)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=28
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.004..0.005 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..0.02 rows=1 width=0) (actual time=0.001..0.002 rows=7 loops=1)
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=0.04..0.05 rows=1 width=32) (actual time=0.063..0.064 rows=1 loops=1)
+          ->  Sort  (cost=0.03..0.04 rows=1 width=129) (actual time=0.012..0.013 rows=7 loops=1)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                Sort Method: quicksort  Memory: 25kB
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..0.02 rows=1 width=129) (actual time=0.002..0.003 rows=7 loops=1)
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=0.18..0.19 rows=1 width=32) (never executed)
+          ->  Sort  (cost=0.12..0.12 rows=1 width=32) (never executed)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                ->  HashAggregate  (cost=0.06..0.11 rows=1 width=32) (never executed)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..0.05 rows=1 width=24) (never executed)
+Planning:
+  Buffers: shared hit=4
+Planning Time: 3.924 ms
+Execution Time: 81.404 ms
+
+=== browse Top rated + Open now, Riyadh city view, with map
+endpoint: 220 ms; total 4716, 50 rows, map aggregates (0 points, 1508 cells)
+Result  (cost=71551.23..71551.26 rows=1 width=84) (actual time=169.588..169.932 rows=1 loops=1)
+  Buffers: shared hit=11538 read=50482 written=150
+  CTE eligible
+    ->  Gather  (cost=1000.00..35702.91 rows=4708 width=84) (actual time=0.425..68.863 rows=4716 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=5668 read=25289 written=84
+          ->  Parallel Seq Scan on hayer_poi_catalog catalog  (cost=0.00..34232.11 rows=1962 width=84) (actual time=0.316..51.785 rows=1572 loops=3)
+                Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:15.498'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (COALESCE(CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:15.498'::timestamp without time zone) THEN review_count ELSE NULL::bigint END, '0'::bigint) >= '0'::bigint) AND COALESCE((CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:15.498'::timestamp without time zone) THEN opening_hours ELSE NULL::int4multirange END @> 1674), false))
+                Rows Removed by Filter: 65095
+                Buffers: shared hit=5668 read=25289 written=84
+  InitPlan 2 (returns $2)
+    ->  Aggregate  (cost=105.93..105.94 rows=1 width=8) (actual time=71.101..71.102 rows=1 loops=1)
+          Buffers: shared hit=5668 read=25289 written=84
+          ->  CTE Scan on eligible  (cost=0.00..94.16 rows=4708 width=0) (actual time=0.426..70.826 rows=4716 loops=1)
+                Buffers: shared hit=5668 read=25289 written=84
+  InitPlan 3 (returns $4)
+    ->  Finalize Aggregate  (cost=34180.82..34180.83 rows=1 width=8) (actual time=76.551..76.595 rows=1 loops=1)
+          Buffers: shared hit=5666 read=25193 written=66
+          ->  Gather  (cost=34180.61..34180.82 rows=2 width=8) (actual time=76.449..76.591 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=5666 read=25193 written=66
+                ->  Partial Aggregate  (cost=33180.61..33180.62 rows=1 width=8) (actual time=54.084..54.085 rows=1 loops=3)
+                      Buffers: shared hit=5666 read=25193 written=66
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog_1  (cost=0.00..33151.03 rows=11830 width=0) (actual time=0.064..52.240 rows=38908 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                            Rows Removed by Filter: 27758
+                            Buffers: shared hit=5666 read=25193 written=66
+  InitPlan 4 (returns $6)
+    ->  Aggregate  (cost=675.46..675.47 rows=1 width=32) (actual time=4.752..4.755 rows=1 loops=1)
+          Buffers: shared hit=204
+          ->  Nested Loop  (cost=251.65..674.18 rows=51 width=1017) (actual time=1.550..1.792 rows=51 loops=1)
+                Buffers: shared hit=204
+                ->  Limit  (cost=251.23..251.36 rows=51 width=137) (actual time=1.520..1.533 rows=51 loops=1)
+                      ->  Sort  (cost=251.23..263.00 rows=4708 width=137) (actual time=1.519..1.526 rows=51 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: top-N heapsort  Memory: 35kB
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..94.16 rows=4708 width=137) (actual time=0.002..0.573 rows=4716 loops=1)
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.28 rows=1 width=944) (actual time=0.004..0.004 rows=1 loops=51)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=204
+  InitPlan 5 (returns $7)
+    ->  Aggregate  (cost=105.93..105.94 rows=1 width=8) (actual time=0.416..0.416 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..94.16 rows=4708 width=0) (actual time=0.001..0.254 rows=4716 loops=1)
+  InitPlan 6 (returns $8)
+    ->  Aggregate  (cost=416.68..416.69 rows=1 width=32) (never executed)
+          ->  Sort  (cost=381.37..393.14 rows=4708 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..94.16 rows=4708 width=129) (never executed)
+  InitPlan 7 (returns $9)
+    ->  Aggregate  (cost=363.44..363.45 rows=1 width=32) (actual time=12.729..12.731 rows=1 loops=1)
+          ->  Sort  (cost=336.36..337.53 rows=471 width=32) (actual time=2.614..2.683 rows=1508 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 131kB
+                ->  HashAggregate  (cost=294.25..315.44 rows=471 width=32) (actual time=2.014..2.211 rows=1508 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 577kB
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..235.40 rows=4708 width=24) (actual time=0.003..0.864 rows=4716 loops=1)
+Planning:
+  Buffers: shared hit=4
+Planning Time: 2.535 ms
+Execution Time: 170.646 ms
+
+=== browse Most reviewed + text "coffee", Riyadh city view
+endpoint: 373 ms; total 36856, 50 rows, map aggregates (0 points, 1600 cells)
+Result  (cost=70525.98..70526.00 rows=1 width=84) (actual time=330.072..330.374 rows=1 loops=1)
+  Buffers: shared hit=15646 read=43521 written=582, temp read=1389 written=463
+  CTE eligible
+    ->  Bitmap Heap Scan on hayer_poi_catalog catalog  (cost=403.49..33766.47 rows=8030 width=84) (actual time=14.319..187.782 rows=36856 loops=1)
+          Recheck Cond: ((search_text ~~* '%coffee%'::text) AND ("quarantinedAt" IS NULL))
+          Filter: ((location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+          Rows Removed by Filter: 25917
+          Heap Blocks: exact=27970
+          Buffers: shared hit=79 read=28025 written=569
+          ->  Bitmap Index Scan on hayer_discovery_search_trgm  (cost=0.00..401.48 rows=56299 width=0) (actual time=10.829..10.829 rows=62773 loops=1)
+                Index Cond: (search_text ~~* '%coffee%'::text)
+                Buffers: shared hit=52 read=82
+  InitPlan 2 (returns $1)
+    ->  Aggregate  (cost=180.67..180.68 rows=1 width=8) (actual time=207.333..207.334 rows=1 loops=1)
+          Buffers: shared hit=79 read=28025 written=569, temp written=462
+          ->  CTE Scan on eligible  (cost=0.00..160.60 rows=8030 width=0) (actual time=14.321..204.983 rows=36856 loops=1)
+                Buffers: shared hit=79 read=28025 written=569, temp written=462
+  InitPlan 3 (returns $3)
+    ->  Finalize Aggregate  (cost=34180.82..34180.83 rows=1 width=8) (actual time=69.450..69.517 rows=1 loops=1)
+          Buffers: shared hit=15413 read=15446 written=3
+          ->  Gather  (cost=34180.61..34180.82 rows=2 width=8) (actual time=69.339..69.513 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=15413 read=15446 written=3
+                ->  Partial Aggregate  (cost=33180.61..33180.62 rows=1 width=8) (actual time=50.765..50.765 rows=1 loops=3)
+                      Buffers: shared hit=15413 read=15446 written=3
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog_1  (cost=0.00..33151.03 rows=11830 width=0) (actual time=0.171..49.002 rows=38908 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                            Rows Removed by Filter: 27758
+                            Buffers: shared hit=15413 read=15446 written=3
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=852.73..852.74 rows=1 width=32) (actual time=16.909..16.911 rows=1 loops=1)
+          Buffers: shared hit=154 read=50 written=10, temp read=463 written=1
+          ->  Nested Loop  (cost=428.92..851.45 rows=51 width=1017) (actual time=13.928..14.372 rows=51 loops=1)
+                Buffers: shared hit=154 read=50 written=10, temp read=463 written=1
+                ->  Limit  (cost=428.50..428.63 rows=51 width=137) (actual time=13.883..13.896 rows=51 loops=1)
+                      Buffers: temp read=463 written=1
+                      ->  Sort  (cost=428.50..448.57 rows=8030 width=137) (actual time=13.882..13.889 rows=51 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: top-N heapsort  Memory: 35kB
+                            Buffers: temp read=463 written=1
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..160.60 rows=8030 width=137) (actual time=0.014..6.483 rows=36856 loops=1)
+                                  Buffers: temp read=463 written=1
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.28 rows=1 width=944) (actual time=0.008..0.008 rows=1 loops=51)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=154 read=50 written=10
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=180.67..180.68 rows=1 width=8) (actual time=6.081..6.081 rows=1 loops=1)
+          Buffers: temp read=463
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..160.60 rows=8030 width=0) (actual time=0.003..4.749 rows=36856 loops=1)
+                Buffers: temp read=463
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=741.62..741.63 rows=1 width=32) (never executed)
+          ->  Sort  (cost=681.39..701.47 rows=8030 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..160.60 rows=8030 width=129) (never executed)
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=622.93..622.94 rows=1 width=32) (actual time=26.061..26.062 rows=1 loops=1)
+          Buffers: temp read=463
+          ->  Sort  (cost=576.75..578.76 rows=803 width=32) (actual time=15.407..15.480 rows=1600 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 136kB
+                Buffers: temp read=463
+                ->  HashAggregate  (cost=501.88..538.01 rows=803 width=32) (actual time=14.807..15.012 rows=1600 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 577kB
+                      Buffers: temp read=463
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..401.50 rows=8030 width=24) (actual time=0.005..8.513 rows=36856 loops=1)
+                            Buffers: temp read=463
+Planning:
+  Buffers: shared hit=2 read=2
+Planning Time: 2.647 ms
+Execution Time: 332.001 ms
+
+=== browse Hidden gems + Cafes + 100–249 reviews, Riyadh city view
+endpoint: 190 ms; total 184, 50 rows, map points (184 points, 0 cells)
+Result  (cost=70876.55..70876.58 rows=1 width=84) (actual time=184.078..184.440 rows=1 loops=1)
+  Buffers: shared hit=31115 read=30937 written=144
+  CTE eligible
+    ->  Hash Semi Join  (cost=1004.02..36248.08 rows=67 width=84) (actual time=1.344..82.125 rows=184 loops=1)
+          Hash Cond: (aliases.mapped_node = (jsonb_array_elements_text('["cafes"]'::jsonb)))
+          Buffers: shared hit=15502 read=15487 written=30
+          ->  Gather  (cost=1002.25..36244.05 rows=67 width=123) (actual time=1.146..81.801 rows=1403 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=15502 read=15487 written=30
+                ->  Hash Join  (cost=2.25..35237.35 rows=28 width=123) (actual time=0.899..55.424 rows=468 loops=3)
+                      Hash Cond: (catalog.primary_type_key = aliases.alias)
+                      Buffers: shared hit=15502 read=15487 written=30
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog  (cost=0.00..35234.70 rows=30 width=103) (actual time=0.439..54.648 rows=526 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:17.214'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= 100) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:17.214'::timestamp without time zone) THEN review_count ELSE NULL::bigint END <= 249) AND COALESCE(((CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:17.214'::timestamp without time zone) THEN rating ELSE NULL::double precision END >= '4.5'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:17.214'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= '1'::bigint) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:17.214'::timestamp without time zone) THEN review_count ELSE NULL::bigint END < '500'::bigint)), false))
+                            Rows Removed by Filter: 66140
+                            Buffers: shared hit=15372 read=15487 written=30
+                      ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.047..0.048 rows=38 loops=3)
+                            Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                            ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.029..0.032 rows=38 loops=3)
+          ->  Hash  (cost=0.52..0.52 rows=100 width=32) (actual time=0.022..0.023 rows=1 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                ->  ProjectSet  (cost=0.00..0.52 rows=100 width=32) (actual time=0.008..0.016 rows=1 loops=1)
+                      ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.000 rows=1 loops=1)
+  InitPlan 2 (returns $2)
+    ->  Aggregate  (cost=1.51..1.52 rows=1 width=8) (actual time=82.190..82.191 rows=1 loops=1)
+          Buffers: shared hit=15502 read=15487 written=30
+          ->  CTE Scan on eligible  (cost=0.00..1.34 rows=67 width=0) (actual time=1.345..82.147 rows=184 loops=1)
+                Buffers: shared hit=15502 read=15487 written=30
+  InitPlan 3 (returns $4)
+    ->  Finalize Aggregate  (cost=34180.82..34180.83 rows=1 width=8) (actual time=91.067..91.144 rows=1 loops=1)
+          Buffers: shared hit=15458 read=15401 written=68
+          ->  Gather  (cost=34180.61..34180.82 rows=2 width=8) (actual time=90.959..91.137 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=15458 read=15401 written=68
+                ->  Partial Aggregate  (cost=33180.61..33180.62 rows=1 width=8) (actual time=68.078..68.078 rows=1 loops=3)
+                      Buffers: shared hit=15458 read=15401 written=68
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog_1  (cost=0.00..33151.03 rows=11830 width=0) (actual time=0.206..65.761 rows=38908 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                            Rows Removed by Filter: 27758
+                            Buffers: shared hit=15458 read=15401 written=68
+  InitPlan 4 (returns $6)
+    ->  Aggregate  (cost=427.60..427.61 rows=1 width=32) (actual time=6.569..6.571 rows=1 loops=1)
+          Buffers: shared hit=155 read=49 written=46
+          ->  Nested Loop  (cost=3.79..426.32 rows=51 width=1017) (actual time=0.282..1.426 rows=51 loops=1)
+                Buffers: shared hit=155 read=49 written=46
+                ->  Limit  (cost=3.37..3.50 rows=51 width=137) (actual time=0.231..0.262 rows=51 loops=1)
+                      ->  Sort  (cost=3.37..3.54 rows=67 width=137) (actual time=0.230..0.246 rows=51 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: top-N heapsort  Memory: 35kB
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..1.34 rows=67 width=137) (actual time=0.003..0.049 rows=184 loops=1)
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.28 rows=1 width=944) (actual time=0.020..0.020 rows=1 loops=51)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=155 read=49 written=46
+  InitPlan 5 (returns $7)
+    ->  Aggregate  (cost=1.51..1.52 rows=1 width=8) (actual time=0.041..0.041 rows=1 loops=1)
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..1.34 rows=67 width=0) (actual time=0.001..0.026 rows=184 loops=1)
+  InitPlan 6 (returns $8)
+    ->  Aggregate  (cost=3.88..3.89 rows=1 width=32) (actual time=2.609..2.610 rows=1 loops=1)
+          ->  Sort  (cost=3.37..3.54 rows=67 width=129) (actual time=0.239..0.260 rows=184 loops=1)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                Sort Method: quicksort  Memory: 44kB
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..1.34 rows=67 width=129) (actual time=0.002..0.037 rows=184 loops=1)
+  InitPlan 7 (returns $9)
+    ->  Aggregate  (cost=13.09..13.10 rows=1 width=32) (never executed)
+          ->  Sort  (cost=9.23..9.40 rows=67 width=32) (never executed)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)))
+                ->  HashAggregate  (cost=4.19..7.20 rows=67 width=32) (never executed)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '46.5'::double precision) / '0.01125000000000007'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '24.55'::double precision) / '0.009999999999999964'::double precision)))::integer))
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..3.35 rows=67 width=24) (never executed)
+Planning:
+  Buffers: shared hit=4
+Planning Time: 2.818 ms
+Execution Time: 185.061 ms
+
+=== browse Recently discovered, whole-country view, with map
+endpoint: 650 ms; total 195095, 50 rows, map aggregates (0 points, 1122 cells)
+Result  (cost=146135.22..146135.24 rows=1 width=84) (actual time=649.411..649.664 rows=1 loops=1)
+  Buffers: shared hit=28384 read=33538 written=139, temp read=7569 written=2523
+  CTE eligible
+    ->  Seq Scan on hayer_poi_catalog catalog  (cost=0.00..40748.87 rows=195066 width=84) (actual time=0.447..280.999 rows=195095 loops=1)
+          Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000004240000000000080304000000000000042400000000000003F4000000000004049400000000000003F400000000000404940000000000080304000000000000042400000000000803040'::geography) AND (latitude >= '16.5'::double precision) AND (latitude <= '31'::double precision) AND (longitude >= '36'::double precision) AND (longitude <= '50.5'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+          Rows Removed by Filter: 4905
+          Buffers: shared hit=14096 read=16763 written=28
+  InitPlan 2 (returns $1)
+    ->  Aggregate  (cost=4388.99..4389.00 rows=1 width=8) (actual time=372.827..372.828 rows=1 loops=1)
+          Buffers: shared hit=14096 read=16763 written=28, temp written=2522
+          ->  CTE Scan on eligible  (cost=0.00..3901.32 rows=195066 width=0) (actual time=0.448..363.443 rows=195095 loops=1)
+                Buffers: shared hit=14096 read=16763 written=28, temp written=2522
+  InitPlan 3 (returns $3)
+    ->  Finalize Aggregate  (cost=34354.44..34354.45 rows=1 width=8) (actual time=99.491..99.560 rows=1 loops=1)
+          Buffers: shared hit=14128 read=16731 written=70
+          ->  Gather  (cost=34354.23..34354.44 rows=2 width=8) (actual time=99.380..99.556 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                Buffers: shared hit=14128 read=16731 written=70
+                ->  Partial Aggregate  (cost=33354.23..33354.24 rows=1 width=8) (actual time=74.639..74.639 rows=1 loops=3)
+                      Buffers: shared hit=14128 read=16731 written=70
+                      ->  Parallel Seq Scan on hayer_poi_catalog catalog_1  (cost=0.00..33151.03 rows=81278 width=0) (actual time=0.194..70.527 rows=65032 loops=3)
+                            Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000004240000000000080304000000000000042400000000000003F4000000000004049400000000000003F400000000000404940000000000080304000000000000042400000000000803040'::geography) AND (latitude >= '16.5'::double precision) AND (latitude <= '31'::double precision) AND (longitude >= '36'::double precision) AND (longitude <= '50.5'::double precision) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text))
+                            Rows Removed by Filter: 1635
+                            Buffers: shared hit=14128 read=16731 written=70
+  InitPlan 4 (returns $5)
+    ->  Aggregate  (cost=10833.36..10833.37 rows=1 width=32) (actual time=70.405..70.407 rows=1 loops=1)
+          Buffers: shared hit=160 read=44 written=41, temp read=2523 written=1
+          ->  Nested Loop  (cost=10409.56..10832.09 rows=51 width=1017) (actual time=67.438..67.909 rows=51 loops=1)
+                Buffers: shared hit=160 read=44 written=41, temp read=2523 written=1
+                ->  Limit  (cost=10409.14..10409.26 rows=51 width=137) (actual time=67.400..67.413 rows=51 loops=1)
+                      Buffers: temp read=2523 written=1
+                      ->  Sort  (cost=10409.14..10896.80 rows=195066 width=137) (actual time=67.399..67.405 rows=51 loops=1)
+                            Sort Key: eligible_1.sort_value DESC NULLS LAST, eligible_1."providerPlaceId", eligible_1.provider
+                            Sort Method: top-N heapsort  Memory: 36kB
+                            Buffers: temp read=2523 written=1
+                            ->  CTE Scan on eligible eligible_1  (cost=0.00..3901.32 rows=195066 width=137) (actual time=0.013..33.128 rows=195095 loops=1)
+                                  Buffers: temp read=2523 written=1
+                ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_2  (cost=0.42..8.28 rows=1 width=944) (actual time=0.009..0.009 rows=1 loops=51)
+                      Index Cond: ("catalogId" = eligible_1."catalogId")
+                      Buffers: shared hit=160 read=44 written=41
+  InitPlan 5 (returns $6)
+    ->  Aggregate  (cost=4388.99..4389.00 rows=1 width=8) (actual time=24.539..24.540 rows=1 loops=1)
+          Buffers: temp read=2523
+          ->  CTE Scan on eligible eligible_2  (cost=0.00..3901.32 rows=195066 width=0) (actual time=0.003..17.735 rows=195095 loops=1)
+                Buffers: temp read=2523
+  InitPlan 6 (returns $7)
+    ->  Aggregate  (cost=35839.38..35839.39 rows=1 width=32) (never executed)
+          ->  Sort  (cost=34376.38..34864.05 rows=195066 width=129) (never executed)
+                Sort Key: eligible_3."providerPlaceId", eligible_3.provider
+                ->  CTE Scan on eligible eligible_3  (cost=0.00..3901.32 rows=195066 width=129) (never executed)
+  InitPlan 7 (returns $8)
+    ->  Aggregate  (cost=15581.13..15581.14 rows=1 width=32) (actual time=79.146..79.147 rows=1 loops=1)
+          Buffers: temp read=2523
+          ->  Sort  (cost=14459.48..14508.25 rows=19507 width=32) (actual time=71.738..71.791 rows=1122 loops=1)
+                Sort Key: (LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '16.5'::double precision) / '0.3625'::double precision)))::integer))), (LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '36'::double precision) / '0.3625'::double precision)))::integer)))
+                Sort Method: quicksort  Memory: 110kB
+                Buffers: temp read=2523
+                ->  HashAggregate  (cost=12191.63..13069.44 rows=19507 width=32) (actual time=71.177..71.418 rows=1122 loops=1)
+                      Group Key: LEAST(39, GREATEST(0, (floor(((eligible_4.longitude - '36'::double precision) / '0.3625'::double precision)))::integer)), LEAST(39, GREATEST(0, (floor(((eligible_4.latitude - '16.5'::double precision) / '0.3625'::double precision)))::integer))
+                      Batches: 1  Memory Usage: 1297kB
+                      Buffers: temp read=2523
+                      ->  CTE Scan on eligible eligible_4  (cost=0.00..9753.30 rows=195066 width=24) (actual time=0.005..43.993 rows=195095 loops=1)
+                            Buffers: temp read=2523
+Planning:
+  Buffers: shared hit=4
+Planning Time: 2.572 ms
+Execution Time: 653.265 ms
+
+=== facets, Riyadh city view, Food + exact price 2 draft
+endpoint: 207 ms; total 6594, 41 types, unknown rating 0
+Result  (cost=37239.71..37239.74 rows=1 width=136) (actual time=188.250..188.338 rows=1 loops=1)
+  Buffers: shared hit=13316 read=17673, temp read=2636 written=659
+  CTE scope
+    ->  Gather  (cost=1003.02..36116.69 rows=9369 width=66) (actual time=0.925..93.910 rows=92595 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=13316 read=17673
+          ->  Hash Left Join  (cost=2.25..34038.48 rows=3904 width=70) (actual time=0.678..80.555 rows=30865 loops=3)
+                Hash Cond: (catalog.primary_type_key = aliases.alias)
+                Buffers: shared hit=13316 read=17673
+                ->  Parallel Seq Scan on hayer_poi_catalog catalog  (cost=0.00..33984.50 rows=3904 width=50) (actual time=0.199..70.301 rows=30865 loops=3)
+                      Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= '1'::bigint))
+                      Rows Removed by Filter: 35802
+                      Buffers: shared hit=13186 read=17673
+                ->  Hash  (cost=1.00..1.00 rows=100 width=64) (actual time=0.057..0.058 rows=38 loops=3)
+                      Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                      ->  Function Scan on jsonb_each_text aliases  (cost=0.00..1.00 rows=100 width=64) (actual time=0.031..0.035 rows=38 loops=3)
+          SubPlan 1
+            ->  ProjectSet  (cost=0.00..0.52 rows=100 width=32) (actual time=0.007..0.009 rows=8 loops=1)
+                  ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.000..0.001 rows=1 loops=1)
+  InitPlan 3 (returns $3)
+    ->  Aggregate  (cost=188.84..188.85 rows=1 width=8) (actual time=135.483..135.484 rows=1 loops=1)
+          Buffers: shared hit=13316 read=17673, temp written=658
+          ->  CTE Scan on scope  (cost=0.00..187.38 rows=586 width=0) (actual time=1.018..134.995 rows=6594 loops=1)
+                Filter: (in_category AND in_reviews AND in_price AND in_rating)
+                Rows Removed by Filter: 86001
+                Buffers: shared hit=13316 read=17673, temp written=658
+  InitPlan 4 (returns $4)
+    ->  Aggregate  (cost=240.78..240.79 rows=1 width=32) (actual time=13.996..13.997 rows=1 loops=1)
+          Buffers: temp read=659 written=1
+          ->  Sort  (cost=235.60..237.32 rows=690 width=72) (actual time=13.873..13.875 rows=41 loops=1)
+                Sort Key: (count(*)) DESC, scope_1.primary_type, (COALESCE(scope_1.mapped_node, 'other'::text))
+                Sort Method: quicksort  Memory: 27kB
+                Buffers: temp read=659 written=1
+                ->  HashAggregate  (cost=196.16..203.06 rows=690 width=72) (actual time=13.836..13.843 rows=41 loops=1)
+                      Group Key: scope_1.primary_type, COALESCE(scope_1.mapped_node, 'other'::text)
+                      Batches: 1  Memory Usage: 49kB
+                      Buffers: temp read=659 written=1
+                      ->  CTE Scan on scope scope_1  (cost=0.00..187.38 rows=1171 width=64) (actual time=0.012..11.396 rows=12798 loops=1)
+                            Filter: (in_reviews AND in_price AND in_rating)
+                            Rows Removed by Filter: 79797
+                            Buffers: temp read=659 written=1
+  InitPlan 5 (returns $5)
+    ->  Aggregate  (cost=237.15..237.18 rows=1 width=32) (actual time=12.424..12.424 rows=1 loops=1)
+          Buffers: temp read=659
+          ->  CTE Scan on scope scope_2  (cost=0.00..187.38 rows=1171 width=8) (actual time=0.006..11.673 rows=6594 loops=1)
+                Filter: (in_category AND in_price AND in_rating)
+                Rows Removed by Filter: 86001
+                Buffers: temp read=659
+  InitPlan 6 (returns $6)
+    ->  Aggregate  (cost=204.38..204.39 rows=1 width=32) (actual time=15.362..15.363 rows=1 loops=1)
+          Buffers: temp read=659
+          ->  Sort  (cost=202.88..203.38 rows=200 width=10) (actual time=15.344..15.345 rows=5 loops=1)
+                Sort Key: scope_3.effective_price
+                Sort Method: quicksort  Memory: 25kB
+                Buffers: temp read=659
+                ->  HashAggregate  (cost=193.24..195.24 rows=200 width=10) (actual time=15.324..15.326 rows=5 loops=1)
+                      Group Key: scope_3.effective_price
+                      Batches: 1  Memory Usage: 40kB
+                      Buffers: temp read=659
+                      ->  CTE Scan on scope scope_3  (cost=0.00..187.38 rows=1171 width=2) (actual time=0.003..11.262 rows=48242 loops=1)
+                            Filter: (in_category AND in_reviews AND in_rating)
+                            Rows Removed by Filter: 44353
+                            Buffers: temp read=659
+  InitPlan 7 (returns $7)
+    ->  Aggregate  (cost=251.79..251.82 rows=1 width=32) (actual time=10.929..10.929 rows=1 loops=1)
+          Buffers: temp read=659
+          ->  CTE Scan on scope scope_4  (cost=0.00..187.38 rows=1171 width=8) (actual time=0.005..9.945 rows=6594 loops=1)
+                Filter: (in_category AND in_reviews AND in_price)
+                Rows Removed by Filter: 86001
+                Buffers: temp read=659
+Planning:
+  Buffers: shared hit=2
+Planning Time: 1.458 ms
+Execution Time: 189.377 ms
+
+=== placeContext, Riyadh city view, Best
+endpoint: 196 ms; eligible true, ordinal 50, percentile 92.3
+Result  (cost=38043.79..38043.81 rows=1 width=96) (actual time=169.127..169.210 rows=1 loops=1)
+  Buffers: shared hit=13430 read=17433, temp read=4186 written=837
+  CTE eligible
+    ->  Gather  (cost=1000.00..36048.28 rows=9369 width=50) (actual time=0.646..61.915 rows=92595 loops=1)
+          Workers Planned: 2
+          Workers Launched: 2
+          Buffers: shared hit=13426 read=17433
+          ->  Parallel Seq Scan on hayer_poi_catalog catalog  (cost=0.00..34111.38 rows=3904 width=50) (actual time=0.151..53.291 rows=30865 loops=3)
+                Filter: (("quarantinedAt" IS NULL) AND (location && '0103000020E610000001000000050000000000000000404740CDCCCCCCCC8C384000000000004047403333333333F338409A999999997947403333333333F338409A99999999794740CDCCCCCCCC8C38400000000000404740CDCCCCCCCC8C3840'::geography) AND (latitude >= '24.55'::double precision) AND (latitude <= '24.95'::double precision) AND (longitude >= '46.5'::double precision) AND (longitude <= '46.95'::double precision) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN rating ELSE NULL::double precision END IS NOT NULL) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END IS NOT NULL) AND ("countryCode" = 'SA'::text) AND (lifecycle_status = 'unknown'::text) AND (CASE WHEN ("sourceCheckedAt" >= '2026-09-12 00:54:13.231'::timestamp without time zone) THEN review_count ELSE NULL::bigint END >= '1'::bigint))
+                Rows Removed by Filter: 35802
+                Buffers: shared hit=13426 read=17433
+  CTE target
+    ->  CTE Scan on eligible  (cost=0.00..234.23 rows=1 width=89) (actual time=3.736..11.694 rows=1 loops=1)
+          Filter: ((provider = 'google-web'::text) AND ("providerPlaceId" = 'bench-0063450'::text))
+          Rows Removed by Filter: 92594
+          Buffers: temp read=838 written=1
+  InitPlan 3 (returns $3)
+    ->  Aggregate  (cost=210.80..210.81 rows=1 width=8) (actual time=88.338..88.339 rows=1 loops=1)
+          Buffers: shared hit=13426 read=17433, temp written=836
+          ->  CTE Scan on eligible eligible_1  (cost=0.00..187.38 rows=9369 width=0) (actual time=0.647..84.340 rows=92595 loops=1)
+                Buffers: shared hit=13426 read=17433, temp written=836
+  InitPlan 4 (returns $4)
+    ->  Aggregate  (cost=480.18..480.19 rows=1 width=8) (actual time=28.626..28.627 rows=1 loops=1)
+          Buffers: temp read=1675 written=1
+          ->  Nested Loop  (cost=0.00..468.47 rows=4684 width=0) (actual time=4.106..28.617 rows=49 loops=1)
+                Join Filter: (((eligible_2."providerPlaceId" <> target."providerPlaceId") OR (eligible_2.provider <> target.provider)) AND (NOT CASE WHEN (target.sort_value IS NULL) THEN ((eligible_2.sort_value IS NULL) AND (ROW(eligible_2."providerPlaceId", eligible_2.provider) > ROW(target."providerPlaceId", target.provider))) ELSE ((eligible_2.sort_value < target.sort_value) OR (eligible_2.sort_value IS NULL) OR ((eligible_2.sort_value = target.sort_value) AND (ROW(eligible_2."providerPlaceId", eligible_2.provider) > ROW(target."providerPlaceId", target.provider)))) END))
+                Rows Removed by Join Filter: 92546
+                Buffers: temp read=1675 written=1
+                ->  CTE Scan on target  (cost=0.00..0.02 rows=1 width=72) (actual time=3.737..11.695 rows=1 loops=1)
+                      Buffers: temp read=838 written=1
+                ->  CTE Scan on eligible eligible_2  (cost=0.00..187.38 rows=9369 width=72) (actual time=0.002..8.279 rows=92595 loops=1)
+                      Buffers: temp read=837
+  InitPlan 5 (returns $5)
+    ->  Aggregate  (cost=210.69..210.69 rows=1 width=8) (actual time=13.570..13.571 rows=1 loops=1)
+          Buffers: temp read=837
+          ->  CTE Scan on eligible eligible_3  (cost=0.00..187.38 rows=9322 width=0) (actual time=0.003..10.214 rows=92595 loops=1)
+                Filter: (effective_rating IS NOT NULL)
+                Buffers: temp read=837
+  InitPlan 6 (returns $6)
+    ->  Aggregate  (cost=312.32..312.33 rows=1 width=8) (actual time=19.459..19.461 rows=1 loops=1)
+          Buffers: temp read=837
+          ->  Nested Loop  (cost=0.00..304.51 rows=3123 width=0) (actual time=0.005..16.352 rows=85476 loops=1)
+                Join Filter: (eligible_4.effective_rating < target_1.effective_rating)
+                Rows Removed by Join Filter: 7119
+                Buffers: temp read=837
+                ->  CTE Scan on target target_1  (cost=0.00..0.02 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=1)
+                ->  CTE Scan on eligible eligible_4  (cost=0.00..187.38 rows=9369 width=8) (actual time=0.002..8.221 rows=92595 loops=1)
+                      Buffers: temp read=837
+  InitPlan 7 (returns $7)
+    ->  Aggregate  (cost=538.72..538.74 rows=1 width=32) (actual time=19.027..19.027 rows=1 loops=1)
+          Buffers: temp read=837
+          ->  CTE Scan on eligible eligible_5  (cost=0.00..187.38 rows=9369 width=8) (actual time=0.002..7.949 rows=92595 loops=1)
+                Buffers: temp read=837
+  InitPlan 8 (returns $9)
+    ->  Aggregate  (cost=8.50..8.51 rows=1 width=32) (actual time=0.085..0.086 rows=1 loops=1)
+          Buffers: shared hit=4
+          ->  Sort  (cost=8.47..8.47 rows=1 width=1017) (actual time=0.047..0.047 rows=1 loops=1)
+                Sort Key: target_2.sort_value DESC NULLS LAST, target_2."providerPlaceId", target_2.provider
+                Sort Method: quicksort  Memory: 25kB
+                Buffers: shared hit=4
+                ->  Nested Loop  (cost=0.42..8.46 rows=1 width=1017) (actual time=0.023..0.024 rows=1 loops=1)
+                      Buffers: shared hit=4
+                      ->  CTE Scan on target target_2  (cost=0.00..0.02 rows=1 width=81) (actual time=0.001..0.001 rows=1 loops=1)
+                      ->  Index Scan using hayer_poi_catalog_id on hayer_poi_catalog catalog_1  (cost=0.42..8.44 rows=1 width=944) (actual time=0.019..0.019 rows=1 loops=1)
+                            Index Cond: ("catalogId" = target_2."catalogId")
+                            Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=2
+Planning Time: 1.434 ms
+Execution Time: 170.433 ms

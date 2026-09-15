@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:hayer_server/src/discovery/discovery_contract.dart';
+import 'package:hayer_server/src/discovery/discovery_policy_service.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -280,18 +280,16 @@ void main() {
     expect(DiscoveryGrowthMetrics.fromJson(json).catalogPlacesAtEnd, 118);
   });
 
-  test('configuration contains only client capabilities and provisional display settings', () {
-    final config = DiscoveryConfig.fromJson(
-      jsonDecode(jsonEncode(DiscoveryContract.configuration()))
-          as Map<String, dynamic>,
+  test('default discovery policy remains dark with display thresholds', () {
+    final policy = DiscoveryPolicyService.defaultPolicy();
+    expect(policy.discovery?.enabled, isFalse);
+    expect(policy.version, 0);
+    expect(
+      policy.discovery?.scoring.gemMaximumReviewsExclusive,
+      500,
     );
-    expect(config.enabled, isFalse);
-    expect(config.policyRevision, 0);
-    expect(config.scoring.gemMaximumReviewsExclusive, 500);
-    expect(config.amenitiesAvailable, isFalse);
-    expect(config.reviewTextSearchAvailable, isFalse);
-    expect(config.detailsAvailable, isFalse);
-    expect(config.limits.defaultPageSize, 50);
+    expect(policy.discovery?.maximumPageSize, 100);
+    expect(policy.detailRefresh?.maximumRequests, 3);
   });
 
   test(

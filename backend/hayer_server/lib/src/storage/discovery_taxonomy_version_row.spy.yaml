@@ -1,0 +1,20 @@
+class: DiscoveryTaxonomyVersionRow
+serverOnly: true
+table: hayer_discovery_taxonomy
+fields:
+  version: String
+  revision: int
+  status: TaxonomyStatus
+  documentJson: String
+  validationPassed: bool
+  validationErrors: List<String>
+  createdBy: String
+  createdAt: DateTime
+  validatedAt: DateTime?
+  publishedAt: DateTime?
+indexes:
+  hayer_discovery_taxonomy_version_key:
+    fields: version
+    unique: true
+  hayer_discovery_taxonomy_status:
+    fields: status, publishedAt

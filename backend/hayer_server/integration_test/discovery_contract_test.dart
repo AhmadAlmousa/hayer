@@ -1,5 +1,5 @@
 import 'package:hayer_server/src/admin/admin_endpoint.dart';
-import 'package:hayer_server/src/discovery/discovery_contract.dart';
+import 'package:hayer_server/src/discovery/discovery_policy_service.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
@@ -42,7 +42,9 @@ void main() {
       () async {
         final config = await endpoints.bootstrap.discoveryConfig(builder);
         expect(config.enabled, isFalse);
-        expect(config.detailsAvailable, isFalse);
+        expect(config.taxonomyRevision, 1);
+        // Shared details are independent of the Discover flag.
+        expect(config.detailsAvailable, isTrue);
         expect(
           config.expiresAt.difference(config.serverTime),
           const Duration(minutes: 5),
@@ -53,7 +55,7 @@ void main() {
       },
     );
 
-    test('all discover and shared-detail stubs fail closed for an authenticated user', () async {
+    test('discover data and catalog reporting fail closed for an authenticated user', () async {
       final calls = <Future<Object?> Function()>[
         () => endpoints.discover.taxonomy(member),
         () => endpoints.discover.browse(
@@ -79,12 +81,6 @@ void main() {
           idempotencyKey: 'fixture',
         ),
         () => endpoints.discover.harvestStatus(member, jobId: 'fixture'),
-        () => endpoints.place.details(member, identity: identity),
-        () => endpoints.place.details(
-          member,
-          identity: identity,
-          sessionId: 'session-fixture',
-        ),
         () => endpoints.place.reportCatalogIssue(
           member,
           catalogId: 1,
@@ -95,6 +91,19 @@ void main() {
       for (final call in calls) {
         await expectLater(call(), throwsA(_disabled));
       }
+    });
+
+    test('shared details answer while Discover is disabled', () async {
+      await expectLater(
+        endpoints.place.details(member, identity: identity),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.code,
+            'code',
+            'not_found',
+          ),
+        ),
+      );
     });
 
     test(
@@ -120,105 +129,56 @@ void main() {
       },
     );
 
-    test(
-      'admin discovery stubs authorize then reject without a mutation',
-      () async {
-        final session = builder.build();
-        var authorizations = 0;
-        final admin = AdminEndpoint.forTesting(
-          authorizer: (_) async {
-            authorizations++;
-            return 'test-operator';
-          },
+    test('admin discovery reads authorize before answering', () async {
+      final session = builder.build();
+      var authorizations = 0;
+      final admin = AdminEndpoint.forTesting(
+        authorizer: (_) async {
+          authorizations++;
+          return 'test-operator';
+        },
+      );
+      try {
+        final draft = await admin.discoveryHarvestManifestDraft(session);
+        expect(draft.entries, hasLength(9));
+        expect(
+          await admin.discoveryHarvestManifestHistory(session),
+          isNotEmpty,
         );
-        try {
-          final calls = <Future<Object?> Function()>[
-            () => admin.discoveryTaxonomyDraft(session),
-            () => admin.discoveryTaxonomyHistory(session),
-            () => admin.saveDiscoveryTaxonomyDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-              roots: [],
-            ),
-            () => admin.validateDiscoveryTaxonomyDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.publishDiscoveryTaxonomy(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.rollbackDiscoveryTaxonomy(
-              session,
-              reason: 'fixture',
-              version: 'old',
-              expectedActiveRevision: 0,
-            ),
-            () => admin.discoveryHarvestManifestDraft(session),
-            () => admin.discoveryHarvestManifestHistory(session),
-            () => admin.saveDiscoveryHarvestManifestDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-              entries: [],
-            ),
-            () => admin.validateDiscoveryHarvestManifestDraft(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.publishDiscoveryHarvestManifest(
-              session,
-              reason: 'fixture',
-              version: 'draft',
-              revision: 0,
-            ),
-            () => admin.rollbackDiscoveryHarvestManifest(
-              session,
-              reason: 'fixture',
-              version: 'old',
-              expectedActiveRevision: 0,
-            ),
-            () => admin.discoveryHarvestJobs(
-              session,
-              page: 0,
-              pageSize: 25,
-              state: DiscoveryHarvestState.partial,
-              requester: DiscoveryHarvestRequester.user,
-              trigger: DiscoveryHarvestTrigger.deepen,
-            ),
-            () => admin.discoveryUnmappedTypes(
-              session,
-              page: 0,
-              pageSize: 25,
-              issue: DiscoveryTypeMappingIssue.unmapped,
-            ),
-            () => admin.discoveryGrowthMetrics(
-              session,
-              from: DateTime.utc(2026, 9, 1),
-              to: DateTime.utc(2026, 9, 14),
-            ),
-          ];
-          for (final call in calls) {
-            await expectLater(call(), throwsA(_disabled));
-          }
-          expect(authorizations, calls.length);
-        } finally {
-          await session.close();
-        }
-      },
-    );
+        expect(
+          (await admin.discoveryHarvestJobs(
+            session,
+            page: 0,
+            pageSize: 25,
+            state: DiscoveryHarvestState.partial,
+            requester: DiscoveryHarvestRequester.user,
+            trigger: DiscoveryHarvestTrigger.deepen,
+          )).items,
+          isEmpty,
+        );
+        expect(
+          (await admin.discoveryUnmappedTypes(
+            session,
+            page: 0,
+            pageSize: 25,
+            issue: DiscoveryTypeMappingIssue.unmapped,
+          )).total,
+          isNonNegative,
+        );
+        final growth = await admin.discoveryGrowthMetrics(
+          session,
+          from: DateTime.utc(2026, 9, 1),
+          to: DateTime.utc(2026, 9, 14),
+        );
+        expect(growth.from, DateTime.utc(2026, 9, 1));
+        expect(authorizations, 5);
+      } finally {
+        await session.close();
+      }
+    });
 
     test(
-      'new policy fields cannot be acknowledged and silently discarded',
+      'new policy fields persist and legacy clients preserve them',
       () async {
         final session = builder.build();
         final admin = AdminEndpoint.forTesting(
@@ -226,6 +186,8 @@ void main() {
         );
         try {
           final before = await admin.policy(session);
+          expect(before.discovery, isNotNull);
+          expect(before.detailRefresh, isNotNull);
           final legacy = CachePolicy.fromJson(
             before.toJson()
               ..remove('discovery')
@@ -235,7 +197,7 @@ void main() {
           expect(legacy.detailRefresh, isNull);
           final discovery = DiscoveryPolicy(
             enabled: true,
-            scoring: DiscoveryContract.configuration().scoring,
+            scoring: DiscoveryPolicyService.defaultScoring(),
             harvestMaximumRequests: 24,
             harvestDesiredCandidatesPerQuery: 50,
             harvestMaximumSeconds: 300,
@@ -247,29 +209,38 @@ void main() {
             maximumPageSize: 100,
             maximumMapPoints: 2000,
           );
-          await expectLater(
-            admin.updatePolicy(
-              session,
-              reason: 'fixture',
-              policy: legacy.copyWith(discovery: discovery),
-            ),
-            throwsA(_disabled),
+          final withDiscovery = await admin.updatePolicy(
+            session,
+            reason: 'Enable discovery for the test.',
+            policy: legacy.copyWith(discovery: discovery),
           );
-          await expectLater(
-            admin.updatePolicy(
-              session,
-              reason: 'fixture',
-              policy: legacy.copyWith(
-                detailRefresh: PlaceDetailPolicy(
-                  maximumRequests: 3,
-                  maximumSeconds: 10,
-                  cooldownMinutes: 15,
-                ),
-              ),
-            ),
-            throwsA(_disabled),
+          expect(withDiscovery.discovery?.enabled, isTrue);
+          expect(withDiscovery.discovery?.harvestMaximumRequests, 24);
+
+          final legacyEdit = CachePolicy.fromJson(
+            withDiscovery.toJson()
+              ..remove('discovery')
+              ..remove('detailRefresh'),
           );
-          expect((await admin.policy(session)).version, before.version);
+          final saved = await admin.updatePolicy(
+            session,
+            reason: 'Legacy client updates a shared setting.',
+            policy: legacyEdit.copyWith(freshHours: 48),
+          );
+          expect(saved.freshHours, 48);
+          expect(saved.discovery?.enabled, isTrue);
+          expect(saved.discovery?.harvestMaximumRequests, 24);
+          expect(saved.detailRefresh?.maximumRequests, 3);
+
+          final config = await endpoints.bootstrap.discoveryConfig(builder);
+          expect(config.enabled, isTrue);
+          expect(config.policyRevision, saved.version);
+          expect(config.scoring.gemMaximumReviewsExclusive, 500);
+          expect(config.limits.maximumPageSize, 100);
+
+          final taxonomy = await endpoints.discover.taxonomy(member);
+          expect(taxonomy.revision, config.taxonomyRevision);
+          expect(taxonomy.roots, hasLength(9));
         } finally {
           await session.close();
         }

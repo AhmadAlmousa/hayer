@@ -6,7 +6,9 @@ fields:
   reportId: String
   reporterHash: String
   activeDedupeKey: String?
-  sessionId: String
+  # Null for a report filed from Discover, which has no swipe session.
+  sessionId: String?
+  source: PoiIssueSource, default=session
   placeId: String
   placeName: String
   reportedSnapshot: PlaceSnapshot

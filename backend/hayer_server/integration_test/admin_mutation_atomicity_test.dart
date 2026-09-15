@@ -1,5 +1,6 @@
 import 'package:hayer_server/src/admin/admin_audit_writer.dart';
 import 'package:hayer_server/src/admin/admin_endpoint.dart';
+import 'package:hayer_server/src/discovery/discovery_taxonomy_service.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:hayer_server/src/places/taxonomy.dart';
 import 'package:hayer_server/src/places/taxonomy_service.dart';
@@ -238,6 +239,109 @@ void main() {
         },
       );
 
+      test(
+        'two saves of the same Discover tree revision commit exactly once',
+        () async {
+          final setup = sessionBuilder.build();
+          try {
+            await _seedDiscoveryTaxonomy(setup, validationPassed: false);
+          } finally {
+            await setup.close();
+          }
+
+          final sessions = [sessionBuilder.build(), sessionBuilder.build()];
+          try {
+            final results = await Future.wait([
+              _attemptConflict(
+                () => endpoint.saveDiscoveryTaxonomyDraft(
+                  sessions[0],
+                  reason: 'First concurrent Discover tree edit.',
+                  version: _discoveryDraftVersion,
+                  revision: 1,
+                  roots: _discoveryVariant('First'),
+                ),
+              ),
+              _attemptConflict(
+                () => endpoint.saveDiscoveryTaxonomyDraft(
+                  sessions[1],
+                  reason: 'Second concurrent Discover tree edit.',
+                  version: _discoveryDraftVersion,
+                  revision: 1,
+                  roots: _discoveryVariant('Second'),
+                ),
+              ),
+            ]);
+            expect(results.where((value) => value), hasLength(1));
+
+            final row = await DiscoveryTaxonomyVersionRow.db.findFirstRow(
+              sessions[0],
+              where: (table) => table.version.equals(_discoveryDraftVersion),
+            );
+            expect(row?.revision, 2);
+            expect(row?.validationPassed, isFalse);
+            expect(
+              await AdminAuditRow.db.count(
+                sessions[0],
+                where: (table) =>
+                    table.action.equals('discovery_taxonomy.draft.save'),
+              ),
+              1,
+            );
+          } finally {
+            for (final session in sessions) {
+              await session.close();
+            }
+          }
+        },
+      );
+
+      test(
+        'Discover taxonomy publish and restore are atomically audited',
+        () async {
+          final session = sessionBuilder.build();
+          try {
+            await _seedDiscoveryTaxonomy(session, validationPassed: true);
+
+            final published = await endpoint.publishDiscoveryTaxonomy(
+              session,
+              reason: 'Publish the validated Discover tree.',
+              version: _discoveryDraftVersion,
+              revision: 1,
+            );
+            expect(published.status, TaxonomyStatus.active);
+            expect(published.revision, 2);
+
+            final restored = await endpoint.rollbackDiscoveryTaxonomy(
+              session,
+              reason: 'Restore the preceding Discover tree.',
+              version: _discoveryActiveVersion,
+              expectedActiveRevision: published.revision,
+            );
+            expect(restored.status, TaxonomyStatus.active);
+            expect(restored.revision, 3);
+
+            final audits = await AdminAuditRow.db.find(
+              session,
+              where: (table) =>
+                  table.action.equals('discovery_taxonomy.publish') |
+                  table.action.equals('discovery_taxonomy.rollback'),
+              orderBy: (table) => table.occurredAt,
+            );
+            expect(
+              audits.map((row) => row.action),
+              containsAllInOrder([
+                'discovery_taxonomy.publish',
+                'discovery_taxonomy.rollback',
+              ]),
+            );
+            expect(audits.every((row) => row.beforeData != null), isTrue);
+            expect(audits.every((row) => row.afterData != null), isTrue);
+          } finally {
+            await session.close();
+          }
+        },
+      );
+
       test('audit insertion failure rolls back the taxonomy edit', () async {
         final session = sessionBuilder.build();
         try {
@@ -276,6 +380,8 @@ void main() {
 }
 
 const _draftVersion = 'taxonomy-f20-test';
+const _discoveryActiveVersion = 'discovery-taxonomy-active-test';
+const _discoveryDraftVersion = 'discovery-taxonomy-draft-test';
 final _baseline = PlaceTaxonomy.baselineItems();
 final _validationLocation = AdminMapLocation(
   address: 'Riyadh',
@@ -344,6 +450,52 @@ Future<void> _seedTaxonomy(
   );
 }
 
+List<DiscoveryTaxonomyNode> _discoveryVariant(String suffix) {
+  final roots = DiscoveryTaxonomyService.seedRoots();
+  return [
+    roots.first.copyWith(labelEn: '${roots.first.labelEn} $suffix'),
+    ...roots.skip(1),
+  ];
+}
+
+Future<void> _seedDiscoveryTaxonomy(
+  Session session, {
+  required bool validationPassed,
+}) async {
+  final createdAt = DateTime.utc(2026, 9, 14);
+  final document = DiscoveryTaxonomyService.encode(
+    DiscoveryTaxonomyService.seedRoots(),
+  );
+  await DiscoveryTaxonomyVersionRow.db.insert(
+    session,
+    [
+      DiscoveryTaxonomyVersionRow(
+        version: _discoveryActiveVersion,
+        revision: 1,
+        status: TaxonomyStatus.active,
+        documentJson: document,
+        validationPassed: true,
+        validationErrors: const [],
+        createdBy: 'test',
+        createdAt: createdAt,
+        validatedAt: createdAt,
+        publishedAt: createdAt,
+      ),
+      DiscoveryTaxonomyVersionRow(
+        version: _discoveryDraftVersion,
+        revision: 1,
+        status: TaxonomyStatus.draft,
+        documentJson: document,
+        validationPassed: validationPassed,
+        validationErrors: const [],
+        createdBy: 'test',
+        createdAt: createdAt.add(const Duration(seconds: 1)),
+        validatedAt: validationPassed ? createdAt : null,
+      ),
+    ],
+  );
+}
+
 CacheSettingsRow _cacheSettings({required int version}) => CacheSettingsRow(
   settingsKey: 'default',
   version: version,
@@ -390,6 +542,7 @@ Future<void> _resetTables(TestSessionBuilder sessionBuilder) async {
 TRUNCATE TABLE
   "hayer_admin_audit",
   "hayer_cache_settings",
+  "hayer_discovery_taxonomy",
   "hayer_taxonomy_version"
 CASCADE
 ''');

@@ -8,12 +8,17 @@ The generated `hayer_client` types are ready for frontend development with
 on `main` (`d4b58b7`). Bring the frontend lane forward with
 `git merge --ff-only main` before building on these contracts.
 
-**Available now:** public `client.bootstrap.discoveryConfig()` returns a typed,
-disabled configuration. Every other new RPC below returns
-`ApiException(code: 'feature_disabled')` after its normal authentication or
-admin authorization check. There is no discovery query, taxonomy seed, detail
-refresh, catalog report write or harvest implementation yet. These are contract
-deliveries, not completed M9-B/C/D/E checkpoints or permission to enable discovery.
+**Available now (15 September 2026):** public
+`client.bootstrap.discoveryConfig()` reports the stored policy and tree
+revisions. `discover.taxonomy` (M9-B) and `browse`, `facets` and `placeContext`
+(M9-C) are implemented against the PostgreSQL catalog, but like every
+discovery method they return `ApiException(code: 'feature_disabled')` while
+the policy's `discoveryEnabled` is false. So does `place.reportCatalogIssue`,
+implemented in M9-D. `place.details` (M9-D) answers in both modes whatever the
+flag, and `discoveryConfig.detailsAvailable` is true. Harvesting (`ensureArea`,
+`deepen`, `harvestStatus`) and the coverage descriptor are implemented in M9-E
+behind the same flag, and the M9-E admin reads answer authorized operators.
+Enabling discovery remains the M9-K release decision.
 
 The implementation requirements remain in [the plan](../discovery_upgrade.md).
 Both modes must use the same Vela-derived non-API search adapter, cache-first
@@ -170,6 +175,52 @@ facets context revision together. `otherCategoryId` is a synthetic bucket and
 must never equal a taxonomy node id. Empty roots mean unpublished; they do not
 authorize clearing category ids retained from a shared link.
 
+### Query behavior as implemented (M9-C)
+
+These points pin down what the contract above left to the implementation.
+
+- **Errors.** `invalid_area`: non-finite, unordered or out-of-range bounds,
+  or a span over 15 degrees. `unsupported_area`: a viewport centre outside the
+  supported countries, or a country hint that disagrees with it.
+  `bad_request`: page size outside 1–100, more than 50 category ids, text over
+  256 code points, price outside 1–4, minimum rating outside 0–5, a category
+  id the published tree lacks, or an invalid place identity. `query_changed`:
+  a cursor issued for another query, revision or instant, a changed policy or
+  taxonomy revision, or a context instant more than an hour old.
+- **Timeouts.** A statement that exceeds the policy's
+  `queryTimeoutMilliseconds` answers `rate_limited` with
+  `retryAfterSeconds: 5`. Keep the previous results and retry after the wait.
+- **Budgets.** Per user per minute: `browse` spends
+  `browseRequestsPerMinute`, `facets` spends `facetRequestsPerMinute`, and
+  `placeContext` has its own bucket with the browse allowance, so pin previews
+  cannot starve result pages.
+- **Instants.** `DiscoverQueryContext.evaluatedAt` is issued at millisecond
+  precision, and cursors bind to that instant.
+- **Categories.** Unknown ids are rejected rather than dropped, so strip ids
+  missing from the published tree first, as kept links already do. A selected
+  node covers its descendants; Other (`limits.otherCategoryId`) covers
+  unmapped and ambiguous types. Types match aliases after the same
+  normalization as the tree editor: trimmed, lowercased, whitespace collapsed,
+  Arabic unchanged.
+- **Text.** Normalized the same way. It matches names and descriptions, never
+  featured reviews, and `%` and `_` are literal. Descriptions remain visible on
+  stale places, so they remain searchable.
+- **Staleness.** A place older than the policy's `freshHours` at the context
+  instant hides the same fields as a stale Swipe card: rating, reviews, price,
+  hours, phone, status and featured review. It then fails rating-based sorts
+  and filters, never satisfies an hours window, and reports `openNow: null`.
+- **Exclusions.** Places whose status text states a permanent or temporary
+  closure, in English or Arabic, and quarantined places never appear in
+  results, counts, maps or place context.
+- **Map.** Aggregates are cells of a 40 × 40 grid over the viewport, placed at
+  the average position of their places; their counts sum to the total.
+- **Place context.** `ratingPercentile` is the share of other rated eligible
+  places rated strictly lower, times 100. `ordinal` counts ties in the Discover
+  order: sort value, then provider place id, then provider.
+- **Coverage.** `coverage.eligibleCatalogCount` counts open, unquarantined
+  catalog places inside the viewport before filters. Footprints and pending
+  jobs follow §"Harvesting and coverage as implemented (M9-E)".
+
 ## Details, reporting and coverage
 
 ```dart
@@ -226,6 +277,94 @@ and `countryCode`. Prefer locality, then city, for the short area label; do not
 parse the formatted line by comma position. The existing string-returning
 `place.reverseGeocode` remains available to older consumers.
 
+### Details and reporting as implemented (M9-D)
+
+- **Availability.** `place.details` never answers `feature_disabled`, and
+  `detailsAvailable` is true. `place.reportCatalogIssue` answers
+  `feature_disabled` while Discover is off.
+- **Identity.** The provider is `google-web`. A blank or over-long identity,
+  or a session id outside 1–128 characters, is `bad_request`. Without a
+  session, the catalog must hold the place unquarantined, otherwise
+  `not_found`. With a session, a non-participant gets `forbidden` and a place
+  outside that deck `not_found`. A quarantined place stays readable from a
+  session that shows it.
+- **Refreshing.** The read searches the provider only when the record is stale
+  under the policy's `freshHours`, or has missing fields not checked within
+  that window, and no cooldown is running. It then makes one focused search of
+  at most 10 seconds, after which the answer returns.
+- **States.** `notNeeded`: nothing was searched. `refreshing`: another request
+  holds this place's refresh, and the answer is the stored record.
+  `succeeded`: an exact provider id match updated the record. `noMatch` and
+  `failed`: the record is unchanged. `budgetExceeded`: the shared provider
+  queue was busy or this user started 30 refreshes in the hour. None of these
+  is an error.
+- **Timestamps.** `retryAfter` is set while a cooldown runs: the policy's
+  `cooldownMinutes` after no match, a failure or a match still missing fields,
+  and a minute after a busy queue. `lastAttemptAt` and `lastSuccessAt` are
+  shared by every user and mode.
+- **Staleness.** A stale record hides the same fields as a stale Swipe card or
+  Discover result: rating, reviews, price, hours, status, phone and featured
+  review. `stale` and `place.isStale` are both true, and
+  `place.sourceCheckedAt` is the last real observation.
+- **Missing fields.** `missingFields` lists what the returned place cannot
+  show: photos, hours, phone, website, price (neither level nor text) and
+  description. Hidden stale fields count as missing.
+- **Distance.** With a session, `place.distanceMeters` is the deck's distance
+  from the session anchor. Without one it is not meaningful.
+- **Reports.** The server resolves the place from `catalogId`; an unknown id
+  is `not_found`, and zero or less, a retry key outside 8–128 characters or
+  invalid details are `bad_request`. Reusing a key with another body is
+  `conflict` in either mode. Swipe and Discover reports share one active
+  report per reporter, place and type, so they return the same report id,
+  and they share the quotas behind `rate_limited`.
+- **Admin.** `AdminPoiIssue.source` is `discovery` with a null `sessionId`
+  for Discover reports. `affectedSessionCount` counts sessions only and can
+  be 0.
+
+### Harvesting and coverage as implemented (M9-E)
+
+- **Cells.** A viewport's centre snaps to a kilometre grid, and its
+  half-diagonal rounds up to a 1, 2, 5 or 10 km radius. The harvest footprint
+  is the square extending that radius from the snapped centre. Views whose
+  centres snap to the same cell, with the same radius bucket, share a harvest.
+- **`ensureArea` receipts.**
+  - A pending or running `job`: a harvest was enqueued or joined. Poll it.
+  - No `job` and no `retryAfter`: every enabled manifest query completed here
+    within the policy's freshness window. Nothing was enqueued.
+  - A finished `job` with `retryAfter`: the cell is cooling down after that
+    job. Wait until `retryAfter`.
+- **`deepen`.** Like `ensureArea`, but it ignores freshness. The retry key is
+  8–128 characters. The same key returns the same job, and a key reused for
+  another area is `conflict`. The cooldown still applies.
+- **Budget.** `rate_limited`, with `retryAfterSeconds`, comes only when a new
+  harvest would start and the user has spent the policy's harvests for the
+  hour. Joining a job, fresh answers and cooldowns are free.
+- **Jobs.** `harvestStatus` answers any signed-in user; an unknown id is
+  `not_found`. `totalQueries` counts the broad manifest queries plus Swipe
+  compatibility queries, less any whose Swipe coverage was already fresh.
+  States:
+  - `succeeded`: every planned query answered, though continuation depth may
+    have been cut by the budget.
+  - `partial`: some queries answered.
+  - `failed`: none answered.
+  - `cancelled`: by an operator, or by Discover being turned off
+    (`failureCode: feature_disabled`).
+  A finished job that did not cancel carries its cooldown as `retryAfter`.
+- **Footprints.** Up to 20 intersecting cells. `completedQueryGroups` are
+  manifest entry ids completed within the freshness window under the active
+  manifest revision, and `incompleteQueryGroups` are the rest.
+  `lastAttemptAt` is the last finished, uncancelled harvest, and
+  `lastSuccessAt` the last fully successful one. A partial harvest therefore
+  leaves the attempt newer than the success. `retryAfter` is the cooldown.
+  A manifest revision change leaves every group incomplete until the new plan
+  runs.
+- **Pending jobs.** Up to five pending or running harvests whose footprint
+  intersects the view.
+- **Grows the shared catalog.** Every valid observation is stored. Only Swipe
+  compatibility query results carry Swipe category evidence and coverage, so a
+  broad-only place is discoverable but never enters a Swipe deck without real
+  Swipe evidence.
+
 ## Admin and implementation boundaries
 
 Admin methods are `discoveryTaxonomyDraft()`, `discoveryTaxonomyHistory()`,
@@ -262,8 +401,8 @@ client.admin.rollbackDiscoveryHarvestManifest(
 `AdminDiscoveryHarvestManifestVersion` uses `DiscoveryManifestStatus` and holds
 stable entries with an admin label, primary English query, reviewed Arabic
 fallback, order and enabled state. Retain version/revision for optimistic
-concurrency. All six lifecycle calls currently authorize and then return
-`feature_disabled`; mocks can drive the editor until persistence lands.
+concurrency. The lifecycle is implemented as described in §"Admin as
+implemented (M9-E)".
 
 The remaining reads are:
 
@@ -318,6 +457,53 @@ All new errors use the existing `ApiException` envelope and optional
 wait. The implementation contract reserves `bad_request` for invalid filters,
 `invalid_area` for invalid/oversized bounds, `unsupported_area` for unsupported
 coverage and `not_found`/`forbidden` for identity/authorization failures.
-Only `feature_disabled` and existing authentication/authorization failures
-are currently exercised; the future query and provider behavior needs its own
-PostGIS and cross-mode acceptance tests.
+M9-C's query, M9-D's detail and report behavior and M9-E's harvesting and admin
+reads have PostGIS and cross-mode acceptance tests. Real provider pages and
+production load remain M9-K verification.
+
+### Admin as implemented (M9-E)
+
+- **Manifest.** One active and one draft version. Saves compare revisions and
+  normalize whitespace. Validation requires:
+  - 1–20 entries, at least one enabled;
+  - ids of lowercase letters, digits and underscores, starting with a letter;
+  - unique ids, English queries and orders;
+  - 1–80-character labels;
+  - 2–120-character English queries and Arabic fallbacks.
+
+  Publish needs a validated current draft, and rollback restores a validated
+  superseded version under `expectedActiveRevision`. Audit actions are
+  `discovery_manifest.draft.save`, `.draft.validate`, `.publish` and
+  `.rollback`. The seed is `discovery-manifest-v1` with nine domains; its
+  Arabic fallbacks still need a reviewer.
+- **Harvest jobs.** Filters combine: `state`, `requester`, `trigger`, and a
+  `query` over job id, cell, country and requester. `requestedBy` is `user:`
+  and 16 hex digits of a salted hash. `manifestEntries` is the snapshot the job
+  was enqueued with, and `retryAfter` its remaining cooldown. The same jobs
+  appear on the refresh jobs page with `coverageKey` `discovery:…` and reason
+  `discover:committedSearch` or `discover:deepen`; cancelling one there
+  cancels the harvest.
+- **Unmapped types.** Types come from observation counts the shared writer
+  keeps per batch, seeded as one observation per place that existed before
+  M9-E. `primaryType` is the latest spelling, `catalogPlaceCount` counts
+  unquarantined places, and `exampleCatalogIds` holds up to five. `unmapped`
+  means no Discover alias claims the type, and `ambiguous` means two nodes do.
+  Items rank by observations, then places. Mapping one is a Discover taxonomy
+  draft edit.
+- **Growth metrics.**
+  - The window may be at most 90 days, and counters are hourly buckets that
+    start inside it.
+  - Catalog counts at each boundary are current rows first seen before it,
+    plus rows pruned since.
+  - `quarantinedPlaces` counts current quarantines dated in the window.
+  - `exploredCells` counts distinct cells whose succeeded or partial harvest
+    completed in the window.
+  - Breakdowns, by mode and operation:
+    - Swipe search: cache hits and misses, observations, new places and
+      upstream requests.
+    - Discover browse: a committed search that finds fresh coverage is a hit;
+      one that enqueues a harvest is a miss.
+    - Discover harvest: observations, new places and upstream requests.
+    - Detail refresh, Swipe with a session and Discover without: a read served
+      without the provider is a hit; a refresh attempt is a miss, a detail
+      refresh and its upstream requests.

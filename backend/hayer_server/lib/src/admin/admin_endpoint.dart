@@ -10,7 +10,12 @@ import 'admin_gateway_access.dart';
 import 'poi_issue_moderation_service.dart';
 import 'refresh_job_service.dart';
 import '../generated/protocol.dart';
-import '../discovery/discovery_contract.dart';
+import '../discovery/discovery_admin_reads.dart';
+import '../discovery/discovery_harvest_manifest_service.dart';
+import '../discovery/discovery_harvest_service.dart';
+import '../discovery/discovery_metrics.dart';
+import '../discovery/discovery_policy_service.dart';
+import '../discovery/discovery_taxonomy_service.dart';
 import '../places/calibration.dart';
 import '../places/google_web_place_source.dart';
 import '../places/place_services.dart';
@@ -137,15 +142,18 @@ class AdminEndpoint extends Endpoint {
   Future<AdminDiscoveryTaxonomyVersion> discoveryTaxonomyDraft(
     Session session,
   ) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    return DiscoveryTaxonomyService.editableDraft(
+      session,
+      operatorName: operatorName,
+    );
   }
 
   Future<List<AdminDiscoveryTaxonomyVersion>> discoveryTaxonomyHistory(
     Session session,
   ) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryTaxonomyService.history(session);
   }
 
   Future<AdminDiscoveryTaxonomyVersion> saveDiscoveryTaxonomyDraft(
@@ -155,8 +163,31 @@ class AdminEndpoint extends Endpoint {
     required int revision,
     required List<DiscoveryTaxonomyNode> roots,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final saved = await DiscoveryTaxonomyService.saveDraft(
+        session,
+        version: version,
+        revision: revision,
+        roots: roots,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_taxonomy.draft.save',
+        targetType: 'discovery_taxonomy',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '${saved.revision}',
+          'roots': '${saved.roots.length}',
+        },
+        transaction: transaction,
+      );
+      return saved;
+    });
   }
 
   Future<DiscoveryTaxonomyValidation> validateDiscoveryTaxonomyDraft(
@@ -165,8 +196,31 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int revision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final result = await DiscoveryTaxonomyService.recordValidation(
+        session,
+        version: version,
+        revision: revision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_taxonomy.draft.validate',
+        targetType: 'discovery_taxonomy',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '${result.revision}',
+          'passed': '${result.passed}',
+          'errors': '${result.errors.length}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryTaxonomyVersion> publishDiscoveryTaxonomy(
@@ -175,8 +229,38 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int revision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final before = await DiscoveryTaxonomyService.activeRow(
+        session,
+        transaction: transaction,
+      );
+      final result = await DiscoveryTaxonomyService.publish(
+        session,
+        version: version,
+        revision: revision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_taxonomy.publish',
+        targetType: 'discovery_taxonomy',
+        targetId: version,
+        reason: reason,
+        before: {
+          'version': before.version,
+          'revision': '${before.revision}',
+        },
+        after: {
+          'version': result.version,
+          'revision': '${result.revision}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryTaxonomyVersion> rollbackDiscoveryTaxonomy(
@@ -185,21 +269,54 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int expectedActiveRevision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final before = await DiscoveryTaxonomyService.activeRow(
+        session,
+        transaction: transaction,
+      );
+      final result = await DiscoveryTaxonomyService.rollback(
+        session,
+        version: version,
+        expectedActiveRevision: expectedActiveRevision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_taxonomy.rollback',
+        targetType: 'discovery_taxonomy',
+        targetId: version,
+        reason: reason,
+        before: {
+          'version': before.version,
+          'revision': '${before.revision}',
+        },
+        after: {
+          'version': result.version,
+          'revision': '${result.revision}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryHarvestManifestVersion> discoveryHarvestManifestDraft(
     Session session,
   ) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    return DiscoveryHarvestManifestService.editableDraft(
+      session,
+      operatorName: operatorName,
+    );
   }
 
   Future<List<AdminDiscoveryHarvestManifestVersion>>
   discoveryHarvestManifestHistory(Session session) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryHarvestManifestService.history(session);
   }
 
   Future<AdminDiscoveryHarvestManifestVersion>
@@ -210,8 +327,31 @@ class AdminEndpoint extends Endpoint {
     required int revision,
     required List<DiscoveryHarvestManifestEntry> entries,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final saved = await DiscoveryHarvestManifestService.saveDraft(
+        session,
+        version: version,
+        revision: revision,
+        entries: entries,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.draft.save',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '${saved.revision}',
+          'entries': '${saved.entries.length}',
+        },
+        transaction: transaction,
+      );
+      return saved;
+    });
   }
 
   Future<DiscoveryHarvestManifestValidation>
@@ -221,8 +361,31 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int revision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final result = await DiscoveryHarvestManifestService.recordValidation(
+        session,
+        version: version,
+        revision: revision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.draft.validate',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        after: {
+          'revision': '${result.revision}',
+          'passed': '${result.passed}',
+          'errors': '${result.errors.length}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryHarvestManifestVersion> publishDiscoveryHarvestManifest(
@@ -231,8 +394,38 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int revision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final before = await DiscoveryHarvestManifestService.activeRow(
+        session,
+        transaction: transaction,
+      );
+      final result = await DiscoveryHarvestManifestService.publish(
+        session,
+        version: version,
+        revision: revision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.publish',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        before: {
+          'version': before.version,
+          'revision': '${before.revision}',
+        },
+        after: {
+          'version': result.version,
+          'revision': '${result.revision}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryHarvestManifestVersion> rollbackDiscoveryHarvestManifest(
@@ -241,8 +434,38 @@ class AdminEndpoint extends Endpoint {
     required String version,
     required int expectedActiveRevision,
   }) async {
-    await _authorize(session);
-    return DiscoveryContract.unavailable();
+    final operatorName = await _authorize(session);
+    _reason(reason);
+    return session.db.transaction((transaction) async {
+      final before = await DiscoveryHarvestManifestService.activeRow(
+        session,
+        transaction: transaction,
+      );
+      final result = await DiscoveryHarvestManifestService.rollback(
+        session,
+        version: version,
+        expectedActiveRevision: expectedActiveRevision,
+        transaction: transaction,
+      );
+      await _audit(
+        session,
+        operatorName: operatorName,
+        action: 'discovery_manifest.rollback',
+        targetType: 'discovery_manifest',
+        targetId: version,
+        reason: reason,
+        before: {
+          'version': before.version,
+          'revision': '${before.revision}',
+        },
+        after: {
+          'version': result.version,
+          'revision': '${result.revision}',
+        },
+        transaction: transaction,
+      );
+      return result;
+    });
   }
 
   Future<AdminDiscoveryHarvestJobPage> discoveryHarvestJobs(
@@ -255,7 +478,15 @@ class AdminEndpoint extends Endpoint {
     DiscoveryHarvestTrigger? trigger,
   }) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryAdminReads.harvestJobs(
+      session,
+      page: page,
+      pageSize: pageSize,
+      query: query,
+      state: state,
+      requester: requester,
+      trigger: trigger,
+    );
   }
 
   Future<AdminDiscoveryUnmappedTypePage> discoveryUnmappedTypes(
@@ -266,7 +497,13 @@ class AdminEndpoint extends Endpoint {
     DiscoveryTypeMappingIssue? issue,
   }) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryAdminReads.unmappedTypes(
+      session,
+      page: page,
+      pageSize: pageSize,
+      query: query,
+      issue: issue,
+    );
   }
 
   Future<DiscoveryGrowthMetrics> discoveryGrowthMetrics(
@@ -275,7 +512,7 @@ class AdminEndpoint extends Endpoint {
     required DateTime to,
   }) async {
     await _authorize(session);
-    return DiscoveryContract.unavailable();
+    return DiscoveryMetrics.growth(session, from: from, to: to);
   }
 
   Future<AdminTaxonomyVersion> taxonomyDraft(Session session) async {
@@ -729,7 +966,9 @@ class AdminEndpoint extends Endpoint {
     for (final report in related) {
       final key = _poiIssueGroupKey(report.placeId, report.issueType);
       recurrenceByKey.update(key, (value) => value + 1, ifAbsent: () => 1);
-      sessionsByKey.putIfAbsent(key, () => <String>{}).add(report.sessionId);
+      final sessions = sessionsByKey.putIfAbsent(key, () => <String>{});
+      // Discover reports have no swipe session and affect none.
+      if (report.sessionId case final sessionId?) sessions.add(sessionId);
     }
 
     return AdminPoiIssuePage(
@@ -945,12 +1184,7 @@ class AdminEndpoint extends Endpoint {
 
   Future<CachePolicy> policy(Session session) async {
     await _authorize(session);
-    final row = await CacheSettingsRow.db.findFirstRow(
-      session,
-      where: (table) => table.settingsKey.equals('default'),
-    );
-    if (row == null) return _defaultPolicy();
-    return _toPolicy(row);
+    return DiscoveryPolicyService.load(session);
   }
 
   Future<CachePolicy> updatePolicy(
@@ -960,11 +1194,6 @@ class AdminEndpoint extends Endpoint {
   }) async {
     final operatorName = await _authorize(session);
     _reason(reason);
-    if (policy.discovery != null || policy.detailRefresh != null) {
-      // Contract-only fields must not be silently acknowledged and discarded.
-      DiscoveryContract.unavailable();
-    }
-    _validatePolicy(policy);
     return session.db.transaction((transaction) async {
       final before = await CacheSettingsRow.db.findFirstRow(
         session,
@@ -978,23 +1207,14 @@ class AdminEndpoint extends Endpoint {
           message: 'The cache policy changed. Reload before saving.',
         );
       }
-      final next = CacheSettingsRow(
-        id: before?.id,
-        settingsKey: 'default',
-        version: policy.version + 1,
-        freshHours: policy.freshHours,
-        staleFallbackDays: policy.staleFallbackDays,
-        retentionDays: policy.retentionDays,
-        extractorAttempts: policy.extractorAttempts,
-        perCreationConcurrency: policy.perCreationConcurrency,
-        globalRequestsPerMinute: policy.globalRequestsPerMinute,
-        globalBurst: policy.globalBurst,
-        routeEstimatesEnabled: policy.routeEstimatesEnabled,
-        allowParticipantLocation: policy.allowParticipantLocation,
-        defaultRouteOrigin: policy.defaultRouteOrigin,
-        routeEstimateCacheMinutes: policy.routeEstimateCacheMinutes,
-        routeRequestsPerMinute: policy.routeRequestsPerMinute,
-        routeBurst: policy.routeBurst,
+      final resolved = DiscoveryPolicyService.resolveAdditiveSections(
+        policy,
+        before,
+      );
+      DiscoveryPolicyService.validate(resolved);
+      final next = DiscoveryPolicyService.toRow(
+        resolved,
+        existing: before,
         updatedBy: _operator(operatorName),
         updatedAt: DateTime.now().toUtc(),
       );
@@ -1020,6 +1240,14 @@ class AdminEndpoint extends Endpoint {
           transaction: transaction,
         );
       }
+      if (!saved.discoveryEnabled) {
+        // Turning Discover off cancels queued user harvests; running ones
+        // stop before their next provider page.
+        await DiscoveryHarvestService.cancelPendingUserHarvests(
+          session,
+          transaction: transaction,
+        );
+      }
       await _audit(
         session,
         operatorName: operatorName,
@@ -1027,11 +1255,13 @@ class AdminEndpoint extends Endpoint {
         targetType: 'cache_policy',
         targetId: 'default',
         reason: reason,
-        before: before == null ? null : _policyAuditData(_toPolicy(before)),
-        after: _policyAuditData(_toPolicy(saved)),
+        before: before == null
+            ? null
+            : _policyAuditData(DiscoveryPolicyService.fromRow(before)),
+        after: _policyAuditData(DiscoveryPolicyService.fromRow(saved)),
         transaction: transaction,
       );
-      return _toPolicy(saved);
+      return DiscoveryPolicyService.fromRow(saved);
     });
   }
 
@@ -1145,6 +1375,20 @@ class AdminEndpoint extends Endpoint {
           message: 'The refresh job finished before it could be cancelled.',
         );
       }
+      // A harvest's own state follows its job.
+      await DiscoveryHarvestRow.db.updateWhere(
+        session,
+        where: (table) =>
+            table.jobId.equals(jobId) &
+            (table.state.equals(DiscoveryHarvestState.pending) |
+                table.state.equals(DiscoveryHarvestState.running)),
+        columnValues: (table) => [
+          table.state(DiscoveryHarvestState.cancelled),
+          table.completedAt(DateTime.now().toUtc()),
+          table.failureCode('cancelled'),
+        ],
+        transaction: transaction,
+      );
       await _audit(
         session,
         operatorName: operatorName,
@@ -1514,6 +1758,8 @@ class AdminEndpoint extends Endpoint {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     resolvedAt: row.resolvedAt,
+    source: row.source,
+    sessionId: row.sessionId,
   );
 
   Future<TaxonomyCanarySample> _taxonomyCanary(
@@ -1661,74 +1907,6 @@ WHERE "metricName" = @name
       .replaceAll(r'\', r'\\')
       .replaceAll('%', r'\%')
       .replaceAll('_', r'\_');
-
-  CachePolicy _defaultPolicy() => CachePolicy(
-    version: 0,
-    freshHours: 72,
-    staleFallbackDays: 30,
-    retentionDays: 365,
-    extractorAttempts: 2,
-    perCreationConcurrency: 3,
-    globalRequestsPerMinute: 30,
-    globalBurst: 6,
-    routeEstimatesEnabled: true,
-    allowParticipantLocation: true,
-    defaultRouteOrigin: RouteOriginMode.sessionAnchor,
-    routeEstimateCacheMinutes: 10,
-    routeRequestsPerMinute: 30,
-    routeBurst: 6,
-    updatedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
-  );
-
-  CachePolicy _toPolicy(CacheSettingsRow row) => CachePolicy(
-    version: row.version,
-    freshHours: row.freshHours,
-    staleFallbackDays: row.staleFallbackDays,
-    retentionDays: row.retentionDays,
-    extractorAttempts: row.extractorAttempts,
-    perCreationConcurrency: row.perCreationConcurrency,
-    globalRequestsPerMinute: row.globalRequestsPerMinute,
-    globalBurst: row.globalBurst,
-    routeEstimatesEnabled: row.routeEstimatesEnabled,
-    allowParticipantLocation: row.allowParticipantLocation,
-    defaultRouteOrigin: row.defaultRouteOrigin,
-    routeEstimateCacheMinutes: row.routeEstimateCacheMinutes,
-    routeRequestsPerMinute: row.routeRequestsPerMinute,
-    routeBurst: row.routeBurst,
-    updatedAt: row.updatedAt,
-  );
-
-  void _validatePolicy(CachePolicy policy) {
-    if (policy.freshHours < 1 ||
-        policy.freshHours > 720 ||
-        policy.staleFallbackDays < 1 ||
-        policy.staleFallbackDays > 180 ||
-        policy.freshHours > policy.staleFallbackDays * 24 ||
-        policy.retentionDays < 30 ||
-        policy.retentionDays < policy.staleFallbackDays ||
-        policy.retentionDays > 730 ||
-        policy.extractorAttempts < 1 ||
-        policy.extractorAttempts > 3 ||
-        policy.perCreationConcurrency < 1 ||
-        policy.perCreationConcurrency > 5 ||
-        policy.globalRequestsPerMinute < 1 ||
-        policy.globalRequestsPerMinute > 300 ||
-        policy.globalBurst < 1 ||
-        policy.globalBurst > 30 ||
-        policy.routeEstimateCacheMinutes < 1 ||
-        policy.routeEstimateCacheMinutes > 120 ||
-        policy.routeRequestsPerMinute < 1 ||
-        policy.routeRequestsPerMinute > 300 ||
-        policy.routeBurst < 1 ||
-        policy.routeBurst > 30 ||
-        (!policy.allowParticipantLocation &&
-            policy.defaultRouteOrigin == RouteOriginMode.participantLocation)) {
-      throw ApiException(
-        code: 'bad_request',
-        message: 'One or more policy values are outside safe bounds.',
-      );
-    }
-  }
 
   Future<String> _authorize(Session session) => _authorizer(session);
 

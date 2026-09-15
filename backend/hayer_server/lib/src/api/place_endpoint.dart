@@ -1,11 +1,9 @@
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
 import '../discovery/discovery_contract.dart';
-import '../places/poi_issue_policy.dart';
+import '../places/place_detail_resolver.dart';
+import '../places/poi_issue_report_service.dart';
 import '../places/place_services.dart';
 import '../places/place_source.dart';
 import '../places/reverse_geocoding_service.dart';
@@ -17,13 +15,18 @@ class PlaceEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   static final _geocoder = ReverseGeocodingService.shared;
-  static const _uuid = Uuid();
 
+  /// Shared place details for Swipe and Discover. Available whether or not
+  /// Discover is enabled.
   Future<PlaceDetailResult> details(
     Session session, {
     required PoiIdentity identity,
     String? sessionId,
-  }) async => DiscoveryContract.unavailable();
+  }) => PlaceDetailResolver.resolve(
+    session,
+    identity: identity,
+    sessionId: sessionId,
+  );
 
   Future<String> reportCatalogIssue(
     Session session, {
@@ -31,7 +34,16 @@ class PlaceEndpoint extends Endpoint {
     required PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
-  }) async => DiscoveryContract.unavailable();
+  }) async {
+    await DiscoveryContract.requireEnabled(session);
+    return PoiIssueReportService.reportCatalogPlace(
+      session,
+      catalogId: catalogId,
+      issueType: issueType,
+      details: details,
+      idempotencyKey: idempotencyKey,
+    );
+  }
 
   Future<List<LocationSuggestion>> suggest(
     Session session, {
@@ -242,181 +254,14 @@ class PlaceEndpoint extends Endpoint {
     required PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
-  }) async {
-    final String? normalizedDetails;
-    try {
-      PoiIssuePolicy.validateRequestIdentifiers(
-        sessionId: sessionId,
-        placeId: placeId,
-        idempotencyKey: idempotencyKey,
-      );
-      normalizedDetails = PoiIssuePolicy.normalizeDetails(issueType, details);
-    } on FormatException catch (error) {
-      throw ApiException(code: 'bad_request', message: error.message);
-    }
-
-    final userId = session.authenticated!.userIdentifier;
-    final salt =
-        session.passwords['adminIpHashSalt'] ??
-        (session.server.runMode == ServerpodRunMode.test
-            ? 'test-only-poi-reporter-salt'
-            : null);
-    if (salt == null || salt.trim().isEmpty || salt == 'unconfigured') {
-      throw ApiException(
-        code: 'server_error',
-        message: 'Issue reporting is temporarily unavailable.',
-      );
-    }
-    final reporterHash = PoiIssuePolicy.reporterHash(
-      salt: salt,
-      userId: userId,
-    );
-    final activeDedupeKey = PoiIssuePolicy.activeDedupeKey(
-      reporterHash: reporterHash,
-      placeId: placeId,
-      issueType: issueType,
-    );
-    final requestHash = sha256
-        .convert(
-          utf8.encode(
-            jsonEncode({
-              'sessionId': sessionId,
-              'placeId': placeId,
-              'issueType': issueType.name,
-              'details': normalizedDetails,
-            }),
-          ),
-        )
-        .toString();
-    final now = DateTime.now().toUtc();
-    final proposedReportId = _uuid.v7();
-
-    return session.db.transaction((transaction) async {
-      final idempotencyRows = await IdempotencyRow.db.insert(
-        session,
-        [
-          IdempotencyRow(
-            scope: 'poi-issue-report',
-            userId: reporterHash,
-            idempotencyKey: idempotencyKey,
-            requestHash: requestHash,
-            responseId: proposedReportId,
-            createdAt: now,
-            expiresAt: now.add(const Duration(hours: 24)),
-          ),
-        ],
-        transaction: transaction,
-        ignoreConflicts: true,
-      );
-      if (idempotencyRows.isEmpty) {
-        final existingKey = await IdempotencyRow.db.findFirstRow(
-          session,
-          where: (table) =>
-              table.scope.equals('poi-issue-report') &
-              table.userId.equals(reporterHash) &
-              table.idempotencyKey.equals(idempotencyKey),
-          transaction: transaction,
-        );
-        if (existingKey == null) {
-          throw StateError(
-            'Idempotency row disappeared after an issue-report conflict.',
-          );
-        }
-        if (existingKey.requestHash != requestHash) {
-          throw ApiException(
-            code: 'conflict',
-            message: 'This retry key was already used for another report.',
-          );
-        }
-        return existingKey.responseId;
-      }
-
-      final membership = await ParticipantRow.db.findFirstRow(
-        session,
-        where: (table) =>
-            table.sessionId.equals(sessionId) & table.userId.equals(userId),
-        transaction: transaction,
-      );
-      if (membership == null) {
-        throw ApiException(
-          code: 'forbidden',
-          message: 'You can only report places from your own session.',
-        );
-      }
-      final place = await SessionPlaceRow.db.findFirstRow(
-        session,
-        where: (table) =>
-            table.sessionId.equals(sessionId) & table.placeId.equals(placeId),
-        transaction: transaction,
-      );
-      if (place == null) {
-        throw ApiException(
-          code: 'not_found',
-          message: 'That place is not part of this session.',
-        );
-      }
-
-      // Different retry keys for the same reporter/place/type must serialize
-      // before consulting the nullable unique dedupe key.
-      await session.db.unsafeQuery(
-        'SELECT pg_advisory_xact_lock(hashtextextended(@dedupeKey, 0))',
-        parameters: QueryParameters.named({'dedupeKey': activeDedupeKey}),
-        transaction: transaction,
-      );
-      final activeReport = await PoiIssueReportRow.db.findFirstRow(
-        session,
-        where: (table) => table.activeDedupeKey.equals(activeDedupeKey),
-        transaction: transaction,
-      );
-      if (activeReport != null) {
-        final idempotency = idempotencyRows.single
-          ..responseId = activeReport.reportId;
-        await IdempotencyRow.db.updateRow(
-          session,
-          idempotency,
-          columns: (table) => [table.responseId],
-          transaction: transaction,
-        );
-        return activeReport.reportId;
-      }
-
-      await RateLimiter.check(
-        session,
-        operation: 'poi-issue-report-hour',
-        subject: reporterHash,
-        limit: 6,
-        window: const Duration(hours: 1),
-        transaction: transaction,
-      );
-      await RateLimiter.check(
-        session,
-        operation: 'poi-issue-report-day',
-        subject: reporterHash,
-        limit: 20,
-        window: const Duration(days: 1),
-        transaction: transaction,
-      );
-      await PoiIssueReportRow.db.insertRow(
-        session,
-        PoiIssueReportRow(
-          reportId: proposedReportId,
-          reporterHash: reporterHash,
-          activeDedupeKey: activeDedupeKey,
-          sessionId: sessionId,
-          placeId: placeId,
-          placeName: place.snapshot.name,
-          reportedSnapshot: place.snapshot,
-          issueType: issueType,
-          details: normalizedDetails,
-          status: PoiIssueStatus.open,
-          createdAt: now,
-          updatedAt: now,
-        ),
-        transaction: transaction,
-      );
-      return proposedReportId;
-    });
-  }
+  }) => PoiIssueReportService.reportSessionPlace(
+    session,
+    sessionId: sessionId,
+    placeId: placeId,
+    issueType: issueType,
+    details: details,
+    idempotencyKey: idempotencyKey,
+  );
 
   String _country(String value) {
     final normalized = value.trim().toUpperCase();

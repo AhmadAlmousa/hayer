@@ -1,14 +1,19 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../discovery/discovery_contract.dart';
+import '../discovery/discovery_harvest_service.dart';
+import '../discovery/discovery_taxonomy_service.dart';
 import '../generated/protocol.dart';
+import '../places/discovery_query.dart';
 
 class DiscoverEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
-  Future<DiscoveryTaxonomySnapshot> taxonomy(Session session) async =>
-      DiscoveryContract.unavailable();
+  Future<DiscoveryTaxonomySnapshot> taxonomy(Session session) async {
+    await DiscoveryContract.requireEnabled(session);
+    return DiscoveryTaxonomyService.publicSnapshot(session);
+  }
 
   Future<DiscoverBrowsePage> browse(
     Session session, {
@@ -17,36 +22,75 @@ class DiscoverEndpoint extends Endpoint {
     String? cursor,
     int pageSize = 50,
     bool includeMap = true,
-  }) async => DiscoveryContract.unavailable();
+  }) async {
+    await DiscoveryContract.requireEnabled(session);
+    return DiscoveryQuery.browse(
+      session,
+      query: query,
+      context: context,
+      cursor: cursor,
+      pageSize: pageSize,
+      includeMap: includeMap,
+    );
+  }
 
   Future<DiscoverFacets> facets(
     Session session, {
     required DiscoverQuery query,
     required DiscoverQueryContext context,
-  }) async => DiscoveryContract.unavailable();
+  }) async {
+    await DiscoveryContract.requireEnabled(session);
+    return DiscoveryQuery.facets(session, query: query, context: context);
+  }
 
   Future<DiscoverPlaceContext> placeContext(
     Session session, {
     required PoiIdentity identity,
     required DiscoverQuery query,
     required DiscoverQueryContext context,
-  }) async => DiscoveryContract.unavailable();
+  }) async {
+    await DiscoveryContract.requireEnabled(session);
+    return DiscoveryQuery.placeContext(
+      session,
+      identity: identity,
+      query: query,
+      context: context,
+    );
+  }
 
   Future<DiscoveryAreaReceipt> ensureArea(
     Session session, {
     required DiscoverViewport viewport,
     String? countryCode,
-  }) async => DiscoveryContract.unavailable();
+  }) async {
+    await DiscoveryContract.requireEnabled(session);
+    return DiscoveryHarvestService.ensureArea(
+      session,
+      viewport: viewport,
+      countryCode: countryCode,
+    );
+  }
 
   Future<DiscoveryAreaReceipt> deepen(
     Session session, {
     required DiscoverViewport viewport,
     String? countryCode,
     required String idempotencyKey,
-  }) async => DiscoveryContract.unavailable();
+  }) async {
+    await DiscoveryContract.requireEnabled(session);
+    return DiscoveryHarvestService.deepen(
+      session,
+      viewport: viewport,
+      countryCode: countryCode,
+      idempotencyKey: idempotencyKey,
+    );
+  }
 
   Future<DiscoveryHarvestStatus> harvestStatus(
     Session session, {
     required String jobId,
-  }) async => DiscoveryContract.unavailable();
+  }) async {
+    await DiscoveryContract.requireEnabled(session);
+    return DiscoveryHarvestService.status(session, jobId: jobId);
+  }
 }
