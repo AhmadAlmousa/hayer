@@ -12,9 +12,11 @@ checklist and its exit conditions, verification gates, and the role split
 itself. Check a milestone box in `PROJECT.md`; explain how it was earned here.
 
 The back-end lane keeps its own equivalent file. Neither agent edits the
-other's.
+other's. From 2026-09-15 Claude holds both lanes, by owner assignment, until
+Codex returns. Back-end work is still logged in `lane-backend.md` on `main`,
+and this log gets a short pointer for each back-end checkpoint.
 
-Last updated: 2026-09-14
+Last updated: 2026-09-15
 
 ## Current state
 
@@ -28,8 +30,11 @@ Last updated: 2026-09-14
   G4, pins, selection and coverage, later that day on the same generated
   types, without merging `main` while Codex is paused. H, place detail, save,
   share and report, followed on the same generated types and fakes
-  (`backend/discovery-contracts.md`). Every discovery data, detail, report
-  and admin RPC still answers `feature_disabled`. See the checkpoints below and
+  (`backend/discovery-contracts.md`). On `main`, `browse`,
+  `facets` and `placeContext` now run against the catalog (M9-C, `532d33d`),
+  still dark behind `discoveryEnabled`, while detail, report, harvest and admin
+  RPCs still answer `feature_disabled`. This branch has not merged `main`
+  since `3c042fc`. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
@@ -56,6 +61,26 @@ Last updated: 2026-09-14
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### Back-end M9-C on `main` — pointer (2026-09-15)
+
+Claude finished M9-C in the back-end lane as `532d33d`. The evidence is in
+`lane-backend.md`, and the query behavior it settled is in
+`backend/discovery-contracts.md` §"Query behavior as implemented (M9-C)". The
+generated client did not change, so nothing here needs regenerating. For this
+lane's Discover work:
+
+- G2's `rate_limited` handling also covers a statement timeout, which arrives
+  with `retryAfterSeconds: 5`.
+- G3's draft previews are counted under their own fingerprint, and `facets`
+  spends its own budget, as G3 asked.
+- G4's pin previews spend a separate `placeContext` budget, so the re-reads
+  after each first page no longer draw on browse.
+- H's rank names a category only when `populationCategoryId` is set, which the
+  server does for a single selected category other than Other.
+- Unknown category ids are a `bad_request`; kept links already strip them.
+- Still to come from the back-end lane: coverage footprints and freshness
+  (M9-E), and details and catalog reports (M9-D).
 
 ### M9-H place detail, save, share and report — built against contracts (2026-09-14)
 
@@ -1295,6 +1320,9 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ### Discover details, standing and catalog reports — noted 2026-09-14 (M9-H)
 
+Status 2026-09-15: `populationCategoryId` is implemented in M9-C (`532d33d`).
+Details, refresh states and catalog reports wait for M9-D.
+
 H reads `place.details`, `placeContext` and `place.reportCatalogIssue` in
 ways the M9-C and M9-D implementations need to allow.
 
@@ -1315,6 +1343,9 @@ ways the M9-C and M9-D implementations need to allow.
   session sheet does.
 
 ### Discover coverage freshness and request rates — noted 2026-09-14 (M9-G4)
+
+Status 2026-09-15: `placeContext` has its own budget since M9-C (`532d33d`).
+Freshness, exploration checks and area reports wait for M9-E.
 
 G4's strip and selection read `browse`, `ensureArea`, `harvestStatus` and
 `placeContext` in ways the M9-C and M9-E implementations need to allow.
@@ -1363,6 +1394,10 @@ Originally asked: the M9-E admin contract commit ahead of its implementation,
 as was done for the consumer contracts.
 
 ### Discover counts, tree and request budgets — noted 2026-09-14 (M9-G3)
+
+Status 2026-09-15: draft previews and the separate facets budget are
+implemented in M9-C (`532d33d`), and the tree revisions have advanced together
+since M9-B. Hours-window and completeness counts are not added.
 
 G3 reads `facets` and `taxonomy` in ways the M9-B and M9-C implementations
 need to allow.
