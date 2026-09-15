@@ -922,18 +922,24 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   `017e17c`; G2, the results screen, on 2026-09-13; G3, the filter sheet and
   category tree, on 2026-09-14, followed that day by the server-resolved
   area country and structured area label; G4, pins, selection and coverage,
-  also on 2026-09-14 against generated contracts and mocks. Acceptance waits
-  on the M9-C and M9-E implementations; device checks belong to M9-K.
+  also on 2026-09-14 against generated contracts and mocks. The M9-C and M9-E
+  implementations it waited on are merged (`060a472`), an Arabic 200% text
+  pass covers its states, and device checks belong to M9-K.
 - [~] M9-H — Place detail, save, share and report (front end). The shared
   sheet's Discover mode with standing and catalog age, Save, sessionless
   reports from the sheet and Worst rated rows, and Share landed on 2026-09-14
-  against generated contracts and mocks. Acceptance waits on the M9-C and
-  M9-D implementations; device link checks belong to M9-K.
+  against generated contracts and mocks. The M9-C and M9-D implementations
+  it waited on are merged (`060a472`); device link checks belong to M9-K.
 - [~] M9-J — Admin (front end). Policy knobs, Discover tree editor, unmapped
   types, harvest manifest, harvest jobs, growth metrics and report sources
-  landed on 2026-09-14 against generated contracts and mocks. Requirement 16's
-  acceptance waits on the M9-B, M9-D and M9-E implementations.
-- [ ] M9-K — Cross-mode verification and dark release (both lanes).
+  landed on 2026-09-14 against generated contracts and mocks. The M9-B, M9-D
+  and M9-E implementations requirement 16's acceptance waited on are merged
+  (`060a472`).
+- [~] M9-K — Cross-mode verification and dark release (both lanes). The
+  back-end half (`c7ad9ee`), the lane merge (`060a472`), the Got time
+  privacy copy and an Arabic 200% text pass are done. Physical-device and
+  web-host checks and the owner's formula, budget and latency review remain;
+  the flag stays off.
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
@@ -941,7 +947,7 @@ complete from contract availability alone. Discovery stays dark: data, harvest a
 catalog-report RPCs answer `feature_disabled` while `discoveryEnabled` is
 false. Shared place details answer in both modes whatever the flag, and the
 M9-E admin reads answer authorized operators. Every back-end M9 slice is
-implemented; M9-K remains.
+implemented, and M9-K is in progress.
 
 ## Verification gates
 
@@ -1159,6 +1165,21 @@ implemented; M9-K remains.
   SHA-256 `eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f`, unchanged from M9-D because the app did not
   change, and verifies under APK Signature Scheme v2 with the existing
   signer. Discovery stays disabled. Details are in `lane-backend.md`.
+- 2026-09-15: advanced M9-K, with both lanes held by Claude. `main` was
+  merged into the front-end branch as `060a472`. The back-end half
+  (`c7ad9ee`) proves the cross-user, cross-mode catalog loop against PostGIS
+  by upstream request counts, and stops live Swipe refreshes returning
+  quarantined places. Data & Privacy now says Got time sends the map area
+  searched rather than the device position, and keeps the last area and a
+  kept link on the device; the Arabic wording awaits a native reviewer. A
+  new suite shows every Discover empty, failure, coverage and report state
+  in Arabic at 200% text on a small phone without an overflow. Pinned full
+  preflight passed 199 server, 366 app and 72 admin
+  tests with clean analyses, and the remote PostGIS suite passed
+  118/118. Signed `0.2.1+7` built at SHA-256 `9a908507ad0cd86020b1f81f60e0a8a0651ebaa49cc16eacf3ffd277da126a20` and
+  verifies under APK Signature Scheme v2. Device, web-host and owner review
+  items remain open, and Discovery stays disabled. Details are in
+  `lane-frontend.md` and `lane-backend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

@@ -1679,7 +1679,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataLocationBody.
   ///
   /// In en, this message translates to:
-  /// **'The search location you pick — your current position or a place you searched for — is sent to Hayer with your radius to find places nearby. Addresses come from OpenStreetMap, and place details, photos, and ratings come from Google Maps. If you ask for travel time from where you are, that position is sent with the request. Hayer does not follow your position in the background.'**
+  /// **'The search location you pick — your current position or a place you searched for — is sent to Hayer with your radius to find places nearby. Addresses come from OpenStreetMap, and place details, photos, and ratings come from Google Maps. If you ask for travel time from where you are, that position is sent with the request. In Got time, Hayer receives the map area you search, not your position. If you allow location, the map opens around you, so that first area is near you, and distances to places are worked out on this device. Hayer does not follow your position in the background.'**
   String get dataLocationBody;
 
   /// No description provided for @dataGroupTitle.
@@ -1703,7 +1703,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataDeviceBody.
   ///
   /// In en, this message translates to:
-  /// **'Saved places and their notes, the name you last used, the room you can resume, and any swipes that have not reached the server yet stay here. Nothing is synced to an account, so uninstalling Hayer removes them.'**
+  /// **'Saved places and their notes, the name you last used, the room you can resume, the last area you searched in Got time, a Got time link kept while it was unavailable, and any swipes that have not reached the server yet stay here. Nothing is synced to an account, so uninstalling Hayer removes them.'**
   String get dataDeviceBody;
 
   /// No description provided for @dataMeasurementTitle.
@@ -1727,7 +1727,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataEraseBody.
   ///
   /// In en, this message translates to:
-  /// **'Erasing deletes saved places and notes, the remembered name, the resumable room, and the anonymous sign-in. Rooms expire on the server on their own; erasing here does not remove what the server has already recorded.'**
+  /// **'Erasing deletes saved places and notes, the remembered name, the resumable room, the last Got time area and any kept Got time link, and the anonymous sign-in. Rooms expire on the server on their own; erasing here does not remove what the server has already recorded.'**
   String get dataEraseBody;
 
   /// No description provided for @dataEraseAction.

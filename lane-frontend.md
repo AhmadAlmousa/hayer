@@ -35,8 +35,10 @@ Last updated: 2026-09-15
   dark behind `discoveryEnabled`. Shared details now answer in both modes, and
   catalog reports work behind the flag (M9-D, `a40ff76`). Harvesting,
   coverage and the M9-E admin reads are implemented too (M9-E,
-  `7429e03`), harvesting behind the flag. This branch has not merged `main`
-  since `3c042fc`. See the checkpoints below and
+  `7429e03`), harvesting behind the flag. `main` was merged into this branch
+  as `060a472` for M9-K. Its back-end half (`c7ad9ee`), the Got time privacy
+  copy and an Arabic 200% text pass are done; device, web-host and owner
+  items remain. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
@@ -63,6 +65,84 @@ Last updated: 2026-09-15
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-K cross-mode verification and dark release — in progress (2026-09-15)
+
+The owner gave the go-ahead for M9-K on 2026-09-15. Claude holds both lanes,
+so this entry covers the lane merge and the front-end half. The back-end
+half, including the quarantine fix below, is in `lane-backend.md`
+(`c7ad9ee`).
+
+**Merge.** `main` was merged into this branch as `060a472`, the first merge
+since `3c042fc`. It brings M9-C, M9-D, M9-E and the M9-K back end. The only
+conflict was `PROJECT.md`'s change log, where both lanes had appended
+entries; both were kept. The generated client changed only in doc
+comments.
+
+**Release copy.** Data & Privacy now accounts for Got time, in English and
+Arabic:
+
+- **Location.** Hayer receives the map area searched, not the device
+  position. With location allowed, the map opens around the user, so that
+  first area is near them, and distances are worked out on the device. The
+  code agrees: `browse`, `facets`, `placeContext`, `ensureArea` and `deepen`
+  send only the viewport, the area label sends the map centre, and the
+  device position feeds only the starting camera and on-device distances.
+- **Kept on this device.** The last area searched, and a link kept while
+  Got time was unavailable.
+- **Erase.** Both are removed, as `eraseDeviceData` already did.
+
+The Arabic wording needs a native reviewer, like F29's copy.
+`data_and_privacy_test.dart` checks all three disclosures.
+
+**Arabic and largest text.** `discover_arabic_states_test.dart` (15 cases)
+shows Discover states in Arabic at 200% text on a 320 × 640 phone. No suite
+had checked them in Arabic, and most not at all:
+
+- the four empty results: filtered, unexplored, exploring, and a sort with
+  nothing to rank;
+- five failures (connection, rate limited, invalid area, refused filters,
+  unavailable), a failure over earlier rows, and an area outside the Gulf;
+- the coverage strip exploring, cooling down, and after a failed Deepen;
+- the report sheet, from a place's details and from a Worst rated row.
+
+Each must lay out without an overflow, with its message, detail and action
+touchable. With the existing Arabic cases for results, filters and
+categories, the map strip and preview, place details, home's kept link and
+Data & Privacy, every consumer Discover screen now has one. The admin app
+is English only.
+
+No layout defect turned up. Two first-run failures were the test's own. A
+notice's centre fell between two lines of text, and `scrollUntilVisible`
+given `finder.first` threw before it could scroll to a widget not yet
+built. The helpers now check a notice's parts and pass the finder itself. A
+diagnostic run first confirmed that a Top rated link's committed query and
+its results match, so its rows are not dimmed.
+
+**A Swipe change to know about.** Live Swipe refreshes no longer return
+quarantined places (`c7ad9ee`); cached decks already excluded them. No client
+change is needed.
+
+**Verification.** Pinned full preflight at the integrated tree passed
+generation, formatting, all fatal-info analyses, 199 server tests,
+366 app tests and 72 admin tests.
+`HAYER_TEST_DB_NAME=hayer_test_m9e scripts/test-integration-remote.sh` passed
+118/118. The signed `0.2.1+7` APK is 106,926,159 bytes, verifies with
+APK Signature Scheme v2 and has SHA-256 `9a908507ad0cd86020b1f81f60e0a8a0651ebaa49cc16eacf3ffd277da126a20`.
+
+**Still open, and why.**
+
+- **Physical Android device:** cold and warm App Links, map pan and pinch
+  with several hundred pins, sheet gestures and TalkBack. No device is
+  attached to this host; `adb devices` lists none.
+- **Web host:** direct `/discover` navigation and browser history need the
+  gateway deployment the back-end lane still has pending. Route tests
+  cover the link codec.
+- **Owner:** review the Best-formula comparison, the harvest budgets and the
+  latency measurements, then choose the launch formula. The Riyadh formula
+  comparison needs real catalog data this host lacks, and the latency so
+  far is M9-E's simulated benchmark.
+- **Flag:** `discoveryEnabled` stays false until the owner enables a canary.
 
 ### Back-end M9-E on `main` — pointer (2026-09-15)
 

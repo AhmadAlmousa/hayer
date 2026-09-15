@@ -151,8 +151,10 @@ needs production traffic.
 
 **Verification.** `HAYER_TEST_DB_NAME=hayer_test_m9e
 scripts/test-integration-remote.sh` passed 118/118. The 199 server unit tests
-pass and fatal-info analysis is clean. The full preflight and the signed APK
-run at the integrated commit, together with the front-end half.
+pass and fatal-info analysis is clean. The full preflight, the remote suite
+and the signed APK then ran at the integrated tree: `main` merged into
+`worktree-claude-lane` as `060a472`, plus the front-end half. That evidence
+is in `lane-frontend.md`'s M9-K entry.
 
 **Still open for M9-K.**
 
