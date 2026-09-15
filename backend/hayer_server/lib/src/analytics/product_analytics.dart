@@ -222,8 +222,11 @@ DateTime analyticsHour(DateTime value) {
   return DateTime.utc(utc.year, utc.month, utc.day, utc.hour);
 }
 
+/// Reports use Asia/Riyadh, which keeps a fixed UTC+3 offset all year.
+const analyticsReportingOffset = Duration(hours: 3);
+
 DateTime analyticsBucket(DateTime value, AnalyticsGranularity granularity) {
-  const offset = Duration(hours: 3);
+  const offset = analyticsReportingOffset;
   final riyadh = value.toUtc().add(offset);
   late final DateTime localBucket;
   switch (granularity) {

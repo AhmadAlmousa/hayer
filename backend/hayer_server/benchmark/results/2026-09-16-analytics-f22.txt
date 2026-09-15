@@ -1,0 +1,181 @@
+# Product analytics benchmark (F22)
+# scripts/benchmark-analytics.sh
+Database: hayer_test_f22_bench
+Server: PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+jit=on work_mem=4MB shared_buffers=128MB
+Seeded 2767275 hour rows (1089 MB with indexes) from 2025-09-14T21:00:00.000Z to 2026-09-15T21:00:00.000Z in 68 s; 60 places an hour.
+
+## Rows the in-memory reports loaded before F22
+30 days, daily: 226800 rows per range; overview loaded it twice (current and previous period).
+366 days, weekly: 2766960 rows per range; overview loaded it twice (current and previous period).
+366 days, weekly, city-1: 461160 rows per range; overview loaded it twice (current and previous period).
+90 days, daily, multiplayer: 343440 rows per range; overview loaded it twice (current and previous period).
+Loading the 30-day range as the old path did: 226800 rows in 5971 ms, before any Dart aggregation.
+
+## Report latency (one warm-up, then 5 timed runs)
+overview · 30 days, daily: p50 64 ms, max 148 ms
+usage · 30 days, daily: p50 54 ms, max 99 ms
+places · 30 days, daily: p50 89 ms, max 255 ms
+overview · 366 days, weekly: p50 268 ms, max 270 ms
+usage · 366 days, weekly: p50 291 ms, max 302 ms
+places · 366 days, weekly: p50 562 ms, max 585 ms
+overview · 366 days, weekly, city-1: p50 130 ms, max 135 ms
+usage · 366 days, weekly, city-1: p50 109 ms, max 115 ms
+places · 366 days, weekly, city-1: p50 316 ms, max 323 ms
+overview · 90 days, daily, multiplayer: p50 89 ms, max 97 ms
+usage · 90 days, daily, multiplayer: p50 95 ms, max 102 ms
+places · 90 days, daily, multiplayer: p50 160 ms, max 168 ms
+live: 1 ms
+
+## Statement plans, 366 days weekly (EXPLAIN ANALYZE, BUFFERS; full plan when over 100 ms)
+overview #1 (FROM "hayer_product_analytics_hour"): Planning Time: 0.212 ms; Execution Time: 55.654 ms
+overview #2 (FROM "hayer_session" AS room): Planning Time: 0.319 ms; Execution Time: 0.126 ms
+overview #3 (FROM "hayer_product_analytics_hour"): Planning Time: 0.183 ms; Execution Time: 43.804 ms
+overview #4 (FROM "hayer_product_analytics_hour"): Planning Time: 0.218 ms; Execution Time: 33.516 ms
+overview #5 (FROM "hayer_product_analytics_hour"): Planning Time: 0.283 ms; Execution Time: 32.179 ms
+overview #6 (FROM "hayer_product_analytics_hour"): Planning Time: 0.283 ms; Execution Time: 28.210 ms
+overview #7 (FROM "hayer_product_analytics_hour"): Planning Time: 0.247 ms; Execution Time: 29.241 ms
+overview #8 (FROM "hayer_product_analytics_hour"): Planning Time: 0.204 ms; Execution Time: 19.963 ms
+overview #9 (FROM "hayer_product_analytics_hour"): Planning Time: 0.230 ms; Execution Time: 19.307 ms
+usage #1 (FROM "hayer_product_analytics_hour"): Planning Time: 0.186 ms; Execution Time: 51.847 ms
+usage #2 (FROM "hayer_product_analytics_hour"): Planning Time: 0.140 ms; Execution Time: 42.476 ms
+usage #3 (FROM "hayer_product_analytics_hour"): Planning Time: 0.176 ms; Execution Time: 39.568 ms
+usage #4 (FROM "hayer_product_analytics_hour"): Planning Time: 0.154 ms; Execution Time: 39.779 ms
+usage #5 (FROM "hayer_product_analytics_hour"): Planning Time: 0.137 ms; Execution Time: 41.903 ms
+usage #6 (FROM "hayer_product_analytics_hour"): Planning Time: 0.206 ms; Execution Time: 12.591 ms
+usage #7 (FROM "hayer_product_analytics_hour"): Planning Time: 0.206 ms; Execution Time: 12.091 ms
+usage #8 (FROM "hayer_product_analytics_hour"): Planning Time: 0.226 ms; Execution Time: 12.844 ms
+usage #9 (FROM "hayer_product_analytics_hour"): Planning Time: 0.192 ms; Execution Time: 10.971 ms
+usage #10 (FROM "hayer_product_analytics_hour"): Planning Time: 0.175 ms; Execution Time: 10.747 ms
+places #1 (FROM "hayer_product_analytics_hour"): Planning Time: 0.610 ms; Execution Time: 528.817 ms
+```
+WITH totals AS (
+  SELECT
+    "placeId" AS place_id,
+    COALESCE(SUM("total") FILTER (
+      WHERE "metricName" = 'swipe_like'
+    ), 0) AS likes,
+    COALESCE(SUM("total") FILTER (
+      WHERE "metricName" = 'swipe_dislike'
+    ), 0) AS dislikes,
+    COALESCE(SUM("total") FILTER (
+      WHERE "metricName" IN (
+        'deck_exposure',
+        'deck_included'
+      )
+    ), 0) AS exposures,
+    COALESCE(SUM("total") FILTER (
+      WHERE "metricName" = 'card_impression'
+    ), 0) AS impressions
+  FROM "hayer_product_analytics_hour"
+  WHERE "placeId" <> ''
+    AND "metricName" IN ('swipe_like', 'swipe_dislike', 'deck_exposure', 'deck_included', 'card_impression')
+    AND "bucketStartedAt" >= CAST(@from AS timestamp)
+  AND "bucketStartedAt" < CAST(@to AS timestamp)
+  GROUP BY "placeId"
+), counted AS (
+  SELECT
+    totals.*,
+    GREATEST(0, ROUND(CAST(likes AS numeric)))::bigint AS likes_count,
+    GREATEST(0, ROUND(CAST(dislikes AS numeric)))::bigint AS dislikes_count,
+    GREATEST(0, ROUND(CAST(likes + dislikes AS numeric)))::bigint AS votes
+  FROM totals
+), ranked AS (
+  SELECT
+    counted.*,
+    CASE
+      WHEN votes = 0 THEN 0
+      ELSE GREATEST(0, likes) / votes * 100
+    END AS approval
+  FROM counted
+  WHERE votes >= @minimum
+  ORDER BY approval DESC, likes_count + dislikes_count DESC, place_id COLLATE "C"
+  LIMIT 50
+)
+SELECT ranked.*, latest.name
+FROM ranked
+LEFT JOIN LATERAL (
+  SELECT "placeName" AS name
+  FROM "hayer_product_analytics_hour"
+  WHERE "placeId" = ranked.place_id
+    AND "placeName" <> ''
+    AND "metricName" IN ('swipe_like', 'swipe_dislike', 'deck_exposure', 'deck_included', 'card_impression')
+    AND "bucketStartedAt" >= CAST(@from AS timestamp)
+  AND "bucketStartedAt" < CAST(@to AS timestamp)
+  ORDER BY "bucketStartedAt" DESC
+  LIMIT 1
+) AS latest ON true
+ORDER BY approval DESC, likes_count + dislikes_count DESC, place_id COLLATE "C"
+---
+Incremental Sort  (cost=110476.98..187977.36 rows=50 width=120) (actual time=525.137..525.269 rows=50 loops=1)
+  Sort Key: (CASE WHEN ((GREATEST('0'::numeric, round(((totals.likes + totals.dislikes))::numeric, 0)))::bigint = 0) THEN '0'::double precision ELSE ((GREATEST('0'::double precision, totals.likes) / ((GREATEST('0'::numeric, round(((totals.likes + totals.dislikes))::numeric, 0)))::bigint)::double precision) * '100'::double precision) END) DESC, ((((GREATEST('0'::numeric, round((totals.likes)::numeric, 0)))::bigint) + ((GREATEST('0'::numeric, round((totals.dislikes)::numeric, 0)))::bigint))) DESC, totals.place_id COLLATE "C"
+  Presorted Key: (CASE WHEN ((GREATEST('0'::numeric, round(((totals.likes + totals.dislikes))::numeric, 0)))::bigint = 0) THEN '0'::double precision ELSE ((GREATEST('0'::double precision, totals.likes) / ((GREATEST('0'::numeric, round(((totals.likes + totals.dislikes))::numeric, 0)))::bigint)::double precision) * '100'::double precision) END)
+  Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 32kB  Peak Memory: 32kB
+  Buffers: shared hit=27365 read=56899 written=218
+  ->  Nested Loop Left Join  (cost=108895.38..187975.11 rows=50 width=120) (actual time=467.720..525.201 rows=50 loops=1)
+        Buffers: shared hit=27365 read=56899 written=218
+        ->  Limit  (cost=107281.54..107281.67 rows=50 width=112) (actual time=466.387..466.510 rows=50 loops=1)
+              Buffers: shared hit=15720 read=46325
+              ->  Sort  (cost=107281.54..107285.70 rows=1663 width=112) (actual time=445.209..445.323 rows=50 loops=1)
+                    Sort Key: (CASE WHEN ((GREATEST('0'::numeric, round(((totals.likes + totals.dislikes))::numeric, 0)))::bigint = 0) THEN '0'::double precision ELSE ((GREATEST('0'::double precision, totals.likes) / ((GREATEST('0'::numeric, round(((totals.likes + totals.dislikes))::numeric, 0)))::bigint)::double precision) * '100'::double precision) END) DESC, (((GREATEST('0'::numeric, round((totals.likes)::numeric, 0)))::bigint + (GREATEST('0'::numeric, round((totals.dislikes)::numeric, 0)))::bigint)) DESC, totals.place_id COLLATE "C"
+                    Sort Method: top-N heapsort  Memory: 36kB
+                    Buffers: shared hit=15720 read=46325
+                    ->  Subquery Scan on totals  (cost=105659.13..107226.30 rows=1663 width=112) (actual time=419.189..443.421 rows=5000 loops=1)
+                          Buffers: shared hit=15720 read=46325
+                          ->  Finalize GroupAggregate  (cost=105659.13..107072.47 rows=1663 width=40) (actual time=419.181..428.173 rows=5000 loops=1)
+                                Group Key: hayer_product_analytics_hour."placeId"
+                                Filter: ((GREATEST('0'::numeric, round(((COALESCE(sum(hayer_product_analytics_hour.total) FILTER (WHERE (hayer_product_analytics_hour."metricName" = 'swipe_like'::text)), '0'::double precision) + COALESCE(sum(hayer_product_analytics_hour.total) FILTER (WHERE (hayer_product_analytics_hour."metricName" = 'swipe_dislike'::text)), '0'::double precision)))::numeric, 0)))::bigint >= '5'::bigint)
+                                Buffers: shared hit=15720 read=46325
+                                ->  Gather Merge  (cost=105659.13..106823.07 rows=9976 width=40) (actual time=419.144..422.706 rows=15000 loops=1)
+                                      Workers Planned: 2
+                                      Workers Launched: 2
+                                      Buffers: shared hit=15720 read=46325
+                                      ->  Sort  (cost=104659.10..104671.57 rows=4988 width=40) (actual time=404.269..404.677 rows=5000 loops=3)
+                                            Sort Key: hayer_product_analytics_hour."placeId"
+                                            Sort Method: quicksort  Memory: 544kB
+                                            Buffers: shared hit=15720 read=46325
+                                            Worker 0:  Sort Method: quicksort  Memory: 544kB
+                                            Worker 1:  Sort Method: quicksort  Memory: 544kB
+                                            ->  Partial HashAggregate  (cost=104302.85..104352.73 rows=4988 width=40) (actual time=399.703..400.387 rows=5000 loops=3)
+                                                  Group Key: hayer_product_analytics_hour."placeId"
+                                                  Batches: 1  Memory Usage: 977kB
+                                                  Buffers: shared hit=15705 read=46324
+                                                  Worker 0:  Batches: 1  Memory Usage: 977kB
+                                                  Worker 1:  Batches: 1  Memory Usage: 977kB
+                                                  ->  Parallel Seq Scan on hayer_product_analytics_hour  (cost=0.00..89422.48 rows=661350 width=30) (actual time=9.864..222.436 rows=702720 loops=3)
+                                                        Filter: (("placeId" <> ''::text) AND ("bucketStartedAt" >= '2025-09-14 22:00:00'::timestamp without time zone) AND ("bucketStartedAt" < '2026-09-15 22:00:00'::timestamp without time zone) AND ("metricName" = ANY ('{swipe_like,swipe_dislike,deck_exposure,deck_included,card_impression}'::text[])))
+                                                        Rows Removed by Filter: 219705
+                                                        Buffers: shared hit=15705 read=46324
+        ->  Limit  (cost=1613.83..1613.84 rows=1 width=16) (actual time=1.170..1.171 rows=1 loops=50)
+              Buffers: shared hit=11645 read=10574 written=218
+              ->  Sort  (cost=1613.83..1614.63 rows=318 width=16) (actual time=1.160..1.160 rows=1 loops=50)
+                    Sort Key: hayer_product_analytics_hour_1."bucketStartedAt" DESC
+                    Sort Method: top-N heapsort  Memory: 25kB
+                    Buffers: shared hit=11645 read=10574 written=218
+                    ->  Bitmap Heap Scan on hayer_product_analytics_hour hayer_product_analytics_hour_1  (cost=28.53..1612.24 rows=318 width=16) (actual time=0.149..1.081 rows=428 loops=50)
+                          Recheck Cond: (("placeId" = totals.place_id) AND ("metricName" = ANY ('{swipe_like,swipe_dislike,deck_exposure,deck_included,card_impression}'::text[])) AND ("bucketStartedAt" >= '2025-09-14 22:00:00'::timestamp without time zone) AND ("bucketStartedAt" < '2026-09-15 22:00:00'::timestamp without time zone))
+                          Filter: ("placeName" <> ''::text)
+                          Heap Blocks: exact=21400
+                          Buffers: shared hit=11645 read=10574 written=218
+                          ->  Bitmap Index Scan on hayer_analytics_hour_place_time  (cost=0.00..28.45 rows=420 width=0) (actual time=0.111..0.111 rows=428 loops=50)
+                                Index Cond: (("placeId" = totals.place_id) AND ("metricName" = ANY ('{swipe_like,swipe_dislike,deck_exposure,deck_included,card_impression}'::text[])) AND ("bucketStartedAt" >= '2025-09-14 22:00:00'::timestamp without time zone) AND ("bucketStartedAt" < '2026-09-15 22:00:00'::timestamp without time zone))
+                                Buffers: shared hit=646 read=173
+Planning Time: 0.610 ms
+JIT:
+  Functions: 41
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 5.592 ms, Inlining 0.000 ms, Optimization 1.700 ms, Emission 41.682 ms, Total 48.973 ms
+Execution Time: 528.817 ms
+```
+places #2 (FROM "hayer_product_analytics_hour"): Planning Time: 0.171 ms; Execution Time: 21.651 ms
+places #3 (FROM "hayer_product_analytics_hour"): Planning Time: 0.179 ms; Execution Time: 19.468 ms
+
+## Drain, health and pruning
+Seeded 200000 pending events over the last 12 hours in 3 s.
+recordHealth with the whole backlog pending: 30 ms
+drain: 200000 events in 200 batches of 1000 in 15.5 s = 12921 events/s, 77 ms a batch; backlogRemains=false
+pending after drain: 0
+drain with nothing pending: 3 ms (0 events)
+prune of events only, as every pass runs it: 2 ms
+prune of events and hours with nothing expired: 30 ms; deleted 0 events, 0 hours
+prune expiring the first seeded day of hours: 55 ms; deleted 7560 hours and 0 events (0 pending)
