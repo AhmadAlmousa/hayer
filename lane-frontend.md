@@ -31,9 +31,10 @@ Last updated: 2026-09-15
   types, without merging `main` while Codex is paused. H, place detail, save,
   share and report, followed on the same generated types and fakes
   (`backend/discovery-contracts.md`). On `main`, `browse`,
-  `facets` and `placeContext` now run against the catalog (M9-C, `532d33d`),
-  still dark behind `discoveryEnabled`, while detail, report, harvest and admin
-  RPCs still answer `feature_disabled`. This branch has not merged `main`
+  `facets` and `placeContext` run against the catalog (M9-C, `532d33d`), still
+  dark behind `discoveryEnabled`. Shared details now answer in both modes, and
+  catalog reports work behind the flag (M9-D, `a40ff76`), while harvest
+  and admin RPCs still answer `feature_disabled`. This branch has not merged `main`
   since `3c042fc`. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
@@ -61,6 +62,31 @@ Last updated: 2026-09-15
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### Back-end M9-D on `main` — pointer (2026-09-15)
+
+Claude finished M9-D in the back-end lane as `a40ff76`. The evidence
+is in `lane-backend.md`, and the behavior it settled is in
+`backend/discovery-contracts.md` §"Details and reporting as implemented
+(M9-D)". The generated client gained only a doc comment on `details`; no
+signature or type changed. For this lane:
+
+- `detailsAvailable` is now true whether or not Discover is enabled, so once
+  the server is deployed H's Swipe sheet reads `place.details` too.
+- A refresh takes at most 10 s, inside H's 15-second timeout.
+- `refreshing`, `budgetExceeded` and `retryAfter` come in ordinary answers,
+  never as errors. H does not poll, and needs no change for them.
+- A stale answer hides rating, reviews, price, hours, status, phone and
+  featured review. A Swipe sheet opened on a stale deck place therefore shows
+  fewer facts once details load than its card did. Whether to keep the card's
+  values under a stale notice is still to decide.
+- The catalog report errors H already handles are the ones the server sends:
+  `feature_disabled` and `not_found`. A report of a place already reported
+  from Swipe, with the same type, returns that report's id.
+- J's issue rows now carry `source` and `sessionId`, and
+  `affectedSessionCount` can be 0 for Discover reports.
+- Still to come from the back-end lane: coverage footprints and freshness
+  (M9-E).
 
 ### Back-end M9-C on `main` — pointer (2026-09-15)
 
@@ -223,6 +249,10 @@ certificate (`426f3bf4…77a6`) as previous releases.
 Not verified here: real detail refreshes, rank and percentile against
 PostGIS, sessionless report storage, and the Android share sheet and shared
 links opened cold and warm on a device (M9-K).
+
+Status (2026-09-15): the server side is now on `main`, rank and percentile in
+M9-C and details and sessionless reports in M9-D. This branch has not merged
+`main`, so H still has not met a real server.
 
 ### M9-G4 map pins, selection and coverage — landed (2026-09-14)
 
