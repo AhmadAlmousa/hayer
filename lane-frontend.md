@@ -33,8 +33,9 @@ Last updated: 2026-09-15
   (`backend/discovery-contracts.md`). On `main`, `browse`,
   `facets` and `placeContext` run against the catalog (M9-C, `532d33d`), still
   dark behind `discoveryEnabled`. Shared details now answer in both modes, and
-  catalog reports work behind the flag (M9-D, `a40ff76`), while harvest
-  and admin RPCs still answer `feature_disabled`. This branch has not merged `main`
+  catalog reports work behind the flag (M9-D, `a40ff76`). Harvesting,
+  coverage and the M9-E admin reads are implemented too (M9-E,
+  `7429e03`), harvesting behind the flag. This branch has not merged `main`
   since `3c042fc`. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
@@ -62,6 +63,30 @@ Last updated: 2026-09-15
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### Back-end M9-E on `main` — pointer (2026-09-15)
+
+Claude finished M9-E in the back-end lane as `7429e03`. The evidence
+is in `lane-backend.md`, and the behavior it settled is in
+`backend/discovery-contracts.md` §"Harvesting and coverage as implemented
+(M9-E)" and §"Admin as implemented (M9-E)". The generated client did not
+change. For this lane:
+
+- G4's receipt handling fits the server:
+  - a pending or running `job` means follow it;
+  - no job and no `retryAfter` means fresh;
+  - a finished job with `retryAfter` means cooling down.
+- `rate_limited` comes only when a new harvest would start.
+- Footprints are the square around the snapped cell centre, so wide views stay
+  partly explored under G4's union check.
+- `lastSuccessAt` moves only on a full success, so G4's "unfinished" rule
+  holds as written.
+- "Searches" in the exploring strip count Swipe compatibility queries too.
+- J's manifest editor, job page, unmapped types and growth dashboard now have
+  a real server. Requesters are pseudonymous (`user:` and a hash). The
+  manifest's Arabic fallbacks still need a reviewer.
+- Every back-end M9 slice is done. What remains is M9-K, the cross-mode
+  verification and dark release.
 
 ### Back-end M9-D on `main` — pointer (2026-09-15)
 
@@ -380,6 +405,10 @@ Not verified here: MapLibre clustering, label glyphs, tap hit-testing, and
 pan and pinch with several hundred pins, all on a device (M9-K). Real
 coverage waits on the M9-C and M9-E implementations.
 
+Status (2026-09-15): real coverage, harvests and polling are implemented on
+`main` (M9-C and M9-E). This branch has not merged `main`, so G4 has not met
+them yet.
+
 Not in G4: the preview's details action and a row's details affordance are
 M9-H.
 
@@ -481,6 +510,10 @@ The existing admin tests pass unmodified.
 Still open: requirement 16's acceptance needs the implementations. Seeing a
 mapped type's places appear needs M9-B, M9-C and M9-E, audit rows for publish
 and rollback are server-side, and user harvests need M9-E's worker.
+
+Status (2026-09-15): the server side of all of these is implemented on `main`
+through M9-E, and a PostGIS test maps a type and sees its place appear. This
+branch has not merged `main`, so J has not met a real server yet.
 
 Verification: pinned full preflight passed 159 server, 279 app and 72 admin
 tests, up from 51 admin, with clean analyses and formatting, and
