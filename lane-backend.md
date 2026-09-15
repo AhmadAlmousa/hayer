@@ -13,7 +13,7 @@ checkpoint from `lane-frontend.md`.
 acceptance gates. Detailed back-end checkpoints and front-end handoffs live
 here so the two lanes do not repeatedly edit the same evidence paragraphs.
 
-Last updated: 2026-09-15
+Last updated: 2026-09-16
 
 ## Current state
 
@@ -28,9 +28,9 @@ Last updated: 2026-09-15
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 115/115 against real PostGIS on
+- The latest integration suite is fully green: 129/129 against real PostGIS on
   the disposable `hayer_test_m9e`, built fresh from the M9-E definition,
-  including 31 M9-C, 14 M9-D and 14 M9-E cases. The shared `hayer_test` still
+  including 31 M9-C, 14 M9-D, 14 M9-E and 11 F22 cases. The shared `hayer_test` still
   needs a reset before it can run the suite again; see the M9-C checkpoint.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is wired into the merged client.
@@ -80,8 +80,146 @@ Last updated: 2026-09-15
   against PostGIS by upstream request counts, and a live Swipe refresh no
   longer returns quarantined places. The Swipe suites reset every new table.
   The joint checkpoint stays open for the device, web and owner items.
+- M7-E's F22 is implemented and benchmarked. Admin analytics group in SQL
+  under a statement timeout and a two-report gate. Aggregation drains by time
+  budget with backlog metrics, and raw events expire at 14 days even when
+  pending. Production rollout is pending.
 
 ## Checkpoints
+
+### F22 bounded analytics queries and aggregation — implemented (2026-09-16)
+
+The owner asked for the next milestone once M9 had nothing left that this host
+can close. M7 is the beta gate, and F22 is its first remaining item that can
+be built and proven here without a device, a container runtime or the owner.
+The audit found that the admin analytics reports loaded every hourly
+aggregate row in their range and summed them in Dart. It also found that the
+aggregator drained at most 8 × 500 events every five minutes, about
+13.3 events/s, and never pruned pending events.
+
+**Reports** (`lib/src/analytics/analytics_query_service.dart`). Every
+statement groups in SQL and returns one row per bucket, breakdown entry or
+ranked place:
+
+- Current and previous period totals come from one statement using `FILTER`.
+- Trends bucket with `date_trunc` and the Riyadh offset, matching
+  `analyticsBucket`: Riyadh days, and weeks that start on Sunday.
+- Breakdowns take each group's share from a window sum before their `LIMIT`.
+  Heat cells group by Riyadh weekday and hour.
+- Places are ranked, and cut to 50, in SQL, rounding as before.
+
+A report reads on one connection, inside a transaction with a 15-second
+statement timeout, and at most two run at once. Otherwise, and on a timeout,
+it answers `rate_limited`. Metric, enum and taxonomy-kind names are code
+constants, inlined as validated literals so the planner can use the metric
+indexes. Filter values stay parameters. `live` now counts in SQL instead of
+loading every active session and participant, and it stays outside the gate
+because the dashboard polls it.
+
+Three behaviors changed on purpose; the protocol did not:
+
+- A city or place is named by its latest label in the range, and a place by
+  its latest non-empty name. Only the returned keys are looked up, through
+  the city and place indexes. Before, the name came from whichever row Dart
+  met first.
+- Ties sort by key under `COLLATE "C"`. Before, Dart's sort left them in no
+  defined order.
+- Hourly buckets are limited to 31 days, under 750 points a series. The
+  dashboard offers only daily and weekly buckets.
+
+**Aggregation** (`lib/src/analytics/analytics_aggregation_service.dart`):
+
+- A batch claims up to 1,000 pending events with `FOR UPDATE SKIP LOCKED`,
+  marking them processed in the same `UPDATE … RETURNING`. It then upserts
+  their hour groups with one `INSERT … ON CONFLICT DO UPDATE` over a JSON
+  recordset, in key order, so concurrent batches cannot deadlock. A failure
+  rolls both back. Before, each group cost an insert, and on conflict a
+  lookup and an update.
+- Hour keys are computed exactly as before, down to hashing UTF-16 code units
+  rather than UTF-8. Events for hours already stored still merge into them.
+- A pass drains until a batch comes back short or 20 s have passed. When the
+  budget ends on a full batch, another pass starts 10 s later instead of at
+  the next five-minute tick.
+- Raw events expire at 14 days whether or not they were aggregated. The
+  verification gates allow raw funnel events, and their journey IDs, 14 days
+  at most, but pending events used to stay indefinitely. Client events are
+  refused once 24 hours old, so a pending event at 14 days means the drain has
+  been failing for two weeks. It is counted and logged when deleted. Hours
+  expire after 365 days, deleted 5,000 at a time, at most every six hours.
+- Each pass records hourly operational metrics: `analytics.pendingEvents`
+  (counted up to 100,000), `analytics.oldestPendingSeconds`,
+  `analytics.aggregatedEvents`, `analytics.drainMilliseconds`,
+  `analytics.drainFailures` and `analytics.expiredPendingEvents`. It logs a
+  warning once the oldest pending event is over 15 minutes old. Ingestion
+  follows from pending and aggregated counts. No admin view reads these yet,
+  and alerting on them belongs to F32.
+- Draining, pruning and recording are separate steps, so a failed drain still
+  prunes and records its failure.
+
+**Benchmark.** `scripts/benchmark-analytics.sh` runs
+`benchmark/analytics_benchmark_test.dart` against a disposable database. The
+run is recorded in `benchmark/results/2026-09-16-analytics-f22.txt`. It used a
+synthetic year on the remote PostGIS 16 server (jit on, `work_mem` 4 MB,
+`shared_buffers` 128 MB): 2,767,275 hour rows, 1,089 MB with indexes, about
+315 rows an hour including 60 places.
+
+- **Before.** A 30-day range was 226,800 rows, which overview loaded twice.
+  Loading it once took 5,971 ms, before any aggregation. A year was 2,766,960
+  rows.
+- **Reports now.** 30-day reports: p50 54–89 ms. Year reports: p50 268 ms for
+  overview, 291 ms for usage and 562 ms for places, with no run over 585 ms.
+  A year filtered to one city: 109–316 ms. `live`: 1 ms.
+- **Plans.** The slowest statement is the year's place ranking, at 529 ms. It
+  is a parallel sequential scan of 2.1 million place rows, 49 ms of it JIT.
+  Every other statement took under 56 ms. No index was added. The existing
+  metric, city and place indexes serve the rest, and the name lookups use
+  `hayer_analytics_hour_place_time`.
+- **Drain.** 200,000 pending events went through in 200 batches in 15.5 s:
+  12,921 events/s, 77 ms a batch. With 20-second passes and 10-second pauses,
+  a lasting backlog drains at about two-thirds of that.
+- **Health and pruning.** `recordHealth` with 200,000 pending: 30 ms. Pruning
+  events alone, as every pass does: 2 ms. Events and hours with nothing
+  expired: 30 ms. Expiring one day of hours, 7,560 rows: 55 ms. With a literal
+  cutoff the hour prune scans an index in 17 ms. An `EXPLAIN` whose cutoff was
+  hidden in a subquery scanned the whole table instead, in 358 ms.
+
+The benchmark leaves its year in `hayer_test_f22_bench`, built from the M9-E
+`definition.sql`.
+
+**Tests.** `integration_test/product_analytics_test.dart` has 11 cases against
+PostGIS:
+
+- **Aggregation.** A stored hour keyed the old way, with an Arabic city and
+  place name, takes new events across an hour boundary. A budgeted pass
+  reports its backlog. Two concurrent drains count each of 400 events once. A
+  double-precision overflow in the upsert rolls back and leaves the event
+  pending. Pruning covers processed and pending events, hours, and
+  `aggregates: false`. The health metrics are recorded.
+- **Reference.** Reports equal an in-memory reference over 3,000 random rows
+  across 400 days, for four filters. They are 30 days and 30 minutes daily,
+  366 days weekly, 31 days hourly for multiplayer, and 200 days daily for one
+  city (with a padded key) and category. Every KPI and previous value, trend,
+  breakdown, heat cell, quality row and place list is compared, for all four
+  rankings at minimums of 1 and 3.
+- **Behavior.** Latest city and place names, live counts, the two-report gate
+  and the 31-day hourly limit.
+
+**Not done.** Production rollout. The real ingestion rate is unknown. Alerts
+on the new metrics belong to F32. The M7-J protocol fields for sample counts,
+source type and version overlays remain an open handoff.
+
+**Verification.** `HAYER_TEST_DB_NAME=hayer_test_m9e
+scripts/test-integration-remote.sh` passed 129/129, including the 11 new
+cases; the schema did not change, so the M9-E database still applies. The
+pinned full preflight passed generation, formatting (no files changed), every
+fatal-info analysis, 199 server, 367 app and 73 admin tests, the shell syntax
+checks (now including `scripts/benchmark-analytics.sh`) and `git diff
+--check`. The signed `0.2.1+7` APK is 106,926,159 bytes with SHA-256
+`d6f1ff339cc7edf63abd764c307c82997190ed2615e1ae6729baf89acf830370`.
+`apksigner` verifies it with APK Signature Scheme v2 and one signer, and
+`aapt2` reports `sa.almou.hayer` at versionName 0.2.1, versionCode 7. The app
+did not change; release builds on this host are not byte-reproducible, so
+the checksum differs from M9-K's.
 
 ### Front-end M9-G, M9-H and M9-J acceptance — pointer (2026-09-15)
 

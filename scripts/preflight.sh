@@ -35,6 +35,7 @@ bash -n scripts/resolve-toolchain.sh scripts/test-resolve-toolchain.sh \
   scripts/preflight.sh \
   scripts/build-release-apk.sh scripts/build-server-image.sh \
   scripts/test-server-integration.sh scripts/admin-enrollment.sh \
-  scripts/test-integration-remote.sh scripts/benchmark-discovery-query.sh
+  scripts/test-integration-remote.sh scripts/benchmark-discovery-query.sh \
+  scripts/benchmark-analytics.sh
 sh -n backend/deploy/backup-loop.sh backend/deploy/restore-backup.sh
 git diff --check

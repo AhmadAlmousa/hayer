@@ -1,0 +1,7 @@
+class: AdminCatalogReport
+fields:
+  reportId: String
+  issueType: PoiIssueType
+  status: PoiIssueStatus
+  source: PoiIssueSource
+  createdAt: DateTime

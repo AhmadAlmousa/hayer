@@ -1,0 +1,9 @@
+class: AdminCatalogDetailRefresh
+fields:
+  state: PlaceDetailRefreshState
+  lastAttemptAt: DateTime?
+  lastCheckedAt: DateTime?
+  lastSuccessAt: DateTime?
+  retryAfter: DateTime?
+  lastFailureCode: String?
+  attemptCount: int

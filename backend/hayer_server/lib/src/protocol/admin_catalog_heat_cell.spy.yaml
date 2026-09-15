@@ -1,0 +1,5 @@
+class: AdminCatalogHeatCell
+fields:
+  latitude: double
+  longitude: double
+  count: int

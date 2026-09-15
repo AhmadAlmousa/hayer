@@ -1,6 +1,6 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-13
+Last updated: 2026-09-16
 
 Status: audit remediation active; invited-beta release remains blocked
 
@@ -747,7 +747,13 @@ production rollout.
   paused, with a manual refresh. What remains is two-device certification on
   real hardware and the server-side fold of `results` into one response, which
   belongs to M7-A.
-- [ ] Fix F22 by using bounded SQL aggregation/query paths.
+- [x] Fix F22 by using bounded SQL aggregation/query paths. Reports group and
+  rank in SQL on one connection each, under a statement timeout, with at most
+  two at once. Aggregation drains in time-budgeted batches, records backlog
+  and oldest-event metrics, and expires raw events at 14 days even when
+  pending. Over a synthetic 2.77-million-row year no report run took over
+  585 ms, and the drain ran at 12,921 events/s. Production rollout pending;
+  see `lane-backend.md`.
 - [x] Fix F23's last-swiped-place attribution: completion records the actual
   consensus-matched places and distinguishes no-match completion. The remote
   PostGIS regression likes only the first card, finishes on a different card,

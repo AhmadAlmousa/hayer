@@ -1,0 +1,6 @@
+class: AdminCatalogHeatmap
+fields:
+  cells: List<AdminCatalogHeatCell>
+  total: int
+  maximumCount: int
+  generatedAt: DateTime

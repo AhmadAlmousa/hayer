@@ -1,0 +1,12 @@
+class: AdminCatalogPage
+fields:
+  items: List<AdminCatalogPlace>
+  total: int
+  page: int
+  pageSize: int
+  # The commonest primary types among places matching every filter except
+  # the type, for the type filter.
+  types: List<AdminCatalogTypeCount>
+  # Places whose source check is older than this are stale.
+  freshAfter: DateTime
+  generatedAt: DateTime

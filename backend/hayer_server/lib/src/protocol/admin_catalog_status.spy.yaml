@@ -1,0 +1,7 @@
+# Which places the admin catalog includes by quarantine state.
+enum: AdminCatalogStatus
+serialized: byName
+values:
+  - active
+  - quarantined
+  - all
