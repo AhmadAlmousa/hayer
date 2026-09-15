@@ -16,7 +16,7 @@ other's. From 2026-09-15 Claude holds both lanes, by owner assignment, until
 Codex returns. Back-end work is still logged in `lane-backend.md` on `main`,
 and this log gets a short pointer for each back-end checkpoint.
 
-Last updated: 2026-09-15
+Last updated: 2026-09-16
 
 ## Current state
 
@@ -66,6 +66,24 @@ Last updated: 2026-09-15
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### Back-end F22 on `main` — pointer (2026-09-16)
+
+Claude implemented M7-E's F22 in the back-end lane: admin analytics now group
+in SQL, and aggregation drains by time budget. The evidence is in
+`lane-backend.md`. The generated client did not change, and the admin
+analytics pages need no change. For this lane:
+
+- Reports keep their shapes. Three details changed. A city or place is named
+  by its latest label in the range, and a place by its latest non-empty name.
+  Ties sort by key. Heat cells arrive in weekday and hour order, which the
+  peak-usage card ignores because it keys cells by weekday and hour.
+- Two errors are new. `rate_limited` comes when two reports are already
+  loading or a report passes its 15-second timeout. `bad_request` comes for
+  hourly buckets over more than 31 days, which the dashboard never requests.
+  Either way a failed reload keeps the figures already on screen.
+- M7-J's handoff is unchanged: sample counts on KPIs and trend points, source
+  type and version overlays still need protocol fields.
 
 ### M9-G, M9-H and M9-J accepted against the implementations — complete (2026-09-15)
 
