@@ -918,23 +918,25 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [x] M9-F — Entry, configuration and links (front end). Prework in `bb212d7`;
   the configuration read and kept disabled links landed on 2026-09-13. Device
   App Link checks belong to M9-K.
-- [~] M9-G — Discover surface (front end). G1, the shared map base, landed in
+- [x] M9-G — Discover surface (front end). G1, the shared map base, landed in
   `017e17c`; G2, the results screen, on 2026-09-13; G3, the filter sheet and
   category tree, on 2026-09-14, followed that day by the server-resolved
   area country and structured area label; G4, pins, selection and coverage,
   also on 2026-09-14 against generated contracts and mocks. The M9-C and M9-E
   implementations it waited on are merged (`060a472`), an Arabic 200% text
-  pass covers its states, and device checks belong to M9-K.
-- [~] M9-H — Place detail, save, share and report (front end). The shared
+  pass covers its states, its handoffs are settled against the
+  implementations, and device checks belong to M9-K.
+- [x] M9-H — Place detail, save, share and report (front end). The shared
   sheet's Discover mode with standing and catalog age, Save, sessionless
   reports from the sheet and Worst rated rows, and Share landed on 2026-09-14
   against generated contracts and mocks. The M9-C and M9-D implementations
-  it waited on are merged (`060a472`); device link checks belong to M9-K.
-- [~] M9-J — Admin (front end). Policy knobs, Discover tree editor, unmapped
+  it waited on are merged (`060a472`) and its handoffs are settled, stale
+  details included; device link checks belong to M9-K.
+- [x] M9-J — Admin (front end). Policy knobs, Discover tree editor, unmapped
   types, harvest manifest, harvest jobs, growth metrics and report sources
   landed on 2026-09-14 against generated contracts and mocks. The M9-B, M9-D
   and M9-E implementations requirement 16's acceptance waited on are merged
-  (`060a472`).
+  (`060a472`), and refresh jobs now label user explorations.
 - [~] M9-K — Cross-mode verification and dark release (both lanes). The
   back-end half (`c7ad9ee`), the lane merge (`060a472`), the Got time
   privacy copy and an Arabic 200% text pass are done. Physical-device and
@@ -1180,6 +1182,17 @@ implemented, and M9-K is in progress.
   verifies under APK Signature Scheme v2. Device, web-host and owner review
   items remain open, and Discovery stays disabled. Details are in
   `lane-frontend.md` and `lane-backend.md`.
+- 2026-09-15: accepted M9-G, M9-H and M9-J against the M9-B to M9-E
+  implementations. Every front-end handoff was checked against the settled
+  back-end behavior: explored footprints already expire with the freshness
+  window, and unmapped types rank by observations, then places. A stale
+  detail answer keeps changeable facts hidden under the cached-details note,
+  now under test, and the refresh jobs page labels user explorations apart
+  from operator jobs. Pinned full preflight passed 199 server,
+  367 app and 73 admin tests with clean analyses. Signed
+  `0.2.1+7` built at SHA-256 `9a908507ad0cd86020b1f81f60e0a8a0651ebaa49cc16eacf3ffd277da126a20`, unchanged from M9-K because only tests and admin changed, and verifies under APK
+  Signature Scheme v2. Device checks remain with M9-K, and Discovery stays
+  disabled. Details are in `lane-frontend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

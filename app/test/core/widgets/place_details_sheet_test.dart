@@ -130,6 +130,47 @@ void main() {
     expect(find.text('Old name'), findsOneWidget);
   });
 
+  testWidgets('a stale answer hides the facts that change and says why', (
+    tester,
+  ) async {
+    final details = _FakeDetails();
+    await _pump(
+      tester,
+      PlaceDetailsSheet(
+        place: _place().copyWith(rating: 4.6, reviewCount: 120),
+        countryCode: 'SA',
+        sessionId: 'room',
+        routeOrigin: RouteOriginMode.sessionAnchor,
+        routeEstimatesEnabled: false,
+        onReportIssue: () {},
+      ),
+      details: details,
+    );
+    expect(find.textContaining('4.6'), findsWidgets);
+    expect(find.textContaining('Cached details'), findsNothing);
+
+    // The shared read judges the deck's record stale. It keeps the stored
+    // place but withholds rating, reviews, price, hours and contacts, and the
+    // sheet says so rather than showing the card's older values as current.
+    details.answer.complete(
+      PlaceDetailResult(
+        identity: PoiIdentity(provider: 'google-web', placeId: 'nabt'),
+        place: _place().copyWith(isStale: true),
+        stale: true,
+        refreshState: PlaceDetailRefreshState.noMatch,
+        missingFields: const [],
+        fetchedAt: DateTime.utc(2026, 9, 14),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.textContaining('4.6'), findsNothing);
+    expect(
+      find.textContaining('Cached details: dynamic fields are hidden.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('a Discover sheet reads without a session, badges its photos, '
       'and saves the details it last read', (tester) async {
     final details = _FakeDetails();

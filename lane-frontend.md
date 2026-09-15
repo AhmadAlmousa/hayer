@@ -38,7 +38,8 @@ Last updated: 2026-09-15
   `7429e03`), harvesting behind the flag. `main` was merged into this branch
   as `060a472` for M9-K. Its back-end half (`c7ad9ee`), the Got time privacy
   copy and an Arabic 200% text pass are done; device, web-host and owner
-  items remain. See the checkpoints below and
+  items remain. M9-G, H and J are accepted against the real implementations,
+  with their device checks carried by M9-K. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
   with the back-end lane's seven post-`4c9520a` commits.
@@ -65,6 +66,54 @@ Last updated: 2026-09-15
   `backend/hayer_server/`, so it moved to the back-end lane at the split.
 
 ## Checkpoints
+
+### M9-G, M9-H and M9-J accepted against the implementations — complete (2026-09-15)
+
+G, H and J were built against generated contracts and fakes. They stayed open
+until M9-B to M9-E were implemented. With those merged (`060a472`), each
+handoff this lane logged was checked against what the back end settled in
+`backend/discovery-contracts.md` §"as implemented":
+
+| Ask | Settled |
+| --- | --- |
+| G3: draft previews count an unapplied query | Implemented in M9-C |
+| G3: `facets` budgeted apart from `browse` | Implemented in M9-C |
+| G3: tree, configuration and count revisions advance together | Since M9-B |
+| G3: hours-window and completeness counts (optional) | Not added; those chips show no counts, as before |
+| G4: "Explored" expires with the freshness window | `completedQueryGroups` holds only entries completed within the window under the active manifest revision (`DiscoveryHarvestService._footprint`), so the strip's union check expires on its own |
+| G4: repeated area reports stay idempotent | Joins, fresh answers and cooldowns spend nothing |
+| G4: `placeContext` re-reads have their own budget | Implemented in M9-C |
+| H: a refresh in progress | At most 10 s, inside the sheet's 15-second timeout. `refreshing` carries the stored record, and the sheet does not poll |
+| H: report errors | `feature_disabled`, `not_found` and `rate_limited` map as built. `conflict` needs a reused key with a different body, which the sheet never sends |
+| J: unmapped types ranked by frequency | Observations, then places. That is also frequency order, as requirement 16 asks, and the page claims no other order |
+| J: stored policy sections, tree conflicts, pseudonymous requester | Implemented in M9-B and M9-E |
+
+Two gaps are closed here:
+
+- **Stale details (H).** A detail read that judges a deck place stale withholds
+  rating, reviews, price, hours, status, phone and featured review. A Swipe
+  sheet can therefore show fewer facts than its card did. This lane keeps that
+  behavior. Showing the card's older values as current is what the stale rules
+  exist to prevent, and the sheet already says "Cached details: dynamic fields
+  are hidden." No test covered the switch; `place_details_sheet_test.dart` now
+  does.
+- **User explorations on the refresh jobs page (J).** Requirement 16 asks this
+  page to show which harvests came from users. A row printed only
+  `requestedBy · reason`, so a user's job read as
+  `user:… · discover:committedSearch`. `refreshJobSource` now labels it "User
+  exploration from a Discover search" or "from Deepen", and every other job
+  "Operator …". Both markers are required, so an operator named `user:…` still
+  reads as an operator. `widget_test.dart` covers the four cases and the
+  operator row.
+
+Each checkpoint's device checks — App Links, gestures and pins, TalkBack —
+belong to M9-K.
+
+**Verification.** Pinned full preflight passed generation, formatting, all
+fatal-info analyses, 199 server tests, 367 app tests and
+73 admin tests. The signed `0.2.1+7` APK is 106,926,159 bytes,
+verifies with APK Signature Scheme v2 and has SHA-256 `9a908507ad0cd86020b1f81f60e0a8a0651ebaa49cc16eacf3ffd277da126a20`, unchanged from M9-K because only tests and admin changed,. The
+server did not change, so the PostGIS suite's 118/118 at `cfed0e9` stands.
 
 ### M9-K cross-mode verification and dark release — in progress (2026-09-15)
 
@@ -1463,8 +1512,9 @@ pre-existing lane-wide gap rather than a P06 regression.
 
 ### Discover details, standing and catalog reports — noted 2026-09-14 (M9-H)
 
-Status 2026-09-15: `populationCategoryId` is implemented in M9-C (`532d33d`).
-Details, refresh states and catalog reports wait for M9-D.
+Status 2026-09-15: resolved by M9-C and M9-D; see "M9-G, M9-H and M9-J
+accepted against the implementations". Stale details stay hidden under the
+cached-details note.
 
 H reads `place.details`, `placeContext` and `place.reportCatalogIssue` in
 ways the M9-C and M9-D implementations need to allow.
@@ -1487,8 +1537,9 @@ ways the M9-C and M9-D implementations need to allow.
 
 ### Discover coverage freshness and request rates — noted 2026-09-14 (M9-G4)
 
-Status 2026-09-15: `placeContext` has its own budget since M9-C (`532d33d`).
-Freshness, exploration checks and area reports wait for M9-E.
+Status 2026-09-15: resolved by M9-C and M9-E; completed query groups expire
+with the freshness window. See "M9-G, M9-H and M9-J accepted against the
+implementations".
 
 G4's strip and selection read `browse`, `ensureArea`, `harvestStatus` and
 `placeContext` in ways the M9-C and M9-E implementations need to allow.
@@ -1511,6 +1562,9 @@ G4's strip and selection read `browse`, `ensureArea`, `harvestStatus` and
   aggregates mode.
 
 ### Discover admin contracts — requested 2026-09-14, delivered and wired 2026-09-14 (M9-J)
+
+Status 2026-09-15: resolved by M9-B and M9-E. Unmapped types rank by
+observations, then places, and refresh jobs now label user explorations.
 
 The back-end lane delivered the manifest, harvest job, unmapped-type and
 growth contracts in `ebbdf5f`, and every M9-J page now uses them; see "M9-J
@@ -1538,9 +1592,10 @@ as was done for the consumer contracts.
 
 ### Discover counts, tree and request budgets — noted 2026-09-14 (M9-G3)
 
-Status 2026-09-15: draft previews and the separate facets budget are
-implemented in M9-C (`532d33d`), and the tree revisions have advanced together
-since M9-B. Hours-window and completeness counts are not added.
+Status 2026-09-15: resolved. Draft previews and the separate facets budget
+are implemented in M9-C (`532d33d`), and the tree revisions have advanced
+together since M9-B. Hours-window and completeness counts stay optional and
+are not added.
 
 G3 reads `facets` and `taxonomy` in ways the M9-B and M9-C implementations
 need to allow.

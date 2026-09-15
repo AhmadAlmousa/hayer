@@ -83,6 +83,13 @@ Last updated: 2026-09-15
 
 ## Checkpoints
 
+### Front-end M9-G, M9-H and M9-J acceptance — pointer (2026-09-15)
+
+The front-end lane accepted M9-G, M9-H and M9-J against this lane's M9-B to
+M9-E implementations; see `lane-frontend.md`. No back-end change was needed.
+Two settled behaviors are now relied on: `completedQueryGroups` expire with
+the freshness window, and unmapped types rank by observations, then places.
+
 ### M9-K back-end verification — cross-mode loop and cleanup (2026-09-15)
 
 The owner gave the go-ahead for M9-K on 2026-09-15. This entry is the

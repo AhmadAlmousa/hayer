@@ -20,6 +20,37 @@ void main() {
     );
   });
 
+  test('refresh jobs say whether a user or an operator asked for them', () {
+    RefreshJobView job(String requestedBy, String reason) => RefreshJobView(
+      jobId: 'job',
+      coverageKey: 'coverage',
+      status: JobStatus.pending,
+      requestedBy: requestedBy,
+      reason: reason,
+      createdAt: DateTime.utc(2026, 9, 15),
+    );
+
+    expect(
+      refreshJobSource(
+        job('user:0123456789abcdef', 'discover:committedSearch'),
+      ),
+      'User exploration from a Discover search · user:0123456789abcdef',
+    );
+    expect(
+      refreshJobSource(job('user:0123456789abcdef', 'discover:deepen')),
+      'User exploration from Deepen · user:0123456789abcdef',
+    );
+    expect(
+      refreshJobSource(job('ops@hayer', 'Refresh after source drift')),
+      'Operator ops@hayer · Refresh after source drift',
+    );
+    // Only both markers together make a user's exploration.
+    expect(
+      refreshJobSource(job('user:typed-by-an-operator', 'Manual refresh')),
+      'Operator user:typed-by-an-operator · Manual refresh',
+    );
+  });
+
   testWidgets('passkey sign-in unlocks the dashboard', (tester) async {
     await _setSurface(tester, const Size(900, 800));
     final client = Client('http://localhost:8080/');
@@ -149,6 +180,10 @@ void main() {
 
     await tester.tap(find.byKey(const Key('admin-rail-/jobs')));
     await tester.pumpAndSettle();
+    expect(
+      find.text('Operator operator · Refresh after source drift'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).last, 'Operator requested');

@@ -1114,7 +1114,7 @@ class _JobsPageState extends State<_JobsPage> {
                         const SizedBox(height: 10),
                         SelectableText(job.coverageKey),
                         const SizedBox(height: 6),
-                        Text('${job.requestedBy} · ${job.reason}'),
+                        Text(refreshJobSource(job)),
                         Text('Created ${_formatDate(job.createdAt)}'),
                         if (job.errorCode != null)
                           Text(
@@ -2043,6 +2043,20 @@ class _Pager extends StatelessWidget {
 // initializeDateFormatting for it.
 String _formatDate(DateTime value) =>
     DateFormat.yMd().add_Hm().format(value.toLocal());
+
+/// Who asked for [job]. Users start only Discover explorations, which carry
+/// a pseudonymous `user:` requester and a `discover:` reason naming the
+/// trigger; every other job is an operator's, with the reason they gave.
+String refreshJobSource(RefreshJobView job) {
+  if (job.requestedBy.startsWith('user:') &&
+      job.reason.startsWith('discover:')) {
+    final trigger = job.reason == 'discover:deepen'
+        ? 'Deepen'
+        : 'a Discover search';
+    return 'User exploration from $trigger · ${job.requestedBy}';
+  }
+  return 'Operator ${job.requestedBy} · ${job.reason}';
+}
 
 String _jobStatusLabel(JobStatus status) => switch (status) {
   JobStatus.pending => 'Pending',
