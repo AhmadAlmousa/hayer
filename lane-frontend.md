@@ -67,6 +67,82 @@ Last updated: 2026-09-16
 
 ## Checkpoints
 
+### Admin POI catalog: map modes, map-scoped list, filters and info card — implemented (2026-09-16)
+
+Owner request. The catalog page moved out of `admin_app.dart` into
+`admin/lib/features/catalog/`. It now uses the three catalog reads the
+back-end lane added on `main` in `e511291`, merged here as `695d597`; see
+`lane-backend.md`.
+
+- **Map** (`catalog_map.dart`). Places mode draws the list page's places:
+  teal, amber when stale, red when quarantined. Heat map mode draws the
+  server's density grid for the visible bounds, under the same filters. Each
+  cell is weighted by its share of the busiest cell, and a legend explains
+  the ramp. The selected place is ringed in both modes. Tapping a place opens
+  its card, and the map reports its bounds whenever the camera settles.
+- **Limit list to map view.** Off by default, so a link that carries a
+  search still covers the whole catalog. When on, the list and its count
+  follow the bounds. A view wider than the server's 60° limit shows a
+  prompt to zoom in, rather than being clamped silently.
+- **List.** Each row shows type, rating, price and country. It then gives
+  the cache times: "Cached" (the source check, with its age), first cached,
+  and last seen in results. Badges mark quarantine, staleness, closure, open
+  reports and missing fields. The list sorts by last seen, first cached,
+  cached, name, rating or review count, in either direction, and filters by
+  status (Active, Quarantined or All). More filters adds:
+  - cache age and closure;
+  - primary type, with counts;
+  - category id;
+  - minimum rating and minimum reviews;
+  - first cached within a day, 7 days or 30 days;
+  - price levels;
+  - missing photos, hours, phone, website, price or summary;
+  - open reports.
+
+  Every change returns to page one. Clear filters keeps the order and status.
+- **Info card** (`catalog_place_panel.dart`). It sits beside the list at
+  1,100 px and wider, and opens in a dialog below that. It shows:
+  - cache timing and detail-refresh state;
+  - every cached field, including hours, photos, summary, featured review
+    and attributions;
+  - identity;
+  - category ids with their evidence queries;
+  - use: decks, and 90-day votes and impressions;
+  - reports, with a link to the issue queue;
+  - the quarantine reason, and the quarantine or restore action, which asks
+    for a reason and reloads the list.
+- Opening hours use `DateTime.weekday` numbers, as the app's hours calendar
+  reads them.
+
+**Tests.** `admin/test/catalog_page_test.dart` has 11 cases:
+
+- row content and badges;
+- a carried search;
+- sort, status, every filter and Clear filters, each reaching the query at
+  page one;
+- the map-view limit, moving bounds and a too-wide view;
+- heat mode waiting for bounds, drawing, and following filters;
+- the wide info card's content, and selection from the map;
+- the narrow dialog;
+- quarantine from the card;
+- the map's feature builders and day labels.
+
+Widget tests replace MapLibre through a builder seam, so real map rendering,
+the heat layer and taps still need a check in a browser.
+
+**Verification.** The pinned full preflight passed on the integrated
+tree (`main`'s `e511291` merged here, plus this change). Generation and
+formatting changed no files, and every fatal-info analysis passed. It ran 199
+server, 367 app and 84 admin tests, plus the shell syntax and `git diff
+--check` steps. The remote PostGIS suite passed 134/134. A release web build
+of the admin compiled the MapLibre heatmap, circle-layer, tap and camera
+calls, and passed Flutter's Wasm dry run. The signed `0.2.1+7` APK is
+107,040,847 bytes with SHA-256
+`d2c6ed72b36f6993082e9397ef7cdd5d36acb8e19fa75da3e59d988b575c783b`.
+`apksigner` verifies it with APK Signature Scheme v2 and one signer, and
+`aapt2` reports `sa.almou.hayer` at versionName 0.2.1 and versionCode 7. The
+app did not change; release builds on this host are not byte-identical.
+
 ### Back-end F22 on `main` — pointer (2026-09-16)
 
 Claude implemented M7-E's F22 in the back-end lane: admin analytics now group

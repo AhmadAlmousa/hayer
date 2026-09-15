@@ -87,6 +87,66 @@ Last updated: 2026-09-16
 
 ## Checkpoints
 
+### Admin catalog reads: map scope, filters, heat grid and place detail — implemented (2026-09-16)
+
+The owner asked for a better admin POI catalog: a heat map of where places
+are, a list limited to the map view, an info card with everything cached,
+when each place was cached, and sort and filter options. The old
+`admin.catalog` read paged every place by last sighting, searched names only
+and returned bare snapshots without cache times. Three additive reads now
+serve the dashboard (`e511291`). `admin.catalog` stays for compatibility.
+
+- **`catalogPlaces(query, page, pageSize)`.** One `AdminCatalogQuery`
+  carries:
+  - map bounds, at most 60° a side;
+  - a search over name, provider place id and catalog id, with `LIKE`
+    wildcards escaped;
+  - quarantine state;
+  - freshness against the cache policy's `freshHours`;
+  - closure, from `lifecycle_status`;
+  - exact primary type and category id;
+  - minimum rating and minimum reviews;
+  - price levels;
+  - missing cached fields, from the M9-C `completeness_mask` bits;
+  - open or in-review reports;
+  - first-cached date.
+
+  It sorts by last seen, first seen, source check, name, rating or review
+  count, in either direction, with missing values last and catalog id
+  breaking ties. Each item carries its first-seen, last-seen and source-check
+  times, staleness, closure, missing fields and open report count. The page
+  adds the 30 commonest primary types among places matching every filter
+  except the type.
+- **`catalogHeatmap(query)`.** Counts the same places in a 64 × 64 grid over
+  the bounds, each cell at its places' mean position. It requires bounds.
+- **`catalogPlace(catalogId)`.** Returns the cached snapshot, calibration,
+  quarantine reason, the 50 newest category evidence rows, detail refresh
+  state, the report count with the 10 newest reports, the stored swipe decks
+  that include the place, and 90-day likes, dislikes and card impressions.
+
+All three run in one transaction under a 15-second statement timeout, which
+answers `rate_limited`, and read through the M9-C generated columns and
+location index. No migration was needed.
+
+**Tests.** `integration_test/admin_catalog_reads_test.dart` has 5 PostGIS
+cases:
+
+- every filter and the type counts;
+- every sort in both directions, with missing values last, and paging;
+- item times, staleness, closure, missing fields and report counts;
+- the heat grid, a filtered grid and the bounds checks;
+- the detail joins, a quarantined place and an unknown id.
+
+**Not done.** None of these reads has been measured over a large catalog. A
+whole-catalog view counts, and the heat map groups, every matching row, bounded
+only by the 15-second timeout.
+
+**Verification.** `HAYER_TEST_DB_NAME=hayer_test_m9e
+scripts/test-integration-remote.sh` passed 134/134 with the 5 new cases. The
+schema did not change, so the M9-E database still applies. The server and the
+generated client analyze clean. The integrated tree's gates are in
+`lane-frontend.md`'s entry for the catalog page.
+
 ### F22 bounded analytics queries and aggregation — implemented (2026-09-16)
 
 The owner asked for the next milestone once M9 had nothing left that this host

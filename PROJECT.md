@@ -866,6 +866,9 @@ selection history; recommendation changes are measurable and reversible.
   in `worktree-claude-lane`; see [`lane-frontend.md`](lane-frontend.md). Sample counts on KPIs and trend
   points, source type, and version overlays need protocol fields that do not
   exist yet, and are an open handoff to the back-end lane.
+  The POI catalog view now has a heat map, a list that can follow the map,
+  cache times, sorting and filters, and a full info card per place (owner
+  request, 2026-09-16); see both lane logs.
 - [ ] Add source/rights governance, moderation ownership, measurement-health,
   alert acknowledgement/resolution, and controlled aggregate export manifests.
   Suppress unsafe small cohorts; journey IDs never become a retention identity.

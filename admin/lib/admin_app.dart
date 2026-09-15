@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
 import 'package:intl/intl.dart';
-import 'package:maplibre_gl/maplibre_gl.dart';
 
 import 'admin_operations.dart';
 import 'features/analytics/analytics_pages.dart';
+import 'features/catalog/catalog_page.dart';
 import 'features/auth/admin_auth_controller.dart';
 import 'features/auth/admin_auth_page.dart';
 import 'features/discovery/discover_taxonomy_page.dart';
@@ -108,7 +108,7 @@ class _AdminAppState extends State<AdminApp> {
           GoRoute(
             path: '/catalog',
             pageBuilder: (_, state) => _page(
-              _CatalogPage(
+              CatalogPage(
                 operations: _operations,
                 query: state.uri.queryParameters['q'] ?? '',
               ),
@@ -392,237 +392,6 @@ class _OverviewPageState extends State<_OverviewPage> {
       },
     ),
   );
-}
-
-class _CatalogPage extends StatefulWidget {
-  const _CatalogPage({required this.operations, this.query = ''});
-  final AdminOperations operations;
-
-  /// Search this page opens on, supplied by whatever linked here.
-  final String query;
-
-  @override
-  State<_CatalogPage> createState() => _CatalogPageState();
-}
-
-class _CatalogPageState extends State<_CatalogPage> {
-  final _search = TextEditingController();
-  CatalogPlacePage? _page;
-  Object? _error;
-  bool _quarantined = false;
-  int _pageIndex = 0;
-  MapLibreMapController? _map;
-
-  @override
-  void initState() {
-    super.initState();
-    _search.text = widget.query;
-    _load();
-  }
-
-  // A second link to this page rebuilds the same state object, so a newly
-  // carried search has to be applied here as well as in initState.
-  @override
-  void didUpdateWidget(covariant _CatalogPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.query == widget.query) return;
-    _search.text = widget.query;
-    _pageIndex = 0;
-    _load();
-  }
-
-  @override
-  void dispose() {
-    _search.dispose();
-    super.dispose();
-  }
-
-  Future<void> _load() async {
-    try {
-      final value = await widget.operations.catalog(
-        page: _pageIndex,
-        pageSize: 25,
-        query: _search.text,
-        includeQuarantined: _quarantined,
-      );
-      if (!mounted) return;
-      setState(() {
-        _page = value;
-        _error = null;
-      });
-      await _drawPlaces(value.items);
-    } catch (error) {
-      if (mounted) setState(() => _error = error);
-    }
-  }
-
-  Future<void> _drawPlaces(List<PlaceSnapshot> places) async {
-    final controller = _map;
-    if (controller == null) return;
-    await controller.clearCircles();
-    for (final place in places) {
-      await controller.addCircle(
-        CircleOptions(
-          geometry: LatLng(place.latitude, place.longitude),
-          circleColor: '#0E9594',
-          circleRadius: 7,
-          circleStrokeColor: '#FFFFFF',
-          circleStrokeWidth: 2,
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => _PageShell(
-    title: 'POI catalog',
-    child: Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _search,
-                onSubmitted: (_) {
-                  _pageIndex = 0;
-                  _load();
-                },
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  labelText: 'Search name',
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            FilterChip(
-              label: const Text('Include quarantine'),
-              selected: _quarantined,
-              onSelected: (value) {
-                setState(() => _quarantined = value);
-                _load();
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        SizedBox(
-          height: 280,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(18),
-            child: MapLibreMap(
-              styleString: 'https://tiles.openfreemap.org/styles/liberty',
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(24.7, 46.7),
-                zoom: 4.4,
-              ),
-              onMapCreated: (controller) {
-                _map = controller;
-                _drawPlaces(_page?.items ?? const []);
-              },
-              onStyleLoadedCallback: () =>
-                  _drawPlaces(_page?.items ?? const []),
-            ),
-          ),
-        ),
-        const SizedBox(height: 14),
-        if (_error != null)
-          _ErrorPanel(_error!)
-        else if (_page == null)
-          const Padding(
-            padding: EdgeInsets.all(40),
-            child: CircularProgressIndicator(),
-          )
-        else if (_page!.items.isEmpty)
-          const Padding(
-            padding: EdgeInsets.all(40),
-            child: Text('No catalog data has been collected yet.'),
-          )
-        else
-          for (final place in _page!.items)
-            Card(
-              child: ListTile(
-                leading: CircleAvatar(
-                  child: Text(place.name.characters.first.toUpperCase()),
-                ),
-                title: Text(
-                  place.name,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-                subtitle: Text(
-                  '${place.primaryType ?? 'Unknown type'} • ${place.latitude.toStringAsFixed(4)}, ${place.longitude.toStringAsFixed(4)}',
-                ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (action) => _placeAction(place, action),
-                  itemBuilder: (_) => [
-                    const PopupMenuItem(
-                      value: 'quarantine',
-                      child: Text('Quarantine'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'restore',
-                      child: Text('Restore'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        if (_page != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                '${_pageIndex * 25 + 1}–${(_pageIndex * 25 + _page!.items.length)} of ${_page!.total}',
-              ),
-              IconButton(
-                onPressed: _pageIndex == 0
-                    ? null
-                    : () {
-                        _pageIndex--;
-                        _load();
-                      },
-                icon: const Icon(Icons.chevron_left),
-              ),
-              IconButton(
-                onPressed: (_pageIndex + 1) * 25 >= _page!.total
-                    ? null
-                    : () {
-                        _pageIndex++;
-                        _load();
-                      },
-                icon: const Icon(Icons.chevron_right),
-              ),
-            ],
-          ),
-      ],
-    ),
-  );
-
-  Future<void> _placeAction(PlaceSnapshot place, String action) async {
-    final reason = await _reasonDialog(
-      context,
-      '${action == 'restore' ? 'Restore' : 'Quarantine'} ${place.name}',
-    );
-    if (reason == null) return;
-    try {
-      if (action == 'restore') {
-        await widget.operations.restore(
-          providerPlaceId: place.placeId,
-          reason: reason,
-        );
-      } else {
-        await widget.operations.quarantine(
-          providerPlaceId: place.placeId,
-          reason: reason,
-        );
-      }
-      await _load();
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$error')));
-      }
-    }
-  }
 }
 
 class _CoveragePage extends StatefulWidget {

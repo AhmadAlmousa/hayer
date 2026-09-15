@@ -139,12 +139,15 @@ abstract interface class AdminOperations {
 
   Future<CacheDashboardSummary> summary();
 
-  Future<CatalogPlacePage> catalog({
+  Future<AdminCatalogPage> catalogPlaces({
+    required AdminCatalogQuery query,
     required int page,
     required int pageSize,
-    required String query,
-    required bool includeQuarantined,
   });
+
+  Future<AdminCatalogHeatmap> catalogHeatmap(AdminCatalogQuery query);
+
+  Future<AdminCatalogPlaceDetail> catalogPlace(int catalogId);
 
   Future<CoveragePage> coverage({
     required int page,
@@ -500,17 +503,20 @@ class ServerpodAdminOperations implements AdminOperations {
   Future<CacheDashboardSummary> summary() => client.admin.summary();
 
   @override
-  Future<CatalogPlacePage> catalog({
+  Future<AdminCatalogPage> catalogPlaces({
+    required AdminCatalogQuery query,
     required int page,
     required int pageSize,
-    required String query,
-    required bool includeQuarantined,
-  }) => client.admin.catalog(
-    page: page,
-    pageSize: pageSize,
-    query: query,
-    includeQuarantined: includeQuarantined,
-  );
+  }) =>
+      client.admin.catalogPlaces(query: query, page: page, pageSize: pageSize);
+
+  @override
+  Future<AdminCatalogHeatmap> catalogHeatmap(AdminCatalogQuery query) =>
+      client.admin.catalogHeatmap(query: query);
+
+  @override
+  Future<AdminCatalogPlaceDetail> catalogPlace(int catalogId) =>
+      client.admin.catalogPlace(catalogId: catalogId);
 
   @override
   Future<CoveragePage> coverage({
