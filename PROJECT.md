@@ -906,8 +906,10 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 - [x] M9-C — Catalog columns and discovery query (back end). Generated catalog
   projections and the shared browse, facets and place-context SQL, with PostGIS
   acceptance, recorded query plans and a timed populated upgrade.
-- [~] M9-D — Shared detail resolver and sessionless reporting (back end).
-  Generated contracts delivered; shared resolver and report storage remain open.
+- [x] M9-D — Shared detail resolver and sessionless reporting (back end).
+  One cache-first resolver serves both modes' details, refreshing a place once
+  under a database lease and cooldown, and Discover reports share session
+  reporting's validation, dedupe, quotas and moderation storage.
 - [~] M9-E — Harvesting and coverage (back end, after F21). Consumer coverage
   and admin manifest/job/unmapped-type/growth contracts plus web path rewrites
   delivered; workers and persistent manifest, coverage and metrics storage
@@ -926,10 +928,10 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
-complete from contract availability alone. Discovery stays dark: data RPCs answer
-`feature_disabled` while `discoveryEnabled` is false, and detail, reporting,
-harvest and M9-E admin RPCs answer it unconditionally. M9-D and M9-E are the
-remaining back-end slices.
+complete from contract availability alone. Discovery stays dark: data and catalog-report RPCs
+answer `feature_disabled` while `discoveryEnabled` is false, and harvest and
+M9-E admin RPCs answer it unconditionally. Shared place details answer in both
+modes whatever the flag. M9-E is the remaining back-end slice.
 
 ## Verification gates
 
@@ -1085,6 +1087,22 @@ remaining back-end slices.
   SHA-256 `d5aaca0b71174fc3d93d64699b2706e62fcf83fdaaa23e5912de60a6967a14a5`
   and verifies under APK Signature Scheme v2 with the existing signer.
   Discovery stays disabled. Details are in `lane-backend.md`.
+- 2026-09-15: closed M9-D in the back-end lane. `place.details` resolves both
+  modes' detail reads from the shared catalog. It runs one focused
+  Vela-derived search under a per-place database lease only when a record is
+  stale or its missing fields are unchecked, with shared cooldowns, and it
+  answers whether or not Discover is enabled. `place.reportCatalogIssue` files
+  sessionless Discover reports through the session pipeline, sharing its
+  dedupe and quotas, and admin issue rows carry their source. The migration
+  makes a report's session nullable with a `source` backfill and adds refresh
+  metadata. It also restores a report constraint that fresh definitions had
+  lost. The 14 new PostGIS cases pass within 101/101 on a disposable
+  fresh-schema database, and the upgraded and fresh schemas fingerprint
+  identically. Pinned full preflight passed 181 server,
+  279 app and 51 admin tests with clean analyses. Signed
+  `0.2.1+7` built at SHA-256 `eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f` and verifies under APK Signature
+  Scheme v2 with the existing signer. Discovery stays disabled. Details are in
+  `lane-backend.md`.
 - 2026-09-13: the owner confirmed the deployed calibration repair resolved
   Start swiping. Closed that incident using owner-reported production
   evidence; no independent authenticated canary was rerun. Reviewed current

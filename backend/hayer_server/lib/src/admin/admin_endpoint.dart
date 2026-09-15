@@ -840,7 +840,9 @@ class AdminEndpoint extends Endpoint {
     for (final report in related) {
       final key = _poiIssueGroupKey(report.placeId, report.issueType);
       recurrenceByKey.update(key, (value) => value + 1, ifAbsent: () => 1);
-      sessionsByKey.putIfAbsent(key, () => <String>{}).add(report.sessionId);
+      final sessions = sessionsByKey.putIfAbsent(key, () => <String>{});
+      // Discover reports have no swipe session and affect none.
+      if (report.sessionId case final sessionId?) sessions.add(sessionId);
     }
 
     return AdminPoiIssuePage(
@@ -1608,6 +1610,8 @@ class AdminEndpoint extends Endpoint {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     resolvedAt: row.resolvedAt,
+    source: row.source,
+    sessionId: row.sessionId,
   );
 
   Future<TaxonomyCanarySample> _taxonomyCanary(

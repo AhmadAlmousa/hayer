@@ -34,15 +34,24 @@ WHERE catalog."lastSeenAt" < @cutoff
   }) async {
     final rows = await session.db.unsafeQuery(
       '''
-DELETE FROM "hayer_poi_catalog" AS catalog
-WHERE catalog."lastSeenAt" < @cutoff
-  AND catalog."quarantinedAt" IS NULL
-  AND NOT EXISTS (
-    SELECT 1
-    FROM "hayer_session_place" AS session_place
-    WHERE session_place."placeId" = catalog."providerPlaceId"
-  )
-RETURNING "providerPlaceId"
+WITH pruned AS (
+  DELETE FROM "hayer_poi_catalog" AS catalog
+  WHERE catalog."lastSeenAt" < @cutoff
+    AND catalog."quarantinedAt" IS NULL
+    AND NOT EXISTS (
+      SELECT 1
+      FROM "hayer_session_place" AS session_place
+      WHERE session_place."placeId" = catalog."providerPlaceId"
+    )
+  RETURNING catalog."provider", catalog."providerPlaceId"
+), refresh AS (
+  -- Detail refresh metadata describes a catalog record and leaves with it.
+  DELETE FROM "hayer_poi_detail_refresh" AS refresh
+  USING pruned
+  WHERE refresh."provider" = pruned."provider"
+    AND refresh."providerPlaceId" = pruned."providerPlaceId"
+)
+SELECT "providerPlaceId" FROM pruned
 ''',
       parameters: QueryParameters.named({'cutoff': cutoff}),
       transaction: transaction,

@@ -74,5 +74,26 @@ void main() {
         ),
       );
     });
+
+    test('catalog reports take a positive catalog id and a retry key', () {
+      expect(
+        () => PoiIssuePolicy.validateCatalogRequest(
+          catalogId: 0,
+          idempotencyKey: 'retry-key-1',
+        ),
+        throwsFormatException,
+      );
+      expect(
+        () => PoiIssuePolicy.validateCatalogRequest(
+          catalogId: 7,
+          idempotencyKey: 'short',
+        ),
+        throwsFormatException,
+      );
+      PoiIssuePolicy.validateCatalogRequest(
+        catalogId: 7,
+        idempotencyKey: 'retry-key-1',
+      );
+    });
   });
 }

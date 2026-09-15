@@ -12,10 +12,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../place_snapshot.dart' as _i2;
-import '../poi_issue_type.dart' as _i3;
-import '../poi_issue_status.dart' as _i4;
-import 'package:hayer_server/src/generated/protocol.dart' as _i5;
+import '../poi_issue_source.dart' as _i2;
+import '../place_snapshot.dart' as _i3;
+import '../poi_issue_type.dart' as _i4;
+import '../poi_issue_status.dart' as _i5;
+import 'package:hayer_server/src/generated/protocol.dart' as _i6;
 
 abstract class PoiIssueReportRow
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -24,7 +25,8 @@ abstract class PoiIssueReportRow
     required this.reportId,
     required this.reporterHash,
     this.activeDedupeKey,
-    required this.sessionId,
+    this.sessionId,
+    _i2.PoiIssueSource? source,
     required this.placeId,
     required this.placeName,
     required this.reportedSnapshot,
@@ -37,20 +39,21 @@ abstract class PoiIssueReportRow
     required this.createdAt,
     required this.updatedAt,
     this.resolvedAt,
-  });
+  }) : source = source ?? _i2.PoiIssueSource.session;
 
   factory PoiIssueReportRow({
     _i1.UuidValue? id,
     required String reportId,
     required String reporterHash,
     String? activeDedupeKey,
-    required String sessionId,
+    String? sessionId,
+    _i2.PoiIssueSource? source,
     required String placeId,
     required String placeName,
-    required _i2.PlaceSnapshot reportedSnapshot,
-    required _i3.PoiIssueType issueType,
+    required _i3.PlaceSnapshot reportedSnapshot,
+    required _i4.PoiIssueType issueType,
     String? details,
-    required _i4.PoiIssueStatus status,
+    required _i5.PoiIssueStatus status,
     String? ownerName,
     String? resolution,
     String? sourceEvidence,
@@ -67,17 +70,22 @@ abstract class PoiIssueReportRow
       reportId: jsonSerialization['reportId'] as String,
       reporterHash: jsonSerialization['reporterHash'] as String,
       activeDedupeKey: jsonSerialization['activeDedupeKey'] as String?,
-      sessionId: jsonSerialization['sessionId'] as String,
+      sessionId: jsonSerialization['sessionId'] as String?,
+      source: jsonSerialization['source'] == null
+          ? null
+          : _i2.PoiIssueSource.fromJson(
+              (jsonSerialization['source'] as String),
+            ),
       placeId: jsonSerialization['placeId'] as String,
       placeName: jsonSerialization['placeName'] as String,
-      reportedSnapshot: _i5.Protocol().deserialize<_i2.PlaceSnapshot>(
+      reportedSnapshot: _i6.Protocol().deserialize<_i3.PlaceSnapshot>(
         jsonSerialization['reportedSnapshot'],
       ),
-      issueType: _i3.PoiIssueType.fromJson(
+      issueType: _i4.PoiIssueType.fromJson(
         (jsonSerialization['issueType'] as String),
       ),
       details: jsonSerialization['details'] as String?,
-      status: _i4.PoiIssueStatus.fromJson(
+      status: _i5.PoiIssueStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
       ownerName: jsonSerialization['ownerName'] as String?,
@@ -108,19 +116,21 @@ abstract class PoiIssueReportRow
 
   String? activeDedupeKey;
 
-  String sessionId;
+  String? sessionId;
+
+  _i2.PoiIssueSource source;
 
   String placeId;
 
   String placeName;
 
-  _i2.PlaceSnapshot reportedSnapshot;
+  _i3.PlaceSnapshot reportedSnapshot;
 
-  _i3.PoiIssueType issueType;
+  _i4.PoiIssueType issueType;
 
   String? details;
 
-  _i4.PoiIssueStatus status;
+  _i5.PoiIssueStatus status;
 
   String? ownerName;
 
@@ -146,12 +156,13 @@ abstract class PoiIssueReportRow
     String? reporterHash,
     String? activeDedupeKey,
     String? sessionId,
+    _i2.PoiIssueSource? source,
     String? placeId,
     String? placeName,
-    _i2.PlaceSnapshot? reportedSnapshot,
-    _i3.PoiIssueType? issueType,
+    _i3.PlaceSnapshot? reportedSnapshot,
+    _i4.PoiIssueType? issueType,
     String? details,
-    _i4.PoiIssueStatus? status,
+    _i5.PoiIssueStatus? status,
     String? ownerName,
     String? resolution,
     String? sourceEvidence,
@@ -167,7 +178,8 @@ abstract class PoiIssueReportRow
       'reportId': reportId,
       'reporterHash': reporterHash,
       if (activeDedupeKey != null) 'activeDedupeKey': activeDedupeKey,
-      'sessionId': sessionId,
+      if (sessionId != null) 'sessionId': sessionId,
+      'source': source.toJson(),
       'placeId': placeId,
       'placeName': placeName,
       'reportedSnapshot': reportedSnapshot.toJson(),
@@ -226,13 +238,14 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
     required String reportId,
     required String reporterHash,
     String? activeDedupeKey,
-    required String sessionId,
+    String? sessionId,
+    _i2.PoiIssueSource? source,
     required String placeId,
     required String placeName,
-    required _i2.PlaceSnapshot reportedSnapshot,
-    required _i3.PoiIssueType issueType,
+    required _i3.PlaceSnapshot reportedSnapshot,
+    required _i4.PoiIssueType issueType,
     String? details,
-    required _i4.PoiIssueStatus status,
+    required _i5.PoiIssueStatus status,
     String? ownerName,
     String? resolution,
     String? sourceEvidence,
@@ -245,6 +258,7 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
          reporterHash: reporterHash,
          activeDedupeKey: activeDedupeKey,
          sessionId: sessionId,
+         source: source,
          placeId: placeId,
          placeName: placeName,
          reportedSnapshot: reportedSnapshot,
@@ -268,13 +282,14 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
     String? reportId,
     String? reporterHash,
     Object? activeDedupeKey = _Undefined,
-    String? sessionId,
+    Object? sessionId = _Undefined,
+    _i2.PoiIssueSource? source,
     String? placeId,
     String? placeName,
-    _i2.PlaceSnapshot? reportedSnapshot,
-    _i3.PoiIssueType? issueType,
+    _i3.PlaceSnapshot? reportedSnapshot,
+    _i4.PoiIssueType? issueType,
     Object? details = _Undefined,
-    _i4.PoiIssueStatus? status,
+    _i5.PoiIssueStatus? status,
     Object? ownerName = _Undefined,
     Object? resolution = _Undefined,
     Object? sourceEvidence = _Undefined,
@@ -289,7 +304,8 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
       activeDedupeKey: activeDedupeKey is String?
           ? activeDedupeKey
           : this.activeDedupeKey,
-      sessionId: sessionId ?? this.sessionId,
+      sessionId: sessionId is String? ? sessionId : this.sessionId,
+      source: source ?? this.source,
       placeId: placeId ?? this.placeId,
       placeName: placeName ?? this.placeName,
       reportedSnapshot: reportedSnapshot ?? this.reportedSnapshot.copyWith(),
@@ -328,8 +344,15 @@ class PoiIssueReportRowUpdateTable
         value,
       );
 
-  _i1.ColumnValue<String, String> sessionId(String value) => _i1.ColumnValue(
+  _i1.ColumnValue<String, String> sessionId(String? value) => _i1.ColumnValue(
     table.sessionId,
+    value,
+  );
+
+  _i1.ColumnValue<_i2.PoiIssueSource, _i2.PoiIssueSource> source(
+    _i2.PoiIssueSource value,
+  ) => _i1.ColumnValue(
+    table.source,
     value,
   );
 
@@ -343,15 +366,15 @@ class PoiIssueReportRowUpdateTable
     value,
   );
 
-  _i1.ColumnValue<_i2.PlaceSnapshot, _i2.PlaceSnapshot> reportedSnapshot(
-    _i2.PlaceSnapshot value,
+  _i1.ColumnValue<_i3.PlaceSnapshot, _i3.PlaceSnapshot> reportedSnapshot(
+    _i3.PlaceSnapshot value,
   ) => _i1.ColumnValue(
     table.reportedSnapshot,
     value,
   );
 
-  _i1.ColumnValue<_i3.PoiIssueType, _i3.PoiIssueType> issueType(
-    _i3.PoiIssueType value,
+  _i1.ColumnValue<_i4.PoiIssueType, _i4.PoiIssueType> issueType(
+    _i4.PoiIssueType value,
   ) => _i1.ColumnValue(
     table.issueType,
     value,
@@ -362,8 +385,8 @@ class PoiIssueReportRowUpdateTable
     value,
   );
 
-  _i1.ColumnValue<_i4.PoiIssueStatus, _i4.PoiIssueStatus> status(
-    _i4.PoiIssueStatus value,
+  _i1.ColumnValue<_i5.PoiIssueStatus, _i5.PoiIssueStatus> status(
+    _i5.PoiIssueStatus value,
   ) => _i1.ColumnValue(
     table.status,
     value,
@@ -424,6 +447,12 @@ class PoiIssueReportRowTable extends _i1.Table<_i1.UuidValue?> {
       'sessionId',
       this,
     );
+    source = _i1.ColumnEnum(
+      'source',
+      this,
+      _i1.EnumSerialization.byName,
+      hasDefault: true,
+    );
     placeId = _i1.ColumnString(
       'placeId',
       this,
@@ -432,7 +461,7 @@ class PoiIssueReportRowTable extends _i1.Table<_i1.UuidValue?> {
       'placeName',
       this,
     );
-    reportedSnapshot = _i1.ColumnSerializable<_i2.PlaceSnapshot>(
+    reportedSnapshot = _i1.ColumnSerializable<_i3.PlaceSnapshot>(
       'reportedSnapshot',
       this,
     );
@@ -486,17 +515,19 @@ class PoiIssueReportRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnString sessionId;
 
+  late final _i1.ColumnEnum<_i2.PoiIssueSource> source;
+
   late final _i1.ColumnString placeId;
 
   late final _i1.ColumnString placeName;
 
-  late final _i1.ColumnSerializable<_i2.PlaceSnapshot> reportedSnapshot;
+  late final _i1.ColumnSerializable<_i3.PlaceSnapshot> reportedSnapshot;
 
-  late final _i1.ColumnEnum<_i3.PoiIssueType> issueType;
+  late final _i1.ColumnEnum<_i4.PoiIssueType> issueType;
 
   late final _i1.ColumnString details;
 
-  late final _i1.ColumnEnum<_i4.PoiIssueStatus> status;
+  late final _i1.ColumnEnum<_i5.PoiIssueStatus> status;
 
   late final _i1.ColumnString ownerName;
 
@@ -517,6 +548,7 @@ class PoiIssueReportRowTable extends _i1.Table<_i1.UuidValue?> {
     reporterHash,
     activeDedupeKey,
     sessionId,
+    source,
     placeId,
     placeName,
     reportedSnapshot,

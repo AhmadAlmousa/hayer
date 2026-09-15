@@ -43,7 +43,8 @@ void main() {
         final config = await endpoints.bootstrap.discoveryConfig(builder);
         expect(config.enabled, isFalse);
         expect(config.taxonomyRevision, 1);
-        expect(config.detailsAvailable, isFalse);
+        // Shared details are independent of the Discover flag.
+        expect(config.detailsAvailable, isTrue);
         expect(
           config.expiresAt.difference(config.serverTime),
           const Duration(minutes: 5),
@@ -54,7 +55,7 @@ void main() {
       },
     );
 
-    test('all discover and shared-detail stubs fail closed for an authenticated user', () async {
+    test('discover data and catalog reporting fail closed for an authenticated user', () async {
       final calls = <Future<Object?> Function()>[
         () => endpoints.discover.taxonomy(member),
         () => endpoints.discover.browse(
@@ -80,12 +81,6 @@ void main() {
           idempotencyKey: 'fixture',
         ),
         () => endpoints.discover.harvestStatus(member, jobId: 'fixture'),
-        () => endpoints.place.details(member, identity: identity),
-        () => endpoints.place.details(
-          member,
-          identity: identity,
-          sessionId: 'session-fixture',
-        ),
         () => endpoints.place.reportCatalogIssue(
           member,
           catalogId: 1,
@@ -96,6 +91,19 @@ void main() {
       for (final call in calls) {
         await expectLater(call(), throwsA(_disabled));
       }
+    });
+
+    test('shared details answer while Discover is disabled', () async {
+      await expectLater(
+        endpoints.place.details(member, identity: identity),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.code,
+            'code',
+            'not_found',
+          ),
+        ),
+      );
     });
 
     test(

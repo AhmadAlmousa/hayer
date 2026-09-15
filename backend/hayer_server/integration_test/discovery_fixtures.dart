@@ -341,3 +341,61 @@ Future<List<DiscoverBrowsePage>> browseAll(
   } while (page.nextCursor != null);
   return pages;
 }
+
+/// A solo swipe session owned by [userId], whose deck holds [places] in order.
+Future<void> insertSwipeSession(
+  Session session, {
+  required String sessionId,
+  required String code,
+  required String userId,
+  required List<PlaceSnapshot> places,
+}) async {
+  await HayerSessionRow.db.insertRow(
+    session,
+    HayerSessionRow(
+      sessionId: sessionId,
+      code: code,
+      hostUserId: userId,
+      mode: SessionMode.solo,
+      categoryId: 'restaurant',
+      subcategoryIds: const [],
+      anchorLatitude: 24.7,
+      anchorLongitude: 46.65,
+      countryCode: 'SA',
+      radiusMeters: 500,
+      deckSizeRequested: 10,
+      deckSizeActual: places.length,
+      consensusRule: ConsensusRule.majority,
+      matchingTiming: MatchingTiming.instant,
+      status: SessionStatus.active,
+      revision: 3,
+      createdAt: fixtureNow,
+      expiresAt: fixtureNow.add(const Duration(days: 1)),
+    ),
+  );
+  await ParticipantRow.db.insertRow(
+    session,
+    ParticipantRow(
+      participantId: '$sessionId-host',
+      sessionId: sessionId,
+      userId: userId,
+      displayName: 'Host',
+      normalizedName: 'host',
+      isHost: true,
+      currentIndex: 0,
+      hasCompleted: false,
+      lastSeenAt: fixtureNow,
+    ),
+  );
+  for (final (index, snapshot) in places.indexed) {
+    await SessionPlaceRow.db.insertRow(
+      session,
+      SessionPlaceRow(
+        sessionId: sessionId,
+        placeId: snapshot.placeId,
+        deckOrder: index,
+        snapshot: snapshot,
+      ),
+    );
+  }
+}

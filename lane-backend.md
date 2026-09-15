@@ -28,10 +28,11 @@ Last updated: 2026-09-15
   exact refresh coalescing, and selective deterministic cache query are
   implemented, and their PostGIS concurrency/dense-cache cases now pass. The
   catalog-truncation defect the first real run exposed is fixed.
-- The latest integration suite is fully green: 86/86 against real PostGIS on
-  the disposable `hayer_test_m9c_fresh`, including the 31 M9-C Discover cases.
-  The shared `hayer_test` needs a reset before it can run the suite again; see
-  the M9-C checkpoint.
+- The latest integration suite is fully green: 101/101 against real PostGIS on
+  the disposable `hayer_test_m9d`, built fresh from the M9-D definition,
+  including 31 M9-C Discover cases and 14 M9-D detail and report cases. The
+  shared `hayer_test` still needs a reset before it can run the suite again;
+  see the M9-C checkpoint.
 - Claude completed the F17 client convergence half in `6277dcd`, and the
   additive deck-free server progress contract is wired into the merged client.
   Two-device acceptance remains open.
@@ -43,9 +44,9 @@ Last updated: 2026-09-15
 - The owner prioritized contracts to unblock Claude's discovery work. Frontend
   prework is merged in `d4b58b7`; M9-B/C/D and consumer M9-E generated contracts
   are delivered. The exact calls, mock semantics and retained-link flow are in
-  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). M9-B's and
-  M9-C's implementations are complete; M9-D/E and production activation
-  remain open.
+  [`backend/discovery-contracts.md`](backend/discovery-contracts.md). M9-B's,
+  M9-C's and M9-D's implementations are complete; M9-E and production
+  activation remain open.
 - Claude's M9-F configuration/link retention commit `5863f02` is merged into
   `main`. It adds no new backend handoff: G2–G4 can continue against the dark
   generated contracts and fakes. The next discovery backend slice remains
@@ -68,8 +69,181 @@ Last updated: 2026-09-15
 - M9-C is complete. Discover browse, facets and place context run on generated
   catalog projections well inside the statement timeout on a 200,000-row
   catalog, with recorded query plans and a timed populated upgrade.
+- M9-D is complete. One cache-first resolver serves both modes' place details,
+  refreshing a place once under a database lease only when needed, and
+  Discover reports go through the session reporting pipeline without a
+  session. Details answer whether or not Discover is enabled.
 
 ## Checkpoints
+
+### M9-D shared detail resolver and sessionless reporting — complete (2026-09-15)
+
+`place.details` and `place.reportCatalogIssue` are implemented. Details answer
+whether or not Discover is enabled, so `discoveryConfig.detailsAvailable` is
+now true. Catalog reporting stays behind `discoveryEnabled`.
+
+**Detail resolver.** `PlaceDetailResolver`
+(`lib/src/places/place_detail_resolver.dart`) answers both modes from the
+canonical catalog record.
+
+- **Identity.** Provider `google-web` and a place id. Without a session the
+  catalog must hold an unquarantined record. With a session the caller must be
+  a participant and the place must be in that deck, answering `forbidden` and
+  `not_found` exactly as session reporting does. When the catalog no longer
+  holds a deck place, the session's snapshot stands in. A quarantined record
+  is readable only from a session that shows it, and is never refreshed.
+- **When it searches.** Never while the record is fresh under the policy's
+  `freshHours` and complete. Never when its missing fields were already put to
+  the provider within that window, nor during a cooldown. Otherwise it runs
+  one focused search: the stored name at the stored coordinates, one
+  calibrated page through M9-A's `GoogleWebPlaceSource.fetchPage`. The search
+  runs inside a `ProviderOperation` bounded by the policy's `maximumRequests`
+  and `maximumSeconds`, capped at 10 s, and is admitted through F08's shared
+  controller under the global rate limit.
+- **One refresh per place.** `hayer_poi_detail_refresh` keeps a row per place.
+  A request takes the lease with a single `INSERT … ON CONFLICT … WHERE` that
+  also requires no attempt since the request read the row, no live lease and
+  no cooldown. A request that loses answers `refreshing` with the stored
+  record. Leases expire 30 s after the refresh deadline, so a crashed server
+  cannot hold one.
+- **What it writes.** Every valid observation goes through
+  `CatalogObservationWriter` without Swipe evidence or coverage. The requested
+  record changes only when a returned provider id matches exactly. Session
+  snapshots, deck order and session revisions are never written.
+- **Outcomes.** `succeeded` is an exact match and `noMatch` is none. `failed`
+  covers a source error, the deadline or the request budget, and
+  `budgetExceeded` a busy admission queue or a user past 30 refreshes an hour.
+  No match, failure and a match still missing fields cool down for the
+  policy's `cooldownMinutes`, a busy queue for one minute. A complete success
+  sets no cooldown.
+- **What it returns.** The record as both modes present it. A stale record
+  hides rating, reviews, price, hours, status, phone and featured review, the
+  set Swipe's `PlaceSearchPolicy` hides; `PlaceDetailView` now holds that rule
+  for Discover and details. `missingFields` lists what the returned place
+  cannot show. With a session, `distanceMeters` is the deck's own.
+
+**Catalog reporting.** `PoiIssueReportService` now serves both report
+endpoints. `reportIssue` keeps its validation, request hash, membership checks
+and messages, and its session authorization tests pass unmodified.
+`reportCatalogIssue` needs Discover enabled and a positive catalog id. The
+server resolves the place and its snapshot from `catalogId`, answering
+`not_found` otherwise, and stores `source: discovery` with no session.
+
+Both report paths share:
+
+- the reporter hash;
+- the idempotency scope, so a key reused across modes with another body
+  answers `conflict`;
+- one active report per reporter, place and issue type, so a Swipe report and
+  a Discover report of the same place and type are the same report;
+- the 6-an-hour and 20-a-day quotas;
+- moderation.
+
+Admin issue rows now fill `source` and `sessionId`. `affectedSessionCount`
+counts sessions only, so a group of Discover reports alone shows 0.
+
+**Migration `20260915070806721-shared-detail-reporting`.**
+
+- Adds `hayer_poi_detail_refresh`, with a unique place index and a values
+  check that ties the lease columns to the `refreshing` state.
+- Makes `hayer_poi_issue_report.sessionId` nullable and adds
+  `source text NOT NULL DEFAULT 'session'`, which backfills existing rows.
+- Adds `hayer_poi_issue_source_valid`: a session report keeps its session,
+  and a Discover report has none.
+
+The catalog pruner deletes a pruned record's refresh row in the same
+statement.
+
+Found on the way: `hayer_poi_issue_values_valid`, the report lifecycle check,
+was missing from every fresh `definition.sql` from
+`20260914073223386-discovery-policy-taxonomy` on. Upgraded databases have it;
+databases built from those definitions did not. The new definition restores
+it verbatim.
+
+**Upgrade proof.** `hayer_test_m9d_upgrade` started from the M9-C definition,
+plus that constraint as every migrated database has it, and a legacy session
+report. Applying this `migration.sql` took under 0.1 s, with no table rewrite:
+
+- The legacy report became `source = session` and kept its session.
+- Changing it to `discovery` was rejected.
+- Its columns, constraints, indexes and functions fingerprint identically to
+  `hayer_test_m9d`, built from the new definition: `3a8edf49…`, `50015bf9…`,
+  `511110df…` and `fc90e713…`.
+
+**Decisions.**
+
+- The refresh deadline is the smaller of the stored policy and 10 s. The plan
+  specifies a ten-second detail deadline and the front end's 15-second client
+  timeout relies on it, but M9-B stored a 20-second default, so the policy can
+  only tighten the cap. The stored 60-minute cooldown (the plan says 15) is
+  used as stored.
+- Missing fields are put to the provider once per freshness window per place,
+  not on every open.
+- The 30-refreshes-an-hour user budget is a fixed constant, like the report
+  quotas. Exceeding it returns the stored record as `budgetExceeded`, never an
+  error.
+- A refresh replaces the stored snapshot with the matched observation, as a
+  Swipe observation does. Fields the focused result lacks are not carried over
+  from the older record.
+- A quarantined catalog place can still be reported by id.
+
+**Acceptance.** `place_details_test.dart` (9 cases) covers the server side of
+requirement 10:
+
+- A fresh, complete record is served to two users with Discover off, with no
+  upstream request.
+- A missing-field check fetches once for Discover. The Swipe session read then
+  gets the refreshed record, with its own distance, and no second fetch. The
+  neighbouring observation is stored, and no category or coverage rows appear.
+  The session's snapshot, order and revision are unchanged, and Discover
+  `browse` shows the refreshed record without a request, across users and
+  modes.
+- A stale record with no match keeps its data and presents the stale view. It
+  cools down and is searched again after the cooldown.
+- Source failure and a busy provider keep the record.
+- A match that still lacks fields succeeds with those fields listed. It is not
+  searched again inside the freshness window, and is once stale.
+- Concurrent opens take one lease, expiring at the capped 10 s plus margin.
+  The second open answers `refreshing`, the third `notNeeded`, and one fetch
+  runs.
+- A 1-second policy deadline stops a slow source.
+- A user past the budget gets the record without a fetch, while another user
+  still refreshes it.
+- Identity and session validation; a quarantined record reachable only through
+  its session; a deck place missing from the catalog refreshed into the
+  catalog alone.
+
+`catalog_issue_report_test.dart` (5 cases):
+
+- Reports are unavailable with Discover off.
+- Reports are resolved on the server and retry safe: concurrent keys,
+  retries, dedupe and a conflicting body; unknown and invalid ids; no session
+  rows created.
+- Session and Discover reports share deduplication and the hourly quota.
+- Admin source, session and recurrence counts are correct, and a Discover
+  report can be claimed, resolved and reopened.
+- The storage constraint holds.
+
+Unit tests cover the migration files, `PlaceDetailView` and catalog request
+validation. `discovery_contract_test.dart` now expects `detailsAvailable` and
+`not_found`, not `feature_disabled`, from details with Discover off. The
+spatial test follows the latest migration id, and its Discover upgrade
+assertions stay pinned to M9-C.
+
+**Verification.** Pinned full preflight passed generation, formatting, all
+fatal-info analyses, 181 server tests, 279 app tests
+and 51 admin tests. `HAYER_TEST_DB_NAME=hayer_test_m9d
+scripts/test-integration-remote.sh` passed 101/101. The signed `0.2.1+7` APK
+is 107,122,415 bytes, verifies with APK Signature Scheme v2 and has SHA-256
+`eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f`. Graft was rebuilt.
+
+**Not verified.**
+
+- A live focused search against Google: the tests use a counting fixture
+  source, and the transport is M9-A's `fetchPage`, whose single-request
+  retrieval its unit test covers.
+- Production deployment.
+- The front end against a real server.
 
 ### M9-C catalog columns and discovery query — complete (2026-09-15)
 
@@ -872,6 +1046,34 @@ both manifests and APK Signature Scheme v2 verify. The backend-only change
 correctly leaves the APK bytes unchanged from the prior P06 build.
 
 ## Open handoffs to the front-end lane
+
+### M9-D details and catalog reports — implemented 2026-09-15
+
+`place.details` and `place.reportCatalogIssue` now run. The generated client
+gained only a doc comment on `details`; no signature or type changed. The settled behavior is in `backend/discovery-contracts.md`
+§"Details and reporting as implemented (M9-D)". Points that touch M9-H and
+M9-J:
+
+- `discoveryConfig.detailsAvailable` is now true whether or not Discover is
+  enabled. Once this server is deployed, H's Swipe sheet reads `place.details`
+  too.
+- A refresh takes at most 10 s, inside H's 15-second timeout.
+- `refreshing` means another request holds the refresh, and the answer carries
+  the stored record. H does not poll, which is fine.
+- `budgetExceeded` and `retryAfter` are ordinary results, not errors.
+- A stale result hides rating, reviews, price, hours, status, phone and
+  featured review. A Swipe sheet opened on a stale deck place therefore shows
+  fewer facts once details load than its card did. Whether to keep the card's
+  values under a stale notice is H's call.
+- Details errors: `bad_request`; `not_found` for an unknown place, or a
+  quarantined one without a session; `forbidden` outside the session.
+- A catalog report answers `feature_disabled` with Discover off, `not_found`
+  for an unknown catalog id, `conflict` for a reused key with another body and
+  `rate_limited` from the quota Swipe reports share. Reporting a place the
+  user already reported from Swipe, with the same type, returns that report's
+  id.
+- For J, `AdminPoiIssue.source` and `sessionId` are filled, and
+  `affectedSessionCount` can be 0.
 
 ### M9-C discovery query — implemented 2026-09-15
 

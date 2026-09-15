@@ -28,7 +28,8 @@ abstract final class DiscoveryContract {
     return DiscoveryConfig(
       contractVersion: 1,
       enabled: discovery.enabled,
-      detailsAvailable: false,
+      // Shared detail reads do not depend on the Discover flag.
+      detailsAvailable: true,
       policyRevision: policy.version,
       taxonomyRevision: taxonomy.revision,
       serverTime: now,

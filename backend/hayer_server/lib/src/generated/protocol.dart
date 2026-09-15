@@ -145,36 +145,37 @@ import 'storage/participant_row.dart' as _i129;
 import 'storage/poi_catalog_row.dart' as _i130;
 import 'storage/poi_category_row.dart' as _i131;
 import 'storage/poi_coverage_row.dart' as _i132;
-import 'storage/poi_issue_report_row.dart' as _i133;
-import 'storage/product_analytics_event_row.dart' as _i134;
-import 'storage/product_analytics_hour_row.dart' as _i135;
-import 'storage/rate_limit_row.dart' as _i136;
-import 'storage/refresh_job_row.dart' as _i137;
-import 'storage/session_place_row.dart' as _i138;
-import 'storage/swipe_row.dart' as _i139;
-import 'storage/taxonomy_version_row.dart' as _i140;
-import 'swipe_command.dart' as _i141;
-import 'taxonomy_canary_sample.dart' as _i142;
-import 'taxonomy_item.dart' as _i143;
-import 'taxonomy_kind.dart' as _i144;
-import 'taxonomy_snapshot.dart' as _i145;
-import 'taxonomy_status.dart' as _i146;
-import 'taxonomy_validation.dart' as _i147;
-import 'package:hayer_server/src/generated/location_suggestion.dart' as _i148;
+import 'storage/poi_detail_refresh_row.dart' as _i133;
+import 'storage/poi_issue_report_row.dart' as _i134;
+import 'storage/product_analytics_event_row.dart' as _i135;
+import 'storage/product_analytics_hour_row.dart' as _i136;
+import 'storage/rate_limit_row.dart' as _i137;
+import 'storage/refresh_job_row.dart' as _i138;
+import 'storage/session_place_row.dart' as _i139;
+import 'storage/swipe_row.dart' as _i140;
+import 'storage/taxonomy_version_row.dart' as _i141;
+import 'swipe_command.dart' as _i142;
+import 'taxonomy_canary_sample.dart' as _i143;
+import 'taxonomy_item.dart' as _i144;
+import 'taxonomy_kind.dart' as _i145;
+import 'taxonomy_snapshot.dart' as _i146;
+import 'taxonomy_status.dart' as _i147;
+import 'taxonomy_validation.dart' as _i148;
+import 'package:hayer_server/src/generated/location_suggestion.dart' as _i149;
 import 'package:hayer_server/src/generated/admin_discovery_taxonomy_version.dart'
-    as _i149;
-import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
     as _i150;
-import 'package:hayer_server/src/generated/admin_discovery_harvest_manifest_version.dart'
+import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
     as _i151;
-import 'package:hayer_server/src/generated/discovery_harvest_manifest_entry.dart'
+import 'package:hayer_server/src/generated/admin_discovery_harvest_manifest_version.dart'
     as _i152;
-import 'package:hayer_server/src/generated/admin_taxonomy_version.dart'
+import 'package:hayer_server/src/generated/discovery_harvest_manifest_entry.dart'
     as _i153;
-import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i154;
-import 'package:hayer_server/src/generated/metric_point.dart' as _i155;
-import 'package:hayer_server/src/generated/session_result.dart' as _i156;
-import 'dart:typed_data' as _i157;
+import 'package:hayer_server/src/generated/admin_taxonomy_version.dart'
+    as _i154;
+import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i155;
+import 'package:hayer_server/src/generated/metric_point.dart' as _i156;
+import 'package:hayer_server/src/generated/session_result.dart' as _i157;
+import 'dart:typed_data' as _i158;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -303,6 +304,7 @@ export 'storage/participant_row.dart';
 export 'storage/poi_catalog_row.dart';
 export 'storage/poi_category_row.dart';
 export 'storage/poi_coverage_row.dart';
+export 'storage/poi_detail_refresh_row.dart';
 export 'storage/poi_issue_report_row.dart';
 export 'storage/product_analytics_event_row.dart';
 export 'storage/product_analytics_hour_row.dart';
@@ -1913,6 +1915,127 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'hayer_poi_detail_refresh',
+      dartName: 'PoiDetailRefreshRow',
+      schema: 'public',
+      module: 'hayer',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'provider',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'providerPlaceId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'state',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:PlaceDetailRefreshState',
+        ),
+        _i2.ColumnDefinition(
+          name: 'leaseToken',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'leaseExpiresAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastAttemptAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastCheckedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastSuccessAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'retryAfter',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastFailureCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'attemptCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'hayer_poi_detail_refresh_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'hayer_poi_detail_refresh_identity',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'provider',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'providerPlaceId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'hayer_poi_issue_report',
       dartName: 'PoiIssueReportRow',
       schema: 'public',
@@ -1946,8 +2069,15 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'sessionId',
           columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'source',
+          columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'String',
+          dartType: 'protocol:PoiIssueSource',
+          columnDefault: '\'session\'::text',
         ),
         _i2.ColumnDefinition(
           name: 'placeId',
@@ -3816,50 +3946,53 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i132.PoiCoverageRow) {
       return _i132.PoiCoverageRow.fromJson(data) as T;
     }
-    if (t == _i133.PoiIssueReportRow) {
-      return _i133.PoiIssueReportRow.fromJson(data) as T;
+    if (t == _i133.PoiDetailRefreshRow) {
+      return _i133.PoiDetailRefreshRow.fromJson(data) as T;
     }
-    if (t == _i134.ProductAnalyticsEventRow) {
-      return _i134.ProductAnalyticsEventRow.fromJson(data) as T;
+    if (t == _i134.PoiIssueReportRow) {
+      return _i134.PoiIssueReportRow.fromJson(data) as T;
     }
-    if (t == _i135.ProductAnalyticsHourRow) {
-      return _i135.ProductAnalyticsHourRow.fromJson(data) as T;
+    if (t == _i135.ProductAnalyticsEventRow) {
+      return _i135.ProductAnalyticsEventRow.fromJson(data) as T;
     }
-    if (t == _i136.RateLimitRow) {
-      return _i136.RateLimitRow.fromJson(data) as T;
+    if (t == _i136.ProductAnalyticsHourRow) {
+      return _i136.ProductAnalyticsHourRow.fromJson(data) as T;
     }
-    if (t == _i137.RefreshJobRow) {
-      return _i137.RefreshJobRow.fromJson(data) as T;
+    if (t == _i137.RateLimitRow) {
+      return _i137.RateLimitRow.fromJson(data) as T;
     }
-    if (t == _i138.SessionPlaceRow) {
-      return _i138.SessionPlaceRow.fromJson(data) as T;
+    if (t == _i138.RefreshJobRow) {
+      return _i138.RefreshJobRow.fromJson(data) as T;
     }
-    if (t == _i139.SwipeRow) {
-      return _i139.SwipeRow.fromJson(data) as T;
+    if (t == _i139.SessionPlaceRow) {
+      return _i139.SessionPlaceRow.fromJson(data) as T;
     }
-    if (t == _i140.TaxonomyVersionRow) {
-      return _i140.TaxonomyVersionRow.fromJson(data) as T;
+    if (t == _i140.SwipeRow) {
+      return _i140.SwipeRow.fromJson(data) as T;
     }
-    if (t == _i141.SwipeCommand) {
-      return _i141.SwipeCommand.fromJson(data) as T;
+    if (t == _i141.TaxonomyVersionRow) {
+      return _i141.TaxonomyVersionRow.fromJson(data) as T;
     }
-    if (t == _i142.TaxonomyCanarySample) {
-      return _i142.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _i142.SwipeCommand) {
+      return _i142.SwipeCommand.fromJson(data) as T;
     }
-    if (t == _i143.TaxonomyItem) {
-      return _i143.TaxonomyItem.fromJson(data) as T;
+    if (t == _i143.TaxonomyCanarySample) {
+      return _i143.TaxonomyCanarySample.fromJson(data) as T;
     }
-    if (t == _i144.TaxonomyKind) {
-      return _i144.TaxonomyKind.fromJson(data) as T;
+    if (t == _i144.TaxonomyItem) {
+      return _i144.TaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i145.TaxonomySnapshot) {
-      return _i145.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i145.TaxonomyKind) {
+      return _i145.TaxonomyKind.fromJson(data) as T;
     }
-    if (t == _i146.TaxonomyStatus) {
-      return _i146.TaxonomyStatus.fromJson(data) as T;
+    if (t == _i146.TaxonomySnapshot) {
+      return _i146.TaxonomySnapshot.fromJson(data) as T;
     }
-    if (t == _i147.TaxonomyValidation) {
-      return _i147.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i147.TaxonomyStatus) {
+      return _i147.TaxonomyStatus.fromJson(data) as T;
+    }
+    if (t == _i148.TaxonomyValidation) {
+      return _i148.TaxonomyValidation.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.AdminAnalyticsOverview?>()) {
       return (data != null ? _i5.AdminAnalyticsOverview.fromJson(data) : null)
@@ -4347,59 +4480,63 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i132.PoiCoverageRow?>()) {
       return (data != null ? _i132.PoiCoverageRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i133.PoiIssueReportRow?>()) {
-      return (data != null ? _i133.PoiIssueReportRow.fromJson(data) : null)
+    if (t == _i1.getType<_i133.PoiDetailRefreshRow?>()) {
+      return (data != null ? _i133.PoiDetailRefreshRow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i134.ProductAnalyticsEventRow?>()) {
+    if (t == _i1.getType<_i134.PoiIssueReportRow?>()) {
+      return (data != null ? _i134.PoiIssueReportRow.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i135.ProductAnalyticsEventRow?>()) {
       return (data != null
-              ? _i134.ProductAnalyticsEventRow.fromJson(data)
+              ? _i135.ProductAnalyticsEventRow.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i135.ProductAnalyticsHourRow?>()) {
+    if (t == _i1.getType<_i136.ProductAnalyticsHourRow?>()) {
       return (data != null
-              ? _i135.ProductAnalyticsHourRow.fromJson(data)
+              ? _i136.ProductAnalyticsHourRow.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i136.RateLimitRow?>()) {
-      return (data != null ? _i136.RateLimitRow.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i137.RateLimitRow?>()) {
+      return (data != null ? _i137.RateLimitRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i137.RefreshJobRow?>()) {
-      return (data != null ? _i137.RefreshJobRow.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i138.RefreshJobRow?>()) {
+      return (data != null ? _i138.RefreshJobRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i138.SessionPlaceRow?>()) {
-      return (data != null ? _i138.SessionPlaceRow.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i139.SessionPlaceRow?>()) {
+      return (data != null ? _i139.SessionPlaceRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i139.SwipeRow?>()) {
-      return (data != null ? _i139.SwipeRow.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i140.SwipeRow?>()) {
+      return (data != null ? _i140.SwipeRow.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i140.TaxonomyVersionRow?>()) {
-      return (data != null ? _i140.TaxonomyVersionRow.fromJson(data) : null)
+    if (t == _i1.getType<_i141.TaxonomyVersionRow?>()) {
+      return (data != null ? _i141.TaxonomyVersionRow.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i141.SwipeCommand?>()) {
-      return (data != null ? _i141.SwipeCommand.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i142.SwipeCommand?>()) {
+      return (data != null ? _i142.SwipeCommand.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i142.TaxonomyCanarySample?>()) {
-      return (data != null ? _i142.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _i1.getType<_i143.TaxonomyCanarySample?>()) {
+      return (data != null ? _i143.TaxonomyCanarySample.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i143.TaxonomyItem?>()) {
-      return (data != null ? _i143.TaxonomyItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i144.TaxonomyItem?>()) {
+      return (data != null ? _i144.TaxonomyItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i144.TaxonomyKind?>()) {
-      return (data != null ? _i144.TaxonomyKind.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i145.TaxonomyKind?>()) {
+      return (data != null ? _i145.TaxonomyKind.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i145.TaxonomySnapshot?>()) {
-      return (data != null ? _i145.TaxonomySnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i146.TaxonomySnapshot?>()) {
+      return (data != null ? _i146.TaxonomySnapshot.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i146.TaxonomyStatus?>()) {
-      return (data != null ? _i146.TaxonomyStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i147.TaxonomyStatus?>()) {
+      return (data != null ? _i147.TaxonomyStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i147.TaxonomyValidation?>()) {
-      return (data != null ? _i147.TaxonomyValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i148.TaxonomyValidation?>()) {
+      return (data != null ? _i148.TaxonomyValidation.fromJson(data) : null)
           as T;
     }
     if (t == List<_i26.AnalyticsKpi>) {
@@ -4639,72 +4776,72 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i143.TaxonomyItem>) {
+    if (t == List<_i144.TaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i143.TaxonomyItem>(e))
+              .map((e) => deserialize<_i144.TaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i142.TaxonomyCanarySample>) {
+    if (t == List<_i143.TaxonomyCanarySample>) {
       return (data as List)
-              .map((e) => deserialize<_i142.TaxonomyCanarySample>(e))
+              .map((e) => deserialize<_i143.TaxonomyCanarySample>(e))
               .toList()
           as T;
     }
-    if (t == List<_i148.LocationSuggestion>) {
+    if (t == List<_i149.LocationSuggestion>) {
       return (data as List)
-              .map((e) => deserialize<_i148.LocationSuggestion>(e))
+              .map((e) => deserialize<_i149.LocationSuggestion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i149.AdminDiscoveryTaxonomyVersion>) {
+    if (t == List<_i150.AdminDiscoveryTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i149.AdminDiscoveryTaxonomyVersion>(e))
+              .map((e) => deserialize<_i150.AdminDiscoveryTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i150.DiscoveryTaxonomyNode>) {
+    if (t == List<_i151.DiscoveryTaxonomyNode>) {
       return (data as List)
-              .map((e) => deserialize<_i150.DiscoveryTaxonomyNode>(e))
+              .map((e) => deserialize<_i151.DiscoveryTaxonomyNode>(e))
               .toList()
           as T;
     }
-    if (t == List<_i151.AdminDiscoveryHarvestManifestVersion>) {
+    if (t == List<_i152.AdminDiscoveryHarvestManifestVersion>) {
       return (data as List)
               .map(
                 (e) =>
-                    deserialize<_i151.AdminDiscoveryHarvestManifestVersion>(e),
+                    deserialize<_i152.AdminDiscoveryHarvestManifestVersion>(e),
               )
               .toList()
           as T;
     }
-    if (t == List<_i152.DiscoveryHarvestManifestEntry>) {
+    if (t == List<_i153.DiscoveryHarvestManifestEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i152.DiscoveryHarvestManifestEntry>(e))
+              .map((e) => deserialize<_i153.DiscoveryHarvestManifestEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i153.AdminTaxonomyVersion>) {
+    if (t == List<_i154.AdminTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i153.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_i154.AdminTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i154.AdminTaxonomyItem>) {
+    if (t == List<_i155.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i154.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i155.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i155.MetricPoint>) {
+    if (t == List<_i156.MetricPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i155.MetricPoint>(e))
+              .map((e) => deserialize<_i156.MetricPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i156.SessionResult>) {
+    if (t == List<_i157.SessionResult>) {
       return (data as List)
-              .map((e) => deserialize<_i156.SessionResult>(e))
+              .map((e) => deserialize<_i157.SessionResult>(e))
               .toList()
           as T;
     }
@@ -4717,9 +4854,9 @@ class Protocol extends _i1.SerializationManagerServer {
           )
           as T;
     }
-    if (t == _i1.getType<({_i157.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i158.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i157.ByteData>(
+            challenge: deserialize<_i158.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -4870,21 +5007,22 @@ class Protocol extends _i1.SerializationManagerServer {
       _i130.PoiCatalogRow => 'PoiCatalogRow',
       _i131.PoiCategoryRow => 'PoiCategoryRow',
       _i132.PoiCoverageRow => 'PoiCoverageRow',
-      _i133.PoiIssueReportRow => 'PoiIssueReportRow',
-      _i134.ProductAnalyticsEventRow => 'ProductAnalyticsEventRow',
-      _i135.ProductAnalyticsHourRow => 'ProductAnalyticsHourRow',
-      _i136.RateLimitRow => 'RateLimitRow',
-      _i137.RefreshJobRow => 'RefreshJobRow',
-      _i138.SessionPlaceRow => 'SessionPlaceRow',
-      _i139.SwipeRow => 'SwipeRow',
-      _i140.TaxonomyVersionRow => 'TaxonomyVersionRow',
-      _i141.SwipeCommand => 'SwipeCommand',
-      _i142.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i143.TaxonomyItem => 'TaxonomyItem',
-      _i144.TaxonomyKind => 'TaxonomyKind',
-      _i145.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i146.TaxonomyStatus => 'TaxonomyStatus',
-      _i147.TaxonomyValidation => 'TaxonomyValidation',
+      _i133.PoiDetailRefreshRow => 'PoiDetailRefreshRow',
+      _i134.PoiIssueReportRow => 'PoiIssueReportRow',
+      _i135.ProductAnalyticsEventRow => 'ProductAnalyticsEventRow',
+      _i136.ProductAnalyticsHourRow => 'ProductAnalyticsHourRow',
+      _i137.RateLimitRow => 'RateLimitRow',
+      _i138.RefreshJobRow => 'RefreshJobRow',
+      _i139.SessionPlaceRow => 'SessionPlaceRow',
+      _i140.SwipeRow => 'SwipeRow',
+      _i141.TaxonomyVersionRow => 'TaxonomyVersionRow',
+      _i142.SwipeCommand => 'SwipeCommand',
+      _i143.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _i144.TaxonomyItem => 'TaxonomyItem',
+      _i145.TaxonomyKind => 'TaxonomyKind',
+      _i146.TaxonomySnapshot => 'TaxonomySnapshot',
+      _i147.TaxonomyStatus => 'TaxonomyStatus',
+      _i148.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -5155,35 +5293,37 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'PoiCategoryRow';
       case _i132.PoiCoverageRow():
         return 'PoiCoverageRow';
-      case _i133.PoiIssueReportRow():
+      case _i133.PoiDetailRefreshRow():
+        return 'PoiDetailRefreshRow';
+      case _i134.PoiIssueReportRow():
         return 'PoiIssueReportRow';
-      case _i134.ProductAnalyticsEventRow():
+      case _i135.ProductAnalyticsEventRow():
         return 'ProductAnalyticsEventRow';
-      case _i135.ProductAnalyticsHourRow():
+      case _i136.ProductAnalyticsHourRow():
         return 'ProductAnalyticsHourRow';
-      case _i136.RateLimitRow():
+      case _i137.RateLimitRow():
         return 'RateLimitRow';
-      case _i137.RefreshJobRow():
+      case _i138.RefreshJobRow():
         return 'RefreshJobRow';
-      case _i138.SessionPlaceRow():
+      case _i139.SessionPlaceRow():
         return 'SessionPlaceRow';
-      case _i139.SwipeRow():
+      case _i140.SwipeRow():
         return 'SwipeRow';
-      case _i140.TaxonomyVersionRow():
+      case _i141.TaxonomyVersionRow():
         return 'TaxonomyVersionRow';
-      case _i141.SwipeCommand():
+      case _i142.SwipeCommand():
         return 'SwipeCommand';
-      case _i142.TaxonomyCanarySample():
+      case _i143.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i143.TaxonomyItem():
+      case _i144.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i144.TaxonomyKind():
+      case _i145.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i145.TaxonomySnapshot():
+      case _i146.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i146.TaxonomyStatus():
+      case _i147.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i147.TaxonomyValidation():
+      case _i148.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -5593,50 +5733,53 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'PoiCoverageRow') {
       return deserialize<_i132.PoiCoverageRow>(data['data']);
     }
+    if (dataClassName == 'PoiDetailRefreshRow') {
+      return deserialize<_i133.PoiDetailRefreshRow>(data['data']);
+    }
     if (dataClassName == 'PoiIssueReportRow') {
-      return deserialize<_i133.PoiIssueReportRow>(data['data']);
+      return deserialize<_i134.PoiIssueReportRow>(data['data']);
     }
     if (dataClassName == 'ProductAnalyticsEventRow') {
-      return deserialize<_i134.ProductAnalyticsEventRow>(data['data']);
+      return deserialize<_i135.ProductAnalyticsEventRow>(data['data']);
     }
     if (dataClassName == 'ProductAnalyticsHourRow') {
-      return deserialize<_i135.ProductAnalyticsHourRow>(data['data']);
+      return deserialize<_i136.ProductAnalyticsHourRow>(data['data']);
     }
     if (dataClassName == 'RateLimitRow') {
-      return deserialize<_i136.RateLimitRow>(data['data']);
+      return deserialize<_i137.RateLimitRow>(data['data']);
     }
     if (dataClassName == 'RefreshJobRow') {
-      return deserialize<_i137.RefreshJobRow>(data['data']);
+      return deserialize<_i138.RefreshJobRow>(data['data']);
     }
     if (dataClassName == 'SessionPlaceRow') {
-      return deserialize<_i138.SessionPlaceRow>(data['data']);
+      return deserialize<_i139.SessionPlaceRow>(data['data']);
     }
     if (dataClassName == 'SwipeRow') {
-      return deserialize<_i139.SwipeRow>(data['data']);
+      return deserialize<_i140.SwipeRow>(data['data']);
     }
     if (dataClassName == 'TaxonomyVersionRow') {
-      return deserialize<_i140.TaxonomyVersionRow>(data['data']);
+      return deserialize<_i141.TaxonomyVersionRow>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i141.SwipeCommand>(data['data']);
+      return deserialize<_i142.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i142.TaxonomyCanarySample>(data['data']);
+      return deserialize<_i143.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i143.TaxonomyItem>(data['data']);
+      return deserialize<_i144.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i144.TaxonomyKind>(data['data']);
+      return deserialize<_i145.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i145.TaxonomySnapshot>(data['data']);
+      return deserialize<_i146.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i146.TaxonomyStatus>(data['data']);
+      return deserialize<_i147.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i147.TaxonomyValidation>(data['data']);
+      return deserialize<_i148.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -5698,22 +5841,24 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i131.PoiCategoryRow.t;
       case _i132.PoiCoverageRow:
         return _i132.PoiCoverageRow.t;
-      case _i133.PoiIssueReportRow:
-        return _i133.PoiIssueReportRow.t;
-      case _i134.ProductAnalyticsEventRow:
-        return _i134.ProductAnalyticsEventRow.t;
-      case _i135.ProductAnalyticsHourRow:
-        return _i135.ProductAnalyticsHourRow.t;
-      case _i136.RateLimitRow:
-        return _i136.RateLimitRow.t;
-      case _i137.RefreshJobRow:
-        return _i137.RefreshJobRow.t;
-      case _i138.SessionPlaceRow:
-        return _i138.SessionPlaceRow.t;
-      case _i139.SwipeRow:
-        return _i139.SwipeRow.t;
-      case _i140.TaxonomyVersionRow:
-        return _i140.TaxonomyVersionRow.t;
+      case _i133.PoiDetailRefreshRow:
+        return _i133.PoiDetailRefreshRow.t;
+      case _i134.PoiIssueReportRow:
+        return _i134.PoiIssueReportRow.t;
+      case _i135.ProductAnalyticsEventRow:
+        return _i135.ProductAnalyticsEventRow.t;
+      case _i136.ProductAnalyticsHourRow:
+        return _i136.ProductAnalyticsHourRow.t;
+      case _i137.RateLimitRow:
+        return _i137.RateLimitRow.t;
+      case _i138.RefreshJobRow:
+        return _i138.RefreshJobRow.t;
+      case _i139.SessionPlaceRow:
+        return _i139.SessionPlaceRow.t;
+      case _i140.SwipeRow:
+        return _i140.SwipeRow.t;
+      case _i141.TaxonomyVersionRow:
+        return _i141.TaxonomyVersionRow.t;
     }
     return null;
   }
@@ -5742,7 +5887,7 @@ class Protocol extends _i1.SerializationManagerServer {
         },
       };
     }
-    if (record is ({_i157.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i158.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),

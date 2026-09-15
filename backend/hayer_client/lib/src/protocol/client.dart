@@ -948,6 +948,8 @@ class EndpointPlace extends _i1.EndpointRef {
   @override
   String get name => 'place';
 
+  /// Shared place details for Swipe and Discover. Available whether or not
+  /// Discover is enabled.
   _i2.Future<_i59.PlaceDetailResult> details({
     required _i47.PoiIdentity identity,
     String? sessionId,

@@ -11,6 +11,7 @@ import '../generated/protocol.dart';
 import '../security/rate_limiter.dart';
 import 'discovery_cursor.dart';
 import 'place_availability.dart';
+import 'place_detail_view.dart';
 
 /// The canonical PostgreSQL read path for Discover.
 ///
@@ -885,9 +886,7 @@ CASE
     return DiscoverPlace(
       catalogId: _integer(row['catalogId']),
       provider: row['provider']! as String,
-      place: row['fresh'] == true
-          ? snapshot.copyWith(isStale: false)
-          : _staleSnapshot(snapshot),
+      place: PlaceDetailView.present(snapshot, fresh: row['fresh'] == true),
       ordinal: ordinal,
       firstSeenAt: DateTime.fromMicrosecondsSinceEpoch(
         _integer(row['firstSeenAtMicros']),
@@ -897,20 +896,6 @@ CASE
       openNow: row['openNow'] as bool?,
     );
   }
-
-  /// The same suppression as Swipe's `PlaceSearchPolicy` stale snapshot.
-  static PlaceSnapshot _staleSnapshot(PlaceSnapshot place) => place.copyWith(
-    rating: null,
-    reviewCount: null,
-    priceLevel: null,
-    priceText: null,
-    isOpen: null,
-    statusText: null,
-    hours: const [],
-    phoneNumber: null,
-    featuredReview: null,
-    isStale: true,
-  );
 
   static DiscoveryMapPayload? _mapPayload(Object? raw) {
     if (raw == null) return null;

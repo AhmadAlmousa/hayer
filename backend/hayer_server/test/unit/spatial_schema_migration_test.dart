@@ -4,7 +4,8 @@ import 'package:test/test.dart';
 
 void main() {
   const migrationId = '20260901083702427-spatial-schema-repair';
-  const latestMigrationId = '20260914142952104-discovery-catalog-query';
+  const latestMigrationId = '20260915070806721-shared-detail-reporting';
+  const discoveryMigrationId = '20260914142952104-discovery-catalog-query';
   final migrationDirectory = Directory('migrations/$migrationId');
 
   group('spatial schema migration', () {
@@ -58,9 +59,9 @@ void main() {
       );
     });
 
-    test('current upgrade adds guarded Discover projections', () async {
+    test('the Discover upgrade adds guarded projections', () async {
       final sql = await File(
-        'migrations/$latestMigrationId/migration.sql',
+        'migrations/$discoveryMigrationId/migration.sql',
       ).readAsString();
 
       expect(

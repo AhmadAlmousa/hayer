@@ -13,9 +13,11 @@ on `main` (`d4b58b7`). Bring the frontend lane forward with
 revisions. `discover.taxonomy` (M9-B) and `browse`, `facets` and `placeContext`
 (M9-C) are implemented against the PostgreSQL catalog, but like every
 discovery method they return `ApiException(code: 'feature_disabled')` while
-the policy's `discoveryEnabled` is false. Detail refresh, catalog reporting,
-harvesting and the M9-E admin reads still return `feature_disabled`
-unconditionally. Enabling discovery remains the M9-K release decision.
+the policy's `discoveryEnabled` is false. So does `place.reportCatalogIssue`,
+implemented in M9-D. `place.details` (M9-D) answers in both modes whatever the
+flag, and `discoveryConfig.detailsAvailable` is true. Harvesting and the M9-E
+admin reads still return `feature_disabled` unconditionally. Enabling
+discovery remains the M9-K release decision.
 
 The implementation requirements remain in [the plan](../discovery_upgrade.md).
 Both modes must use the same Vela-derived non-API search adapter, cache-first
@@ -274,6 +276,50 @@ and `countryCode`. Prefer locality, then city, for the short area label; do not
 parse the formatted line by comma position. The existing string-returning
 `place.reverseGeocode` remains available to older consumers.
 
+### Details and reporting as implemented (M9-D)
+
+- **Availability.** `place.details` never answers `feature_disabled`, and
+  `detailsAvailable` is true. `place.reportCatalogIssue` answers
+  `feature_disabled` while Discover is off.
+- **Identity.** The provider is `google-web`. A blank or over-long identity,
+  or a session id outside 1–128 characters, is `bad_request`. Without a
+  session, the catalog must hold the place unquarantined, otherwise
+  `not_found`. With a session, a non-participant gets `forbidden` and a place
+  outside that deck `not_found`. A quarantined place stays readable from a
+  session that shows it.
+- **Refreshing.** The read searches the provider only when the record is stale
+  under the policy's `freshHours`, or has missing fields not checked within
+  that window, and no cooldown is running. It then makes one focused search of
+  at most 10 seconds, after which the answer returns.
+- **States.** `notNeeded`: nothing was searched. `refreshing`: another request
+  holds this place's refresh, and the answer is the stored record.
+  `succeeded`: an exact provider id match updated the record. `noMatch` and
+  `failed`: the record is unchanged. `budgetExceeded`: the shared provider
+  queue was busy or this user started 30 refreshes in the hour. None of these
+  is an error.
+- **Timestamps.** `retryAfter` is set while a cooldown runs: the policy's
+  `cooldownMinutes` after no match, a failure or a match still missing fields,
+  and a minute after a busy queue. `lastAttemptAt` and `lastSuccessAt` are
+  shared by every user and mode.
+- **Staleness.** A stale record hides the same fields as a stale Swipe card or
+  Discover result: rating, reviews, price, hours, status, phone and featured
+  review. `stale` and `place.isStale` are both true, and
+  `place.sourceCheckedAt` is the last real observation.
+- **Missing fields.** `missingFields` lists what the returned place cannot
+  show: photos, hours, phone, website, price (neither level nor text) and
+  description. Hidden stale fields count as missing.
+- **Distance.** With a session, `place.distanceMeters` is the deck's distance
+  from the session anchor. Without one it is not meaningful.
+- **Reports.** The server resolves the place from `catalogId`; an unknown id
+  is `not_found`, and zero or less, a retry key outside 8–128 characters or
+  invalid details are `bad_request`. Reusing a key with another body is
+  `conflict` in either mode. Swipe and Discover reports share one active
+  report per reporter, place and type, so they return the same report id,
+  and they share the quotas behind `rate_limited`.
+- **Admin.** `AdminPoiIssue.source` is `discovery` with a null `sessionId`
+  for Discover reports. `affectedSessionCount` counts sessions only and can
+  be 0.
+
 ## Admin and implementation boundaries
 
 Admin methods are `discoveryTaxonomyDraft()`, `discoveryTaxonomyHistory()`,
@@ -366,6 +412,5 @@ All new errors use the existing `ApiException` envelope and optional
 wait. The implementation contract reserves `bad_request` for invalid filters,
 `invalid_area` for invalid/oversized bounds, `unsupported_area` for unsupported
 coverage and `not_found`/`forbidden` for identity/authorization failures.
-Only `feature_disabled` and existing authentication/authorization failures
-are currently exercised; the future query and provider behavior needs its own
-PostGIS and cross-mode acceptance tests.
+M9-C's query and M9-D's detail and report behavior have PostGIS and cross-mode
+acceptance tests. Harvesting's provider behavior (M9-E) still needs its own.
