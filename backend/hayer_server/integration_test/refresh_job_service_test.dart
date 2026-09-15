@@ -243,6 +243,9 @@ Future<void> _resetTables(TestSessionBuilder sessionBuilder) async {
 TRUNCATE TABLE
   "hayer_refresh_job",
   "hayer_poi_coverage",
+  "hayer_discovery_type_observation",
+  "hayer_discovery_harvest",
+  "hayer_discovery_coverage",
   "hayer_taxonomy_version"
 CASCADE
 ''');

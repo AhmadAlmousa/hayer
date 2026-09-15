@@ -686,6 +686,10 @@ TRUNCATE TABLE
   "hayer_poi_category",
   "hayer_poi_coverage",
   "hayer_poi_catalog",
+  "hayer_poi_detail_refresh",
+  "hayer_discovery_type_observation",
+  "hayer_discovery_harvest",
+  "hayer_discovery_coverage",
   "hayer_cache_settings",
   "hayer_taxonomy_version"
 CASCADE

@@ -347,8 +347,47 @@ class CatalogPlaceService {
         freshHours: settings.freshHours,
         partialFailureCode: live.partialFailureCode,
       );
+      // The provider can still return a place operators quarantined. Keep it
+      // out of new decks, as the cache does, by choosing from the fresh
+      // catalog rows this refresh just wrote.
+      var deck = live.deck;
+      if (deck.isNotEmpty &&
+          await PoiCatalogRow.db.count(
+                session,
+                where: (table) =>
+                    table.provider.equals('google-web') &
+                    table.providerPlaceId.inSet({
+                      for (final place in deck) place.placeId,
+                    }) &
+                    table.quarantinedAt.notEquals(null),
+              ) >
+              0) {
+        final freshAfter = now.subtract(Duration(hours: settings.freshHours));
+        final nearby = await _nearbyCatalog(
+          session,
+          latitude: latitude,
+          longitude: longitude,
+          radiusMeters: radiusMeters,
+          countryCode: countryCode,
+          seenAfter: now.subtract(Duration(days: settings.staleFallbackDays)),
+          requiredCategoryIds: subcategoryIds.isEmpty
+              ? {categoryId}
+              : subcategoryIds.toSet(),
+          maximumPriceLevel: maximumPriceLevel,
+        );
+        deck = policy.select(
+          candidates: nearby
+              .where((place) => !place.sourceCheckedAt.isBefore(freshAfter))
+              .toList(growable: false),
+          anchorLatitude: latitude,
+          anchorLongitude: longitude,
+          radiusMeters: radiusMeters,
+          deckSize: deckSize,
+          maximumPriceLevel: maximumPriceLevel,
+        );
+      }
       return _LiveCatalogRefresh(
-        deck: live.deck,
+        deck: deck,
         partialFailureCode: live.partialFailureCode,
       );
     } finally {

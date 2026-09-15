@@ -76,8 +76,92 @@ Last updated: 2026-09-15
   deduplicated harvest per canonical cell through the shared source and
   writer; coverage, the broad-query manifest and the admin job, unmapped-type
   and growth reads are live behind the flag.
+- M9-K's back-end half is done. The cross-user, cross-mode loop is proven
+  against PostGIS by upstream request counts, and a live Swipe refresh no
+  longer returns quarantined places. The Swipe suites reset every new table.
+  The joint checkpoint stays open for the device, web and owner items.
 
 ## Checkpoints
+
+### M9-K back-end verification — cross-mode loop and cleanup (2026-09-15)
+
+The owner gave the go-ahead for M9-K on 2026-09-15. This entry is the
+back-end half of that joint checkpoint. M9-K itself stays open; see "Still
+open" below.
+
+**Cross-mode loop.** `integration_test/discovery_cross_mode_test.dart` (3
+cases) runs architecture item 7 against PostGIS. Its Swipe, harvest and detail
+sources each spend one upstream request per call through `ProviderOperation`.
+Each case therefore compares request counts, and the growth metrics recorded
+for each mode, rather than UI output.
+
+- **Swipe to Discover.** One Swipe search stores all five observations, not
+  only its two-card deck. A known place keeps its first sighting, and a
+  quarantined one stays quarantined. Another user's Discover view lists the
+  four eligible places with no provider request. That user's committed search
+  counts them before any harvest runs, and their matching Swipe search is a
+  cache hit. The metrics show Swipe search requests equal to the source's
+  calls, one miss, one hit, three new places, and no harvest.
+- **Discover to Swipe.** A Swipe search in area A comes first, then a cold
+  committed search in area B, 5 km away. The harvest spends one request per
+  manifest and compatibility query. A repeat committed search and `browse`
+  spend none, and places found only by broad queries are listed. A matching
+  Swipe search in B reads the compatibility place from cache without a
+  request. The catalog holds both areas. The metrics show one explored cell,
+  Swipe search and Discover harvest requests each equal to their source's
+  calls, and one committed-search miss and one hit.
+- **Details.** A refresh opened from a Swipe session updates the record
+  another user then reads in Discover details and `browse`. A refresh opened
+  from Discover serves the Swipe session the same way. Each refresh takes one
+  provider request. The session keeps its own snapshots, order and revision.
+  Each mode records one detail refresh, one request, one hit and one miss.
+
+The Swipe side enters at `CatalogPlaceService`, the service `hayerSession.create`
+builds around the active calibration's source, because the endpoint has no
+source seam.
+
+**Defect found and fixed: quarantine on live Swipe refreshes.** The first run
+of the Swipe-to-Discover case failed. A place operators had quarantined came
+back in a live Swipe deck when the provider returned it again. The cache path
+(`_nearbyCatalog`), shortlists, Discover and details all exclude quarantined
+places, but `CatalogPlaceService._refresh` returned `PlaceSearchService`'s deck
+unfiltered. After persisting, the refresh now checks the deck against the
+catalog. Only when a deck place is quarantined does it choose the deck from
+the fresh catalog rows the refresh just wrote, as a cache hit would.
+Observations are still stored, and keep their quarantine. The gap predates M9,
+and Swipe's behavior changes only in that case. The existing Swipe suites pass
+with their assertions unchanged.
+
+**Cleanup.** The Swipe suites now reset the new tables too:
+
+- catalog persistence and the session endpoint truncate
+  `hayer_poi_detail_refresh`, `hayer_discovery_type_observation`,
+  `hayer_discovery_harvest` and `hayer_discovery_coverage`;
+- refresh jobs truncate the last three.
+
+No suite's isolation depends on file order any more. Only the reset lists
+changed, not assertions; the Discover suites already reset their own tables.
+After a full run every new table is empty. The header of
+`scripts/test-integration-remote.sh` now lists what the suite truncates.
+
+**Load.** Queue delay and Swipe latency under harvest load are M9-E's
+simulated-latency benchmark
+(`benchmark/results/2026-09-15-harvest-load-*.txt`). Real provider latency
+needs production traffic.
+
+**Verification.** `HAYER_TEST_DB_NAME=hayer_test_m9e
+scripts/test-integration-remote.sh` passed 118/118. The 199 server unit tests
+pass and fatal-info analysis is clean. The full preflight and the signed APK
+run at the integrated commit, together with the front-end half.
+
+**Still open for M9-K.**
+
+- The front-end half: device checks, and web direct navigation and history.
+- The gates at the integrated commit.
+- The owner's review of the Best-formula comparison, the harvest budgets and
+  the latency measurements. The Riyadh formula comparison needs real catalog
+  data that this host does not have.
+- Enabling `discoveryEnabled` for a canary, which is the owner's decision.
 
 ### M9-E harvesting and coverage — complete (2026-09-15)
 
