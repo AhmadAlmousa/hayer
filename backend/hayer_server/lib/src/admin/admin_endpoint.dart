@@ -5,6 +5,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../analytics/analytics_query_service.dart';
 import 'admin_audit_writer.dart';
+import 'admin_catalog_reads.dart';
 import 'admin_authorization.dart';
 import 'admin_gateway_access.dart';
 import 'poi_issue_moderation_service.dart';
@@ -808,6 +809,41 @@ class AdminEndpoint extends Endpoint {
       page: safePage,
       pageSize: safeSize,
     );
+  }
+
+  /// A page of catalog places matching [query], in its order, with the
+  /// commonest primary types among them.
+  Future<AdminCatalogPage> catalogPlaces(
+    Session session, {
+    required AdminCatalogQuery query,
+    required int page,
+    required int pageSize,
+  }) async {
+    await _authorize(session);
+    return AdminCatalogReads.page(
+      session,
+      query: query,
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+
+  /// Catalog place density over the query's map bounds, for the heat map.
+  Future<AdminCatalogHeatmap> catalogHeatmap(
+    Session session, {
+    required AdminCatalogQuery query,
+  }) async {
+    await _authorize(session);
+    return AdminCatalogReads.heatmap(session, query: query);
+  }
+
+  /// Everything the catalog holds about one place.
+  Future<AdminCatalogPlaceDetail> catalogPlace(
+    Session session, {
+    required int catalogId,
+  }) async {
+    await _authorize(session);
+    return AdminCatalogReads.detail(session, catalogId: catalogId);
   }
 
   Future<CoveragePage> coverage(

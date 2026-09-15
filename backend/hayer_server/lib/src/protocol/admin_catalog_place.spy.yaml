@@ -1,0 +1,26 @@
+# One catalog place as the admin list shows it.
+class: AdminCatalogPlace
+fields:
+  catalogId: int
+  provider: String
+  placeId: String
+  name: String
+  primaryType: String?
+  categoryIds: List<String>
+  countryCode: String
+  latitude: double
+  longitude: double
+  rating: double?
+  reviewCount: int?
+  priceLevel: int?
+  lifecycle: AdminCatalogLifecycle
+  missing: List<AdminCatalogField>
+  # When the catalog first stored the place.
+  firstSeenAt: DateTime
+  # When a search or harvest last returned it.
+  lastSeenAt: DateTime
+  # When the provider last confirmed the cached record.
+  sourceCheckedAt: DateTime
+  isStale: bool
+  quarantinedAt: DateTime?
+  openReportCount: int

@@ -1,0 +1,24 @@
+# Area, filters and order for the admin catalog list and heat map.
+class: AdminCatalogQuery
+fields:
+  # Only places inside these bounds. Null covers the whole catalog; the heat
+  # map requires bounds.
+  viewport: DiscoverViewport?
+  # Matches the name, the provider place id or the catalog id.
+  search: String?
+  sort: AdminCatalogSort
+  descending: bool
+  status: AdminCatalogStatus
+  freshness: AdminCatalogFreshness
+  lifecycle: AdminCatalogLifecycle?
+  # The provider's primary type, exactly as cached.
+  primaryType: String?
+  categoryId: String?
+  minimumRating: double?
+  minimumReviews: int?
+  priceLevels: List<int>?
+  # Places missing every listed field.
+  missing: List<AdminCatalogField>?
+  # Only places with an open or in-review issue report.
+  withOpenReports: bool
+  firstSeenAfter: DateTime?

@@ -1,0 +1,7 @@
+# Whether a place's source check is inside the cache policy's freshness window.
+enum: AdminCatalogFreshness
+serialized: byName
+values:
+  - any
+  - fresh
+  - stale

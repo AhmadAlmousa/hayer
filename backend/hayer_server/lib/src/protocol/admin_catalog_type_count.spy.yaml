@@ -1,0 +1,4 @@
+class: AdminCatalogTypeCount
+fields:
+  primaryType: String
+  count: int

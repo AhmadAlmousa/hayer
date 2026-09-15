@@ -1,0 +1,7 @@
+# Closure as the catalog derives it from the cached status text.
+enum: AdminCatalogLifecycle
+serialized: byName
+values:
+  - notClosed
+  - temporarilyClosed
+  - permanentlyClosed

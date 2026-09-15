@@ -1,0 +1,10 @@
+# The column the admin catalog list is ordered by.
+enum: AdminCatalogSort
+serialized: byName
+values:
+  - lastSeen
+  - firstSeen
+  - sourceChecked
+  - name
+  - rating
+  - reviewCount

@@ -1,0 +1,18 @@
+# Everything the catalog holds about one place.
+class: AdminCatalogPlaceDetail
+fields:
+  place: AdminCatalogPlace
+  snapshot: PlaceSnapshot
+  calibrationVersion: String
+  quarantineReason: String?
+  categoryEvidence: List<AdminCatalogCategoryEvidence>
+  detailRefresh: AdminCatalogDetailRefresh?
+  reportCount: int
+  recentReports: List<AdminCatalogReport>
+  # Swipe decks still stored that include the place.
+  deckAppearances: int
+  # Hourly analytics over the last 90 days.
+  likes: int
+  dislikes: int
+  cardImpressions: int
+  generatedAt: DateTime

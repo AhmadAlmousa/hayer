@@ -1,0 +1,10 @@
+# Optional cached fields the catalog tracks in its completeness mask.
+enum: AdminCatalogField
+serialized: byName
+values:
+  - photos
+  - hours
+  - phone
+  - website
+  - price
+  - summary

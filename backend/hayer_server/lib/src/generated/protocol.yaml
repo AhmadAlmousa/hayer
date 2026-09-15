@@ -28,6 +28,9 @@ admin:
   - rollbackTaxonomy:
   - summary:
   - catalog:
+  - catalogPlaces:
+  - catalogHeatmap:
+  - catalogPlace:
   - coverage:
   - refreshJobs:
   - poiIssues:

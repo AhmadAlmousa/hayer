@@ -1,0 +1,6 @@
+class: AdminCatalogCategoryEvidence
+fields:
+  categoryId: String
+  evidenceQuery: String
+  firstSeenAt: DateTime
+  lastSeenAt: DateTime
