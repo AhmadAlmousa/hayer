@@ -16,7 +16,7 @@ other's. From 2026-09-15 Claude holds both lanes, by owner assignment, until
 Codex returns. Back-end work is still logged in `lane-backend.md` on `main`,
 and this log gets a short pointer for each back-end checkpoint.
 
-Last updated: 2026-09-16
+Last updated: 2026-09-17
 
 ## Current state
 
@@ -37,8 +37,9 @@ Last updated: 2026-09-16
   coverage and the M9-E admin reads are implemented too (M9-E,
   `7429e03`), harvesting behind the flag. `main` was merged into this branch
   as `060a472` for M9-K. Its back-end half (`c7ad9ee`), the Got time privacy
-  copy and an Arabic 200% text pass are done; device, web-host and owner
-  items remain. M9-G, H and J are accepted against the real implementations,
+  copy and an Arabic 200% text pass are done. On 2026-09-17 the web half found
+  and fixed a defect that stopped every browser deep link reaching the router;
+  a live host proof, the device checks and the owner items remain. M9-G, H and J are accepted against the real implementations,
   with their device checks carried by M9-K. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
@@ -208,6 +209,66 @@ fatal-info analyses, 199 server tests, 367 app tests and
 73 admin tests. The signed `0.2.1+7` APK is 106,926,159 bytes,
 verifies with APK Signature Scheme v2 and has SHA-256 `9a908507ad0cd86020b1f81f60e0a8a0651ebaa49cc16eacf3ffd277da126a20`, unchanged from M9-K because only tests and admin changed,. The
 server did not change, so the PostGIS suite's 118/118 at `cfed0e9` stands.
+
+### M9-K web links — defect found and fixed (2026-09-17)
+
+M9-K's web half was recorded as blocked on the gateway deployment. Docker is
+unavailable here, so the gateway was reproduced instead: the app built the way
+`Dockerfile.production` builds it (`--release --wasm --base-href /app/`),
+served through a replica of `backend/deploy/nginx.conf`'s rules, and driven in
+headless Chrome over CDP.
+
+**No deep link survived.** `/discover?…`, `/app/discover?…`, `/join/ABC-123`
+and `/app/saved` all collapsed to `/app/` within about 0.2 s, losing path and
+query. A shared Got time link landed on plain home: not opened, not kept, not
+noticed. `/app/join/ABC-123` showed home rather than the join form, so this
+predates Discover and is not specific to it.
+
+**Cause.** `main` calls `usePathUrlStrategy()`, then `StartupApp` mounts a
+plain `MaterialApp` while `_initialize` runs. Under the path strategy that
+replaces the browser URL with the document's base href, and it happens before
+any router exists. `appRouter` was a top-level `createAppRouter()` with no
+initial location, so the router later read the URL that replacement had already
+left behind. Every widget test passed because each one calls
+`createAppRouter(initialLocation: …)` directly and never mounts the shell.
+
+**Fix.** `main` reads the launch URL before `runApp` and passes it on.
+`HayerApp` is now a `ConsumerStatefulWidget` that builds its router once — a
+rebuild on a theme or locale change would otherwise discard the navigation
+stack — and disposes it. The top-level `appRouter` is gone.
+
+**Proof, same replica.** Every link now reaches the router. `/join/ABC-123`
+ends at `/app/join/ABC-123` with the join form showing `ABC-123`, and
+`/app/saved` restores. `/discover?v=1&bbox=…&sort=top_rated&cat=cafes`
+restores, then goes home because discovery is off, and home now shows "Your
+Got time link is saved" with `hayer.discovery.pending-link.v1` written to
+storage. Before the fix no link was ever kept.
+
+**Verification.** Pinned full preflight passed generation, formatting, all
+fatal-info analyses, 199 server tests, 368 app tests and 84 admin tests.
+`router_test.dart` gains a case covering the HayerApp-to-router seam, which a
+router-only test cannot see.
+
+**Blocked: the signed APK.** `scripts/build-release-apk.sh` and
+`scripts/preflight.sh` do not pin `FLUTTER_BIN`, unlike
+`scripts/test-integration-remote.sh`. PATH carries Flutter 3.44.2 (Dart
+3.12.2), which can no longer resolve a workspace requiring `^3.13.0`, so both
+scripts failed at `pub get` while the lane's usual `| tail` invocation still
+reported success — a run can look green having executed nothing. Re-run with
+`FLUTTER_BIN` pinned to 3.47.2 preflight passes, but `flutter build apk
+--release` then fails compiling the generated `GeneratedPluginRegistrant.java`:
+`package dev.flutter.plugins.integration_test does not exist`. That try/catch
+guards runtime, not compilation. `integration_test` is a dev dependency and has
+been in `app/.flutter-plugins-dependencies` since 2026-09-09, so this is the
+toolchain rather than this change, which touches four Dart files. A pinned `pub
+get` does not rewrite that plugin state. No APK is claimed here; per
+`PROJECT.md` the gate is recorded blocked rather than substituted. `scripts/`
+belongs to the back-end lane, so pinning it is left for the owner to direct.
+
+**Still open for M9-K.** The physical-device checks, the live gateway
+deployment and the owner's formula, budget and latency review are unchanged.
+The evidence above is a faithful local replica of the gateway rules, not a live
+host proof.
 
 ### M9-K cross-mode verification and dark release — in progress (2026-09-15)
 

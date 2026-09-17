@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,26 +14,48 @@ import 'router.dart';
 import 'theme.dart';
 import 'theme_controller.dart';
 
-class HayerApp extends ConsumerWidget {
+class HayerApp extends ConsumerStatefulWidget {
   const HayerApp({
     super.key,
     this.updateRequired = false,
     this.platform,
+    this.initialLocation,
   });
 
   final bool updateRequired;
   final TargetPlatform? platform;
 
+  /// The link the app was launched with, read before the startup shell could
+  /// replace it. Null keeps the router's own default.
+  final String? initialLocation;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HayerApp> createState() => _HayerAppState();
+}
+
+class _HayerAppState extends ConsumerState<HayerApp> {
+  // Built once: rebuilding on a theme or locale change would throw away the
+  // navigation stack.
+  late final GoRouter _router = createAppRouter(
+    initialLocation: widget.initialLocation,
+  );
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ref.watch(locationWarmupProvider);
     final locale = ref.watch(localeControllerProvider);
     final themeMode = ref.watch(themeModeControllerProvider);
-    final effectivePlatform = platform ?? defaultTargetPlatform;
+    final effectivePlatform = widget.platform ?? defaultTargetPlatform;
     final lightTheme = HayerTheme.light(platform: effectivePlatform);
     final darkTheme = HayerTheme.dark(platform: effectivePlatform);
     final builder = _adaptiveBuilder(effectivePlatform);
-    if (updateRequired) {
+    if (widget.updateRequired) {
       return MaterialApp(
         title: 'Hayer',
         debugShowCheckedModeBanner: false,
@@ -54,7 +77,7 @@ class HayerApp extends ConsumerWidget {
       themeMode: themeMode,
       locale: locale,
       builder: builder,
-      routerConfig: appRouter,
+      routerConfig: _router,
       localizationsDelegates: hayerLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );

@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hayer_app/app/app.dart';
 import 'package:hayer_app/app/router.dart';
 import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/data/display_name_store.dart';
@@ -46,6 +47,33 @@ void main() {
       find.text('Enter a display name with 2–30 characters.'),
       findsNothing,
     );
+  });
+
+  // The startup shell mounts a plain MaterialApp before any router exists, and
+  // under the path URL strategy that replaces the browser URL with the base
+  // href. main() reads the launch link before that can happen; this covers the
+  // seam carrying it to the router, which a router-only test cannot see.
+  testWidgets('a launch link reaches the router through HayerApp', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [clientProvider.overrideWithValue(client)],
+        child: const HayerApp(initialLocation: '/join/A37'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('New search'), findsNothing);
+    final fields = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
+    expect(fields.first.controller?.text, 'A37');
   });
 
   testWidgets('a mounted web join path is normalized to the join form', (

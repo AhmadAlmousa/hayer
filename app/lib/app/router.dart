@@ -89,5 +89,3 @@ GoRouter createAppRouter({String? initialLocation}) => GoRouter(
     ),
   ],
 );
-
-final appRouter = createAppRouter();

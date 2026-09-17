@@ -948,9 +948,11 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   (`060a472`), and refresh jobs now label user explorations.
 - [~] M9-K — Cross-mode verification and dark release (both lanes). The
   back-end half (`c7ad9ee`), the lane merge (`060a472`), the Got time
-  privacy copy and an Arabic 200% text pass are done. Physical-device and
-  web-host checks and the owner's formula, budget and latency review remain;
-  the flag stays off.
+  privacy copy and an Arabic 200% text pass are done. Browser deep links
+  reached the router only after the 2026-09-17 startup-shell fix, proven
+  against a local replica of the gateway rules. A live web-host proof,
+  physical-device checks and the owner's formula, budget and latency review
+  remain; the flag stays off.
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
@@ -1176,6 +1178,22 @@ implemented, and M9-K is in progress.
   SHA-256 `eeb18794c653d79ae4e9c48684d3a56799e34166310f7fda888dfb36aa077c6f`, unchanged from M9-D because the app did not
   change, and verifies under APK Signature Scheme v2 with the existing
   signer. Discovery stays disabled. Details are in `lane-backend.md`.
+- 2026-09-17: fixed browser deep links for M9-K's web half. No link survived
+  the web build: `StartupApp`'s plain `MaterialApp` under the path URL strategy
+  replaced the browser URL with the base href before the router mounted, so
+  `/discover?…`, `/join/ABC-123` and `/app/saved` all collapsed to `/app/`.
+  `main` now reads the launch URL before `runApp`, and `HayerApp` builds its
+  router once with it. Proven in headless Chrome against a replica of the
+  gateway rewrite rules: a shared Got time link reaches the router and home
+  shows the saved-link notice, and a join link opens the join form with its
+  code. The defect predates Discover and was invisible to widget tests, which
+  pass an initial location straight to the router. Pinned full preflight passed
+  199 server, 368 app and 84 admin tests with clean analyses. No signed APK is
+  claimed: `flutter build apk --release` fails compiling the generated
+  `GeneratedPluginRegistrant.java` against the `integration_test` dev
+  dependency, and the release scripts do not pin `FLUTTER_BIN`, so that gate is
+  recorded blocked. Discovery stays disabled. Details are in
+  `lane-frontend.md`.
 - 2026-09-15: advanced M9-K, with both lanes held by Claude. `main` was
   merged into the front-end branch as `060a472`. The back-end half
   (`c7ad9ee`) proves the cross-user, cross-mode catalog loop against PostGIS

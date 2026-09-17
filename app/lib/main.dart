@@ -21,11 +21,31 @@ void main() {
   // Shared /join/{code} links are clean browser paths. This also lets the
   // deployed /app/ shell read those paths when nginx serves it in place.
   usePathUrlStrategy();
+  // Read the launch link before anything can rewrite it. The startup shell
+  // below is a plain MaterialApp, and mounting one under the path URL strategy
+  // replaces the browser URL with the document's base href while no router
+  // exists yet, so a shared /discover or /join link is already gone by the time
+  // the router could read it.
+  final launchLocation = _launchLocation();
   ErrorWidget.builder = (details) => FriendlyErrorView(details: details);
-  runApp(StartupApp(initialize: _initialize));
+  runApp(StartupApp(initialize: () => _initialize(launchLocation)));
 }
 
-Future<Widget> _initialize() async {
+/// The location this launch asked for, or null to keep the router's default.
+String? _launchLocation() {
+  if (!kIsWeb) return null;
+  final uri = Uri.base;
+  final path = uri.path.isEmpty ? '/' : uri.path;
+  // The gateway serves the /app/ bundle in place for a shared link, so the
+  // router's own /app/ normalisation still decides the final location.
+  if (path == '/' || path == '/app' || path == '/app/') return null;
+  return Uri(
+    path: path,
+    query: uri.query.isEmpty ? null : uri.query,
+  ).toString();
+}
+
+Future<Widget> _initialize(String? launchLocation) async {
   final url = await getServerUrl().timeout(const Duration(seconds: 8));
   final client = Client(url)
     ..connectivityMonitor = FlutterConnectivityMonitor()
@@ -72,7 +92,10 @@ Future<Widget> _initialize() async {
               false,
         ),
       ],
-      child: HayerApp(updateRequired: updateRequired),
+      child: HayerApp(
+        updateRequired: updateRequired,
+        initialLocation: launchLocation,
+      ),
     );
   } catch (_) {
     client.close();
