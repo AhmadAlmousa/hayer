@@ -1192,11 +1192,13 @@ implemented, and M9-K is in progress.
   shows the saved-link notice, and a join link opens the join form with its
   code. The defect predates Discover and was invisible to widget tests, which
   pass an initial location straight to the router. Pinned full preflight passed
-  199 server, 368 app and 84 admin tests with clean analyses. No signed APK is
-  claimed: `flutter build apk --release` fails compiling the generated
-  `GeneratedPluginRegistrant.java` against the `integration_test` dev
-  dependency, and the release scripts do not pin `FLUTTER_BIN`, so that gate is
-  recorded blocked. Later the same day a paired SM-S918B and the restored live
+  199 server, 368 app and 84 admin tests with clean analyses. The signed
+  `0.2.1+7` APK is 107,040,847 bytes at SHA-256 `dfa87d90973e4b02922d77ebb348d295d9ba6affad7aacee7bf5b627ec5adf67`
+  and verifies under APK Signature Scheme v2. It needed `flutter clean` first:
+  a stale build-variant `GeneratedPluginRegistrant.java` referenced the
+  `integration_test` dev dependency and broke the release compile, and the
+  release scripts do not pin `FLUTTER_BIN`, which had earlier let a run report
+  success having executed nothing. Later the same day a paired SM-S918B and the restored live
   host confirmed the device half: cold and warm `/discover`, `/app/discover`
   and `/join/` links open the app and show the saved-link notice, and the
   gateway serves every discovery path with its query intact. autoVerify itself

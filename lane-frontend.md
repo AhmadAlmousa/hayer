@@ -249,7 +249,7 @@ fatal-info analyses, 199 server tests, 368 app tests and 84 admin tests.
 `router_test.dart` gains a case covering the HayerApp-to-router seam, which a
 router-only test cannot see.
 
-**Blocked: the signed APK.** `scripts/build-release-apk.sh` and
+**The signed APK, and two toolchain traps.** `scripts/build-release-apk.sh` and
 `scripts/preflight.sh` do not pin `FLUTTER_BIN`, unlike
 `scripts/test-integration-remote.sh`. PATH carries Flutter 3.44.2 (Dart
 3.12.2), which can no longer resolve a workspace requiring `^3.13.0`, so both
@@ -260,10 +260,24 @@ reported success — a run can look green having executed nothing. Re-run with
 `package dev.flutter.plugins.integration_test does not exist`. That try/catch
 guards runtime, not compilation. `integration_test` is a dev dependency and has
 been in `app/.flutter-plugins-dependencies` since 2026-09-09, so this is the
-toolchain rather than this change, which touches four Dart files. A pinned `pub
-get` does not rewrite that plugin state. No APK is claimed here; per
-`PROJECT.md` the gate is recorded blocked rather than substituted. `scripts/`
-belongs to the back-end lane, so pinning it is left for the owner to direct.
+toolchain rather than this change, which touches four Dart files.
+
+That second trap was first recorded here as blocking the gate, which was wrong.
+Deleting and regenerating `app/.flutter-plugins-dependencies` changes nothing —
+it correctly lists `integration_test` for android with `dev_dependency: true` —
+but `flutter clean` clears it, because the offending
+`GeneratedPluginRegistrant.java` was a stale build-variant artifact that Gradle
+reused for the release variant. With the toolchain pinned, `flutter clean`
+followed by `scripts/build-release-apk.sh` produces the APK below. `scripts/`
+belongs to the back-end lane, so pinning `FLUTTER_BIN` inside those scripts is
+still left for the owner to direct.
+
+**APK.** The signed `0.2.1+7` APK is 107,040,847 bytes with SHA-256
+`dfa87d90973e4b02922d77ebb348d295d9ba6affad7aacee7bf5b627ec5adf67`. `apksigner
+verify --verbose` reports Verifies under APK Signature Scheme v2 with one
+signer, and `aapt2 dump badging` confirms `sa.almou.hayer`, versionCode 7,
+versionName 0.2.1, minSdk 26, targetSdk 36. The byte count matches the previous
+release while the digest differs, as expected on this host.
 
 **Device App Links — verified on hardware (2026-09-17).** The owner paired a
 Samsung SM-S918B (Android 16, SDK 36) over Tailscale, so the device half ran
