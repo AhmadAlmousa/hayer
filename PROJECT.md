@@ -950,9 +950,13 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   back-end half (`c7ad9ee`), the lane merge (`060a472`), the Got time
   privacy copy and an Arabic 200% text pass are done. Browser deep links
   reached the router only after the 2026-09-17 startup-shell fix, proven
-  against a local replica of the gateway rules. A live web-host proof,
-  physical-device checks and the owner's formula, budget and latency review
-  remain; the flag stays off.
+  against a local replica of the gateway rules. That day the live host and a
+  paired Android device also confirmed the App Link paths: cold and warm
+  `/discover`, `/app/discover` and `/join/` links open the app and render the
+  dark-release notice. Genuine autoVerify stayed unproven on that device, the
+  Discover surface's own device checks need the flag on, a live proof of the
+  fixed bundle needs the server image rebuilt, and the owner's formula, budget
+  and latency review remains; the flag stays off.
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
@@ -1192,8 +1196,15 @@ implemented, and M9-K is in progress.
   claimed: `flutter build apk --release` fails compiling the generated
   `GeneratedPluginRegistrant.java` against the `integration_test` dev
   dependency, and the release scripts do not pin `FLUTTER_BIN`, so that gate is
-  recorded blocked. Discovery stays disabled. Details are in
-  `lane-frontend.md`.
+  recorded blocked. Later the same day a paired SM-S918B and the restored live
+  host confirmed the device half: cold and warm `/discover`, `/app/discover`
+  and `/join/` links open the app and show the saved-link notice, and the
+  gateway serves every discovery path with its query intact. autoVerify itself
+  stayed unproven (domain state 1024, no verifier activity), so routing came
+  from user approval. A production outage was cleared first — the `server`
+  container had been recreated without the gateway, leaving nginx with a stale
+  upstream IP, so every proxied route 502'd. Discovery stays disabled. Details
+  are in `lane-frontend.md`.
 - 2026-09-15: advanced M9-K, with both lanes held by Claude. `main` was
   merged into the front-end branch as `060a472`. The back-end half
   (`c7ad9ee`) proves the cross-user, cross-mode catalog loop against PostGIS

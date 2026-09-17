@@ -265,10 +265,47 @@ get` does not rewrite that plugin state. No APK is claimed here; per
 `PROJECT.md` the gate is recorded blocked rather than substituted. `scripts/`
 belongs to the back-end lane, so pinning it is left for the owner to direct.
 
-**Still open for M9-K.** The physical-device checks, the live gateway
-deployment and the owner's formula, budget and latency review are unchanged.
-The evidence above is a faithful local replica of the gateway rules, not a live
-host proof.
+**Device App Links — verified on hardware (2026-09-17).** The owner paired a
+Samsung SM-S918B (Android 16, SDK 36) over Tailscale, so the device half ran
+against production once the outage below was cleared. The installed build was
+the signed `0.2.1+7`; today's fix is web-only (`_launchLocation` returns null
+when `!kIsWeb`), so Android behaviour is identical to it.
+
+- Cold `https://hayer.almou.sa/discover?v=1&sort=top_rated&cat=cafes` after a
+  force-stop opens `sa.almou.hayer/.MainActivity` with no chooser, and home
+  shows "Your Got time link is saved" over "Got time isn't available right
+  now" — the documented dark-release path, on hardware.
+- Warm `https://hayer.almou.sa/app/discover?v=1&sort=most_reviewed` reaches the
+  same state, so `/app/` normalisation holds on device.
+- Cold `https://hayer.almou.sa/join/ABC-123` opens the join form with the code
+  already filled in, in a new task.
+- The live gateway gate in `backend/deploy/README.md:75-77` passes: all three
+  paths answer 200 `text/html` through Cloudflare, and `/discover?…` serves the
+  `--base-href /app/` shell with its query intact.
+
+**Not proven: genuine autoVerify.** `hayer.almou.sa` stayed at domain state
+1024 through `pm set-app-links … 0` and `pm verify-app-links --re-verify`, with
+zero verifier lines in logcat, so Android's verification agent never ran here.
+Routing came instead from moving the domain out of the user "Disabled" bucket
+(`pm set-app-links-user-selection … true`) — a device setting the owner may keep
+or revert. The fingerprint is not the obstacle: the served
+`/.well-known/assetlinks.json` carries `42:6F:3B:F4:…:A6`, matching both the
+installed app and the signed release APK.
+
+**A production outage was cleared first.** Every proxied route returned 502
+while nginx's own routes stayed instant. The `server` container had been
+recreated without the gateway, and with no `resolver` directive nginx had
+cached the old container IP for all 12 `proxy_pass` targets. Recreating both,
+as `backend/deploy/README.md:66` prescribes, restored it. The `WARNING: The
+database does not match the target database` line in the server log is the
+known false positive recorded in `lane-backend.md`.
+
+**Still open for M9-K.** The Discover surface's own device checks — pins, pan
+and pinch, sheet gestures, TalkBack — need `discoveryEnabled` on, which is the
+owner's call. The owner's formula, budget and latency review is unchanged. The
+live host now serves the discovery paths, but the deployed bundle predates
+`b67e471`, so closing the browser half against production needs the server
+image rebuilt from a checkout carrying it.
 
 ### M9-K cross-mode verification and dark release — in progress (2026-09-15)
 
