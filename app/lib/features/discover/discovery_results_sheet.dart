@@ -16,7 +16,6 @@ import 'discovery_coverage_controller.dart';
 import 'discovery_coverage_strip.dart';
 import 'discovery_filter_text.dart';
 import 'discovery_place_details.dart';
-import 'discovery_place_preview.dart';
 import 'discovery_place_row.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_selection_controller.dart';
@@ -201,9 +200,6 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
             SliverToBoxAdapter(
               child: DiscoveryCoverageStrip(viewport: viewport),
             ),
-          SliverToBoxAdapter(
-            child: DiscoveryPlacePreview(origin: widget.origin),
-          ),
           if (results.search == null)
             SliverToBoxAdapter(
               child: switch (results.error) {

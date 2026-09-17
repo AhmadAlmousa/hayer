@@ -231,7 +231,7 @@ void main() {
     platform.loadStyle();
     await tester.pump();
     expect(platform.added, hasLength(3));
-    expect(platform.layers, hasLength(8));
+    expect(platform.layers, hasLength(9));
     expect(platform.clustered[platform.layers[discoveryPinLayer]], isTrue);
     expect(
       platform.clustered[platform.layers[discoveryAggregateLayer]],
@@ -252,7 +252,7 @@ void main() {
       expect(platform.featuresOf(discoveryPinLayer), hasLength(round));
     }
     expect(platform.added, hasLength(3));
-    expect(platform.layers, hasLength(8));
+    expect(platform.layers, hasLength(9));
 
     // Above the point limit, cells replace pins rather than join them.
     await pumpMap(tester, places: _cells('c1', 4800));
@@ -275,7 +275,7 @@ void main() {
     platform.loadStyle();
     await tester.pump();
     expect(platform.added, hasLength(6));
-    expect(platform.layers, hasLength(8));
+    expect(platform.layers, hasLength(9));
     expect(platform.featuresOf(discoveryAggregateLayer), hasLength(1));
   });
 

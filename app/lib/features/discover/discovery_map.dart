@@ -16,6 +16,10 @@ const discoveryClusterLayer = 'discovery-clusters';
 /// The layer single pins are drawn in. Tapping one selects its place.
 const discoveryPinLayer = 'discovery-pins';
 
+/// The layer pin names are drawn in, from the zoom where they start to fit. It
+/// takes no taps: a name belongs to the pin under it.
+const discoveryPinNameLayer = 'discovery-pin-names';
+
 /// The layer aggregate cells are drawn in. Tapping one fits the camera to it.
 const discoveryAggregateLayer = 'discovery-aggregates';
 
@@ -31,7 +35,7 @@ const _labelFont = ['Noto Sans Bold'];
 /// It shows the committed viewport, moving the camera whenever that viewport
 /// changes to one the map is not already showing, and reports the whole
 /// visible area each time the camera comes to rest. It never commits anything
-/// itself: a moved camera is only a candidate for "Search this area".
+/// itself: what a rested camera means is the view's to decide.
 ///
 /// Places are drawn from style sources and layers rather than annotations.
 /// Up to the server's point limit every match is a pin, labelled with its
@@ -46,7 +50,9 @@ class DiscoveryMap extends StatefulWidget {
     required this.onVisibleViewport,
     this.places,
     this.selected,
+    this.ranks = const {},
     this.onPlace,
+    this.myLocationEnabled = false,
   });
 
   /// The committed viewport.
@@ -62,8 +68,20 @@ class DiscoveryMap extends StatefulWidget {
   /// The place drawn as selected.
   final DiscoveryMapMarker? selected;
 
+  /// Where each plotted place stands in the loaded list, by catalog id.
+  ///
+  /// A pin the list also shows is drawn in the primary colour and labelled
+  /// with its row number instead of its rating, so the map and the list read
+  /// as one set rather than two. A pin the list has not reached stays a
+  /// rating dot.
+  final Map<int, int> ranks;
+
   /// Called with the place behind a tapped pin.
   final ValueChanged<DiscoveryMapPoint>? onPlace;
+
+  /// Whether the device's own location is drawn on the map. Only ever true
+  /// once location permission is granted; see [HayerMap.myLocationEnabled].
+  final bool myLocationEnabled;
 
   @override
   State<DiscoveryMap> createState() => DiscoveryMapState();
@@ -85,6 +103,7 @@ class DiscoveryMapState extends State<DiscoveryMap> {
   bool _drawAgain = false;
   DiscoveryMapPayload? _drawnPlaces;
   DiscoveryMapMarker? _drawnSelection;
+  Map<int, int> _drawnRanks = const {};
 
   /// Moves the camera to [point] at the current zoom. The query is unchanged
   /// until the user searches the new area.
@@ -107,6 +126,7 @@ class DiscoveryMapState extends State<DiscoveryMap> {
       _show(widget.viewport);
     }
     if (!identical(widget.places, oldWidget.places) ||
+        !_sameRanks(widget.ranks, oldWidget.ranks) ||
         widget.selected != oldWidget.selected) {
       unawaited(_draw());
     }
@@ -135,7 +155,7 @@ class DiscoveryMapState extends State<DiscoveryMap> {
 
   void _show(DiscoveryViewport viewport) {
     final visible = _visible;
-    // After "Search this area" the map already shows what was committed.
+    // A searched area is one the map already shows, so it stays where it is.
     if (visible != null && discoveryViewportShows(visible, viewport)) return;
     unawaited(
       _controller?.animateCamera(
@@ -188,11 +208,16 @@ class DiscoveryMapState extends State<DiscoveryMap> {
         await _addLayers(controller, colors, places, selected);
         _layersAdded = true;
       } else {
-        if (!identical(places, _drawnPlaces)) {
+        final moved = !identical(places, _drawnPlaces);
+        // Ranks change on their own as more rows load, without the payload
+        // changing, and the pins carry them.
+        if (moved || !_sameRanks(widget.ranks, _drawnRanks)) {
           await controller.setGeoJsonSource(
             _pinsSource,
-            discoveryPointFeatures(places),
+            discoveryPointFeatures(places, ranks: widget.ranks),
           );
+        }
+        if (moved) {
           await controller.setGeoJsonSource(
             _aggregatesSource,
             discoveryAggregateFeatures(places),
@@ -206,6 +231,7 @@ class DiscoveryMapState extends State<DiscoveryMap> {
         }
       }
       _drawnPlaces = places;
+      _drawnRanks = widget.ranks;
       _drawnSelection = selected;
     } catch (_) {
       // A style replaced during a draw rejects its calls, and loading the new
@@ -235,7 +261,7 @@ class DiscoveryMapState extends State<DiscoveryMap> {
     await controller.addSource(
       _pinsSource,
       GeojsonSourceProperties(
-        data: discoveryPointFeatures(places),
+        data: discoveryPointFeatures(places, ranks: widget.ranks),
         cluster: true,
         clusterRadius: 44,
         clusterMaxZoom: 15,
@@ -261,6 +287,13 @@ class DiscoveryMapState extends State<DiscoveryMap> {
       '',
     ];
     const gem = ['get', 'gem'];
+    // A pin the loaded list also shows. Ranks start at 1, so 0 means the list
+    // has not reached this place.
+    const ranked = [
+      '>',
+      ['get', 'rank'],
+      0,
+    ];
 
     await controller.addCircleLayer(
       _aggregatesSource,
@@ -331,10 +364,26 @@ class DiscoveryMapState extends State<DiscoveryMap> {
       _pinsSource,
       discoveryPinLayer,
       CircleLayerProperties(
-        circleColor: ['case', gem, colors.gem, colors.surface],
-        circleStrokeColor: ['case', gem, colors.surface, colors.outline],
+        circleColor: [
+          'case',
+          ranked,
+          colors.primary,
+          gem,
+          colors.gem,
+          colors.surface,
+        ],
+        circleStrokeColor: [
+          'case',
+          ranked,
+          colors.surface,
+          gem,
+          colors.surface,
+          colors.outline,
+        ],
         circleStrokeWidth: 1.5,
-        circleRadius: ['case', unrated, 7, 15],
+        // A ranked pin keeps the full circle even without a rating, because it
+        // carries its row number instead.
+        circleRadius: ['case', ranked, 15, unrated, 7, 15],
       ),
       filter: single,
     );
@@ -342,14 +391,53 @@ class DiscoveryMapState extends State<DiscoveryMap> {
       _pinsSource,
       'discovery-pin-labels',
       SymbolLayerProperties(
-        textField: ['get', 'label'],
+        textField: [
+          'case',
+          ranked,
+          [
+            'to-string',
+            ['get', 'rank'],
+          ],
+          ['get', 'label'],
+        ],
         textFont: _labelFont,
         textSize: 11,
-        textColor: ['case', gem, colors.onGem, colors.onSurface],
+        textColor: [
+          'case',
+          ranked,
+          colors.onPrimary,
+          gem,
+          colors.onGem,
+          colors.onSurface,
+        ],
         textAllowOverlap: true,
         textIgnorePlacement: true,
       ),
       filter: single,
+      enableInteraction: false,
+    );
+    await controller.addSymbolLayer(
+      _pinsSource,
+      discoveryPinNameLayer,
+      SymbolLayerProperties(
+        textField: ['get', 'name'],
+        textFont: _labelFont,
+        textSize: 11,
+        textColor: colors.onSurface,
+        textHaloColor: colors.surface,
+        textHaloWidth: 1.2,
+        textAnchor: 'top',
+        textOffset: [0, 1.1],
+        textMaxWidth: 8,
+        // Names give way to one another rather than to the pins: where places
+        // sit together only the names with room are drawn, and a name is never
+        // allowed to hide a pin.
+        textAllowOverlap: false,
+        textIgnorePlacement: false,
+        textOptional: true,
+      ),
+      filter: single,
+      minzoom: 14,
       enableInteraction: false,
     );
     await controller.addCircleLayer(
@@ -451,12 +539,24 @@ class DiscoveryMapState extends State<DiscoveryMap> {
           ),
         ),
         annotationOrder: const [],
+        myLocationEnabled: widget.myLocationEnabled,
         onMapCreated: _created,
         onStyleLoaded: _styleReady,
         onCameraIdle: () => unawaited(_idle()),
       );
     },
   );
+}
+
+/// Whether two rank maps hold the same pairs. The view builds a fresh map
+/// whenever its rows change, so identity alone would redraw every pin.
+bool _sameRanks(Map<int, int> a, Map<int, int> b) {
+  if (identical(a, b)) return true;
+  if (a.length != b.length) return false;
+  for (final entry in a.entries) {
+    if (b[entry.key] != entry.value) return false;
+  }
+  return true;
 }
 
 /// The theme's colours, in the form map styles take.

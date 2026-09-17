@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_app/domain/discovery_area.dart';
 import 'package:hayer_app/domain/discovery_url_query.dart';
-import 'package:hayer_app/features/discover/discover_screen.dart';
 import 'package:hayer_app/features/discover/discovery_area_labels.dart';
 import 'package:hayer_app/features/discover/discovery_map.dart';
 import 'package:hayer_app/features/discover/discovery_place_row.dart';
@@ -18,7 +17,7 @@ import 'discovery_fakes.dart';
 import 'discovery_results_fakes.dart';
 
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
-const _searchArea = ValueKey('discovery-search-area');
+const _searchingArea = ValueKey('discovery-searching-area');
 const _sheetToggle = ValueKey('discovery-sheet-toggle');
 
 void main() {
@@ -226,8 +225,8 @@ void main() {
     expect(fixture.repository.requests.single.query.countryCode, isNull);
   });
 
-  testWidgets('moving the map offers Search this area, which adds one '
-      'history entry that Back undoes', (tester) async {
+  testWidgets('a map that comes to rest somewhere new searches it on its own, '
+      'without a history entry to step back through', (tester) async {
     final router = await pumpDiscover(tester, fixture, _riyadhLink);
     final map = tester.widget<DiscoveryMap>(find.byType(DiscoveryMap));
 
@@ -241,7 +240,7 @@ void main() {
       )!,
     );
     await tester.pump();
-    expect(find.byKey(_searchArea), findsNothing);
+    expect(find.byKey(_searchingArea), findsNothing);
 
     final moved = DiscoveryViewport.tryCreate(
       south: 24.7,
@@ -251,24 +250,20 @@ void main() {
     )!;
     map.onVisibleViewport(moved);
     await tester.pump();
+    expect(find.byKey(_searchingArea), findsOneWidget);
     expect(find.text('Previous area · This area'), findsOneWidget);
     expect(find.text('3 places in the previous area'), findsOneWidget);
-    // Moving alone searches nothing.
+    // The area is searched once the map has rested, not the moment it moves.
     expect(fixture.repository.requests, hasLength(1));
 
-    await tester.tap(find.byKey(_searchArea));
+    await tester.pump(const Duration(milliseconds: 700));
     await tester.pumpAndSettle();
     expect(_committedViewport(router).token, moved.token);
     expect(fixture.repository.requests.last.query.viewport.north, 24.9);
-    expect(find.byKey(_searchArea), findsNothing);
+    expect(find.byKey(_searchingArea), findsNothing);
     expect(find.text('3 places in view'), findsOneWidget);
 
-    await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
-    expect(_committedViewport(router).token, testViewport.token);
-    expect(find.byType(DiscoverScreen), findsOneWidget);
-    expect(fixture.repository.requests.last.query.viewport.north, 24.8);
-
+    // Panning is not a step to retrace, so Back leaves Discover outright.
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/');

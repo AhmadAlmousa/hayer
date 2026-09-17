@@ -1086,6 +1086,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoverySearchThisArea => 'Search this area';
 
   @override
+  String get discoverySearchingThisArea => 'Searching this area…';
+
+  @override
   String get discoveryShowMyLocation => 'Show my location';
 
   @override

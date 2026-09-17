@@ -26,6 +26,7 @@ class HayerMap extends StatelessWidget {
     this.onCameraMove,
     this.onCameraIdle,
     this.onMapClick,
+    this.myLocationEnabled = false,
   });
 
   final CameraPosition initialCameraPosition;
@@ -43,6 +44,15 @@ class HayerMap extends StatelessWidget {
   final VoidCallback? onCameraIdle;
   final OnMapClickCallback? onMapClick;
 
+  /// Whether the platform draws the device's own location on the map.
+  ///
+  /// Turn this on only once location permission is granted: the platform reads
+  /// the device's location as soon as the layer exists, so enabling it without
+  /// permission asks for a location Hayer may not have. Callers pass it as a
+  /// field rather than fixing it at creation, so the dot can appear when a
+  /// permitted location arrives after the map is built.
+  final bool myLocationEnabled;
+
   @override
   Widget build(BuildContext context) => MapLibreMap(
     gestureRecognizers: {
@@ -56,6 +66,7 @@ class HayerMap extends StatelessWidget {
     compassEnabled: false,
     logoEnabled: false,
     annotationOrder: annotationOrder,
+    myLocationEnabled: myLocationEnabled,
     onMapCreated: onMapCreated,
     onCameraMove: onCameraMove,
     onCameraIdle: onCameraIdle,

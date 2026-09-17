@@ -166,7 +166,12 @@ class DiscoveryPlaceRow extends StatelessWidget {
             size: 12,
           )
         : null;
-    final (tagText, tagColor) = _tag(context, strings, locale);
+    final (tagText, tagColor) = discoveryTagLabel(
+      context,
+      item,
+      evaluatedAt: evaluatedAt,
+      scoring: scoring,
+    );
     final rankedName = '${formatCount(context, item.ordinal)}. ${place.name}';
     final titleStyle = theme.textTheme.titleSmall?.copyWith(
       fontSize: 15,
@@ -212,7 +217,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Thumbnail(place: place),
+            DiscoveryPlaceThumbnail(place: place),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -250,7 +255,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: Row(
         children: [
-          _Thumbnail(place: place),
+          DiscoveryPlaceThumbnail(place: place),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -302,59 +307,62 @@ class DiscoveryPlaceRow extends StatelessWidget {
       ),
     );
   }
+}
 
-  (String, Color) _tag(
-    BuildContext context,
-    AppLocalizations strings,
-    String locale,
-  ) {
-    final colors = Theme.of(context).colorScheme;
-    final tag = discoveryTagFor(
-      item,
-      evaluatedAt: evaluatedAt,
-      scoring: scoring,
-    );
-    // Scheme colours rather than the design's green and coral, which are too
-    // faint for text this small on a light surface.
-    return switch (tag) {
-      (kind: DiscoveryTagKind.hiddenGem, value: final count?) => (
-        strings.discoveryTagHiddenGem(formatCount(context, count)),
-        colors.primary,
+/// The one line a place is tagged with, and the colour it is written in.
+///
+/// The row and the map's card both say the same thing about a place, so they
+/// say it from here.
+(String, Color) discoveryTagLabel(
+  BuildContext context,
+  DiscoverPlace item, {
+  required DateTime evaluatedAt,
+  required DiscoveryScoring? scoring,
+}) {
+  final strings = AppLocalizations.of(context)!;
+  final locale = Localizations.localeOf(context).toLanguageTag();
+  final colors = Theme.of(context).colorScheme;
+  final tag = discoveryTagFor(item, evaluatedAt: evaluatedAt, scoring: scoring);
+  // Scheme colours rather than the design's green and coral, which are too
+  // faint for text this small on a light surface.
+  return switch (tag) {
+    (kind: DiscoveryTagKind.hiddenGem, value: final count?) => (
+      strings.discoveryTagHiddenGem(formatCount(context, count)),
+      colors.primary,
+    ),
+    (kind: DiscoveryTagKind.hiddenGem, value: _) => (
+      strings.discoveryTagHiddenGemPlain,
+      colors.primary,
+    ),
+    (kind: DiscoveryTagKind.recentlyAdded, :final value) => (
+      strings.discoveryTagAdded(value ?? 0),
+      colors.primary,
+    ),
+    (kind: DiscoveryTagKind.ratedBelow, value: _) => (
+      strings.discoveryTagRatedBelow(
+        NumberFormat('0.0', locale).format(discoveryLowRating),
       ),
-      (kind: DiscoveryTagKind.hiddenGem, value: _) => (
-        strings.discoveryTagHiddenGemPlain,
-        colors.primary,
+      colors.error,
+    ),
+    (kind: DiscoveryTagKind.manyReviews, :final value) => (
+      strings.discoveryTagManyReviews(
+        NumberFormat.compact(locale: locale).format(value ?? 0),
       ),
-      (kind: DiscoveryTagKind.recentlyAdded, :final value) => (
-        strings.discoveryTagAdded(value ?? 0),
-        colors.primary,
-      ),
-      (kind: DiscoveryTagKind.ratedBelow, value: _) => (
-        strings.discoveryTagRatedBelow(
-          NumberFormat('0.0', locale).format(discoveryLowRating),
-        ),
-        colors.error,
-      ),
-      (kind: DiscoveryTagKind.manyReviews, :final value) => (
-        strings.discoveryTagManyReviews(
-          NumberFormat.compact(locale: locale).format(value ?? 0),
-        ),
-        colors.onSurfaceVariant,
-      ),
-      (kind: DiscoveryTagKind.openNow, value: _) => (
-        strings.openNow,
-        colors.primary,
-      ),
-      (kind: DiscoveryTagKind.closedNow, value: _) => (
-        strings.closedNow,
-        colors.error,
-      ),
-      (kind: DiscoveryTagKind.hoursUnknown, value: _) => (
-        strings.unknownHours,
-        colors.onSurfaceVariant,
-      ),
-    };
-  }
+      colors.onSurfaceVariant,
+    ),
+    (kind: DiscoveryTagKind.openNow, value: _) => (
+      strings.openNow,
+      colors.primary,
+    ),
+    (kind: DiscoveryTagKind.closedNow, value: _) => (
+      strings.closedNow,
+      colors.error,
+    ),
+    (kind: DiscoveryTagKind.hoursUnknown, value: _) => (
+      strings.unknownHours,
+      colors.onSurfaceVariant,
+    ),
+  };
 }
 
 /// Each swipe category and category option by id, pointing at its category.
@@ -365,8 +373,9 @@ final _categoryOf = {
   },
 };
 
-class _Thumbnail extends StatelessWidget {
-  const _Thumbnail({required this.place});
+/// A place's category emoji, as the square that stands in for a photo.
+class DiscoveryPlaceThumbnail extends StatelessWidget {
+  const DiscoveryPlaceThumbnail({super.key, required this.place});
 
   final PlaceSnapshot place;
 

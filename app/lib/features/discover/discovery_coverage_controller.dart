@@ -17,6 +17,15 @@ final discoveryHarvestPollIntervalProvider = Provider<Duration>(
   (ref) => const Duration(seconds: 3),
 );
 
+/// Whether an area the catalog knows nothing about starts exploring itself.
+///
+/// Moving the map to somewhere unexplored otherwise leaves an empty list and a
+/// button to find; exploring it straight away is what moving the map to see
+/// places means. The server's own cooldown and per-user harvest limits still
+/// bound what this can spend. Tests turn it off to keep their explorations
+/// explicit.
+final discoveryAutoExploreProvider = Provider<bool>((ref) => true);
+
 final discoveryCoverageProvider =
     NotifierProvider.autoDispose<
       DiscoveryCoverageController,
@@ -77,8 +86,10 @@ final class DiscoveryExploration {
 /// starts, and deepens the area on request.
 ///
 /// An area is reported once when it is committed, whether from a link, the
-/// starting area or Search this area; sorting, filtering and paging the same
-/// area report nothing. An exploration is checked until it ends, and one that
+/// starting area or a map that has come to rest somewhere new; sorting,
+/// filtering and paging the same area report nothing. An area that turns out
+/// to hold nothing at all starts exploring itself, once. An exploration is
+/// checked until it ends, and one that
 /// found places reloads the results from the top. A Deepen request keeps its
 /// idempotency key until the server accepts it, so retrying a failed one
 /// cannot start a second exploration.
@@ -91,6 +102,9 @@ class DiscoveryCoverageController extends Notifier<DiscoveryExploration>
   static const _maxFailedChecks = 8;
 
   int _area = 0;
+
+  /// The area already started on its own, so it is never started twice.
+  String? _autoExplored;
   String? _deepenKey;
   Timer? _check;
   Timer? _waitEnd;
@@ -210,6 +224,23 @@ class DiscoveryCoverageController extends Notifier<DiscoveryExploration>
         return;
       }
     }
+    // Nothing is running here, so an area with nothing to show can start.
+    _autoExplore(viewport, coverage.eligibleCatalogCount);
+  }
+
+  /// Starts exploring a committed area that has nothing at all to show, once.
+  ///
+  /// Only an area the catalog knows nothing about qualifies: a thin area still
+  /// has places to read, and deepening that one stays the reader's call. The
+  /// area is remembered whether or not the request is accepted, so a refusal
+  /// is explained by the coverage strip rather than retried on every reload.
+  void _autoExplore(DiscoveryViewport viewport, int knownPlaces) {
+    if (knownPlaces > 0) return;
+    if (_autoExplored == viewport.token) return;
+    if (state.deepening || _waiting) return;
+    if (!ref.read(discoveryAutoExploreProvider)) return;
+    _autoExplored = viewport.token;
+    unawaited(deepen());
   }
 
   void _follow(DiscoveryHarvestStatus job) {

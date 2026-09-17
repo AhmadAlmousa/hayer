@@ -1928,6 +1928,12 @@ abstract class AppLocalizations {
   /// **'Search this area'**
   String get discoverySearchThisArea;
 
+  /// No description provided for @discoverySearchingThisArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching this area…'**
+  String get discoverySearchingThisArea;
+
   /// No description provided for @discoveryShowMyLocation.
   ///
   /// In en, this message translates to:

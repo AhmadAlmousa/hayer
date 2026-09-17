@@ -7,6 +7,11 @@ import '../../app/theme.dart';
 /// Both cards carry equal weight: the same size, type and structure. The
 /// emphasized card sits on the primary container; the other sits on a quieter
 /// surface behind an amber icon.
+///
+/// A card may also carry [actions]: entry points that belong to that mode
+/// alone. They sit under the highlights, below a divider, and keep their own
+/// tap targets and their own semantics, so choosing the mode and taking one of
+/// its actions stay separate to both a pointer and a screen reader.
 class ModeHeroButton extends StatelessWidget {
   const ModeHeroButton({
     super.key,
@@ -16,6 +21,7 @@ class ModeHeroButton extends StatelessWidget {
     required this.highlights,
     required this.onPressed,
     this.emphasized = false,
+    this.actions = const [],
   });
 
   final IconData icon;
@@ -26,6 +32,10 @@ class ModeHeroButton extends StatelessWidget {
   final List<String> highlights;
   final VoidCallback onPressed;
   final bool emphasized;
+
+  /// Actions belonging to this mode, stacked under the highlights. Each keeps
+  /// its own tap target, so they are outside the card's own button semantics.
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
@@ -47,101 +57,131 @@ class ModeHeroButton extends StatelessWidget {
     final bodyColor = emphasized
         ? colors.onPrimaryContainer
         : colors.onSurfaceVariant;
-    return MergeSemantics(
-      child: Semantics(
-        button: true,
-        child: Material(
-          color: emphasized ? colors.primaryContainer : colors.surfaceContainer,
-          shape: shape,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onPressed,
-            child: Padding(
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+    final separatorColor = emphasized
+        ? colors.onPrimaryContainer.withValues(alpha: .18)
+        : colors.outlineVariant;
+    return Material(
+      color: emphasized ? colors.primaryContainer : colors.surfaceContainer,
+      shape: shape,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Only the mode itself is the card's button; the actions below carry
+          // their own, so the merge stops here.
+          MergeSemantics(
+            child: Semantics(
+              button: true,
+              child: InkWell(
+                onTap: onPressed,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    22,
+                    22,
+                    22,
+                    actions.isEmpty ? 22 : 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: emphasized
-                              ? colors.primary
-                              : amber.primaryContainer,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Icon(
-                          icon,
-                          size: 30,
-                          color: emphasized
-                              ? colors.onPrimary
-                              : amber.onPrimaryContainer,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 56,
+                            height: 56,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: emphasized
+                                  ? colors.primary
+                                  : amber.primaryContainer,
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: Icon(
+                              icon,
+                              size: 30,
+                              color: emphasized
+                                  ? colors.onPrimary
+                                  : amber.onPrimaryContainer,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  title,
+                                  style: theme.textTheme.headlineSmall
+                                      ?.copyWith(
+                                        color: titleColor,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  description,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: bodyColor,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                color: titleColor,
-                                fontWeight: FontWeight.w900,
+                      const SizedBox(height: 14),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final highlight in highlights)
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: emphasized
+                                    ? colors.onPrimaryContainer.withValues(
+                                        alpha: .12,
+                                      )
+                                    : colors.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(99),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                child: Text(
+                                  highlight,
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: titleColor,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              description,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: bodyColor,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      for (final highlight in highlights)
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: emphasized
-                                ? colors.onPrimaryContainer.withValues(
-                                    alpha: .12,
-                                  )
-                                : colors.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(99),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            child: Text(
-                              highlight,
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: titleColor,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          if (actions.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 0, 22, 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Divider(height: 18, thickness: 1, color: separatorColor),
+                  for (var index = 0; index < actions.length; index++) ...[
+                    if (index > 0) const SizedBox(height: 8),
+                    actions[index],
+                  ],
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -113,12 +113,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 },
                               ),
                             ),
-                            if (_activeSession != null)
-                              M3EIconButton(
-                                tooltip: strings.resumeSession,
-                                onPressed: _resuming ? null : _resume,
-                                icon: const Icon(Icons.restore_rounded),
-                              ),
                             M3EIconButton(
                               tooltip: strings.joinSession,
                               onPressed: () => context.push('/scan'),
@@ -136,20 +130,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           icon: const Icon(Icons.bookmarks_rounded),
                           label: Text(strings.savedPlaces),
                         ),
-                        const SizedBox(height: 12),
-                        if (_activeSession != null) ...[
-                          ResumeSessionButton(
-                            bundle: _activeSession!,
-                            loading: _resuming,
-                            onPressed: _resume,
-                          ),
+                        // With both modes on screen, resuming and joining
+                        // belong to "In a hurry" — the only mode that has
+                        // sessions — so they sit inside its card instead.
+                        if (!discoveryEnabled) ...[
                           const SizedBox(height: 12),
+                          if (_activeSession != null) ...[
+                            ResumeSessionButton(
+                              bundle: _activeSession!,
+                              loading: _resuming,
+                              onPressed: _resume,
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                          OutlinedButton.icon(
+                            onPressed: () => context.push('/join'),
+                            icon: const Icon(Icons.group_add_rounded),
+                            label: Text(strings.joinSession),
+                          ),
                         ],
-                        OutlinedButton.icon(
-                          onPressed: () => context.push('/join'),
-                          icon: const Icon(Icons.group_add_rounded),
-                          label: Text(strings.joinSession),
-                        ),
                         const SizedBox(height: 16),
                         TextButton.icon(
                           key: const ValueKey('data-and-privacy'),
@@ -277,6 +276,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           strings.inAHurryDuration,
         ],
         onPressed: () => context.push('/setup'),
+        actions: [
+          if (_activeSession != null)
+            ResumeSessionButton(
+              bundle: _activeSession!,
+              loading: _resuming,
+              onPressed: _resume,
+            ),
+          OutlinedButton.icon(
+            key: const ValueKey('home-join-session'),
+            onPressed: () => context.push('/join'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: theme.colorScheme.onPrimaryContainer,
+              side: BorderSide(
+                color: theme.colorScheme.onPrimaryContainer.withValues(
+                  alpha: .35,
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.group_add_rounded),
+            label: Text(strings.joinSession),
+          ),
+        ],
       ),
       const SizedBox(height: 14),
       ModeHeroButton(

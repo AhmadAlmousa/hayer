@@ -4,12 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart'
-    show DiscoveryHarvestState, DiscoveryMapMode;
+    show DiscoveryHarvestState, DiscoveryMapMode, LocationSuggestion;
 import 'package:material_ui/material_ui.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/providers.dart';
 import '../../core/public_links.dart';
+import '../../core/widgets/location_search_field.dart';
 import '../../domain/discovery_area.dart';
 import '../../domain/discovery_category_tree.dart';
 import '../../domain/discovery_coverage.dart';
@@ -22,6 +23,7 @@ import 'discovery_coverage_controller.dart';
 import 'discovery_filter_bar.dart';
 import 'discovery_filter_sheet.dart';
 import 'discovery_map.dart';
+import 'discovery_place_card.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
 import 'discovery_search.dart';
@@ -32,6 +34,19 @@ import 'discovery_taxonomy_provider.dart';
 /// How long entering Discover waits for an already permitted location before
 /// opening somewhere else.
 const _locationWait = Duration(seconds: 3);
+
+/// How long a moved map rests before its area is searched.
+///
+/// Long enough that panning across a city is one search rather than a dozen,
+/// short enough that stopping somewhere feels like arriving.
+const _autoSearchDelay = Duration(milliseconds: 700);
+
+/// The least room above the sheet the selected place's card is drawn in.
+///
+/// Raising the sheet over the whole map leaves nowhere to put the card, so
+/// under this it gives way to the list rather than being squeezed into a
+/// sliver of it.
+const _cardMinimumRoom = 140.0;
 
 /// The Discover map, its results and the controls over them.
 ///
@@ -57,6 +72,14 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
 
   /// Earlier committed locations from this visit, most recent last.
   final _history = <String>[];
+
+  /// Searches the area the map has settled on, once it has rested.
+  Timer? _autoSearch;
+
+  /// The area bar's search field, while it is open.
+  final _areaSearch = TextEditingController();
+  final _areaSearchField = GlobalKey<LocationSearchFieldState>();
+  bool _searchingArea = false;
 
   late DiscoveryLinkParse _link;
 
@@ -119,6 +142,8 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
 
   @override
   void dispose() {
+    _autoSearch?.cancel();
+    _areaSearch.dispose();
     _sheet.dispose();
     super.dispose();
   }
@@ -233,8 +258,55 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     context.go(_history.removeLast());
   }
 
-  void _searchThisArea() {
-    if (_visible case final visible?) _apply(_query.withViewport(visible));
+  /// Takes the area the map has come to rest on, and searches it once it has
+  /// stayed there.
+  ///
+  /// Committing an area moves the camera to it, which comes to rest in turn;
+  /// [discoveryViewportShows] recognises that as the area already shown, so a
+  /// search cannot start another one.
+  void _settled(DiscoveryViewport visible) {
+    setState(() => _visible = visible);
+    _autoSearch?.cancel();
+    if (!_pending) return;
+    _autoSearch = Timer(_autoSearchDelay, () {
+      if (!mounted || !_pending) return;
+      if (_visible case final rested?) _searchAutomatically(rested);
+    });
+  }
+
+  /// Commits [visible] without a history entry: panning is not a step to go
+  /// back through, and Back must still leave Discover rather than retrace
+  /// every drag of the map.
+  void _searchAutomatically(DiscoveryViewport visible) {
+    final location = _query.withViewport(visible).location;
+    if (location == _query.location) return;
+    Router.neglect(context, () => context.go(location));
+  }
+
+  /// Moves the search to a place chosen by name. Unlike panning, this is a
+  /// search the user asked for, so it keeps its history entry.
+  void _goToSuggestion(LocationSuggestion suggestion) {
+    final size = _mapSize ?? MediaQuery.sizeOf(context);
+    final viewport = discoveryViewportForCamera(
+      (
+        latitude: suggestion.latitude,
+        longitude: suggestion.longitude,
+        zoom: discoveryLocationZoom,
+      ),
+      width: size.width > 0 ? size.width : 400.0,
+      height: size.height > 0 ? size.height : 800.0,
+    );
+    _closeAreaSearch();
+    if (viewport == null) return;
+    _autoSearch?.cancel();
+    _apply(_query.withViewport(viewport));
+  }
+
+  void _closeAreaSearch() {
+    _areaSearchField.currentState?.clearSuggestions();
+    _areaSearch.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (mounted) setState(() => _searchingArea = false);
   }
 
   Future<void> _locate() async {
@@ -419,6 +491,14 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     final selected = ref.watch(
       discoverySelectionProvider.select((selection) => selection.place?.marker),
     );
+    // The places the list has reached, so their pins are drawn as its rows
+    // rather than as one more rating.
+    final ranks = {
+      for (final item in ref.watch(
+        discoveryResultsProvider.select((results) => results.items),
+      ))
+        item.catalogId: item.ordinal,
+    };
     final viewport = _query.viewport;
     final pending = _pending;
     final area = _areaLabel ?? strings.discoveryThisArea;
@@ -439,10 +519,11 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                         : DiscoveryMap(
                             key: _map,
                             viewport: viewport,
-                            onVisibleViewport: (visible) =>
-                                setState(() => _visible = visible),
+                            onVisibleViewport: _settled,
                             places: places,
                             selected: selected,
+                            ranks: ranks,
+                            myLocationEnabled: _origin != null,
                             onPlace: ref
                                 .read(discoverySelectionProvider.notifier)
                                 .selectPoint,
@@ -464,7 +545,36 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                           locating: _locating,
                           onLocate: _locate,
                           onShare: viewport == null ? null : _share,
+                          searching: _searchingArea,
+                          onSearch: () => setState(() => _searchingArea = true),
+                          onCloseSearch: _closeAreaSearch,
                         ),
+                        if (_searchingArea)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Material(
+                              color: colors.surface,
+                              elevation: 3,
+                              borderRadius: BorderRadius.circular(20),
+                              clipBehavior: Clip.antiAlias,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  12,
+                                  8,
+                                  12,
+                                  8,
+                                ),
+                                child: LocationSearchField(
+                                  key: _areaSearchField,
+                                  controller: _areaSearch,
+                                  autofocus: true,
+                                  latitude: _origin?.latitude,
+                                  longitude: _origin?.longitude,
+                                  onSelected: _goToSuggestion,
+                                ),
+                              ),
+                            ),
+                          ),
                         const SizedBox(height: 4),
                         DiscoveryFilterBar(
                           query: _query,
@@ -499,26 +609,80 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                               ),
                             ),
                           ),
+                        // A moved map searches itself, so this says what is
+                        // happening rather than asking for a tap.
                         if (pending)
                           Center(
                             child: Padding(
                               padding: const EdgeInsets.only(top: 8),
-                              child: FilledButton.icon(
-                                key: const ValueKey('discovery-search-area'),
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: colors.inverseSurface,
-                                  foregroundColor: colors.onInverseSurface,
-                                  minimumSize: const Size(0, 36),
-                                  visualDensity: VisualDensity.compact,
-                                  elevation: 2,
+                              child: Material(
+                                key: const ValueKey(
+                                  'discovery-searching-area',
                                 ),
-                                onPressed: _searchThisArea,
-                                icon: const Icon(Icons.refresh_rounded),
-                                label: Text(strings.discoverySearchThisArea),
+                                color: colors.inverseSurface,
+                                shape: const StadiumBorder(),
+                                elevation: 2,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: 14,
+                                        height: 14,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: colors.onInverseSurface,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        strings.discoverySearchingThisArea,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          color: colors.onInverseSurface,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                       ],
+                    ),
+                  ),
+                  // The selected place rides just above the sheet's top edge.
+                  // The padding around it lets taps through to the map.
+                  Positioned.fill(
+                    child: AnimatedBuilder(
+                      animation: _sheet,
+                      builder: (context, child) {
+                        final covered =
+                            constraints.maxHeight *
+                            (_sheet.isAttached
+                                ? _sheet.size
+                                : discoverySheetHalf);
+                        if (constraints.maxHeight - covered <
+                            _cardMinimumRoom) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            left: 12,
+                            right: 12,
+                            bottom: covered + 8,
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: DiscoveryPlaceCard(origin: _origin),
                     ),
                   ),
                   DraggableScrollableSheet(
@@ -563,6 +727,9 @@ class _AreaBar extends StatelessWidget {
     required this.locating,
     required this.onLocate,
     required this.onShare,
+    required this.searching,
+    required this.onSearch,
+    required this.onCloseSearch,
   });
 
   final String title;
@@ -571,6 +738,12 @@ class _AreaBar extends StatelessWidget {
 
   /// Shares the committed search, while there is one.
   final VoidCallback? onShare;
+
+  /// Whether the area is being searched by name, which the bar offers a way
+  /// out of instead of a way in.
+  final bool searching;
+  final VoidCallback onSearch;
+  final VoidCallback onCloseSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -586,22 +759,55 @@ class _AreaBar extends StatelessWidget {
           children: [
             const BackButton(),
             Expanded(
-              child: Text(
-                title,
-                key: const ValueKey('discovery-area-title'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+              child: InkWell(
+                key: const ValueKey('discovery-area-search'),
+                onTap: searching ? onCloseSearch : onSearch,
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.search_rounded,
+                          size: 18,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          title,
+                          key: const ValueKey('discovery-area-title'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            IconButton(
-              key: const ValueKey('discovery-share'),
-              tooltip: strings.discoveryShareSearch,
-              onPressed: onShare,
-              icon: const Icon(Icons.share_rounded),
-            ),
+            if (searching)
+              IconButton(
+                key: const ValueKey('discovery-close-search'),
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: onCloseSearch,
+                icon: const Icon(Icons.close_rounded),
+              )
+            else
+              IconButton(
+                key: const ValueKey('discovery-share'),
+                tooltip: strings.discoveryShareSearch,
+                onPressed: onShare,
+                icon: const Icon(Icons.share_rounded),
+              ),
             IconButton.filledTonal(
               tooltip: strings.discoveryShowMyLocation,
               onPressed: locating ? null : onLocate,

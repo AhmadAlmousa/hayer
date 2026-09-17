@@ -13,7 +13,7 @@ import 'discover_harness.dart';
 import 'discovery_results_fakes.dart';
 
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
-const _preview = ValueKey('discovery-preview');
+const _card = ValueKey('discovery-place-card');
 const _deepen = ValueKey('discovery-deepen');
 const _sheetToggle = ValueKey('discovery-sheet-toggle');
 
@@ -105,7 +105,7 @@ void main() {
       map(tester).onPlace!(testMapPoint(99));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(_preview), findsOneWidget);
+      expect(find.byKey(_card), findsOneWidget);
       expect(find.text('Selected on the map'), findsOneWidget);
       expect(find.text('120. Far away'), findsOneWidget);
       expect(
@@ -113,9 +113,10 @@ void main() {
         'place-99',
       );
       expect(fixture.repository.requests, hasLength(1));
+      // The card is its own layout, so the list still holds three rows.
       expect(
         find.byType(DiscoveryPlaceRow, skipOffstage: false),
-        findsNWidgets(4),
+        findsNWidgets(3),
       );
       expect(map(tester).selected?.catalogId, 99);
       for (final id in [1, 2, 3]) {
@@ -124,7 +125,7 @@ void main() {
 
       await tester.tap(find.byTooltip('Clear selection'));
       await tester.pumpAndSettle();
-      expect(find.byKey(_preview), findsNothing);
+      expect(find.byKey(_card), findsNothing);
       expect(map(tester).selected, isNull);
     });
 
@@ -132,15 +133,18 @@ void main() {
         'clears it', (tester) async {
       await pumpDiscover(tester, fixture, _riyadhLink);
 
-      await tester.tap(find.text('2. Place 2'));
+      // By key, because the card over the map names the same place.
+      await tester.tap(find.byKey(_row(2)));
       await tester.pumpAndSettle();
       expect(map(tester).selected?.catalogId, 2);
       expect(rowWidget(tester, 2).selected, isTrue);
+      expect(find.byKey(_card), findsOneWidget);
 
-      await tester.tap(find.text('2. Place 2'));
+      await tester.tap(find.byKey(_row(2)));
       await tester.pumpAndSettle();
       expect(map(tester).selected, isNull);
       expect(rowWidget(tester, 2).selected, isFalse);
+      expect(find.byKey(_card), findsNothing);
     });
 
     testWidgets('a selected place that leaves the results is cleared with a '
@@ -415,12 +419,17 @@ void main() {
     );
     map(tester).onPlace!(testMapPoint(99));
     await tester.pumpAndSettle();
+    // Over the map, the selected place's card is there to read.
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(_card), findsOneWidget);
+
     await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
     expect(find.byKey(const ValueKey('discovery-coverage')), findsOneWidget);
-    expect(find.byKey(_preview), findsOneWidget);
+    // The full list covers the map, so the card gives way to it.
+    expect(find.byKey(_card), findsNothing);
     // The strip's details fold away at this size until asked for.
     expect(find.text('لم يكتمل آخر استكشاف.'), findsNothing);
 

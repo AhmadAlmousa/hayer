@@ -30,6 +30,10 @@ const _shareChannel = MethodChannel('dev.fluttercommunity.plus/share');
 
 ValueKey<String> _row(int id) => ValueKey('discovery-row-$id');
 ValueKey<String> _details(int id) => ValueKey('discovery-details-$id');
+
+/// The details button on the card over the map, which is the only one a
+/// place beyond the loaded rows has.
+ValueKey<String> _cardDetails(int id) => ValueKey('discovery-card-details-$id');
 ValueKey<String> _report(int id) => ValueKey('discovery-report-$id');
 
 List<DiscoveryRatingBucket> _buckets() => [
@@ -225,7 +229,7 @@ void main() {
         testMapPoint(99),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(_details(99)));
+      await tester.tap(find.byKey(_cardDetails(99)));
       await tester.pumpAndSettle();
 
       expect(_inSheet(find.text('Far away')), findsOneWidget);
@@ -382,14 +386,14 @@ void main() {
         testMapPoint(99),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(_details(99)));
+      await tester.tap(find.byKey(_cardDetails(99)));
       await tester.pumpAndSettle();
 
       ProviderScope.containerOf(
         tester.element(find.byType(PlaceDetailsSheet)),
       ).read(discoverySelectionProvider.notifier).clear();
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('discovery-preview')), findsNothing);
+      expect(find.byKey(const ValueKey('discovery-place-card')), findsNothing);
 
       await scrollSheetTo(tester, find.byKey(_reportTile));
       await tester.tap(find.byKey(_reportTile));

@@ -177,6 +177,41 @@ void main() {
     expect(repository.deepenRequests, hasLength(2));
   });
 
+  test('an area holding nothing at all explores itself, once', () async {
+    repository
+      ..onBrowse = ((request) async => testBrowsePage(
+        coverage: testCoverage(eligible: 0),
+        includeMap: request.includeMap,
+      ))
+      ..onDeepen = ((_) async => testReceipt());
+    coverage().ensure(testViewport);
+    await _settle(10);
+
+    showResults();
+    await _settle();
+    expect(repository.deepenRequests, hasLength(1));
+
+    // Reloading the same empty area does not start a second exploration.
+    showResults();
+    await _settle();
+    expect(repository.deepenRequests, hasLength(1));
+  });
+
+  test('an area that already holds places is left alone', () async {
+    repository
+      ..onBrowse = ((request) async => testBrowsePage(
+        coverage: testCoverage(eligible: 12),
+        includeMap: request.includeMap,
+      ))
+      ..onDeepen = ((_) async => testReceipt());
+    coverage().ensure(testViewport);
+    await _settle(10);
+
+    showResults();
+    await _settle();
+    expect(repository.deepenRequests, isEmpty);
+  });
+
   test('an exploration the results list as pending is followed', () async {
     repository
       ..onBrowse = ((request) async => testBrowsePage(

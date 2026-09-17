@@ -49,15 +49,25 @@ Map<String, dynamic> _feature(
 
 /// Every individual place in [payload], for the clustered pin source. Empty
 /// unless the payload holds points.
-Map<String, dynamic> discoveryPointFeatures(DiscoveryMapPayload? payload) =>
-    _collection([
-      if (payload?.mode == DiscoveryMapMode.points)
-        for (final point in payload!.points)
-          _feature(point.catalogId, point.latitude, point.longitude, {
-            'label': discoveryPinLabel(point.rating),
-            'gem': point.hiddenGem,
-          }),
-    ]);
+///
+/// [ranks] maps a catalog id to its place in the loaded list. A pin the list
+/// also shows carries that rank, so the map can draw it as the row the reader
+/// is looking at rather than as one more rating; a pin the list has not
+/// reached carries rank 0. Every pin carries its [DiscoveryMapPoint.name], so
+/// a pin can be read without opening it.
+Map<String, dynamic> discoveryPointFeatures(
+  DiscoveryMapPayload? payload, {
+  Map<int, int> ranks = const {},
+}) => _collection([
+  if (payload?.mode == DiscoveryMapMode.points)
+    for (final point in payload!.points)
+      _feature(point.catalogId, point.latitude, point.longitude, {
+        'label': discoveryPinLabel(point.rating),
+        'name': point.name,
+        'rank': ranks[point.catalogId] ?? 0,
+        'gem': point.hiddenGem,
+      }),
+]);
 
 /// Every aggregate cell in [payload], for its own source. Empty unless the
 /// payload holds aggregates.

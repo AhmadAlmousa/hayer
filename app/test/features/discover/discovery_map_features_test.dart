@@ -10,7 +10,8 @@ List<Map<String, dynamic>> _features(Map<String, dynamic> collection) {
 }
 
 void main() {
-  test('points become pins with their id, position, rating label and gem', () {
+  test('points become pins with their id, position, name, rating label, rank '
+      'and gem', () {
     final features = _features(
       discoveryPointFeatures(
         DiscoveryMapPayload(
@@ -33,9 +34,26 @@ void main() {
     expect(features.first['properties'], {
       'id': 7,
       'label': '4.3',
+      'name': 'Place 7',
+      'rank': 0,
       'gem': false,
     });
-    expect(features.last['properties'], {'id': 8, 'label': '', 'gem': true});
+    expect(features.last['properties'], {
+      'id': 8,
+      'label': '',
+      'name': 'Place 8',
+      'rank': 0,
+      'gem': true,
+    });
+  });
+
+  test('a pin the list has reached carries its row number', () {
+    final features = _features(
+      discoveryPointFeatures(testPointsMap([1, 2]), ranks: {1: 5}),
+    );
+
+    expect(features.first['properties']['rank'], 5);
+    expect(features.last['properties']['rank'], 0);
   });
 
   test('aggregate cells are their own features, never pins', () {

@@ -347,6 +347,7 @@
   "@discoveryPlacesInPreviousArea": {"placeholders": {"count": {"type": "int", "format": "decimalPattern"}}},
   "discoveryLoadingPlaces": "Loading places",
   "discoverySearchThisArea": "Search this area",
+  "discoverySearchingThisArea": "Searching this area…",
   "discoveryShowMyLocation": "Show my location",
   "discoverySortTitle": "Sort places",
   "discoverySortBest": "Best",

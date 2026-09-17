@@ -340,6 +340,7 @@
   "discoveryPlacesInPreviousArea": "{count, plural, =0{لا أماكن في المنطقة السابقة} =1{مكان واحد في المنطقة السابقة} =2{مكانان في المنطقة السابقة} few{{count} أماكن في المنطقة السابقة} many{{count} مكاناً في المنطقة السابقة} other{{count} مكان في المنطقة السابقة}}",
   "discoveryLoadingPlaces": "جارٍ تحميل الأماكن",
   "discoverySearchThisArea": "ابحث في هذه المنطقة",
+  "discoverySearchingThisArea": "جارٍ البحث في هذه المنطقة…",
   "discoveryShowMyLocation": "اعرض موقعي",
   "discoverySortTitle": "ترتيب الأماكن",
   "discoverySortBest": "الأفضل",

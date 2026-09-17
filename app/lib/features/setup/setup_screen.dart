@@ -15,6 +15,7 @@ import '../../core/page_title.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../core/widgets/adaptive_actions.dart';
+import '../../core/widgets/location_search_field.dart';
 import '../../core/widgets/search_area_map.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'setup_data.dart';
@@ -52,13 +53,8 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   String? _error;
   final _displayName = TextEditingController();
   final _locationSearch = TextEditingController();
-  List<LocationSuggestion> _suggestions = const [];
-  bool _searching = false;
-  bool _searchFailed = false;
-  bool _searchComplete = false;
-  int _searchRevision = 0;
+  final _locationField = GlobalKey<LocationSearchFieldState>();
   int _locationRevision = 0;
-  Timer? _debounce;
   Timer? _mapDebounce;
   List<SetupCategory> _categories = setupCategories;
   bool _journeyStarted = false;
@@ -88,7 +84,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
 
   @override
   void dispose() {
-    _debounce?.cancel();
     _mapDebounce?.cancel();
     _displayName.dispose();
     _locationSearch.dispose();
@@ -313,74 +308,18 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Heading(strings.setupWhereTitle),
-        TextField(
+        LocationSearchField(
+          key: _locationField,
           controller: _locationSearch,
-          onChanged: _searchLocations,
-          onSubmitted: _searchLocations,
-          textInputAction: TextInputAction.search,
-          decoration: InputDecoration(
-            hintText: strings.searchLocation,
-            prefixIcon: const Icon(Icons.search_rounded),
-            suffixIcon: M3EIconButton(
-              tooltip: strings.useCurrentLocation,
-              onPressed: _locating ? null : _useLocation,
-              icon: _locating
-                  ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.my_location_rounded),
-            ),
-          ),
+          // Typing supersedes the location being enriched, so a late address
+          // cannot land on top of it.
+          onTyped: () => _locationRevision++,
+          latitude: _latitude,
+          longitude: _longitude,
+          locating: _locating,
+          onUseCurrentLocation: _useLocation,
+          onSelected: _selectSuggestion,
         ),
-        if (_searching)
-          Semantics(
-            liveRegion: true,
-            label: strings.searchingLocations,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: LinearProgressIndicator(),
-            ),
-          ),
-        if (_searchFailed)
-          Semantics(
-            liveRegion: true,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(strings.locationSearchFailed),
-                TextButton.icon(
-                  onPressed: () => _searchLocations(_locationSearch.text),
-                  icon: const Icon(Icons.refresh_rounded),
-                  label: Text(strings.tryAgain),
-                ),
-              ],
-            ),
-          ),
-        if (_searchComplete && _suggestions.isEmpty)
-          Semantics(
-            liveRegion: true,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(strings.noLocationResults),
-            ),
-          ),
-        if (_suggestions.isNotEmpty)
-          Card(
-            child: Column(
-              children: [
-                for (final suggestion in _suggestions)
-                  ListTile(
-                    leading: const Icon(Icons.location_on_outlined),
-                    title: Text(suggestion.mainText),
-                    subtitle: suggestion.secondaryText == null
-                        ? null
-                        : Text(suggestion.secondaryText!),
-                    onTap: () => _selectSuggestion(suggestion),
-                  ),
-              ],
-            ),
-          ),
         if (_latitude != null) ...[
           const SizedBox(height: 16),
           Card(
@@ -668,59 +607,10 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
     }
   }
 
-  void _searchLocations(String value) {
-    _debounce?.cancel();
-    final revision = ++_searchRevision;
-    ++_locationRevision;
-    final query = value.trim();
-    setState(() {
-      _suggestions = const [];
-      _searching = query.length >= 3;
-      _searchFailed = false;
-      _searchComplete = false;
-    });
-    if (!_searching) return;
-    _debounce = Timer(const Duration(milliseconds: 350), () async {
-      try {
-        final values = await ref
-            .read(locationRepositoryProvider)
-            .suggest(
-              query: query,
-              latitude: _latitude,
-              longitude: _longitude,
-            );
-        if (mounted && revision == _searchRevision) {
-          setState(() {
-            _suggestions = values;
-            _searching = false;
-            _searchComplete = true;
-          });
-        }
-      } catch (_) {
-        if (mounted && revision == _searchRevision) {
-          setState(() {
-            _searching = false;
-            _searchFailed = true;
-          });
-        }
-      }
-    });
-  }
-
-  void _cancelSuggestions() {
-    _debounce?.cancel();
-    ++_searchRevision;
-    _suggestions = const [];
-    _searching = false;
-    _searchFailed = false;
-    _searchComplete = false;
-  }
-
   void _selectSuggestion(LocationSuggestion suggestion) {
     ++_locationRevision;
     _mapDebounce?.cancel();
     setState(() {
-      _cancelSuggestions();
       _latitude = suggestion.latitude;
       _longitude = suggestion.longitude;
       _address = suggestion.fullText;
@@ -739,8 +629,9 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
 
   int _selectCoordinates(double latitude, double longitude) {
     final revision = ++_locationRevision;
+    // The field owns its suggestions; a location chosen on the map drops them.
+    _locationField.currentState?.clearSuggestions();
     setState(() {
-      _cancelSuggestions();
       _latitude = latitude;
       _longitude = longitude;
       _address = null;

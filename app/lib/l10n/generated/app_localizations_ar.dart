@@ -1080,6 +1080,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoverySearchThisArea => 'ابحث في هذه المنطقة';
 
   @override
+  String get discoverySearchingThisArea => 'جارٍ البحث في هذه المنطقة…';
+
+  @override
   String get discoveryShowMyLocation => 'اعرض موقعي';
 
   @override

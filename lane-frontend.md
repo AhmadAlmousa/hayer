@@ -68,6 +68,100 @@ Last updated: 2026-09-17
 
 ## Checkpoints
 
+### "Got time" map and home crowding: seven owner fixes — complete (2026-09-17)
+
+Owner request, from first use of the two-mode home and Discover on a device.
+Seven points, all in this lane.
+
+- **Home crowding** (`features/home/`). `ModeHeroButton` gained an `actions`
+  slot, and Resume and Join moved inside the "In a hurry" card: they are
+  sessions, which only that mode has. The card's `MergeSemantics` and
+  `Semantics(button: true)` now wrap the header and chips alone, so the nested
+  buttons keep their own nodes instead of being merged into the card's. The
+  duplicate restore icon went from the top row. With discovery off there is no
+  card, so `_singleSearch` keeps both entries standalone.
+- **The blue dot** (`core/widgets/hayer_map.dart`). `myLocationEnabled` is
+  threaded through `HayerMap` to `DiscoveryMap`, defaulting false so
+  `SearchAreaMap` is untouched. It is passed as a field, not fixed at
+  creation, so the dot appears when a permitted fix arrives after the map is
+  built, and it stays false until permission is actually granted — the
+  platform reads the location as soon as the layer exists.
+- **Pins that read as the list** (`discovery_map_features.dart`,
+  `discovery_map.dart`). Point features now carry `name` and `rank`. A pin the
+  loaded list has reached is drawn in the primary colour, labelled with its row
+  number instead of its rating; the rest stay rating dots. A new
+  `discovery-pin-names` symbol layer draws names from zoom 14 with
+  `textAllowOverlap: false`, so names give way to each other and never hide a
+  pin.
+- **A moved map searches itself** (`discover_view.dart`). The camera's rested
+  viewport is committed 700 ms later. It goes through `Router.neglect`, so
+  panning adds no history entry — **a behaviour change for reviewers: Back now
+  leaves Discover rather than retracing every drag.** The "Search this area"
+  button is replaced by a "Searching this area…" indicator, since there is no
+  longer anything to tap.
+- **An empty area explores itself** (`discovery_coverage_controller.dart`).
+  When a committed area comes back with `eligibleCatalogCount == 0` and nothing
+  already running, one exploration starts on its own, remembered per viewport
+  token so a refusal is explained by the coverage strip rather than retried.
+  `discoveryAutoExploreProvider` gates it; `discover_harness.dart` turns it off
+  so existing tests keep their explorations explicit. This spends provider
+  budget per newly visited area, bounded by the server's own cooldown and
+  per-user harvest limits.
+- **An info card on the map** (`discovery_place_card.dart`, new). Selecting a
+  pin or a row shows the place over the map: thumbnail, ranked name, rating,
+  tag, and Directions, Save and Details. It replaces `DiscoveryPlacePreview`,
+  which is deleted. It deliberately does **not** reuse `DiscoveryPlaceRow`: the
+  selected place is usually also a visible row, and two widgets carrying one
+  row's keys make every `byKey` finder ambiguous. `_Thumbnail` became
+  `DiscoveryPlaceThumbnail` and the tag switch became `discoveryTagLabel`, so
+  the card and the row still say the same things from one place. The card hides
+  when the sheet is raised over the map, which is what the full list means.
+- **A typeable address bar** (`core/widgets/location_search_field.dart`, new).
+  The setup screen's autocomplete — the field, its suggestion list, the 350 ms
+  debounce and the stale-reply guard — moved into a shared widget that both
+  modes use, against the existing `place.suggest`. Tapping the area bar opens
+  it; choosing a place commits it as a real search, with its history entry.
+  `onTyped` carries the keystroke back to the owner, because setup relies on
+  typing superseding an in-flight reverse geocode so a late address cannot land
+  on top of what was typed.
+
+**Verification.** 371 app tests pass; `dart analyze --fatal-infos` and
+`dart format --output=none --set-exit-if-changed` are both clean over
+`app/lib` and `app/test`. `flutter build bundle --release` succeeds.
+
+Signed `0.2.1+7` built and verified: v2 signature true (v1 and v3 false),
+signer `CN=Ahmad Almousa, OU=Hayer`, package `sa.almou.hayer`, versionCode 7,
+minSdk 26, 107,868,659 bytes, SHA-256
+`620f5e9e6f49257a77442da2bb8a168e6e1fb4edd4d821311b808e36ffd31c07`.
+
+**Toolchain defect found and fixed.** Every `flutter` command on this host hung
+forever, and so did `assembleRelease`. The cause was not Gradle:
+`bin/internal/shared.sh::_wait_for_lock` takes an exclusive `flock` on a
+**read-only** fd (`upgrade_flutter 7< "$SHARED_NAME"`), and this SDK sits on an
+`nfs4` mount with `local_lock=none`, where the server rejects that. Flutter
+documents the limitation at `shared.sh:77` but only falls back to its NFS-safe
+`mkdir` lock when `flock` is absent, which it is not here, so it retried every
+0.1s indefinitely. Gradle inherited the hang because the Flutter Gradle plugin
+shells out to `${flutter.sdk}/bin/flutter` for `flutter assemble` — no JVM was
+ever spawned and `~/.gradle` was never touched, which made it look like a
+Gradle fault. Killing processes and clearing lock files does not help: nothing
+holds the lock, and the call cannot succeed on this mount.
+
+Fixed by replacing `bin/flutter` in the pinned toolchain with a launcher that
+execs `bin/cache/flutter_tools.snapshot` through the bundled `dart`; the
+toolchain never upgrades, so the step the lock guards has nothing to do. The
+original is kept beside it as `bin/flutter.orig-lockver`, and
+`git -C build/toolchains/flutter-3.47.2 checkout bin/flutter` restores it.
+`assembleRelease` then completed in 291.5s. This is a change to the toolchain,
+not to this repository. Driving the snapshot directly
+(`dart bin/cache/flutter_tools.snapshot …`) bypasses `shared.sh` and works
+either way; the tests and analysis above were run that way before the fix.
+
+**Outstanding.** `scripts/preflight.sh` has not been run end to end here; it
+also drives `serverpod_cli` and the back-end and admin packages, which this
+lane did not touch. Device acceptance for all seven points remains open —
+`adb devices` is empty on this host.
+
 ### Admin POI catalog: map modes, map-scoped list, filters and info card — implemented (2026-09-16)
 
 Owner request. The catalog page moved out of `admin_app.dart` into
