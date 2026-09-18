@@ -87,6 +87,43 @@ Last updated: 2026-09-16
 
 ## Checkpoints
 
+### A Discover tree that fills itself in — implemented (2026-09-19)
+
+M9-L's last item. The owner asked for nested Discover types, mapped without
+an operator doing it by hand.
+
+- **The tree already nested; it was empty.** `DiscoveryTaxonomyNode` is
+  recursive, validated to eight levels, and both the admin editor and the app
+  sheet render it as a tree. What shipped was nine roots with no children and
+  no aliases. `DiscoveryTaxonomySeed` replaces that with the real vocabulary:
+  over 100 nodes, English and Arabic labels, an emoji each, and the provider
+  spellings the harvest will meet, with the owner's example chain
+  Food & Drinks → Restaurants → Middle Eastern → Lebanese in it. It is Dart
+  seed data rather than a migration, so an operator edits and republishes it
+  through the ordinary draft → validate → publish lifecycle.
+- **`DiscoveryTypeAutoMapper`.** The harvest is what learns of a new provider
+  type, so mapping runs at the end of one. It reads the observed types the
+  active tree does not claim and matches each by, in order: a node label,
+  singular or plural; a known head noun whose modifier resolves inside that
+  noun's subtree ("Lebanese cuisine" → Lebanese); the head noun's own node
+  ("Peruvian restaurant" → Restaurants). Anything else is left alone and still
+  appears in the admin unmapped report, which stays the manual escape hatch.
+  The alias goes on the target and comes off every other node, the same rule
+  the admin tree editor applies, so tree-wide alias uniqueness still holds; a
+  run whose result would not validate is abandoned rather than published, and
+  a failure is logged without failing the harvest.
+- **What it did is on the record.** Each assignment is a row in
+  `hayer_discovery_type_automap` (one per type, a later run overwrites its
+  own), and each run is an audit row attributed to `auto-mapper`. The new
+  `discoveryAutoMappedTypes` admin read serves both: the tree editor marks
+  aliases the mapper chose, and the unmapped-types page says whether it is on
+  and when it last ran. `discoveryTypeAutoMapEnabled` defaults on.
+
+Tests: the seed is checked against `validate`, the matching rules are unit
+tested without a database, and four PostGIS cases cover a fresh database's
+vocabulary, a run's writes, a second run being a no-op, and an operator's
+placement never being moved back. 216 server tests pass.
+
 ### Optional reason, photo policy and covering coverage — implemented (2026-09-18)
 
 M9-L, the owner's feedback pass. Three back-end halves.

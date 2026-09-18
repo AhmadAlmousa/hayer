@@ -310,6 +310,32 @@ void main() {
       expect(discoveryNodeAt(saved, [1]).typeAliases, ['hotel']);
     });
 
+    testWidgets('the page says what was mapped without an operator', (
+      tester,
+    ) async {
+      final operations = _FakeDiscoveryOperations();
+      await _pumpDashboard(tester, operations, '/discover-types');
+
+      expect(find.text('Automatic mapping is on'), findsOneWidget);
+      expect(find.textContaining('It has mapped 3 types'), findsOneWidget);
+      expect(find.text('Lebanese restaurant → Lebanese'), findsOneWidget);
+      // The list below stays what it always was: what it could not place.
+      expect(find.text('pastry_shop'), findsOneWidget);
+    });
+
+    testWidgets('with mapping off the page says every type waits here', (
+      tester,
+    ) async {
+      final operations = _FakeDiscoveryOperations()..autoMapEnabled = false;
+      await _pumpDashboard(tester, operations, '/discover-types');
+
+      expect(find.text('Automatic mapping is off'), findsOneWidget);
+      expect(
+        find.textContaining('Every new type waits here for you'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('the issue filter reaches the server', (tester) async {
       final operations = _FakeDiscoveryOperations();
       await _pumpDashboard(tester, operations, '/discover-types');
@@ -630,6 +656,7 @@ class _FakeDiscoveryOperations implements AdminOperations {
   int? publishedTaxonomyRevision;
   (String, int)? taxonomyRollback;
   DiscoveryTypeMappingIssue? unmappedIssue;
+  bool autoMapEnabled = true;
   AdminDiscoveryHarvestManifestVersion manifest = _manifestVersion(
     'core-v3',
     7,
@@ -782,6 +809,26 @@ class _FakeDiscoveryOperations implements AdminOperations {
       total: items.length,
       page: page,
       pageSize: pageSize,
+    );
+  }
+
+  @override
+  Future<AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes() async {
+    _check();
+    return AdminDiscoveryAutoMapReport(
+      enabled: autoMapEnabled,
+      mappedTypeCount: 3,
+      lastMappedAt: DateTime.utc(2026, 9, 18, 9, 30),
+      recent: [
+        AdminDiscoveryAutoMappedType(
+          primaryType: 'Lebanese restaurant',
+          typeKey: 'lebanese restaurant',
+          nodeId: 'food_lebanese',
+          nodeLabel: 'Lebanese',
+          rule: 'branch',
+          mappedAt: DateTime.utc(2026, 9, 18, 9, 30),
+        ),
+      ],
     );
   }
 
@@ -993,6 +1040,7 @@ DiscoveryPolicy _discoveryPolicy() => DiscoveryPolicy(
   queryTimeoutMilliseconds: 2500,
   maximumPageSize: 50,
   maximumMapPoints: 2000,
+  typeAutoMapEnabled: true,
 );
 
 DiscoveryTaxonomyNode _node(

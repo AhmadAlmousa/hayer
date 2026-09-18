@@ -23,6 +23,7 @@ import 'discovery_harvest_plan.dart';
 import 'discovery_harvest_scheduler.dart';
 import 'discovery_metrics.dart';
 import 'discovery_policy_service.dart';
+import 'discovery_type_auto_mapper.dart';
 
 /// Calibrated provider pages for harvests.
 abstract interface class HarvestPageSource {
@@ -828,6 +829,7 @@ RETURNING job."jobId"
       jobId: job.jobId,
       failureCode: failureCode,
     );
+    await _autoMapTypes(session, policy: policy, state: state);
     if (!operatorCancelled) {
       await control.finish(
         switch (state) {
@@ -838,6 +840,31 @@ RETURNING job."jobId"
         state == DiscoveryHarvestState.partial
             ? 'partial_$failureCode'
             : failureCode,
+      );
+    }
+  }
+
+  /// Attaches the types this harvest observed to the Discover tree.
+  ///
+  /// The harvest is what learns of a new provider type, so mapping runs here
+  /// rather than on a schedule. It is best effort: a failure is logged and the
+  /// harvest still reports its own outcome, because a type left under Other is
+  /// a smaller problem than a harvest that looks failed.
+  static Future<void> _autoMapTypes(
+    Session session, {
+    required CachePolicy policy,
+    required DiscoveryHarvestState state,
+  }) async {
+    if (state == DiscoveryHarvestState.cancelled) return;
+    if (policy.discovery?.typeAutoMapEnabled != true) return;
+    try {
+      final assigned = await DiscoveryTypeAutoMapper.run(session);
+      if (assigned.isEmpty) return;
+      session.log('Discover auto-mapped ${assigned.length} observed types.');
+    } catch (error) {
+      session.log(
+        'Discover type auto-mapping failed: $error',
+        level: LogLevel.warning,
       );
     }
   }

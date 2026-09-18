@@ -39,6 +39,10 @@ fields:
   discoveryQueryTimeoutMilliseconds: int, default=2000
   discoveryMaximumPageSize: int, default=100
   discoveryMaximumMapPoints: int, default=2000
+  # Whether the harvest attaches newly observed provider types to the
+  # Discover tree by itself. Off leaves every new type under Other until an
+  # operator maps it by hand.
+  discoveryTypeAutoMapEnabled: bool, default=true
   detailRefreshMaximumRequests: int, default=3
   detailRefreshMaximumSeconds: int, default=20
   detailRefreshCooldownMinutes: int, default=60

@@ -1,0 +1,22 @@
+### What the Discover type auto-mapper has assigned, so an operator can see
+### which aliases the mapper chose rather than a person, and move the ones it
+### got wrong. One row per observed type; a later run overwrites its own row.
+class: DiscoveryTypeAutoMapRow
+serverOnly: true
+table: hayer_discovery_type_automap
+fields:
+  # hayer_discovery_normalize(primaryType), matching the observation row.
+  typeKey: String
+  # The spelling the source returned when it was mapped.
+  primaryType: String
+  # The taxonomy node the alias was added to.
+  nodeId: String
+  # DiscoveryTypeAutoMapRule.name: how the match was reached.
+  rule: String
+  mappedAt: DateTime
+indexes:
+  hayer_discovery_type_automap_key:
+    fields: typeKey
+    unique: true
+  hayer_discovery_type_automap_time:
+    fields: mappedAt

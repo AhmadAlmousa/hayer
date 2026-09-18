@@ -12,3 +12,4 @@ fields:
   queryTimeoutMilliseconds: int
   maximumPageSize: int
   maximumMapPoints: int
+  typeAutoMapEnabled: bool

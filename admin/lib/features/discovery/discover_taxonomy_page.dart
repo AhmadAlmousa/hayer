@@ -32,6 +32,10 @@ class _DiscoverTaxonomyPageState extends State<DiscoverTaxonomyPage> {
   bool _busy = false;
   bool _dirty = false;
 
+  /// Normalized aliases the auto-mapper chose, so the tree can say which
+  /// aliases a person put there and which a harvest guessed.
+  Set<String> _autoMapped = const {};
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +60,20 @@ class _DiscoverTaxonomyPageState extends State<DiscoverTaxonomyPage> {
       if (mounted) setState(() => _error = error);
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+    // A server that does not report auto-mapping yet leaves every alias
+    // unmarked, which is what it was before the mapper existed.
+    try {
+      final report = await widget.operations.discoveryAutoMappedTypes();
+      if (!mounted) return;
+      setState(() {
+        _autoMapped = {
+          for (final mapped in report.recent)
+            discoveryAliasKey(mapped.primaryType),
+        };
+      });
+    } catch (_) {
+      if (mounted) setState(() => _autoMapped = const {});
     }
   }
 
@@ -172,6 +190,11 @@ class _DiscoverTaxonomyPageState extends State<DiscoverTaxonomyPage> {
     ),
   );
 
+  List<String> _autoAliasesOf(DiscoveryTaxonomyNode node) => [
+    for (final alias in node.typeAliases)
+      if (_autoMapped.contains(discoveryAliasKey(alias))) alias,
+  ];
+
   Widget _nodeTile(
     List<DiscoveryTaxonomyNode> roots,
     DiscoveryNodePath path,
@@ -221,6 +244,16 @@ class _DiscoverTaxonomyPageState extends State<DiscoverTaxonomyPage> {
                               ? 'No aliases'
                               : 'Aliases: ${node.typeAliases.join(', ')}',
                         ),
+                        if (_autoAliasesOf(node) case final auto
+                            when auto.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            'Mapped automatically: ${auto.join(', ')}. Move one '
+                            'to another node to correct it; it stays where you '
+                            'put it.',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
                       ],
                     ),
                   ),

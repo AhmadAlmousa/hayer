@@ -55,6 +55,7 @@ abstract class CacheSettingsRow
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
@@ -98,6 +99,7 @@ abstract class CacheSettingsRow
            discoveryQueryTimeoutMilliseconds ?? 2000,
        discoveryMaximumPageSize = discoveryMaximumPageSize ?? 100,
        discoveryMaximumMapPoints = discoveryMaximumMapPoints ?? 2000,
+       discoveryTypeAutoMapEnabled = discoveryTypeAutoMapEnabled ?? true,
        detailRefreshMaximumRequests = detailRefreshMaximumRequests ?? 3,
        detailRefreshMaximumSeconds = detailRefreshMaximumSeconds ?? 20,
        detailRefreshCooldownMinutes = detailRefreshCooldownMinutes ?? 60,
@@ -144,6 +146,7 @@ abstract class CacheSettingsRow
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
@@ -242,6 +245,12 @@ abstract class CacheSettingsRow
           jsonSerialization['discoveryMaximumPageSize'] as int?,
       discoveryMaximumMapPoints:
           jsonSerialization['discoveryMaximumMapPoints'] as int?,
+      discoveryTypeAutoMapEnabled:
+          jsonSerialization['discoveryTypeAutoMapEnabled'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['discoveryTypeAutoMapEnabled'],
+            ),
       detailRefreshMaximumRequests:
           jsonSerialization['detailRefreshMaximumRequests'] as int?,
       detailRefreshMaximumSeconds:
@@ -338,6 +347,8 @@ abstract class CacheSettingsRow
 
   int discoveryMaximumMapPoints;
 
+  bool discoveryTypeAutoMapEnabled;
+
   int detailRefreshMaximumRequests;
 
   int detailRefreshMaximumSeconds;
@@ -400,6 +411,7 @@ abstract class CacheSettingsRow
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
@@ -453,6 +465,7 @@ abstract class CacheSettingsRow
       'discoveryQueryTimeoutMilliseconds': discoveryQueryTimeoutMilliseconds,
       'discoveryMaximumPageSize': discoveryMaximumPageSize,
       'discoveryMaximumMapPoints': discoveryMaximumMapPoints,
+      'discoveryTypeAutoMapEnabled': discoveryTypeAutoMapEnabled,
       'detailRefreshMaximumRequests': detailRefreshMaximumRequests,
       'detailRefreshMaximumSeconds': detailRefreshMaximumSeconds,
       'detailRefreshCooldownMinutes': detailRefreshCooldownMinutes,
@@ -541,6 +554,7 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
@@ -590,6 +604,7 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
          discoveryQueryTimeoutMilliseconds: discoveryQueryTimeoutMilliseconds,
          discoveryMaximumPageSize: discoveryMaximumPageSize,
          discoveryMaximumMapPoints: discoveryMaximumMapPoints,
+         discoveryTypeAutoMapEnabled: discoveryTypeAutoMapEnabled,
          detailRefreshMaximumRequests: detailRefreshMaximumRequests,
          detailRefreshMaximumSeconds: detailRefreshMaximumSeconds,
          detailRefreshCooldownMinutes: detailRefreshCooldownMinutes,
@@ -643,6 +658,7 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
@@ -725,6 +741,8 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
           discoveryMaximumPageSize ?? this.discoveryMaximumPageSize,
       discoveryMaximumMapPoints:
           discoveryMaximumMapPoints ?? this.discoveryMaximumMapPoints,
+      discoveryTypeAutoMapEnabled:
+          discoveryTypeAutoMapEnabled ?? this.discoveryTypeAutoMapEnabled,
       detailRefreshMaximumRequests:
           detailRefreshMaximumRequests ?? this.detailRefreshMaximumRequests,
       detailRefreshMaximumSeconds:
@@ -951,6 +969,12 @@ class CacheSettingsRowUpdateTable
   _i1.ColumnValue<int, int> discoveryMaximumMapPoints(int value) =>
       _i1.ColumnValue(
         table.discoveryMaximumMapPoints,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> discoveryTypeAutoMapEnabled(bool value) =>
+      _i1.ColumnValue(
+        table.discoveryTypeAutoMapEnabled,
         value,
       );
 
@@ -1181,6 +1205,11 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
       this,
       hasDefault: true,
     );
+    discoveryTypeAutoMapEnabled = _i1.ColumnBool(
+      'discoveryTypeAutoMapEnabled',
+      this,
+      hasDefault: true,
+    );
     detailRefreshMaximumRequests = _i1.ColumnInt(
       'detailRefreshMaximumRequests',
       this,
@@ -1300,6 +1329,8 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnInt discoveryMaximumMapPoints;
 
+  late final _i1.ColumnBool discoveryTypeAutoMapEnabled;
+
   late final _i1.ColumnInt detailRefreshMaximumRequests;
 
   late final _i1.ColumnInt detailRefreshMaximumSeconds;
@@ -1357,6 +1388,7 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
     discoveryQueryTimeoutMilliseconds,
     discoveryMaximumPageSize,
     discoveryMaximumMapPoints,
+    discoveryTypeAutoMapEnabled,
     detailRefreshMaximumRequests,
     detailRefreshMaximumSeconds,
     detailRefreshCooldownMinutes,

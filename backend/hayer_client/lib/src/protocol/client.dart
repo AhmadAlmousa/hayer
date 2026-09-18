@@ -43,62 +43,64 @@ import 'package:hayer_client/src/protocol/admin_discovery_unmapped_type_page.dar
     as _i21;
 import 'package:hayer_client/src/protocol/discovery_type_mapping_issue.dart'
     as _i22;
-import 'package:hayer_client/src/protocol/discovery_growth_metrics.dart'
+import 'package:hayer_client/src/protocol/admin_discovery_auto_map_report.dart'
     as _i23;
-import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i24;
-import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i25;
-import 'package:hayer_client/src/protocol/taxonomy_validation.dart' as _i26;
-import 'package:hayer_client/src/protocol/cache_dashboard_summary.dart' as _i27;
-import 'package:hayer_client/src/protocol/catalog_place_page.dart' as _i28;
-import 'package:hayer_client/src/protocol/admin_catalog_page.dart' as _i29;
-import 'package:hayer_client/src/protocol/admin_catalog_query.dart' as _i30;
-import 'package:hayer_client/src/protocol/admin_catalog_heatmap.dart' as _i31;
+import 'package:hayer_client/src/protocol/discovery_growth_metrics.dart'
+    as _i24;
+import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i25;
+import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i26;
+import 'package:hayer_client/src/protocol/taxonomy_validation.dart' as _i27;
+import 'package:hayer_client/src/protocol/cache_dashboard_summary.dart' as _i28;
+import 'package:hayer_client/src/protocol/catalog_place_page.dart' as _i29;
+import 'package:hayer_client/src/protocol/admin_catalog_page.dart' as _i30;
+import 'package:hayer_client/src/protocol/admin_catalog_query.dart' as _i31;
+import 'package:hayer_client/src/protocol/admin_catalog_heatmap.dart' as _i32;
 import 'package:hayer_client/src/protocol/admin_catalog_place_detail.dart'
-    as _i32;
-import 'package:hayer_client/src/protocol/coverage_page.dart' as _i33;
-import 'package:hayer_client/src/protocol/refresh_job_page.dart' as _i34;
-import 'package:hayer_client/src/protocol/job_status.dart' as _i35;
-import 'package:hayer_client/src/protocol/admin_poi_issue_page.dart' as _i36;
-import 'package:hayer_client/src/protocol/poi_issue_status.dart' as _i37;
-import 'package:hayer_client/src/protocol/admin_audit_page.dart' as _i38;
-import 'package:hayer_client/src/protocol/metric_point.dart' as _i39;
-import 'package:hayer_client/src/protocol/catalog_prune_preview.dart' as _i40;
-import 'package:hayer_client/src/protocol/cache_policy.dart' as _i41;
-import 'package:hayer_client/src/protocol/calibration_validation.dart' as _i42;
-import 'package:hayer_client/src/protocol/discovery_config.dart' as _i43;
-import 'package:hayer_client/src/protocol/bootstrap_info.dart' as _i44;
+    as _i33;
+import 'package:hayer_client/src/protocol/coverage_page.dart' as _i34;
+import 'package:hayer_client/src/protocol/refresh_job_page.dart' as _i35;
+import 'package:hayer_client/src/protocol/job_status.dart' as _i36;
+import 'package:hayer_client/src/protocol/admin_poi_issue_page.dart' as _i37;
+import 'package:hayer_client/src/protocol/poi_issue_status.dart' as _i38;
+import 'package:hayer_client/src/protocol/admin_audit_page.dart' as _i39;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i40;
+import 'package:hayer_client/src/protocol/catalog_prune_preview.dart' as _i41;
+import 'package:hayer_client/src/protocol/cache_policy.dart' as _i42;
+import 'package:hayer_client/src/protocol/calibration_validation.dart' as _i43;
+import 'package:hayer_client/src/protocol/discovery_config.dart' as _i44;
+import 'package:hayer_client/src/protocol/bootstrap_info.dart' as _i45;
 import 'package:hayer_client/src/protocol/discovery_taxonomy_snapshot.dart'
-    as _i45;
-import 'package:hayer_client/src/protocol/discover_browse_page.dart' as _i46;
-import 'package:hayer_client/src/protocol/discover_query.dart' as _i47;
-import 'package:hayer_client/src/protocol/discover_query_context.dart' as _i48;
-import 'package:hayer_client/src/protocol/discover_facets.dart' as _i49;
-import 'package:hayer_client/src/protocol/discover_place_context.dart' as _i50;
-import 'package:hayer_client/src/protocol/poi_identity.dart' as _i51;
-import 'package:hayer_client/src/protocol/discovery_area_receipt.dart' as _i52;
-import 'package:hayer_client/src/protocol/discover_viewport.dart' as _i53;
+    as _i46;
+import 'package:hayer_client/src/protocol/discover_browse_page.dart' as _i47;
+import 'package:hayer_client/src/protocol/discover_query.dart' as _i48;
+import 'package:hayer_client/src/protocol/discover_query_context.dart' as _i49;
+import 'package:hayer_client/src/protocol/discover_facets.dart' as _i50;
+import 'package:hayer_client/src/protocol/discover_place_context.dart' as _i51;
+import 'package:hayer_client/src/protocol/poi_identity.dart' as _i52;
+import 'package:hayer_client/src/protocol/discovery_area_receipt.dart' as _i53;
+import 'package:hayer_client/src/protocol/discover_viewport.dart' as _i54;
 import 'package:hayer_client/src/protocol/discovery_harvest_status.dart'
-    as _i54;
-import 'package:hayer_client/src/protocol/session_bundle.dart' as _i55;
-import 'package:hayer_client/src/protocol/create_session_request.dart' as _i56;
+    as _i55;
+import 'package:hayer_client/src/protocol/session_bundle.dart' as _i56;
+import 'package:hayer_client/src/protocol/create_session_request.dart' as _i57;
 import 'package:hayer_client/src/protocol/client_analytics_context.dart'
-    as _i57;
-import 'package:hayer_client/src/protocol/session_progress.dart' as _i58;
-import 'package:hayer_client/src/protocol/swipe_command.dart' as _i59;
-import 'package:hayer_client/src/protocol/client_analytics_event.dart' as _i60;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i61;
-import 'package:hayer_client/src/protocol/session_event.dart' as _i62;
-import 'package:hayer_client/src/protocol/place_detail_result.dart' as _i63;
-import 'package:hayer_client/src/protocol/poi_issue_type.dart' as _i64;
-import 'package:hayer_client/src/protocol/reverse_geocode_result.dart' as _i65;
-import 'package:hayer_client/src/protocol/route_estimate.dart' as _i66;
-import 'package:hayer_client/src/protocol/taxonomy_snapshot.dart' as _i67;
+    as _i58;
+import 'package:hayer_client/src/protocol/session_progress.dart' as _i59;
+import 'package:hayer_client/src/protocol/swipe_command.dart' as _i60;
+import 'package:hayer_client/src/protocol/client_analytics_event.dart' as _i61;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i62;
+import 'package:hayer_client/src/protocol/session_event.dart' as _i63;
+import 'package:hayer_client/src/protocol/place_detail_result.dart' as _i64;
+import 'package:hayer_client/src/protocol/poi_issue_type.dart' as _i65;
+import 'package:hayer_client/src/protocol/reverse_geocode_result.dart' as _i66;
+import 'package:hayer_client/src/protocol/route_estimate.dart' as _i67;
+import 'package:hayer_client/src/protocol/taxonomy_snapshot.dart' as _i68;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i68;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i69;
-import 'dart:typed_data' as _i70;
-import 'protocol.dart' as _i71;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i70;
+import 'dart:typed_data' as _i71;
+import 'protocol.dart' as _i72;
 
 /// {@category Endpoint}
 class EndpointAdmin extends _i1.EndpointRef {
@@ -357,10 +359,17 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i23.DiscoveryGrowthMetrics> discoveryGrowthMetrics({
+  _i2.Future<_i23.AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes() =>
+      caller.callServerEndpoint<_i23.AdminDiscoveryAutoMapReport>(
+        'admin',
+        'discoveryAutoMappedTypes',
+        {},
+      );
+
+  _i2.Future<_i24.DiscoveryGrowthMetrics> discoveryGrowthMetrics({
     required DateTime from,
     required DateTime to,
-  }) => caller.callServerEndpoint<_i23.DiscoveryGrowthMetrics>(
+  }) => caller.callServerEndpoint<_i24.DiscoveryGrowthMetrics>(
     'admin',
     'discoveryGrowthMetrics',
     {
@@ -369,26 +378,26 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i24.AdminTaxonomyVersion> taxonomyDraft() =>
-      caller.callServerEndpoint<_i24.AdminTaxonomyVersion>(
+  _i2.Future<_i25.AdminTaxonomyVersion> taxonomyDraft() =>
+      caller.callServerEndpoint<_i25.AdminTaxonomyVersion>(
         'admin',
         'taxonomyDraft',
         {},
       );
 
-  _i2.Future<List<_i24.AdminTaxonomyVersion>> taxonomyHistory() =>
-      caller.callServerEndpoint<List<_i24.AdminTaxonomyVersion>>(
+  _i2.Future<List<_i25.AdminTaxonomyVersion>> taxonomyHistory() =>
+      caller.callServerEndpoint<List<_i25.AdminTaxonomyVersion>>(
         'admin',
         'taxonomyHistory',
         {},
       );
 
-  _i2.Future<_i24.AdminTaxonomyVersion> saveTaxonomyDraft({
+  _i2.Future<_i25.AdminTaxonomyVersion> saveTaxonomyDraft({
     required String reason,
     required String version,
     required int revision,
-    required List<_i25.AdminTaxonomyItem> items,
-  }) => caller.callServerEndpoint<_i24.AdminTaxonomyVersion>(
+    required List<_i26.AdminTaxonomyItem> items,
+  }) => caller.callServerEndpoint<_i25.AdminTaxonomyVersion>(
     'admin',
     'saveTaxonomyDraft',
     {
@@ -399,13 +408,13 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i26.TaxonomyValidation> validateTaxonomyDraft({
+  _i2.Future<_i27.TaxonomyValidation> validateTaxonomyDraft({
     required String reason,
     required String version,
     required int revision,
     required _i10.AdminMapLocation location,
     required int radiusMeters,
-  }) => caller.callServerEndpoint<_i26.TaxonomyValidation>(
+  }) => caller.callServerEndpoint<_i27.TaxonomyValidation>(
     'admin',
     'validateTaxonomyDraft',
     {
@@ -417,11 +426,11 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i24.AdminTaxonomyVersion> publishTaxonomy({
+  _i2.Future<_i25.AdminTaxonomyVersion> publishTaxonomy({
     required String reason,
     required String version,
     required int revision,
-  }) => caller.callServerEndpoint<_i24.AdminTaxonomyVersion>(
+  }) => caller.callServerEndpoint<_i25.AdminTaxonomyVersion>(
     'admin',
     'publishTaxonomy',
     {
@@ -431,10 +440,10 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i24.AdminTaxonomyVersion> rollbackTaxonomy({
+  _i2.Future<_i25.AdminTaxonomyVersion> rollbackTaxonomy({
     required String reason,
     required String version,
-  }) => caller.callServerEndpoint<_i24.AdminTaxonomyVersion>(
+  }) => caller.callServerEndpoint<_i25.AdminTaxonomyVersion>(
     'admin',
     'rollbackTaxonomy',
     {
@@ -443,19 +452,19 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i27.CacheDashboardSummary> summary() =>
-      caller.callServerEndpoint<_i27.CacheDashboardSummary>(
+  _i2.Future<_i28.CacheDashboardSummary> summary() =>
+      caller.callServerEndpoint<_i28.CacheDashboardSummary>(
         'admin',
         'summary',
         {},
       );
 
-  _i2.Future<_i28.CatalogPlacePage> catalog({
+  _i2.Future<_i29.CatalogPlacePage> catalog({
     required int page,
     required int pageSize,
     String? query,
     required bool includeQuarantined,
-  }) => caller.callServerEndpoint<_i28.CatalogPlacePage>(
+  }) => caller.callServerEndpoint<_i29.CatalogPlacePage>(
     'admin',
     'catalog',
     {
@@ -468,11 +477,11 @@ class EndpointAdmin extends _i1.EndpointRef {
 
   /// A page of catalog places matching [query], in its order, with the
   /// commonest primary types among them.
-  _i2.Future<_i29.AdminCatalogPage> catalogPlaces({
-    required _i30.AdminCatalogQuery query,
+  _i2.Future<_i30.AdminCatalogPage> catalogPlaces({
+    required _i31.AdminCatalogQuery query,
     required int page,
     required int pageSize,
-  }) => caller.callServerEndpoint<_i29.AdminCatalogPage>(
+  }) => caller.callServerEndpoint<_i30.AdminCatalogPage>(
     'admin',
     'catalogPlaces',
     {
@@ -483,28 +492,28 @@ class EndpointAdmin extends _i1.EndpointRef {
   );
 
   /// Catalog place density over the query's map bounds, for the heat map.
-  _i2.Future<_i31.AdminCatalogHeatmap> catalogHeatmap({
-    required _i30.AdminCatalogQuery query,
-  }) => caller.callServerEndpoint<_i31.AdminCatalogHeatmap>(
+  _i2.Future<_i32.AdminCatalogHeatmap> catalogHeatmap({
+    required _i31.AdminCatalogQuery query,
+  }) => caller.callServerEndpoint<_i32.AdminCatalogHeatmap>(
     'admin',
     'catalogHeatmap',
     {'query': query},
   );
 
   /// Everything the catalog holds about one place.
-  _i2.Future<_i32.AdminCatalogPlaceDetail> catalogPlace({
+  _i2.Future<_i33.AdminCatalogPlaceDetail> catalogPlace({
     required int catalogId,
-  }) => caller.callServerEndpoint<_i32.AdminCatalogPlaceDetail>(
+  }) => caller.callServerEndpoint<_i33.AdminCatalogPlaceDetail>(
     'admin',
     'catalogPlace',
     {'catalogId': catalogId},
   );
 
-  _i2.Future<_i33.CoveragePage> coverage({
+  _i2.Future<_i34.CoveragePage> coverage({
     required int page,
     required int pageSize,
     String? query,
-  }) => caller.callServerEndpoint<_i33.CoveragePage>(
+  }) => caller.callServerEndpoint<_i34.CoveragePage>(
     'admin',
     'coverage',
     {
@@ -514,12 +523,12 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i34.RefreshJobPage> refreshJobs({
+  _i2.Future<_i35.RefreshJobPage> refreshJobs({
     required int page,
     required int pageSize,
     String? query,
-    _i35.JobStatus? status,
-  }) => caller.callServerEndpoint<_i34.RefreshJobPage>(
+    _i36.JobStatus? status,
+  }) => caller.callServerEndpoint<_i35.RefreshJobPage>(
     'admin',
     'refreshJobs',
     {
@@ -530,12 +539,12 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i36.AdminPoiIssuePage> poiIssues({
+  _i2.Future<_i37.AdminPoiIssuePage> poiIssues({
     required int page,
     required int pageSize,
     String? query,
-    _i37.PoiIssueStatus? status,
-  }) => caller.callServerEndpoint<_i36.AdminPoiIssuePage>(
+    _i38.PoiIssueStatus? status,
+  }) => caller.callServerEndpoint<_i37.AdminPoiIssuePage>(
     'admin',
     'poiIssues',
     {
@@ -605,11 +614,11 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i38.AdminAuditPage> auditLog({
+  _i2.Future<_i39.AdminAuditPage> auditLog({
     required int page,
     required int pageSize,
     String? query,
-  }) => caller.callServerEndpoint<_i38.AdminAuditPage>(
+  }) => caller.callServerEndpoint<_i39.AdminAuditPage>(
     'admin',
     'auditLog',
     {
@@ -619,15 +628,15 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<List<_i39.MetricPoint>> metricTrend({required int hours}) =>
-      caller.callServerEndpoint<List<_i39.MetricPoint>>(
+  _i2.Future<List<_i40.MetricPoint>> metricTrend({required int hours}) =>
+      caller.callServerEndpoint<List<_i40.MetricPoint>>(
         'admin',
         'metricTrend',
         {'hours': hours},
       );
 
-  _i2.Future<_i40.CatalogPrunePreview> prunePreview() =>
-      caller.callServerEndpoint<_i40.CatalogPrunePreview>(
+  _i2.Future<_i41.CatalogPrunePreview> prunePreview() =>
+      caller.callServerEndpoint<_i41.CatalogPrunePreview>(
         'admin',
         'prunePreview',
         {},
@@ -640,17 +649,17 @@ class EndpointAdmin extends _i1.EndpointRef {
         {'reason': reason},
       );
 
-  _i2.Future<_i41.CachePolicy> policy() =>
-      caller.callServerEndpoint<_i41.CachePolicy>(
+  _i2.Future<_i42.CachePolicy> policy() =>
+      caller.callServerEndpoint<_i42.CachePolicy>(
         'admin',
         'policy',
         {},
       );
 
-  _i2.Future<_i41.CachePolicy> updatePolicy({
+  _i2.Future<_i42.CachePolicy> updatePolicy({
     required String reason,
-    required _i41.CachePolicy policy,
-  }) => caller.callServerEndpoint<_i41.CachePolicy>(
+    required _i42.CachePolicy policy,
+  }) => caller.callServerEndpoint<_i42.CachePolicy>(
     'admin',
     'updatePolicy',
     {
@@ -719,10 +728,10 @@ class EndpointAdmin extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i42.CalibrationValidation> validateCalibration({
+  _i2.Future<_i43.CalibrationValidation> validateCalibration({
     required String version,
     required String documentJson,
-  }) => caller.callServerEndpoint<_i42.CalibrationValidation>(
+  }) => caller.callServerEndpoint<_i43.CalibrationValidation>(
     'admin',
     'validateCalibration',
     {
@@ -763,15 +772,15 @@ class EndpointBootstrap extends _i1.EndpointRef {
   @override
   String get name => 'bootstrap';
 
-  _i2.Future<_i43.DiscoveryConfig> discoveryConfig() =>
-      caller.callServerEndpoint<_i43.DiscoveryConfig>(
+  _i2.Future<_i44.DiscoveryConfig> discoveryConfig() =>
+      caller.callServerEndpoint<_i44.DiscoveryConfig>(
         'bootstrap',
         'discoveryConfig',
         {},
       );
 
-  _i2.Future<_i44.BootstrapInfo> getInfo({required int build}) =>
-      caller.callServerEndpoint<_i44.BootstrapInfo>(
+  _i2.Future<_i45.BootstrapInfo> getInfo({required int build}) =>
+      caller.callServerEndpoint<_i45.BootstrapInfo>(
         'bootstrap',
         'getInfo',
         {'build': build},
@@ -785,20 +794,20 @@ class EndpointDiscover extends _i1.EndpointRef {
   @override
   String get name => 'discover';
 
-  _i2.Future<_i45.DiscoveryTaxonomySnapshot> taxonomy() =>
-      caller.callServerEndpoint<_i45.DiscoveryTaxonomySnapshot>(
+  _i2.Future<_i46.DiscoveryTaxonomySnapshot> taxonomy() =>
+      caller.callServerEndpoint<_i46.DiscoveryTaxonomySnapshot>(
         'discover',
         'taxonomy',
         {},
       );
 
-  _i2.Future<_i46.DiscoverBrowsePage> browse({
-    required _i47.DiscoverQuery query,
-    _i48.DiscoverQueryContext? context,
+  _i2.Future<_i47.DiscoverBrowsePage> browse({
+    required _i48.DiscoverQuery query,
+    _i49.DiscoverQueryContext? context,
     String? cursor,
     required int pageSize,
     required bool includeMap,
-  }) => caller.callServerEndpoint<_i46.DiscoverBrowsePage>(
+  }) => caller.callServerEndpoint<_i47.DiscoverBrowsePage>(
     'discover',
     'browse',
     {
@@ -810,10 +819,10 @@ class EndpointDiscover extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i49.DiscoverFacets> facets({
-    required _i47.DiscoverQuery query,
-    required _i48.DiscoverQueryContext context,
-  }) => caller.callServerEndpoint<_i49.DiscoverFacets>(
+  _i2.Future<_i50.DiscoverFacets> facets({
+    required _i48.DiscoverQuery query,
+    required _i49.DiscoverQueryContext context,
+  }) => caller.callServerEndpoint<_i50.DiscoverFacets>(
     'discover',
     'facets',
     {
@@ -822,11 +831,11 @@ class EndpointDiscover extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i50.DiscoverPlaceContext> placeContext({
-    required _i51.PoiIdentity identity,
-    required _i47.DiscoverQuery query,
-    required _i48.DiscoverQueryContext context,
-  }) => caller.callServerEndpoint<_i50.DiscoverPlaceContext>(
+  _i2.Future<_i51.DiscoverPlaceContext> placeContext({
+    required _i52.PoiIdentity identity,
+    required _i48.DiscoverQuery query,
+    required _i49.DiscoverQueryContext context,
+  }) => caller.callServerEndpoint<_i51.DiscoverPlaceContext>(
     'discover',
     'placeContext',
     {
@@ -836,10 +845,10 @@ class EndpointDiscover extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i52.DiscoveryAreaReceipt> ensureArea({
-    required _i53.DiscoverViewport viewport,
+  _i2.Future<_i53.DiscoveryAreaReceipt> ensureArea({
+    required _i54.DiscoverViewport viewport,
     String? countryCode,
-  }) => caller.callServerEndpoint<_i52.DiscoveryAreaReceipt>(
+  }) => caller.callServerEndpoint<_i53.DiscoveryAreaReceipt>(
     'discover',
     'ensureArea',
     {
@@ -848,11 +857,11 @@ class EndpointDiscover extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i52.DiscoveryAreaReceipt> deepen({
-    required _i53.DiscoverViewport viewport,
+  _i2.Future<_i53.DiscoveryAreaReceipt> deepen({
+    required _i54.DiscoverViewport viewport,
     String? countryCode,
     required String idempotencyKey,
-  }) => caller.callServerEndpoint<_i52.DiscoveryAreaReceipt>(
+  }) => caller.callServerEndpoint<_i53.DiscoveryAreaReceipt>(
     'discover',
     'deepen',
     {
@@ -862,9 +871,9 @@ class EndpointDiscover extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i54.DiscoveryHarvestStatus> harvestStatus({
+  _i2.Future<_i55.DiscoveryHarvestStatus> harvestStatus({
     required String jobId,
-  }) => caller.callServerEndpoint<_i54.DiscoveryHarvestStatus>(
+  }) => caller.callServerEndpoint<_i55.DiscoveryHarvestStatus>(
     'discover',
     'harvestStatus',
     {'jobId': jobId},
@@ -878,10 +887,10 @@ class EndpointHayerSession extends _i1.EndpointRef {
   @override
   String get name => 'hayerSession';
 
-  _i2.Future<_i55.SessionBundle> create({
-    required _i56.CreateSessionRequest request,
+  _i2.Future<_i56.SessionBundle> create({
+    required _i57.CreateSessionRequest request,
     required String idempotencyKey,
-  }) => caller.callServerEndpoint<_i55.SessionBundle>(
+  }) => caller.callServerEndpoint<_i56.SessionBundle>(
     'hayerSession',
     'create',
     {
@@ -890,11 +899,11 @@ class EndpointHayerSession extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i55.SessionBundle> join({
+  _i2.Future<_i56.SessionBundle> join({
     required String code,
     required String displayName,
-    _i57.ClientAnalyticsContext? analyticsContext,
-  }) => caller.callServerEndpoint<_i55.SessionBundle>(
+    _i58.ClientAnalyticsContext? analyticsContext,
+  }) => caller.callServerEndpoint<_i56.SessionBundle>(
     'hayerSession',
     'join',
     {
@@ -904,16 +913,16 @@ class EndpointHayerSession extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i55.SessionBundle> load({required String sessionId}) =>
-      caller.callServerEndpoint<_i55.SessionBundle>(
+  _i2.Future<_i56.SessionBundle> load({required String sessionId}) =>
+      caller.callServerEndpoint<_i56.SessionBundle>(
         'hayerSession',
         'load',
         {'sessionId': sessionId},
       );
 
   /// Returns mutable room state without retransmitting the immutable deck.
-  _i2.Future<_i58.SessionProgress> progress({required String sessionId}) =>
-      caller.callServerEndpoint<_i58.SessionProgress>(
+  _i2.Future<_i59.SessionProgress> progress({required String sessionId}) =>
+      caller.callServerEndpoint<_i59.SessionProgress>(
         'hayerSession',
         'progress',
         {'sessionId': sessionId},
@@ -927,19 +936,19 @@ class EndpointHayerSession extends _i1.EndpointRef {
         {'sessionId': sessionId},
       );
 
-  _i2.Future<_i55.SessionBundle> swipe({required _i59.SwipeCommand command}) =>
-      caller.callServerEndpoint<_i55.SessionBundle>(
+  _i2.Future<_i56.SessionBundle> swipe({required _i60.SwipeCommand command}) =>
+      caller.callServerEndpoint<_i56.SessionBundle>(
         'hayerSession',
         'swipe',
         {'command': command},
       );
 
-  _i2.Future<_i55.SessionBundle> chooseDestination({
+  _i2.Future<_i56.SessionBundle> chooseDestination({
     required String sessionId,
     required String placeId,
     required int expectedRevision,
-    _i57.ClientAnalyticsContext? analyticsContext,
-  }) => caller.callServerEndpoint<_i55.SessionBundle>(
+    _i58.ClientAnalyticsContext? analyticsContext,
+  }) => caller.callServerEndpoint<_i56.SessionBundle>(
     'hayerSession',
     'chooseDestination',
     {
@@ -954,24 +963,24 @@ class EndpointHayerSession extends _i1.EndpointRef {
   /// authoritative votes and destination choices are recorded in their own
   /// database transactions instead.
   _i2.Future<void> recordClientAnalytics({
-    required _i60.ClientAnalyticsEvent event,
+    required _i61.ClientAnalyticsEvent event,
   }) => caller.callServerEndpoint<void>(
     'hayerSession',
     'recordClientAnalytics',
     {'event': event},
   );
 
-  _i2.Future<List<_i61.SessionResult>> results({required String sessionId}) =>
-      caller.callServerEndpoint<List<_i61.SessionResult>>(
+  _i2.Future<List<_i62.SessionResult>> results({required String sessionId}) =>
+      caller.callServerEndpoint<List<_i62.SessionResult>>(
         'hayerSession',
         'results',
         {'sessionId': sessionId},
       );
 
-  _i2.Stream<_i62.SessionEvent> watch({required String sessionId}) =>
+  _i2.Stream<_i63.SessionEvent> watch({required String sessionId}) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i62.SessionEvent>,
-        _i62.SessionEvent
+        _i2.Stream<_i63.SessionEvent>,
+        _i63.SessionEvent
       >(
         'hayerSession',
         'watch',
@@ -989,10 +998,10 @@ class EndpointPlace extends _i1.EndpointRef {
 
   /// Shared place details for Swipe and Discover. Available whether or not
   /// Discover is enabled.
-  _i2.Future<_i63.PlaceDetailResult> details({
-    required _i51.PoiIdentity identity,
+  _i2.Future<_i64.PlaceDetailResult> details({
+    required _i52.PoiIdentity identity,
     String? sessionId,
-  }) => caller.callServerEndpoint<_i63.PlaceDetailResult>(
+  }) => caller.callServerEndpoint<_i64.PlaceDetailResult>(
     'place',
     'details',
     {
@@ -1003,7 +1012,7 @@ class EndpointPlace extends _i1.EndpointRef {
 
   _i2.Future<String> reportCatalogIssue({
     required int catalogId,
-    required _i64.PoiIssueType issueType,
+    required _i65.PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
   }) => caller.callServerEndpoint<String>(
@@ -1047,11 +1056,11 @@ class EndpointPlace extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i65.ReverseGeocodeResult> reverseGeocodeDetails({
+  _i2.Future<_i66.ReverseGeocodeResult> reverseGeocodeDetails({
     required double latitude,
     required double longitude,
     required String languageCode,
-  }) => caller.callServerEndpoint<_i65.ReverseGeocodeResult>(
+  }) => caller.callServerEndpoint<_i66.ReverseGeocodeResult>(
     'place',
     'reverseGeocodeDetails',
     {
@@ -1061,12 +1070,12 @@ class EndpointPlace extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i66.RouteEstimate> routeEstimate({
+  _i2.Future<_i67.RouteEstimate> routeEstimate({
     required String sessionId,
     required String placeId,
     double? originLatitude,
     double? originLongitude,
-  }) => caller.callServerEndpoint<_i66.RouteEstimate>(
+  }) => caller.callServerEndpoint<_i67.RouteEstimate>(
     'place',
     'routeEstimate',
     {
@@ -1080,7 +1089,7 @@ class EndpointPlace extends _i1.EndpointRef {
   _i2.Future<String> reportIssue({
     required String sessionId,
     required String placeId,
-    required _i64.PoiIssueType issueType,
+    required _i65.PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
   }) => caller.callServerEndpoint<String>(
@@ -1103,8 +1112,8 @@ class EndpointTaxonomy extends _i1.EndpointRef {
   @override
   String get name => 'taxonomy';
 
-  _i2.Future<_i67.TaxonomySnapshot> current() =>
-      caller.callServerEndpoint<_i67.TaxonomySnapshot>(
+  _i2.Future<_i68.TaxonomySnapshot> current() =>
+      caller.callServerEndpoint<_i68.TaxonomySnapshot>(
         'taxonomy',
         'current',
         {},
@@ -1138,8 +1147,8 @@ class EndpointAdminEnrollment extends _i1.EndpointRef {
   @override
   String get name => 'adminEnrollment';
 
-  _i2.Future<({_i68.AuthSuccess auth, String operator})> begin() =>
-      caller.callServerEndpoint<({_i68.AuthSuccess auth, String operator})>(
+  _i2.Future<({_i69.AuthSuccess auth, String operator})> begin() =>
+      caller.callServerEndpoint<({_i69.AuthSuccess auth, String operator})>(
         'adminEnrollment',
         'begin',
         {},
@@ -1147,7 +1156,7 @@ class EndpointAdminEnrollment extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointAnonymousIdp extends _i69.EndpointAnonymousIdpBase {
+class EndpointAnonymousIdp extends _i70.EndpointAnonymousIdpBase {
   EndpointAnonymousIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -1158,8 +1167,8 @@ class EndpointAnonymousIdp extends _i69.EndpointAnonymousIdpBase {
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
   @override
-  _i2.Future<_i68.AuthSuccess> login({String? token}) =>
-      caller.callServerEndpoint<_i68.AuthSuccess>(
+  _i2.Future<_i69.AuthSuccess> login({String? token}) =>
+      caller.callServerEndpoint<_i69.AuthSuccess>(
         'anonymousIdp',
         'login',
         {'token': token},
@@ -1169,7 +1178,7 @@ class EndpointAnonymousIdp extends _i69.EndpointAnonymousIdpBase {
 /// By extending [RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i68.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i69.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -1194,9 +1203,9 @@ class EndpointJwtRefresh extends _i68.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i68.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i69.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i68.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i69.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -1205,15 +1214,15 @@ class EndpointJwtRefresh extends _i68.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
-class EndpointPasskeyIdp extends _i69.EndpointPasskeyIdpBase {
+class EndpointPasskeyIdp extends _i70.EndpointPasskeyIdpBase {
   EndpointPasskeyIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'passkeyIdp';
 
   @override
-  _i2.Future<({_i70.ByteData challenge, _i1.UuidValue id})> createChallenge() =>
-      caller.callServerEndpoint<({_i70.ByteData challenge, _i1.UuidValue id})>(
+  _i2.Future<({_i71.ByteData challenge, _i1.UuidValue id})> createChallenge() =>
+      caller.callServerEndpoint<({_i71.ByteData challenge, _i1.UuidValue id})>(
         'passkeyIdp',
         'createChallenge',
         {},
@@ -1221,7 +1230,7 @@ class EndpointPasskeyIdp extends _i69.EndpointPasskeyIdpBase {
 
   @override
   _i2.Future<void> register({
-    required _i69.PasskeyRegistrationRequest registrationRequest,
+    required _i70.PasskeyRegistrationRequest registrationRequest,
   }) => caller.callServerEndpoint<void>(
     'passkeyIdp',
     'register',
@@ -1229,9 +1238,9 @@ class EndpointPasskeyIdp extends _i69.EndpointPasskeyIdpBase {
   );
 
   @override
-  _i2.Future<_i68.AuthSuccess> login({
-    required _i69.PasskeyLoginRequest loginRequest,
-  }) => caller.callServerEndpoint<_i68.AuthSuccess>(
+  _i2.Future<_i69.AuthSuccess> login({
+    required _i70.PasskeyLoginRequest loginRequest,
+  }) => caller.callServerEndpoint<_i69.AuthSuccess>(
     'passkeyIdp',
     'login',
     {'loginRequest': loginRequest},
@@ -1247,13 +1256,13 @@ class EndpointPasskeyIdp extends _i69.EndpointPasskeyIdpBase {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i69.Caller(client);
-    serverpod_auth_core = _i68.Caller(client);
+    serverpod_auth_idp = _i70.Caller(client);
+    serverpod_auth_core = _i69.Caller(client);
   }
 
-  late final _i69.Caller serverpod_auth_idp;
+  late final _i70.Caller serverpod_auth_idp;
 
-  late final _i68.Caller serverpod_auth_core;
+  late final _i69.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -1276,7 +1285,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i71.Protocol(),
+         _i72.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

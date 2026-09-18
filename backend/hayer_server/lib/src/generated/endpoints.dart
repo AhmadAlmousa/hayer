@@ -655,6 +655,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     issue: params['issue'],
                   ),
         ),
+        'discoveryAutoMappedTypes': _i1.MethodConnector(
+          name: 'discoveryAutoMappedTypes',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['admin'] as _i2.AdminEndpoint)
+                  .discoveryAutoMappedTypes(session),
+        ),
         'discoveryGrowthMetrics': _i1.MethodConnector(
           name: 'discoveryGrowthMetrics',
           params: {

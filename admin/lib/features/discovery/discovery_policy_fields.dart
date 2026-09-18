@@ -97,6 +97,7 @@ class DiscoveryPolicyFields {
   DiscoveryPolicyFields(DiscoveryPolicy policy)
     : _saved = policy,
       enabled = policy.enabled,
+      typeAutoMapEnabled = policy.typeAutoMapEnabled,
       bestFormula = policy.scoring.bestFormula {
     for (final knob in DiscoveryKnob.values) {
       controllers[knob] = TextEditingController(
@@ -107,12 +108,14 @@ class DiscoveryPolicyFields {
 
   DiscoveryPolicy _saved;
   bool enabled;
+  bool typeAutoMapEnabled;
   DiscoveryBestFormula bestFormula;
   final controllers = <DiscoveryKnob, TextEditingController>{};
 
   void reset(DiscoveryPolicy policy) {
     _saved = policy;
     enabled = policy.enabled;
+    typeAutoMapEnabled = policy.typeAutoMapEnabled;
     bestFormula = policy.scoring.bestFormula;
     for (final knob in DiscoveryKnob.values) {
       controllers[knob]!.text = '${knob.readFrom(policy)}';
@@ -158,6 +161,7 @@ class DiscoveryPolicyFields {
     queryTimeoutMilliseconds: _whole(DiscoveryKnob.queryTimeoutMilliseconds),
     maximumPageSize: _whole(DiscoveryKnob.maximumPageSize),
     maximumMapPoints: _whole(DiscoveryKnob.maximumMapPoints),
+    typeAutoMapEnabled: typeAutoMapEnabled,
   );
 
   int _whole(DiscoveryKnob knob) =>
@@ -376,6 +380,25 @@ class DiscoveryPolicySection extends StatelessWidget {
             value: discovery.enabled,
             onChanged: (value) {
               discovery.enabled = value;
+              onChanged();
+            },
+          ),
+          SwitchListTile(
+            key: const Key('policy-discovery-type-auto-map'),
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Map new place types automatically'),
+            subtitle: const Text(
+              'After each exploration, types the source returned that the '
+              'Discover tree does not claim are attached to the node they '
+              'name: "Lebanese restaurant" under Restaurants → Middle Eastern '
+              '→ Lebanese. Off, each one counts under Other until an operator '
+              'maps it on the Unmapped types page. Default: on. Nothing is '
+              'ever renamed, moved or removed, and a type nothing matches '
+              'still waits for you there.',
+            ),
+            value: discovery.typeAutoMapEnabled,
+            onChanged: (value) {
+              discovery.typeAutoMapEnabled = value;
               onChanged();
             },
           ),

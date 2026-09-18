@@ -34,6 +34,9 @@ abstract final class DiscoveryPolicyService {
     queryTimeoutMilliseconds: 2000,
     maximumPageSize: 100,
     maximumMapPoints: 2000,
+    // Newly observed provider types attach themselves to the Discover tree.
+    // Off, every new type counts under Other until an operator maps it.
+    typeAutoMapEnabled: true,
   );
 
   static PlaceDetailPolicy defaultDetailRefresh() => PlaceDetailPolicy(
@@ -123,6 +126,7 @@ abstract final class DiscoveryPolicyService {
       queryTimeoutMilliseconds: row.discoveryQueryTimeoutMilliseconds,
       maximumPageSize: row.discoveryMaximumPageSize,
       maximumMapPoints: row.discoveryMaximumMapPoints,
+      typeAutoMapEnabled: row.discoveryTypeAutoMapEnabled,
     ),
     detailRefresh: PlaceDetailPolicy(
       maximumRequests: row.detailRefreshMaximumRequests,
@@ -202,6 +206,7 @@ abstract final class DiscoveryPolicyService {
       discoveryQueryTimeoutMilliseconds: discovery.queryTimeoutMilliseconds,
       discoveryMaximumPageSize: discovery.maximumPageSize,
       discoveryMaximumMapPoints: discovery.maximumMapPoints,
+      discoveryTypeAutoMapEnabled: discovery.typeAutoMapEnabled,
       detailRefreshMaximumRequests: detail.maximumRequests,
       detailRefreshMaximumSeconds: detail.maximumSeconds,
       detailRefreshCooldownMinutes: detail.cooldownMinutes,

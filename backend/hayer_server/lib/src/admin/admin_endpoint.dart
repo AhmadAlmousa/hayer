@@ -507,6 +507,13 @@ class AdminEndpoint extends Endpoint {
     );
   }
 
+  Future<AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes(
+    Session session,
+  ) async {
+    await _authorize(session);
+    return DiscoveryAdminReads.autoMappedTypes(session);
+  }
+
   Future<DiscoveryGrowthMetrics> discoveryGrowthMetrics(
     Session session, {
     required DateTime from,

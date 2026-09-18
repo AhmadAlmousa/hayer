@@ -952,13 +952,12 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   web-host checks and the owner's formula, budget and latency review remain;
   the flag stays off.
 
-- [~] M9-L — Owner feedback pass (both lanes). Seven defects the owner found
+- [x] M9-L — Owner feedback pass (both lanes). Seven defects the owner found
   in the shipped app: the launcher icon's white edge, the oversized Resume
   button, the 24-hour opening-hours graph, the mandatory admin reason, the
   single place photo, the Got time layout and its "not explored" report, and
-  the unmapped Discover types. The first six are done (`1b06731`, `c599d2c`,
-  `7e638e5`, `d295d19` and the Got time commit); the seeded nested type tree
-  and its auto-mapper remain. Two decisions in
+  the unmapped Discover types. All seven are done (`1b06731`, `c599d2c`,
+  `7e638e5`, `d295d19`, `bbeea5c` and the taxonomy commit). Two decisions in
   [`discovery_upgrade.md`](discovery_upgrade.md) were reversed by the owner and
   amended there: the draggable sheet became a fixed 50/50 split, and the
   committed "Search this area" became a live catalog read with the provider
@@ -1028,6 +1027,32 @@ implemented, and M9-K is in progress.
 
 ## Evidence log
 
+- 2026-09-19: closed M9-L with the Discover type tree the owner asked not to
+  fill in by hand. `seedRoots()` shipped nine bare roots with no children and
+  no aliases, so every observed type fell under Other and an operator had to
+  map each one through the admin. The seed is now the full nested vocabulary —
+  over 100 nodes, four levels where the vocabulary needs it, each labelled in
+  English and Arabic with the provider spellings it will meet, including the
+  owner's example chain Food & Drinks → Restaurants → Middle Eastern →
+  Lebanese. `DiscoveryTypeAutoMapper` then attaches what the seed misses: after
+  each harvest it reads the observed types the tree does not claim and matches
+  each one by node label, by head noun with its modifier resolved against that
+  noun's subtree ("Lebanese cuisine" reaches Lebanese, "Peruvian restaurant"
+  stops at Restaurants), and leaves anything else for the operator. It only
+  adds aliases, never renames, moves or removes a node, never touches a type an
+  operator has placed, and abandons a run whose result would not validate. Each
+  assignment is recorded in `hayer_discovery_type_automap` and each run in the
+  audit log as `auto-mapper`, which is what lets the admin mark auto-assigned
+  aliases in the tree editor and show the last run above the unmapped list. The
+  new `discoveryTypeAutoMapEnabled` policy flag defaults on. Pinned full
+  preflight passed with clean analyses: 216 server, 371 app and 89 admin tests.
+  The remote PostGIS suite ran 144 tests with one failure, the pre-existing
+  growth-metrics `exploredCells` expectation in
+  `discovery_admin_harvest_test.dart`. The signed `0.2.1+7` APK at SHA-256
+  `70faae6a72a5f6042da5f0992728f1baea74a8788b4319938b28baa710e76b68` is
+  unchanged from the Got time commit, because this slice is server and admin
+  only. Discovery stays disabled. Details are in `lane-backend.md` and
+  `lane-frontend.md`.
 - 2026-09-18: opened M9-L, the owner's feedback pass on the shipped app, and
   landed six of its seven items. The launcher icon is now rendered from the
   full-bleed SVG by `scripts/render-icons.sh`, with a teal adaptive background

@@ -67,6 +67,25 @@ Last updated: 2026-09-16
 
 ## Checkpoints
 
+### Admin: automatic type mapping — implemented (2026-09-19)
+
+M9-L's admin half; the server side is in `lane-backend.md`.
+
+- **Policy.** A "Map new place types automatically" switch under Got time
+  discovery, stating what it does, what it does to the app, and its default
+  (on), per the admin field rule.
+- **Unmapped types.** A card above the list says whether mapping is on, how
+  many types it has attached and when it last did, with the most recent
+  assignments as chips. The list underneath is unchanged: it is what the
+  mapper could not place.
+- **Tree editor.** A node whose aliases include ones the mapper chose says so
+  under its alias line, and says that moving one to another node corrects it
+  for good.
+
+Both admin surfaces read `discoveryAutoMappedTypes`; a server that does not
+answer it yet simply shows nothing extra rather than failing the page. 89
+admin tests pass.
+
 ### Owner feedback pass: icon, home, hours, photos, Got time — implemented (2026-09-18)
 
 M9-L. The owner used the shipped app and reported seven defects. Six are
