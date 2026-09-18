@@ -24,7 +24,11 @@ abstract final class DiscoveryPolicyService {
     harvestDesiredCandidatesPerQuery: 50,
     harvestMaximumSeconds: 300,
     harvestCooldownMinutes: 60,
-    userHarvestsPerHour: 3,
+    // Exploring used to need a Search this area tap, so three an hour was a
+    // generous allowance. It now follows the camera into any area that has no
+    // fresh coverage, and three would run out in a minute of browsing. Still
+    // admin-tunable, and a denial leaves cached results on screen.
+    userHarvestsPerHour: 12,
     browseRequestsPerMinute: 30,
     facetRequestsPerMinute: 60,
     queryTimeoutMilliseconds: 2000,

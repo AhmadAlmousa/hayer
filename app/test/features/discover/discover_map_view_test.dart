@@ -15,9 +15,23 @@ import 'discovery_results_fakes.dart';
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
 const _preview = ValueKey('discovery-preview');
 const _deepen = ValueKey('discovery-deepen');
-const _sheetToggle = ValueKey('discovery-sheet-toggle');
 
 ValueKey<String> _row(int id) => ValueKey('discovery-row-$id');
+
+/// Scrolls the results half down to [finder].
+Future<void> _scrollResultsTo(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    200,
+    scrollable: find
+        .descendant(
+          of: find.byType(DiscoveryResultsSheet),
+          matching: find.byType(Scrollable),
+        )
+        .first,
+  );
+  await tester.pumpAndSettle();
+}
 
 void main() {
   late DiscoverFixture fixture;
@@ -55,7 +69,6 @@ void main() {
             );
 
       await pumpDiscover(tester, fixture, _riyadhLink);
-      await tester.tap(find.byKey(_sheetToggle));
       await tester.pumpAndSettle();
 
       expect(
@@ -415,20 +428,38 @@ void main() {
     );
     map(tester).onPlace!(testMapPoint(99));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+    // At twice the system size on a 320pt phone the results header fills the
+    // results half on its own, so everything under it is scrolled to in turn.
+    await _scrollResultsTo(
+      tester,
+      find.byKey(const ValueKey('discovery-coverage')),
+    );
     expect(find.byKey(const ValueKey('discovery-coverage')), findsOneWidget);
-    expect(find.byKey(_preview), findsOneWidget);
     // The strip's details fold away at this size until asked for.
-    expect(find.text('لم يكتمل آخر استكشاف.'), findsNothing);
+    expect(
+      find.text('لم يكتمل آخر استكشاف.', skipOffstage: false),
+      findsNothing,
+    );
 
+    await _scrollResultsTo(
+      tester,
+      find.byKey(const ValueKey('discovery-coverage-toggle')),
+    );
     await tester.tap(find.byKey(const ValueKey('discovery-coverage-toggle')));
     await tester.pumpAndSettle();
-    expect(find.text('لم يكتمل آخر استكشاف.'), findsOneWidget);
+    expect(
+      find.text('لم يكتمل آخر استكشاف.', skipOffstage: false),
+      findsOneWidget,
+    );
+    await _scrollResultsTo(tester, find.byKey(_deepen));
     expect(find.byKey(_deepen), findsOneWidget);
     expect(tester.takeException(), isNull);
+
+    await _scrollResultsTo(tester, find.byKey(_preview));
+    expect(find.byKey(_preview), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.byKey(_row(3)),

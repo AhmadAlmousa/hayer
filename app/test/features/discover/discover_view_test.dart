@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_app/domain/discovery_area.dart';
 import 'package:hayer_app/domain/discovery_url_query.dart';
-import 'package:hayer_app/features/discover/discover_screen.dart';
 import 'package:hayer_app/features/discover/discovery_area_labels.dart';
 import 'package:hayer_app/features/discover/discovery_map.dart';
 import 'package:hayer_app/features/discover/discovery_place_row.dart';
@@ -18,8 +17,21 @@ import 'discovery_fakes.dart';
 import 'discovery_results_fakes.dart';
 
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
-const _searchArea = ValueKey('discovery-search-area');
-const _sheetToggle = ValueKey('discovery-sheet-toggle');
+
+/// The results list, which fills the lower half of the screen.
+Finder _resultsList() => find
+    .descendant(
+      of: find.byType(DiscoveryResultsSheet),
+      matching: find.byType(Scrollable),
+    )
+    .first;
+
+/// Brings [finder] into the results half, which shows fewer rows at once than
+/// the old full-height sheet did.
+Future<void> _scrollToResult(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(finder, 200, scrollable: _resultsList());
+  await tester.pumpAndSettle();
+}
 
 void main() {
   late DiscoverFixture fixture;
@@ -115,7 +127,6 @@ void main() {
     );
 
     await pumpDiscover(tester, fixture, _riyadhLink);
-    await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
 
     expect(find.text('240 places in view'), findsOneWidget);
@@ -127,10 +138,13 @@ void main() {
     expect(find.text('★ 4.8'), findsOneWidget);
     expect(find.text('💎 Hidden gem · only 320 reviews'), findsOneWidget);
     expect(find.text('🆕 Added 10 days ago'), findsOneWidget);
+    await _scrollToResult(tester, find.text('⚠️ Rated below 4.0'));
     expect(find.text('⚠️ Rated below 4.0'), findsOneWidget);
+    await _scrollToResult(tester, find.text('🔥 45K reviews'));
     expect(find.text('🔥 45K reviews'), findsOneWidget);
     expect(find.text('45K reviews'), findsNWidgets(2));
     expect(find.text('Open now'), findsOneWidget);
+    await _scrollToResult(tester, find.text('Hours unavailable'));
     expect(find.text('Hours unavailable'), findsOneWidget);
     expect(find.text('No rating'), findsOneWidget);
     expect(find.text('Place information from Google Maps'), findsOneWidget);
@@ -226,8 +240,8 @@ void main() {
     expect(fixture.repository.requests.single.query.countryCode, isNull);
   });
 
-  testWidgets('moving the map offers Search this area, which adds one '
-      'history entry that Back undoes', (tester) async {
+  testWidgets('moving the map searches where it lands, without stacking '
+      'history entries', (tester) async {
     final router = await pumpDiscover(tester, fixture, _riyadhLink);
     final map = tester.widget<DiscoveryMap>(find.byType(DiscoveryMap));
 
@@ -240,8 +254,8 @@ void main() {
         east: 46.85,
       )!,
     );
-    await tester.pump();
-    expect(find.byKey(_searchArea), findsNothing);
+    await tester.pump(const Duration(seconds: 1));
+    expect(fixture.repository.requests, hasLength(1));
 
     final moved = DiscoveryViewport.tryCreate(
       south: 24.7,
@@ -250,25 +264,20 @@ void main() {
       east: 46.9,
     )!;
     map.onVisibleViewport(moved);
-    await tester.pump();
-    expect(find.text('Previous area · This area'), findsOneWidget);
-    expect(find.text('3 places in the previous area'), findsOneWidget);
-    // Moving alone searches nothing.
+    // Nothing happens while the camera is still settling.
+    await tester.pump(const Duration(milliseconds: 100));
     expect(fixture.repository.requests, hasLength(1));
 
-    await tester.tap(find.byKey(_searchArea));
+    // Panning schedules no frame of its own, so the debounce needs the clock
+    // moved past it rather than pumpAndSettle alone.
+    await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
     expect(_committedViewport(router).token, moved.token);
     expect(fixture.repository.requests.last.query.viewport.north, 24.9);
-    expect(find.byKey(_searchArea), findsNothing);
     expect(find.text('3 places in view'), findsOneWidget);
 
-    await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
-    expect(_committedViewport(router).token, testViewport.token);
-    expect(find.byType(DiscoverScreen), findsOneWidget);
-    expect(fixture.repository.requests.last.query.viewport.north, 24.8);
-
+    // Following the camera leaves no history behind it, so Back leaves
+    // Discover rather than retracing the pan.
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/');
@@ -319,6 +328,7 @@ void main() {
       find.text('No places in this view match your filters.'),
       findsOneWidget,
     );
+    await _scrollToResult(tester, find.text('Clear filters'));
     await tester.tap(find.text('Clear filters'));
     await tester.pumpAndSettle();
 
@@ -326,6 +336,7 @@ void main() {
       router.routeInformationProvider.value.uri.queryParameters,
       isNot(contains('rating')),
     );
+    await _scrollToResult(tester, find.text('3 places in view'));
     expect(find.text('3 places in view'), findsOneWidget);
   });
 
@@ -356,9 +367,11 @@ void main() {
       findsOneWidget,
     );
     failing = false;
+    await _scrollToResult(tester, find.text('Try again'));
     await tester.tap(find.text('Try again'));
     await tester.pumpAndSettle();
 
+    await _scrollToResult(tester, find.text('3 places in view'));
     expect(find.text('3 places in view'), findsOneWidget);
   });
 
@@ -393,13 +406,13 @@ void main() {
         : testBrowsePage(total: 4, items: [testPlace(4)]);
 
     await pumpDiscover(tester, fixture, _riyadhLink);
-    await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
 
     expect(fixture.repository.requests.map((request) => request.cursor), [
       null,
       'after-3',
     ]);
+    await _scrollToResult(tester, find.text('4. Place 4'));
     expect(find.text('4. Place 4'), findsOneWidget);
   });
 
@@ -424,8 +437,8 @@ void main() {
       null,
       'after-3',
     ]);
-    await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
+    await _scrollToResult(tester, find.text('Couldn’t load more places.'));
     expect(find.text('Couldn’t load more places.'), findsOneWidget);
   });
 
@@ -454,8 +467,14 @@ void main() {
       textScale: 2,
       size: const Size(320, 640),
     );
-    await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+
+    // On the smallest phone at twice the system size, the controls, the map's
+    // quarter and the results header fill the screen, so the first row is
+    // scrolled to rather than waiting there. Nothing overflows, which is what
+    // this guards.
+    await _scrollToResult(tester, find.byType(DiscoveryPlaceRow));
     expect(tester.takeException(), isNull);
     expect(find.byType(DiscoveryPlaceRow), findsOneWidget);
 

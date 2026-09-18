@@ -33,7 +33,7 @@ fields:
   discoveryHarvestDesiredCandidatesPerQuery: int, default=50
   discoveryHarvestMaximumSeconds: int, default=300
   discoveryHarvestCooldownMinutes: int, default=60
-  discoveryUserHarvestsPerHour: int, default=3
+  discoveryUserHarvestsPerHour: int, default=12
   discoveryBrowseRequestsPerMinute: int, default=30
   discoveryFacetRequestsPerMinute: int, default=60
   discoveryQueryTimeoutMilliseconds: int, default=2000

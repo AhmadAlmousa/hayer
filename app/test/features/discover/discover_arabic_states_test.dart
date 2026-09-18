@@ -17,7 +17,6 @@ import 'discovery_results_fakes.dart';
 // message and action must stay reachable.
 
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
-const _sheetToggle = ValueKey('discovery-sheet-toggle');
 const _failureNotice = ValueKey('discovery-failure');
 const _coverageToggle = ValueKey('discovery-coverage-toggle');
 const _deepen = ValueKey('discovery-deepen');
@@ -81,13 +80,25 @@ void main() {
       textScale: 2,
       size: const Size(320, 640),
     );
-    await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
     return router;
   }
 
+  /// Scrolls the results half back to the top, so a search from there can
+  /// only ever go one way.
+  Future<void> rewindSheet(WidgetTester tester) async {
+    // The results list is half the screen rather than a sheet, so a check
+    // that scrolled down to a row leaves the coverage strip above the fold.
+    // scrollUntilVisible only moves one way, so each search starts at the top.
+    for (var drag = 0; drag < 6; drag++) {
+      await tester.drag(sheetList(), const Offset(0, 400));
+      await tester.pumpAndSettle();
+    }
+  }
+
   Future<void> scrollToInSheet(WidgetTester tester, Finder finder) async {
     expect(tester.takeException(), isNull);
+    await rewindSheet(tester);
     await tester.scrollUntilVisible(finder, 120, scrollable: sheetList());
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);

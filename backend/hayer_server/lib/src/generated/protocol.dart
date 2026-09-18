@@ -706,7 +706,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
-          columnDefault: '3',
+          columnDefault: '12',
         ),
         _i2.ColumnDefinition(
           name: 'discoveryBrowseRequestsPerMinute',

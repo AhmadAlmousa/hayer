@@ -1083,9 +1083,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoveryLoadingPlaces => 'Loading places';
 
   @override
-  String get discoverySearchThisArea => 'Search this area';
-
-  @override
   String get discoveryShowMyLocation => 'Show my location';
 
   @override
@@ -1289,10 +1286,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoveryFiltersReset => 'Reset';
 
   @override
-  String get discoveryFilterText => 'Search names and descriptions';
+  String get discoveryFilterTextHint => 'For example, rooftop or kunafa';
 
   @override
-  String get discoveryFilterTextHint => 'For example, rooftop or kunafa';
+  String get discoverySearchClear => 'Clear the search';
 
   @override
   String get discoveryFilterReviews => 'Number of reviews';

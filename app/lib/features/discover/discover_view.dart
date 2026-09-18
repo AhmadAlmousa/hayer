@@ -24,6 +24,7 @@ import 'discovery_filter_sheet.dart';
 import 'discovery_map.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
+import 'discovery_search_field.dart';
 import 'discovery_search.dart';
 import 'discovery_selection_controller.dart';
 import 'discovery_sort_text.dart';
@@ -53,16 +54,20 @@ class DiscoverView extends ConsumerStatefulWidget {
 
 class _DiscoverViewState extends ConsumerState<DiscoverView> {
   final _map = GlobalKey<DiscoveryMapState>();
-  final _sheet = DraggableScrollableController();
+  final _results = ScrollController();
+
+  /// Committing the camera on every frame of a pan would put a history entry
+  /// and a query behind each one. This waits for the map to settle.
+  Timer? _settle;
+
+  /// The canonical cell the last exploration was asked for, so panning inside
+  /// one does not ask again. Null until an area has been reported.
+  String? _exploredKey;
 
   /// Earlier committed locations from this visit, most recent last.
   final _history = <String>[];
 
   late DiscoveryLinkParse _link;
-
-  /// The area the map last came to rest on, or null until it does for the
-  /// committed viewport.
-  DiscoveryViewport? _visible;
 
   /// The permitted device location distances are measured from.
   DiscoveryPoint? _origin;
@@ -75,14 +80,6 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
   bool _locating = false;
 
   DiscoveryUrlQuery get _query => _link.query;
-
-  bool get _pending {
-    final committed = _query.viewport;
-    final visible = _visible;
-    return committed != null &&
-        visible != null &&
-        !discoveryViewportShows(visible, committed);
-  }
 
   @override
   void initState() {
@@ -102,10 +99,7 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
   void didUpdateWidget(DiscoverView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.uri == oldWidget.uri) return;
-    final previous = _query.viewport?.token;
     _link = DiscoveryUrlQuery.parse(widget.uri.queryParameters);
-    // Until the map settles on the new area, it is not known to have moved.
-    if (_query.viewport?.token != previous) _visible = null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _commit();
     });
@@ -119,7 +113,8 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
 
   @override
   void dispose() {
-    _sheet.dispose();
+    _settle?.cancel();
+    _results.dispose();
     super.dispose();
   }
 
@@ -144,7 +139,20 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     ref
         .read(discoveryResultsProvider.notifier)
         .show(DiscoverySearch(query: _query));
-    // Reported once per committed area; sorts and filters keep the area.
+    _explore(viewport);
+  }
+
+  /// Asks the server to explore [viewport] if it has not already been asked
+  /// for the same place.
+  ///
+  /// Browsing follows the camera freely because it only reads the catalog.
+  /// Exploring spends the user's harvest quota upstream, so it is asked once
+  /// per canonical cell: panning within one, or changing a sort or filter,
+  /// asks nothing further.
+  void _explore(DiscoveryViewport viewport) {
+    final key = discoveryExploreKey(viewport);
+    if (key == _exploredKey) return;
+    _exploredKey = key;
     ref.read(discoveryCoverageProvider.notifier).ensure(viewport);
   }
 
@@ -204,6 +212,9 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     if (mounted && origin != null) setState(() => _origin = origin);
   }
 
+  /// How long the camera must rest before its area becomes the query.
+  static const _browseDebounce = Duration(milliseconds: 400);
+
   void _labelArea(DiscoveryViewport viewport) {
     final language = Localizations.localeOf(context).languageCode;
     final key = '${viewport.token}|$language';
@@ -228,13 +239,38 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     context.go(location);
   }
 
+  /// Commits [next] without a history entry.
+  ///
+  /// Following the camera would otherwise put one entry behind every pan, and
+  /// back out of Discover a pan at a time.
+  void _follow(DiscoveryUrlQuery next) {
+    final location = next.location;
+    if (location == _query.location) return;
+    _normalizedTo = location;
+    Router.neglect(context, () => context.go(location));
+  }
+
+  /// Runs the search for wherever the map has come to rest.
+  ///
+  /// Results follow the camera rather than waiting for a Search this area
+  /// button: the query is a read of the catalog we already hold, which costs
+  /// nothing upstream. Only exploring a new area does, and [_explore] gates
+  /// that separately.
+  void _cameraSettled(DiscoveryViewport visible) {
+    _settle?.cancel();
+    _settle = Timer(_browseDebounce, () {
+      if (!mounted) return;
+      final committed = _query.viewport;
+      if (committed != null && discoveryViewportShows(visible, committed)) {
+        return;
+      }
+      _follow(_query.withViewport(visible));
+    });
+  }
+
   void _back(bool didPop, Object? result) {
     if (didPop || _history.isEmpty) return;
     context.go(_history.removeLast());
-  }
-
-  void _searchThisArea() {
-    if (_visible case final visible?) _apply(_query.withViewport(visible));
   }
 
   Future<void> _locate() async {
@@ -420,7 +456,6 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
       discoverySelectionProvider.select((selection) => selection.place?.marker),
     );
     final viewport = _query.viewport;
-    final pending = _pending;
     final area = _areaLabel ?? strings.discoveryThisArea;
     return PopScope(
       canPop: kIsWeb || _history.isEmpty,
@@ -428,56 +463,70 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
       child: Scaffold(
         body: SafeArea(
           bottom: false,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              _mapSize = constraints.biggest;
-              return Stack(
-                children: [
-                  Positioned.fill(
-                    child: viewport == null
-                        ? ColoredBox(color: colors.surfaceContainerHighest)
-                        : DiscoveryMap(
-                            key: _map,
-                            viewport: viewport,
-                            onVisibleViewport: (visible) =>
-                                setState(() => _visible = visible),
-                            places: places,
-                            selected: selected,
-                            onPlace: ref
-                                .read(discoverySelectionProvider.notifier)
-                                .selectPoint,
-                          ),
-                  ),
-                  Positioned(
-                    left: 12,
-                    right: 12,
-                    top: 10,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Above the map rather than floating over it. Over a full-bleed
+              // map these had the whole screen behind them; over a half one at
+              // twice the system text size they would not fit.
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _AreaBar(
+                      title: viewport == null
+                          ? strings.discoveryThisArea
+                          : strings.discoveryAreaThisView(area),
+                      locating: _locating,
+                      onLocate: _locate,
+                      onShare: viewport == null ? null : _share,
+                    ),
+                    const SizedBox(height: 6),
+                    DiscoverySearchField(query: _query, onApply: _apply),
+                    const SizedBox(height: 4),
+                    DiscoveryFilterBar(
+                      query: _query,
+                      onSort: _chooseSort,
+                      onFilters: _openFilters,
+                      onCategories: _openCategories,
+                      onApply: _apply,
+                    ),
+                  ],
+                ),
+              ),
+              // Fixed halves of what is left. The one thing the split yields
+              // to is text size: at twice the system size the results header
+              // alone fills half a small phone and no row is left to read.
+              Expanded(
+                flex: _mapFlex(context),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    _mapSize = constraints.biggest;
+                    return Stack(
                       children: [
-                        _AreaBar(
-                          title: viewport == null
-                              ? strings.discoveryThisArea
-                              : pending
-                              ? strings.discoveryPreviousArea(area)
-                              : strings.discoveryAreaThisView(area),
-                          locating: _locating,
-                          onLocate: _locate,
-                          onShare: viewport == null ? null : _share,
+                        Positioned.fill(
+                          child: viewport == null
+                              ? ColoredBox(
+                                  color: colors.surfaceContainerHighest,
+                                )
+                              : DiscoveryMap(
+                                  key: _map,
+                                  viewport: viewport,
+                                  onVisibleViewport: _cameraSettled,
+                                  places: places,
+                                  selected: selected,
+                                  onPlace: ref
+                                      .read(discoverySelectionProvider.notifier)
+                                      .selectPoint,
+                                ),
                         ),
-                        const SizedBox(height: 4),
-                        DiscoveryFilterBar(
-                          query: _query,
-                          onSort: _chooseSort,
-                          onFilters: _openFilters,
-                          onCategories: _openCategories,
-                          onApply: _apply,
-                        ),
-                        if (places?.mode == DiscoveryMapMode.aggregates &&
-                            !pending)
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8),
+                        if (places?.mode == DiscoveryMapMode.aggregates)
+                          Positioned(
+                            left: 12,
+                            right: 12,
+                            top: 8,
+                            child: Center(
                               child: Material(
                                 key: const ValueKey('discovery-zoom-in'),
                                 color: colors.inverseSurface,
@@ -499,59 +548,50 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                               ),
                             ),
                           ),
-                        if (pending)
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: FilledButton.icon(
-                                key: const ValueKey('discovery-search-area'),
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: colors.inverseSurface,
-                                  foregroundColor: colors.onInverseSurface,
-                                  minimumSize: const Size(0, 36),
-                                  visualDensity: VisualDensity.compact,
-                                  elevation: 2,
-                                ),
-                                onPressed: _searchThisArea,
-                                icon: const Icon(Icons.refresh_rounded),
-                                label: Text(strings.discoverySearchThisArea),
-                              ),
-                            ),
-                          ),
                       ],
+                    );
+                  },
+                ),
+              ),
+              Expanded(
+                flex: _resultsFlex(context),
+                child: Material(
+                  color: colors.surface,
+                  elevation: 8,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(28),
                     ),
                   ),
-                  DraggableScrollableSheet(
-                    controller: _sheet,
-                    initialChildSize: discoverySheetHalf,
-                    minChildSize: discoverySheetPeek,
-                    snap: true,
-                    snapSizes: const [discoverySheetPeek, discoverySheetHalf],
-                    builder: (context, scrollController) => Material(
-                      color: colors.surface,
-                      elevation: 8,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(28),
-                        ),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: DiscoveryResultsSheet(
-                        query: _query,
-                        scrollController: scrollController,
-                        sheetController: _sheet,
-                        pending: pending,
-                        origin: _origin,
-                        onApply: _apply,
-                      ),
-                    ),
+                  clipBehavior: Clip.antiAlias,
+                  child: DiscoveryResultsSheet(
+                    query: _query,
+                    scrollController: _results,
+                    origin: _origin,
+                    onApply: _apply,
                   ),
-                ],
-              );
-            },
+                ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  /// The map's share of the split, against [_resultsFlex].
+  ///
+  /// Equal halves at the system text size, which is what the layout is for.
+  /// Above that the results take more, because their header grows with the
+  /// text while the map does not, and a map below a quarter of the screen
+  /// stops being a map.
+  int _mapFlex(BuildContext context) => 100 - _resultsFlex(context);
+
+  int _resultsFlex(BuildContext context) {
+    final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
+    return (discoveryResultsShare * 100 * scale).round().clamp(
+      (discoveryResultsShare * 100).round(),
+      75,
     );
   }
 }

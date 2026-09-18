@@ -87,6 +87,37 @@ Last updated: 2026-09-16
 
 ## Checkpoints
 
+### Optional reason, photo policy and covering coverage — implemented (2026-09-18)
+
+M9-L, the owner's feedback pass. Three back-end halves.
+
+- **The admin reason is optional.** `_reason` no longer demands four
+  characters; a blank one is recorded as "No reason given", so the
+  `NOT NULL` audit column still holds a readable row and no migration or
+  protocol change was needed. The 500-character ceiling stays, and POI issue
+  moderation keeps its 4..500 evidence check, which is a claim about a place
+  rather than a note to the audit log.
+- **Photo policy.** `PhotoPolicy` carries `fetchCount`, `width`,
+  `cacheCount` and `cacheDays`, stored as four columns on
+  `hayer_cache_settings` under the same bounds CHECK as the rest of the
+  policy. `SearchParser` takes its photo limit and width from it instead of
+  the hard-coded 3 and `=w1600`, and `GoogleWebPlaceSource.configurePhotos`
+  applies them per session. The two client numbers reach the app on
+  bootstrap.
+- **Covering coverage.** `_fresh` matched an exact
+  `(country, cellId, radiusMeters)`, so a completed 5 km harvest did not
+  satisfy a later 2 km request over the same centre, and panning a few
+  hundred metres changed the cell entirely and re-reported the area as
+  unexplored. The freshness check now also accepts a covering row: same
+  country, an equal or larger radius bucket whose footprint contains the
+  requested cell, the matching manifest revision, and every enabled query
+  complete. `discoveryUserHarvestsPerHour` rises from 3 to 12 by migration
+  and by default, because harvesting is now automatic rather than a button.
+
+The remote PostGIS suite ran 136 tests with one failure, the growth-metrics
+`exploredCells` expectation in `discovery_admin_harvest_test.dart`, verified
+pre-existing on `main`.
+
 ### Admin catalog reads: map scope, filters, heat grid and place detail — implemented (2026-09-16)
 
 The owner asked for a better admin POI catalog: a heat map of where places

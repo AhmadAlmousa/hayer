@@ -67,6 +67,48 @@ Last updated: 2026-09-16
 
 ## Checkpoints
 
+### Owner feedback pass: icon, home, hours, photos, Got time — implemented (2026-09-18)
+
+M9-L. The owner used the shipped app and reported seven defects. Six are
+done; the seventh, the Discover type tree, is back-end work and open.
+
+- **Launcher icon.** `app/assets/branding/hayer_icon.png` had a 13%
+  transparent margin and the adaptive background was white, so a white plate
+  showed all the way around the art, and `remove_alpha_ios` flattened the
+  margin to solid white on iOS. `scripts/render-icons.sh` now renders both
+  assets from the full-bleed `hayer_icon.svg` with headless Chrome: the
+  square icon edge to edge, and a separate transparent foreground inside
+  Android's 66% safe zone. The adaptive background and the iOS background are
+  the brand teal `#0E9594`, and the foreground inset is 0 because the render
+  already carries the safe zone. The script fails if a corner comes out white.
+- **Resume.** It was a 76dp tonal button between two 40dp outlined ones. It
+  is now an `OutlinedButton.icon` shaped exactly like Join, with the mode and
+  creation time moved out of the button into a caption beneath it.
+- **Weekly hours.** The graph drew all 24 hours in a fixed 470dp box, most of
+  it empty night. It now derives its window from the hours a place is open,
+  padded and at least eight hours wide, and scales the minute height to fit a
+  190dp grid.
+- **Place photos.** The details gallery was already a paging `PageView`; it
+  looked like one image because the parser kept three photos and often one.
+  The new photo policy raises that, and the client caches them under a named
+  `flutter_cache_manager` config sized by the policy.
+- **Got time.** The surface is a fixed 50/50 split: map above, results below,
+  no drag handle and no in-between state. The results follow the camera and
+  the search box: a 400 ms settle commits the viewport with
+  `Router.neglect`, so panning re-queries the catalog without flooding the
+  back stack, and the "Search this area" button and the "Previous area"
+  label are gone along with `discoverySearchThisArea`. The search box moved
+  out of the filter sheet into the map overlay, on the same debounce. The
+  provider harvest is still gated: it is asked for only when the canonical
+  explore key changes. The coverage strip reports `partial` rather than
+  `unexplored` whenever the area holds known places, so an area with results
+  never claims to be unexplored.
+
+Tests: the Discover suites scroll the results half rather than dragging a
+sheet, and the Arabic 200% pass now rewinds the list before each search
+because `scrollUntilVisible` only moves one way. 371 app tests and 87 admin
+tests pass with clean analyses.
+
 ### Admin POI catalog: map modes, map-scoped list, filters and info card — implemented (2026-09-16)
 
 Owner request. The catalog page moved out of `admin_app.dart` into

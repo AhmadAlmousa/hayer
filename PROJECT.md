@@ -952,6 +952,18 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   web-host checks and the owner's formula, budget and latency review remain;
   the flag stays off.
 
+- [~] M9-L — Owner feedback pass (both lanes). Seven defects the owner found
+  in the shipped app: the launcher icon's white edge, the oversized Resume
+  button, the 24-hour opening-hours graph, the mandatory admin reason, the
+  single place photo, the Got time layout and its "not explored" report, and
+  the unmapped Discover types. The first six are done (`1b06731`, `c599d2c`,
+  `7e638e5`, `d295d19` and the Got time commit); the seeded nested type tree
+  and its auto-mapper remain. Two decisions in
+  [`discovery_upgrade.md`](discovery_upgrade.md) were reversed by the owner and
+  amended there: the draggable sheet became a fixed 50/50 split, and the
+  committed "Search this area" became a live catalog read with the provider
+  harvest still gated.
+
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
 complete from contract availability alone. Discovery stays dark: data, harvest and
@@ -1016,6 +1028,33 @@ implemented, and M9-K is in progress.
 
 ## Evidence log
 
+- 2026-09-18: opened M9-L, the owner's feedback pass on the shipped app, and
+  landed six of its seven items. The launcher icon is now rendered from the
+  full-bleed SVG by `scripts/render-icons.sh`, with a teal adaptive background
+  and a separate foreground, so no white edge survives on Android, iOS or the
+  web maskable pair (`1b06731` carries the home-screen half). Resume now looks
+  like Join. The weekly hours graph derives its window from the hours a place
+  is actually open (`c599d2c`). Every admin reason is optional and the audit
+  log records "No reason given" when one is left blank (`7e638e5`). A new
+  photo policy sets how many photos are fetched, at what width, and how many
+  are cached for how long (`d295d19`). Got time is now a fixed 50/50 split,
+  map above and results below, whose results follow the camera and the search
+  box on a 400 ms settle: the catalog read is live, the provider harvest stays
+  gated, a covering harvest of an equal or larger radius satisfies a later
+  request, and an area with known places no longer reports itself unexplored.
+  `discoveryUserHarvestsPerHour` rises from 3 to 12 to match automatic
+  harvesting, by migration and by default. Two locked decisions were reversed
+  by the owner and amended in `discovery_upgrade.md`: requirement 9's
+  draggable sheet, and requirement 2 / architecture item 4's committed
+  "Search this area". Pinned full preflight passed with clean analyses: 202
+  server, 371 app and 87 admin tests. The remote PostGIS suite ran 136 tests
+  with one failure, `discovery_admin_harvest_test.dart`'s growth-metrics
+  `exploredCells` expectation, verified pre-existing on `main` by stashing
+  this work and rerunning. Signed `0.2.1+7` built at SHA-256
+  `70faae6a72a5f6042da5f0992728f1baea74a8788b4319938b28baa710e76b68`
+  (106,529,916 bytes) and verifies under APK Signature Scheme v2. The seeded
+  nested Discover type tree and its auto-mapper remain open. Discovery stays
+  disabled. Details are in `lane-frontend.md` and `lane-backend.md`.
 - 2026-09-13: implemented the F10/F21 source-outage and refresh-truthfulness
   boundary after fast-forwarding Claude's M9-F commit `5863f02`. The core
   server no longer depends on the optional source canary. Dashboard jobs use

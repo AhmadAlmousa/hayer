@@ -249,8 +249,25 @@ abstract final class DiscoveryHarvestService {
             table.radiusMeters.equals(cell.radiusMeters),
         transaction: transaction,
       );
+      // An exact cell match is not the only thing that makes this area fresh.
+      // A larger harvest around a nearby centre already swept it, and after
+      // the Discover map became a fixed half-screen, ordinary panning lands in
+      // a different cellId and a smaller radius bucket every few hundred
+      // metres. Matching only the exact key re-harvested ground that was
+      // covered hours ago.
+      final covering =
+          coverage ??
+          await _coveringCoverage(
+            session,
+            transaction: transaction,
+            country: country,
+            cell: cell,
+            manifest: manifest,
+            freshHours: policy.freshHours,
+            now: now,
+          );
       if (trigger == DiscoveryHarvestTrigger.committedSearch &&
-          _fresh(coverage, manifest, policy.freshHours, now)) {
+          _fresh(covering, manifest, policy.freshHours, now)) {
         return (job: null, retryAfter: null, fresh: true, created: false);
       }
 
@@ -936,6 +953,48 @@ RETURNING job."jobId"
           : null,
     );
   }
+
+  /// A fresh coverage row whose footprint contains all of [cell], if one
+  /// exists.
+  ///
+  /// Only rows of an equal or larger radius can contain it, and containment is
+  /// checked against the recorded footprint rather than the radius alone,
+  /// because two cells of the same radius rarely share a centre.
+  static Future<DiscoveryCoverageRow?> _coveringCoverage(
+    Session session, {
+    required Transaction transaction,
+    required String country,
+    required DiscoveryHarvestCell cell,
+    required DiscoveryHarvestManifestRow manifest,
+    required int freshHours,
+    required DateTime now,
+  }) async {
+    final wanted = cell.bounds;
+    final candidates = await DiscoveryCoverageRow.db.find(
+      session,
+      where: (table) =>
+          table.countryCode.equals(country) &
+          table.radiusMeters.between(cell.radiusMeters, _largestRadiusMeters) &
+          table.south.between(-90, wanted.south) &
+          table.north.between(wanted.north, 90) &
+          table.west.between(-180, wanted.west) &
+          table.east.between(wanted.east, 180),
+      orderBy: (table) => table.radiusMeters,
+      limit: _coveringCandidateLimit,
+      transaction: transaction,
+    );
+    for (final candidate in candidates) {
+      if (_fresh(candidate, manifest, freshHours, now)) return candidate;
+    }
+    return null;
+  }
+
+  /// The widest harvest footprint, from [DiscoveryArea.radiusBucketsMeters].
+  static final _largestRadiusMeters = DiscoveryArea.radiusBucketsMeters.last;
+
+  /// How many wider footprints to weigh before giving up and harvesting. Cells
+  /// are snapped to a kilometre grid, so only a handful can contain any one.
+  static const _coveringCandidateLimit = 8;
 
   /// Fresh when the coverage belongs to the active manifest revision and
   /// every enabled query completed within the freshness window.

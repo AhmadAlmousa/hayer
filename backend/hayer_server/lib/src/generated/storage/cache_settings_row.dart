@@ -90,7 +90,7 @@ abstract class CacheSettingsRow
            discoveryHarvestDesiredCandidatesPerQuery ?? 50,
        discoveryHarvestMaximumSeconds = discoveryHarvestMaximumSeconds ?? 300,
        discoveryHarvestCooldownMinutes = discoveryHarvestCooldownMinutes ?? 60,
-       discoveryUserHarvestsPerHour = discoveryUserHarvestsPerHour ?? 3,
+       discoveryUserHarvestsPerHour = discoveryUserHarvestsPerHour ?? 12,
        discoveryBrowseRequestsPerMinute =
            discoveryBrowseRequestsPerMinute ?? 30,
        discoveryFacetRequestsPerMinute = discoveryFacetRequestsPerMinute ?? 60,

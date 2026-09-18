@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart' show DiscoverPlace;
 import 'package:intl/intl.dart';
@@ -23,21 +24,21 @@ import 'discovery_selection_controller.dart';
 import 'discovery_sort_text.dart';
 import 'discovery_taxonomy_provider.dart';
 
-/// The sheet heights, as parts of the space below the status bar, that the
-/// results rest at over the map.
-const discoverySheetPeek = 0.2;
-const discoverySheetHalf = 0.5;
+/// The share of the screen the results take, the map taking the rest.
+///
+/// Fixed rather than dragged: the sheet used to be draggable over a full-bleed
+/// map, and the owner asked for a layout that never lands in an in-between
+/// state. Both halves are always usable, so neither has to be uncovered.
+const discoveryResultsShare = 0.5;
 
 const _revealDuration = Duration(milliseconds: 250);
 
-/// The ranked Discover results, in a sheet dragged over the map.
+/// The ranked Discover results, filling the lower half of the screen.
 class DiscoveryResultsSheet extends ConsumerStatefulWidget {
   const DiscoveryResultsSheet({
     super.key,
     required this.query,
     required this.scrollController,
-    required this.sheetController,
-    required this.pending,
     required this.origin,
     required this.onApply,
   });
@@ -45,11 +46,6 @@ class DiscoveryResultsSheet extends ConsumerStatefulWidget {
   /// The committed query.
   final DiscoveryUrlQuery query;
   final ScrollController scrollController;
-  final DraggableScrollableController sheetController;
-
-  /// Whether the camera has moved away from the committed area, so the
-  /// results describe the previous one.
-  final bool pending;
 
   /// The permitted device location, for distances.
   final DiscoveryPoint? origin;
@@ -66,22 +62,14 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
   /// The selected row, which a tapped pin scrolls into view.
   final _selectedRow = GlobalKey();
 
-  /// Scrolls the selected place's row into view, raising the sheet first if
-  /// it is lowered.
+  /// Scrolls the selected place's row into view. The list is always on
+  /// screen now, so there is no sheet to raise first.
   Future<void> _reveal() async {
     final place = ref.read(discoverySelectionProvider).place;
     if (place == null) return;
     final items = ref.read(discoveryResultsProvider).items;
     final index = items.indexWhere((item) => item.catalogId == place.catalogId);
     if (index < 0) return;
-    final sheet = widget.sheetController;
-    if (sheet.isAttached && sheet.size < discoverySheetHalf - 0.01) {
-      await sheet.animateTo(
-        discoverySheetHalf,
-        duration: _revealDuration,
-        curve: Curves.easeOutCubic,
-      );
-    }
     // Rows are built only as they near the viewport, so a row further down
     // is first brought close by estimate.
     for (var attempt = 0; attempt < 3; attempt++) {
@@ -171,18 +159,21 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
       DiscoveryResults(search: null, error: null) =>
         strings.discoveryLoadingPlaces,
       DiscoveryResults(search: null) => strings.discoveryThisArea,
-      DiscoveryResults(:final total) when widget.pending =>
-        strings.discoveryPlacesInPreviousArea(total),
       DiscoveryResults(:final total) => strings.discoveryPlacesInView(total),
     };
     return CustomScrollView(
       controller: widget.scrollController,
+      // The list is half a screen rather than a sheet that can be dragged to
+      // fill one, so the default 250dp of off-screen cache is a smaller share
+      // of it than it used to be. A larger one keeps the next rows built as
+      // the half is scrolled, and keeps the coverage strip alive just above
+      // the fold while a selected row is revealed.
+      scrollCacheExtent: const ScrollCacheExtent.pixels(800),
       slivers: [
         SliverToBoxAdapter(
           child: _Header(
             title: title,
             explainer: discoverySortExplainer(context, shownSort, scoring),
-            sheetController: widget.sheetController,
             onRefresh: outsideCoverage ? null : notifier.refresh,
           ),
         ),
@@ -373,13 +364,11 @@ class _Header extends StatelessWidget {
   const _Header({
     required this.title,
     required this.explainer,
-    required this.sheetController,
     required this.onRefresh,
   });
 
   final String title;
   final String? explainer;
-  final DraggableScrollableController sheetController;
   final VoidCallback? onRefresh;
 
   @override
@@ -401,31 +390,6 @@ class _Header extends StatelessWidget {
       onPressed: onRefresh,
       icon: const Icon(Icons.refresh_rounded),
     );
-    final toggle = ListenableBuilder(
-      listenable: sheetController,
-      builder: (context, _) {
-        final expanded =
-            sheetController.isAttached && sheetController.size > 0.9;
-        return OutlinedButton(
-          key: const ValueKey('discovery-sheet-toggle'),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(0, 36),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            visualDensity: VisualDensity.compact,
-          ),
-          onPressed: () => unawaited(
-            sheetController.animateTo(
-              expanded ? discoverySheetHalf : 1,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-            ),
-          ),
-          child: Text(
-            expanded ? strings.discoveryShowMap : strings.discoveryFullList,
-          ),
-        );
-      },
-    );
     // At large text sizes the actions wrap under the count instead of
     // squeezing it.
     final large = MediaQuery.textScalerOf(context).scale(14) > 20;
@@ -433,34 +397,21 @@ class _Header extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 6),
-          child: Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 8, 8),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 8, 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (large) ...[
                 heading,
-                Wrap(
-                  alignment: WrapAlignment.end,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [refresh, toggle],
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: refresh,
                 ),
               ] else
                 Row(
                   children: [
                     Expanded(child: heading),
                     refresh,
-                    toggle,
                   ],
                 ),
               if (explainer case final explainer?)
