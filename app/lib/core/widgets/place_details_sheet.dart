@@ -14,6 +14,7 @@ import '../display_formatters.dart';
 import '../gcc_currency_symbol.dart';
 import '../place_links.dart';
 import '../place_photo.dart';
+import '../place_photo_cache.dart';
 import '../providers.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'route_estimate_text.dart';
@@ -440,7 +441,7 @@ class _OpenChip extends StatelessWidget {
   }
 }
 
-class _PlacePhotoGallery extends StatefulWidget {
+class _PlacePhotoGallery extends ConsumerStatefulWidget {
   const _PlacePhotoGallery({required this.place, this.badges = const []});
 
   final PlaceSnapshot place;
@@ -449,10 +450,14 @@ class _PlacePhotoGallery extends StatefulWidget {
   final List<String> badges;
 
   @override
-  State<_PlacePhotoGallery> createState() => _PlacePhotoGalleryState();
+  ConsumerState<_PlacePhotoGallery> createState() => _PlacePhotoGalleryState();
 }
 
-class _PlacePhotoGalleryState extends State<_PlacePhotoGallery> {
+/// How many photos still read as a row of dots. Beyond this the count alone is
+/// clearer, and the operator can raise the per-place limit to 10.
+const _maximumPhotoDots = 6;
+
+class _PlacePhotoGalleryState extends ConsumerState<_PlacePhotoGallery> {
   int _page = 0;
 
   @override
@@ -469,6 +474,7 @@ class _PlacePhotoGalleryState extends State<_PlacePhotoGallery> {
                 onPageChanged: (value) => setState(() => _page = value),
                 itemBuilder: (context, index) => CachedNetworkImage(
                   imageUrl: widget.place.photoUrls[index],
+                  cacheManager: ref.read(placePhotoCacheProvider),
                   fit: BoxFit.cover,
                   memCacheWidth: placePhotoDecodeWidth(
                     context,
@@ -485,31 +491,40 @@ class _PlacePhotoGalleryState extends State<_PlacePhotoGallery> {
                   ),
                 ),
               );
-              if (widget.badges.isEmpty) return photos;
+              final total = widget.place.photoUrls.length;
+              if (widget.badges.isEmpty && total < 2) return photos;
               return Stack(
                 fit: StackFit.expand,
                 children: [
                   photos,
-                  PositionedDirectional(
-                    start: 12,
-                    end: 12,
-                    bottom: 12,
-                    child: Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        for (final badge in widget.badges)
-                          _PhotoBadge(label: badge),
-                      ],
+                  if (total > 1)
+                    PositionedDirectional(
+                      top: 12,
+                      end: 12,
+                      child: _PhotoBadge(label: '${_page + 1} / $total'),
                     ),
-                  ),
+                  if (widget.badges.isNotEmpty)
+                    PositionedDirectional(
+                      start: 12,
+                      end: 12,
+                      bottom: 12,
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final badge in widget.badges)
+                            _PhotoBadge(label: badge),
+                        ],
+                      ),
+                    ),
                 ],
               );
             },
           ),
         ),
       ),
-      if (widget.place.photoUrls.length > 1) ...[
+      if (widget.place.photoUrls.length > 1 &&
+          widget.place.photoUrls.length <= _maximumPhotoDots) ...[
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

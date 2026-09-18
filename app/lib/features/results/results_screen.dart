@@ -14,6 +14,7 @@ import '../../core/display_formatters.dart';
 import '../../core/page_title.dart';
 import '../../core/place_links.dart';
 import '../../core/place_photo.dart';
+import '../../core/place_photo_cache.dart';
 import '../../core/providers.dart';
 import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
@@ -669,7 +670,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 }
 
-class _ResultCard extends StatelessWidget {
+class _ResultCard extends ConsumerWidget {
   const _ResultCard({
     super.key,
     required this.result,
@@ -696,7 +697,7 @@ class _ResultCard extends StatelessWidget {
   final VoidCallback? onChoose;
   final VoidCallback onDetailsOpened;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final strings = AppLocalizations.of(context)!;
     final place = result.place;
     final ratio = result.voterCount == 0
@@ -741,6 +742,7 @@ class _ResultCard extends StatelessWidget {
                             )
                           : CachedNetworkImage(
                               imageUrl: place.photoUrls.first,
+                              cacheManager: ref.read(placePhotoCacheProvider),
                               fit: BoxFit.cover,
                               memCacheWidth: placePhotoDecodeWidth(
                                 context,

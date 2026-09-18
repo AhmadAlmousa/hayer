@@ -9,6 +9,7 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'app/app.dart';
 import 'app/startup_app.dart';
+import 'core/place_photo_cache.dart';
 import 'core/providers.dart';
 import 'data/authentication.dart';
 import 'data/resilient_auth_storage.dart';
@@ -33,19 +34,20 @@ Future<Widget> _initialize() async {
       storage: ResilientAuthSuccessStorage(SecureClientAuthSuccessStorage()),
     );
   var updateRequired = false;
+  PhotoPolicy? photoPolicy;
   try {
     final package = await PackageInfo.fromPlatform().timeout(
       const Duration(seconds: 5),
     );
     final build = int.tryParse(package.buildNumber) ?? 1;
     try {
-      updateRequired =
-          (await client.bootstrap
-                  .getInfo(
-                    build: build,
-                  )
-                  .timeout(const Duration(seconds: 8)))
-              .updateRequired;
+      final info = await client.bootstrap
+          .getInfo(build: build)
+          .timeout(const Duration(seconds: 8));
+      updateRequired = info.updateRequired;
+      // Null on a server that predates the photo policy; the cache then keeps
+      // its built-in budget rather than being reset.
+      photoPolicy = info.photos;
     } catch (_) {
       // Preserve the existing offline-resume policy; authenticated actions retry.
     }
@@ -60,6 +62,9 @@ Future<Widget> _initialize() async {
     return ProviderScope(
       overrides: [
         clientProvider.overrideWithValue(client),
+        placePhotoCacheProvider.overrideWithValue(
+          buildPlacePhotoCache(photoPolicy),
+        ),
         clientAnalyticsMetadataProvider.overrideWithValue(
           ClientAnalyticsMetadata(
             appBuild: build,

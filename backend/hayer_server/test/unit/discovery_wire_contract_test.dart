@@ -290,6 +290,12 @@ void main() {
     );
     expect(policy.discovery?.maximumPageSize, 100);
     expect(policy.detailRefresh?.maximumRequests, 3);
+    // Photos are shared by both modes, so they carry real defaults even while
+    // Discover is dark.
+    expect(policy.photos?.fetchCount, 6);
+    expect(policy.photos?.width, 1200);
+    expect(policy.photos?.cacheCount, 400);
+    expect(policy.photos?.cacheDays, 14);
   });
 
   test(

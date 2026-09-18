@@ -15,7 +15,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'route_origin_mode.dart' as _i2;
 import 'discovery_policy.dart' as _i3;
 import 'place_detail_policy.dart' as _i4;
-import 'package:hayer_server/src/generated/protocol.dart' as _i5;
+import 'photo_policy.dart' as _i5;
+import 'package:hayer_server/src/generated/protocol.dart' as _i6;
 
 abstract class CachePolicy
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -37,6 +38,7 @@ abstract class CachePolicy
     required this.updatedAt,
     this.discovery,
     this.detailRefresh,
+    this.photos,
   });
 
   factory CachePolicy({
@@ -57,6 +59,7 @@ abstract class CachePolicy
     required DateTime updatedAt,
     _i3.DiscoveryPolicy? discovery,
     _i4.PlaceDetailPolicy? detailRefresh,
+    _i5.PhotoPolicy? photos,
   }) = _CachePolicyImpl;
 
   factory CachePolicy.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -90,13 +93,18 @@ abstract class CachePolicy
       ),
       discovery: jsonSerialization['discovery'] == null
           ? null
-          : _i5.Protocol().deserialize<_i3.DiscoveryPolicy>(
+          : _i6.Protocol().deserialize<_i3.DiscoveryPolicy>(
               jsonSerialization['discovery'],
             ),
       detailRefresh: jsonSerialization['detailRefresh'] == null
           ? null
-          : _i5.Protocol().deserialize<_i4.PlaceDetailPolicy>(
+          : _i6.Protocol().deserialize<_i4.PlaceDetailPolicy>(
               jsonSerialization['detailRefresh'],
+            ),
+      photos: jsonSerialization['photos'] == null
+          ? null
+          : _i6.Protocol().deserialize<_i5.PhotoPolicy>(
+              jsonSerialization['photos'],
             ),
     );
   }
@@ -135,6 +143,8 @@ abstract class CachePolicy
 
   _i4.PlaceDetailPolicy? detailRefresh;
 
+  _i5.PhotoPolicy? photos;
+
   /// Returns a shallow copy of this [CachePolicy]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -156,6 +166,7 @@ abstract class CachePolicy
     DateTime? updatedAt,
     _i3.DiscoveryPolicy? discovery,
     _i4.PlaceDetailPolicy? detailRefresh,
+    _i5.PhotoPolicy? photos,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -178,6 +189,7 @@ abstract class CachePolicy
       'updatedAt': updatedAt.toJson(),
       if (discovery != null) 'discovery': discovery?.toJson(),
       if (detailRefresh != null) 'detailRefresh': detailRefresh?.toJson(),
+      if (photos != null) 'photos': photos?.toJson(),
     };
   }
 
@@ -203,6 +215,7 @@ abstract class CachePolicy
       if (discovery != null) 'discovery': discovery?.toJsonForProtocol(),
       if (detailRefresh != null)
         'detailRefresh': detailRefresh?.toJsonForProtocol(),
+      if (photos != null) 'photos': photos?.toJsonForProtocol(),
     };
   }
 
@@ -233,6 +246,7 @@ class _CachePolicyImpl extends CachePolicy {
     required DateTime updatedAt,
     _i3.DiscoveryPolicy? discovery,
     _i4.PlaceDetailPolicy? detailRefresh,
+    _i5.PhotoPolicy? photos,
   }) : super._(
          version: version,
          freshHours: freshHours,
@@ -251,6 +265,7 @@ class _CachePolicyImpl extends CachePolicy {
          updatedAt: updatedAt,
          discovery: discovery,
          detailRefresh: detailRefresh,
+         photos: photos,
        );
 
   /// Returns a shallow copy of this [CachePolicy]
@@ -275,6 +290,7 @@ class _CachePolicyImpl extends CachePolicy {
     DateTime? updatedAt,
     Object? discovery = _Undefined,
     Object? detailRefresh = _Undefined,
+    Object? photos = _Undefined,
   }) {
     return CachePolicy(
       version: version ?? this.version,
@@ -304,6 +320,7 @@ class _CachePolicyImpl extends CachePolicy {
       detailRefresh: detailRefresh is _i4.PlaceDetailPolicy?
           ? detailRefresh
           : this.detailRefresh?.copyWith(),
+      photos: photos is _i5.PhotoPolicy? ? photos : this.photos?.copyWith(),
     );
   }
 }

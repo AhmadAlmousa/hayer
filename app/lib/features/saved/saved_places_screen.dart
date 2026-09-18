@@ -6,6 +6,7 @@ import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../core/page_title.dart';
 import '../../core/place_photo.dart';
+import '../../core/place_photo_cache.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../domain/saved_place.dart';
 import '../../domain/shortlist_draft.dart';
@@ -308,7 +309,7 @@ class _EditSavedPlaceDialogState extends State<_EditSavedPlaceDialog> {
   }
 }
 
-class _SavedPlaceTile extends StatelessWidget {
+class _SavedPlaceTile extends ConsumerWidget {
   const _SavedPlaceTile({
     required this.saved,
     required this.selected,
@@ -324,7 +325,7 @@ class _SavedPlaceTile extends StatelessWidget {
   final VoidCallback onEdit;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final place = saved.place;
     return Card(
       child: ListTile(
@@ -354,6 +355,7 @@ class _SavedPlaceTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   child: CachedNetworkImage(
                     imageUrl: place.photoUrls.first,
+                    cacheManager: ref.read(placePhotoCacheProvider),
                     width: 48,
                     height: 48,
                     fit: BoxFit.cover,

@@ -1,0 +1,16 @@
+### How many photos a place carries, and how long a device keeps them.
+###
+### Photos are shared: both modes read the same catalog snapshot, so this is
+### not gated on discovery. fetchCount and width shape what the parser stores
+### on the next observation of a place; cacheCount and cacheDays shape each
+### device's own image cache and reach the app through BootstrapInfo.
+class: PhotoPolicy
+fields:
+  ### How many photos to keep from one provider observation, 1 to 10.
+  fetchCount: int
+  ### The pixel width photo URLs are requested at, 400 to 2400.
+  width: int
+  ### How many photo files a device keeps cached, 20 to 2000.
+  cacheCount: int
+  ### How long a cached photo stays usable, 1 to 90 days.
+  cacheDays: int

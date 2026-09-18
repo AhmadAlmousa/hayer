@@ -38,6 +38,9 @@ abstract final class DiscoveryPolicyService {
     cooldownMinutes: 60,
   );
 
+  static PhotoPolicy defaultPhotos() =>
+      PhotoPolicy(fetchCount: 6, width: 1200, cacheCount: 400, cacheDays: 14);
+
   static CachePolicy defaultPolicy() => CachePolicy(
     version: 0,
     freshHours: 72,
@@ -56,6 +59,7 @@ abstract final class DiscoveryPolicyService {
     updatedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
     discovery: defaultDiscovery(),
     detailRefresh: defaultDetailRefresh(),
+    photos: defaultPhotos(),
   );
 
   static Future<CacheSettingsRow?> settings(
@@ -121,6 +125,12 @@ abstract final class DiscoveryPolicyService {
       maximumSeconds: row.detailRefreshMaximumSeconds,
       cooldownMinutes: row.detailRefreshCooldownMinutes,
     ),
+    photos: PhotoPolicy(
+      fetchCount: row.photoFetchCount,
+      width: row.photoWidth,
+      cacheCount: row.photoCacheCount,
+      cacheDays: row.photoCacheDays,
+    ),
   );
 
   /// Resolves nullable additive sections against their persisted values.
@@ -135,6 +145,7 @@ abstract final class DiscoveryPolicyService {
     return incoming.copyWith(
       discovery: incoming.discovery ?? current.discovery,
       detailRefresh: incoming.detailRefresh ?? current.detailRefresh,
+      photos: incoming.photos ?? current.photos,
     );
   }
 
@@ -147,6 +158,7 @@ abstract final class DiscoveryPolicyService {
     final discovery = policy.discovery!;
     final scoring = discovery.scoring;
     final detail = policy.detailRefresh!;
+    final photos = policy.photos!;
     return CacheSettingsRow(
       id: existing?.id,
       settingsKey: 'default',
@@ -189,6 +201,10 @@ abstract final class DiscoveryPolicyService {
       detailRefreshMaximumRequests: detail.maximumRequests,
       detailRefreshMaximumSeconds: detail.maximumSeconds,
       detailRefreshCooldownMinutes: detail.cooldownMinutes,
+      photoFetchCount: photos.fetchCount,
+      photoWidth: photos.width,
+      photoCacheCount: photos.cacheCount,
+      photoCacheDays: photos.cacheDays,
       updatedBy: updatedBy,
       updatedAt: updatedAt,
     );
@@ -197,6 +213,7 @@ abstract final class DiscoveryPolicyService {
   static void validate(CachePolicy policy) {
     final discovery = policy.discovery;
     final detail = policy.detailRefresh;
+    final photos = policy.photos;
     if (policy.freshHours < 1 ||
         policy.freshHours > 720 ||
         policy.staleFallbackDays < 1 ||
@@ -223,14 +240,29 @@ abstract final class DiscoveryPolicyService {
             policy.defaultRouteOrigin == RouteOriginMode.participantLocation) ||
         discovery == null ||
         detail == null ||
+        photos == null ||
         !_validDiscovery(discovery) ||
-        !_validDetail(detail)) {
+        !_validDetail(detail) ||
+        !_validPhotos(photos)) {
       throw ApiException(
         code: 'bad_request',
         message: 'One or more policy values are outside safe bounds.',
       );
     }
   }
+
+  /// Bounds photo counts and widths. The ceilings matter: each extra photo is
+  /// another URL stored on every catalog row and another file on every device
+  /// that opens the place, and the width multiplies both.
+  static bool _validPhotos(PhotoPolicy policy) =>
+      policy.fetchCount >= 1 &&
+      policy.fetchCount <= 10 &&
+      policy.width >= 400 &&
+      policy.width <= 2400 &&
+      policy.cacheCount >= 20 &&
+      policy.cacheCount <= 2000 &&
+      policy.cacheDays >= 1 &&
+      policy.cacheDays <= 90;
 
   static bool _validDiscovery(DiscoveryPolicy policy) {
     final scoring = policy.scoring;

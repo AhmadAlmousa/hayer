@@ -117,57 +117,58 @@ import 'matching_timing.dart' as _i103;
 import 'metric_point.dart' as _i104;
 import 'opening_period.dart' as _i105;
 import 'participant_view.dart' as _i106;
-import 'place_detail_field.dart' as _i107;
-import 'place_detail_policy.dart' as _i108;
-import 'place_detail_refresh_state.dart' as _i109;
-import 'place_detail_result.dart' as _i110;
-import 'place_insight.dart' as _i111;
-import 'place_ranking.dart' as _i112;
-import 'place_snapshot.dart' as _i113;
-import 'poi_identity.dart' as _i114;
-import 'poi_issue_source.dart' as _i115;
-import 'poi_issue_status.dart' as _i116;
-import 'poi_issue_type.dart' as _i117;
-import 'refresh_job_page.dart' as _i118;
-import 'refresh_job_view.dart' as _i119;
-import 'reverse_geocode_result.dart' as _i120;
-import 'route_estimate.dart' as _i121;
-import 'route_estimate_policy.dart' as _i122;
-import 'route_origin_mode.dart' as _i123;
-import 'session_bundle.dart' as _i124;
-import 'session_event.dart' as _i125;
-import 'session_event_type.dart' as _i126;
-import 'session_mode.dart' as _i127;
-import 'session_progress.dart' as _i128;
-import 'session_result.dart' as _i129;
-import 'session_result_tally.dart' as _i130;
-import 'session_status.dart' as _i131;
-import 'session_view.dart' as _i132;
-import 'swipe_command.dart' as _i133;
-import 'taxonomy_canary_sample.dart' as _i134;
-import 'taxonomy_item.dart' as _i135;
-import 'taxonomy_kind.dart' as _i136;
-import 'taxonomy_snapshot.dart' as _i137;
-import 'taxonomy_status.dart' as _i138;
-import 'taxonomy_validation.dart' as _i139;
-import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i140;
+import 'photo_policy.dart' as _i107;
+import 'place_detail_field.dart' as _i108;
+import 'place_detail_policy.dart' as _i109;
+import 'place_detail_refresh_state.dart' as _i110;
+import 'place_detail_result.dart' as _i111;
+import 'place_insight.dart' as _i112;
+import 'place_ranking.dart' as _i113;
+import 'place_snapshot.dart' as _i114;
+import 'poi_identity.dart' as _i115;
+import 'poi_issue_source.dart' as _i116;
+import 'poi_issue_status.dart' as _i117;
+import 'poi_issue_type.dart' as _i118;
+import 'refresh_job_page.dart' as _i119;
+import 'refresh_job_view.dart' as _i120;
+import 'reverse_geocode_result.dart' as _i121;
+import 'route_estimate.dart' as _i122;
+import 'route_estimate_policy.dart' as _i123;
+import 'route_origin_mode.dart' as _i124;
+import 'session_bundle.dart' as _i125;
+import 'session_event.dart' as _i126;
+import 'session_event_type.dart' as _i127;
+import 'session_mode.dart' as _i128;
+import 'session_progress.dart' as _i129;
+import 'session_result.dart' as _i130;
+import 'session_result_tally.dart' as _i131;
+import 'session_status.dart' as _i132;
+import 'session_view.dart' as _i133;
+import 'swipe_command.dart' as _i134;
+import 'taxonomy_canary_sample.dart' as _i135;
+import 'taxonomy_item.dart' as _i136;
+import 'taxonomy_kind.dart' as _i137;
+import 'taxonomy_snapshot.dart' as _i138;
+import 'taxonomy_status.dart' as _i139;
+import 'taxonomy_validation.dart' as _i140;
+import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i141;
 import 'package:hayer_client/src/protocol/admin_discovery_taxonomy_version.dart'
-    as _i141;
-import 'package:hayer_client/src/protocol/discovery_taxonomy_node.dart'
     as _i142;
-import 'package:hayer_client/src/protocol/admin_discovery_harvest_manifest_version.dart'
+import 'package:hayer_client/src/protocol/discovery_taxonomy_node.dart'
     as _i143;
-import 'package:hayer_client/src/protocol/discovery_harvest_manifest_entry.dart'
+import 'package:hayer_client/src/protocol/admin_discovery_harvest_manifest_version.dart'
     as _i144;
-import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i145;
-import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i146;
-import 'package:hayer_client/src/protocol/metric_point.dart' as _i147;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i148;
+import 'package:hayer_client/src/protocol/discovery_harvest_manifest_entry.dart'
+    as _i145;
+import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i146;
+import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i147;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i148;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i149;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i149;
-import 'dart:typed_data' as _i150;
+    as _i150;
+import 'dart:typed_data' as _i151;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i151;
+    as _i152;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -273,6 +274,7 @@ export 'matching_timing.dart';
 export 'metric_point.dart';
 export 'opening_period.dart';
 export 'participant_view.dart';
+export 'photo_policy.dart';
 export 'place_detail_field.dart';
 export 'place_detail_policy.dart';
 export 'place_detail_refresh_state.dart';
@@ -657,104 +659,107 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i106.ParticipantView) {
       return _i106.ParticipantView.fromJson(data) as T;
     }
-    if (t == _i107.PlaceDetailField) {
-      return _i107.PlaceDetailField.fromJson(data) as T;
+    if (t == _i107.PhotoPolicy) {
+      return _i107.PhotoPolicy.fromJson(data) as T;
     }
-    if (t == _i108.PlaceDetailPolicy) {
-      return _i108.PlaceDetailPolicy.fromJson(data) as T;
+    if (t == _i108.PlaceDetailField) {
+      return _i108.PlaceDetailField.fromJson(data) as T;
     }
-    if (t == _i109.PlaceDetailRefreshState) {
-      return _i109.PlaceDetailRefreshState.fromJson(data) as T;
+    if (t == _i109.PlaceDetailPolicy) {
+      return _i109.PlaceDetailPolicy.fromJson(data) as T;
     }
-    if (t == _i110.PlaceDetailResult) {
-      return _i110.PlaceDetailResult.fromJson(data) as T;
+    if (t == _i110.PlaceDetailRefreshState) {
+      return _i110.PlaceDetailRefreshState.fromJson(data) as T;
     }
-    if (t == _i111.PlaceInsight) {
-      return _i111.PlaceInsight.fromJson(data) as T;
+    if (t == _i111.PlaceDetailResult) {
+      return _i111.PlaceDetailResult.fromJson(data) as T;
     }
-    if (t == _i112.PlaceRanking) {
-      return _i112.PlaceRanking.fromJson(data) as T;
+    if (t == _i112.PlaceInsight) {
+      return _i112.PlaceInsight.fromJson(data) as T;
     }
-    if (t == _i113.PlaceSnapshot) {
-      return _i113.PlaceSnapshot.fromJson(data) as T;
+    if (t == _i113.PlaceRanking) {
+      return _i113.PlaceRanking.fromJson(data) as T;
     }
-    if (t == _i114.PoiIdentity) {
-      return _i114.PoiIdentity.fromJson(data) as T;
+    if (t == _i114.PlaceSnapshot) {
+      return _i114.PlaceSnapshot.fromJson(data) as T;
     }
-    if (t == _i115.PoiIssueSource) {
-      return _i115.PoiIssueSource.fromJson(data) as T;
+    if (t == _i115.PoiIdentity) {
+      return _i115.PoiIdentity.fromJson(data) as T;
     }
-    if (t == _i116.PoiIssueStatus) {
-      return _i116.PoiIssueStatus.fromJson(data) as T;
+    if (t == _i116.PoiIssueSource) {
+      return _i116.PoiIssueSource.fromJson(data) as T;
     }
-    if (t == _i117.PoiIssueType) {
-      return _i117.PoiIssueType.fromJson(data) as T;
+    if (t == _i117.PoiIssueStatus) {
+      return _i117.PoiIssueStatus.fromJson(data) as T;
     }
-    if (t == _i118.RefreshJobPage) {
-      return _i118.RefreshJobPage.fromJson(data) as T;
+    if (t == _i118.PoiIssueType) {
+      return _i118.PoiIssueType.fromJson(data) as T;
     }
-    if (t == _i119.RefreshJobView) {
-      return _i119.RefreshJobView.fromJson(data) as T;
+    if (t == _i119.RefreshJobPage) {
+      return _i119.RefreshJobPage.fromJson(data) as T;
     }
-    if (t == _i120.ReverseGeocodeResult) {
-      return _i120.ReverseGeocodeResult.fromJson(data) as T;
+    if (t == _i120.RefreshJobView) {
+      return _i120.RefreshJobView.fromJson(data) as T;
     }
-    if (t == _i121.RouteEstimate) {
-      return _i121.RouteEstimate.fromJson(data) as T;
+    if (t == _i121.ReverseGeocodeResult) {
+      return _i121.ReverseGeocodeResult.fromJson(data) as T;
     }
-    if (t == _i122.RouteEstimatePolicy) {
-      return _i122.RouteEstimatePolicy.fromJson(data) as T;
+    if (t == _i122.RouteEstimate) {
+      return _i122.RouteEstimate.fromJson(data) as T;
     }
-    if (t == _i123.RouteOriginMode) {
-      return _i123.RouteOriginMode.fromJson(data) as T;
+    if (t == _i123.RouteEstimatePolicy) {
+      return _i123.RouteEstimatePolicy.fromJson(data) as T;
     }
-    if (t == _i124.SessionBundle) {
-      return _i124.SessionBundle.fromJson(data) as T;
+    if (t == _i124.RouteOriginMode) {
+      return _i124.RouteOriginMode.fromJson(data) as T;
     }
-    if (t == _i125.SessionEvent) {
-      return _i125.SessionEvent.fromJson(data) as T;
+    if (t == _i125.SessionBundle) {
+      return _i125.SessionBundle.fromJson(data) as T;
     }
-    if (t == _i126.SessionEventType) {
-      return _i126.SessionEventType.fromJson(data) as T;
+    if (t == _i126.SessionEvent) {
+      return _i126.SessionEvent.fromJson(data) as T;
     }
-    if (t == _i127.SessionMode) {
-      return _i127.SessionMode.fromJson(data) as T;
+    if (t == _i127.SessionEventType) {
+      return _i127.SessionEventType.fromJson(data) as T;
     }
-    if (t == _i128.SessionProgress) {
-      return _i128.SessionProgress.fromJson(data) as T;
+    if (t == _i128.SessionMode) {
+      return _i128.SessionMode.fromJson(data) as T;
     }
-    if (t == _i129.SessionResult) {
-      return _i129.SessionResult.fromJson(data) as T;
+    if (t == _i129.SessionProgress) {
+      return _i129.SessionProgress.fromJson(data) as T;
     }
-    if (t == _i130.SessionResultTally) {
-      return _i130.SessionResultTally.fromJson(data) as T;
+    if (t == _i130.SessionResult) {
+      return _i130.SessionResult.fromJson(data) as T;
     }
-    if (t == _i131.SessionStatus) {
-      return _i131.SessionStatus.fromJson(data) as T;
+    if (t == _i131.SessionResultTally) {
+      return _i131.SessionResultTally.fromJson(data) as T;
     }
-    if (t == _i132.SessionView) {
-      return _i132.SessionView.fromJson(data) as T;
+    if (t == _i132.SessionStatus) {
+      return _i132.SessionStatus.fromJson(data) as T;
     }
-    if (t == _i133.SwipeCommand) {
-      return _i133.SwipeCommand.fromJson(data) as T;
+    if (t == _i133.SessionView) {
+      return _i133.SessionView.fromJson(data) as T;
     }
-    if (t == _i134.TaxonomyCanarySample) {
-      return _i134.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _i134.SwipeCommand) {
+      return _i134.SwipeCommand.fromJson(data) as T;
     }
-    if (t == _i135.TaxonomyItem) {
-      return _i135.TaxonomyItem.fromJson(data) as T;
+    if (t == _i135.TaxonomyCanarySample) {
+      return _i135.TaxonomyCanarySample.fromJson(data) as T;
     }
-    if (t == _i136.TaxonomyKind) {
-      return _i136.TaxonomyKind.fromJson(data) as T;
+    if (t == _i136.TaxonomyItem) {
+      return _i136.TaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i137.TaxonomySnapshot) {
-      return _i137.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i137.TaxonomyKind) {
+      return _i137.TaxonomyKind.fromJson(data) as T;
     }
-    if (t == _i138.TaxonomyStatus) {
-      return _i138.TaxonomyStatus.fromJson(data) as T;
+    if (t == _i138.TaxonomySnapshot) {
+      return _i138.TaxonomySnapshot.fromJson(data) as T;
     }
-    if (t == _i139.TaxonomyValidation) {
-      return _i139.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i139.TaxonomyStatus) {
+      return _i139.TaxonomyStatus.fromJson(data) as T;
+    }
+    if (t == _i140.TaxonomyValidation) {
+      return _i140.TaxonomyValidation.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AdminAnalyticsOverview?>()) {
       return (data != null ? _i2.AdminAnalyticsOverview.fromJson(data) : null)
@@ -1180,113 +1185,116 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i106.ParticipantView?>()) {
       return (data != null ? _i106.ParticipantView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i107.PlaceDetailField?>()) {
-      return (data != null ? _i107.PlaceDetailField.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i107.PhotoPolicy?>()) {
+      return (data != null ? _i107.PhotoPolicy.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i108.PlaceDetailPolicy?>()) {
-      return (data != null ? _i108.PlaceDetailPolicy.fromJson(data) : null)
+    if (t == _i1.getType<_i108.PlaceDetailField?>()) {
+      return (data != null ? _i108.PlaceDetailField.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i109.PlaceDetailPolicy?>()) {
+      return (data != null ? _i109.PlaceDetailPolicy.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i109.PlaceDetailRefreshState?>()) {
+    if (t == _i1.getType<_i110.PlaceDetailRefreshState?>()) {
       return (data != null
-              ? _i109.PlaceDetailRefreshState.fromJson(data)
+              ? _i110.PlaceDetailRefreshState.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i110.PlaceDetailResult?>()) {
-      return (data != null ? _i110.PlaceDetailResult.fromJson(data) : null)
+    if (t == _i1.getType<_i111.PlaceDetailResult?>()) {
+      return (data != null ? _i111.PlaceDetailResult.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i111.PlaceInsight?>()) {
-      return (data != null ? _i111.PlaceInsight.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i112.PlaceInsight?>()) {
+      return (data != null ? _i112.PlaceInsight.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i112.PlaceRanking?>()) {
-      return (data != null ? _i112.PlaceRanking.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i113.PlaceRanking?>()) {
+      return (data != null ? _i113.PlaceRanking.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i113.PlaceSnapshot?>()) {
-      return (data != null ? _i113.PlaceSnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i114.PlaceSnapshot?>()) {
+      return (data != null ? _i114.PlaceSnapshot.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i114.PoiIdentity?>()) {
-      return (data != null ? _i114.PoiIdentity.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i115.PoiIdentity?>()) {
+      return (data != null ? _i115.PoiIdentity.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i115.PoiIssueSource?>()) {
-      return (data != null ? _i115.PoiIssueSource.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i116.PoiIssueSource?>()) {
+      return (data != null ? _i116.PoiIssueSource.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i116.PoiIssueStatus?>()) {
-      return (data != null ? _i116.PoiIssueStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i117.PoiIssueStatus?>()) {
+      return (data != null ? _i117.PoiIssueStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i117.PoiIssueType?>()) {
-      return (data != null ? _i117.PoiIssueType.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i118.PoiIssueType?>()) {
+      return (data != null ? _i118.PoiIssueType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i118.RefreshJobPage?>()) {
-      return (data != null ? _i118.RefreshJobPage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i119.RefreshJobPage?>()) {
+      return (data != null ? _i119.RefreshJobPage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i119.RefreshJobView?>()) {
-      return (data != null ? _i119.RefreshJobView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i120.RefreshJobView?>()) {
+      return (data != null ? _i120.RefreshJobView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i120.ReverseGeocodeResult?>()) {
-      return (data != null ? _i120.ReverseGeocodeResult.fromJson(data) : null)
+    if (t == _i1.getType<_i121.ReverseGeocodeResult?>()) {
+      return (data != null ? _i121.ReverseGeocodeResult.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i121.RouteEstimate?>()) {
-      return (data != null ? _i121.RouteEstimate.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i122.RouteEstimate?>()) {
+      return (data != null ? _i122.RouteEstimate.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i122.RouteEstimatePolicy?>()) {
-      return (data != null ? _i122.RouteEstimatePolicy.fromJson(data) : null)
+    if (t == _i1.getType<_i123.RouteEstimatePolicy?>()) {
+      return (data != null ? _i123.RouteEstimatePolicy.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i123.RouteOriginMode?>()) {
-      return (data != null ? _i123.RouteOriginMode.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i124.RouteOriginMode?>()) {
+      return (data != null ? _i124.RouteOriginMode.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i124.SessionBundle?>()) {
-      return (data != null ? _i124.SessionBundle.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i125.SessionBundle?>()) {
+      return (data != null ? _i125.SessionBundle.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i125.SessionEvent?>()) {
-      return (data != null ? _i125.SessionEvent.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i126.SessionEvent?>()) {
+      return (data != null ? _i126.SessionEvent.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i126.SessionEventType?>()) {
-      return (data != null ? _i126.SessionEventType.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i127.SessionEventType?>()) {
+      return (data != null ? _i127.SessionEventType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i127.SessionMode?>()) {
-      return (data != null ? _i127.SessionMode.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i128.SessionMode?>()) {
+      return (data != null ? _i128.SessionMode.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i128.SessionProgress?>()) {
-      return (data != null ? _i128.SessionProgress.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i129.SessionProgress?>()) {
+      return (data != null ? _i129.SessionProgress.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i129.SessionResult?>()) {
-      return (data != null ? _i129.SessionResult.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i130.SessionResult?>()) {
+      return (data != null ? _i130.SessionResult.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i130.SessionResultTally?>()) {
-      return (data != null ? _i130.SessionResultTally.fromJson(data) : null)
+    if (t == _i1.getType<_i131.SessionResultTally?>()) {
+      return (data != null ? _i131.SessionResultTally.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i131.SessionStatus?>()) {
-      return (data != null ? _i131.SessionStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i132.SessionStatus?>()) {
+      return (data != null ? _i132.SessionStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i132.SessionView?>()) {
-      return (data != null ? _i132.SessionView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i133.SessionView?>()) {
+      return (data != null ? _i133.SessionView.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i133.SwipeCommand?>()) {
-      return (data != null ? _i133.SwipeCommand.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i134.SwipeCommand?>()) {
+      return (data != null ? _i134.SwipeCommand.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i134.TaxonomyCanarySample?>()) {
-      return (data != null ? _i134.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _i1.getType<_i135.TaxonomyCanarySample?>()) {
+      return (data != null ? _i135.TaxonomyCanarySample.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i135.TaxonomyItem?>()) {
-      return (data != null ? _i135.TaxonomyItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i136.TaxonomyItem?>()) {
+      return (data != null ? _i136.TaxonomyItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i136.TaxonomyKind?>()) {
-      return (data != null ? _i136.TaxonomyKind.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i137.TaxonomyKind?>()) {
+      return (data != null ? _i137.TaxonomyKind.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i137.TaxonomySnapshot?>()) {
-      return (data != null ? _i137.TaxonomySnapshot.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i138.TaxonomySnapshot?>()) {
+      return (data != null ? _i138.TaxonomySnapshot.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i138.TaxonomyStatus?>()) {
-      return (data != null ? _i138.TaxonomyStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i139.TaxonomyStatus?>()) {
+      return (data != null ? _i139.TaxonomyStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i139.TaxonomyValidation?>()) {
-      return (data != null ? _i139.TaxonomyValidation.fromJson(data) : null)
+    if (t == _i1.getType<_i140.TaxonomyValidation?>()) {
+      return (data != null ? _i140.TaxonomyValidation.fromJson(data) : null)
           as T;
     }
     if (t == List<_i38.AnalyticsKpi>) {
@@ -1414,9 +1422,9 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i111.PlaceInsight>) {
+    if (t == List<_i112.PlaceInsight>) {
       return (data as List)
-              .map((e) => deserialize<_i111.PlaceInsight>(e))
+              .map((e) => deserialize<_i112.PlaceInsight>(e))
               .toList()
           as T;
     }
@@ -1438,9 +1446,9 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i113.PlaceSnapshot>) {
+    if (t == List<_i114.PlaceSnapshot>) {
       return (data as List)
-              .map((e) => deserialize<_i113.PlaceSnapshot>(e))
+              .map((e) => deserialize<_i114.PlaceSnapshot>(e))
               .toList()
           as T;
     }
@@ -1546,9 +1554,9 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i107.PlaceDetailField>) {
+    if (t == List<_i108.PlaceDetailField>) {
       return (data as List)
-              .map((e) => deserialize<_i107.PlaceDetailField>(e))
+              .map((e) => deserialize<_i108.PlaceDetailField>(e))
               .toList()
           as T;
     }
@@ -1558,9 +1566,9 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i119.RefreshJobView>) {
+    if (t == List<_i120.RefreshJobView>) {
       return (data as List)
-              .map((e) => deserialize<_i119.RefreshJobView>(e))
+              .map((e) => deserialize<_i120.RefreshJobView>(e))
               .toList()
           as T;
     }
@@ -1570,93 +1578,93 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i130.SessionResultTally>) {
+    if (t == List<_i131.SessionResultTally>) {
       return (data as List)
-              .map((e) => deserialize<_i130.SessionResultTally>(e))
+              .map((e) => deserialize<_i131.SessionResultTally>(e))
               .toList()
           as T;
     }
-    if (t == List<_i135.TaxonomyItem>) {
+    if (t == List<_i136.TaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i135.TaxonomyItem>(e))
+              .map((e) => deserialize<_i136.TaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i134.TaxonomyCanarySample>) {
+    if (t == List<_i135.TaxonomyCanarySample>) {
       return (data as List)
-              .map((e) => deserialize<_i134.TaxonomyCanarySample>(e))
+              .map((e) => deserialize<_i135.TaxonomyCanarySample>(e))
               .toList()
           as T;
     }
-    if (t == List<_i140.LocationSuggestion>) {
+    if (t == List<_i141.LocationSuggestion>) {
       return (data as List)
-              .map((e) => deserialize<_i140.LocationSuggestion>(e))
+              .map((e) => deserialize<_i141.LocationSuggestion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i141.AdminDiscoveryTaxonomyVersion>) {
+    if (t == List<_i142.AdminDiscoveryTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i141.AdminDiscoveryTaxonomyVersion>(e))
+              .map((e) => deserialize<_i142.AdminDiscoveryTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i142.DiscoveryTaxonomyNode>) {
+    if (t == List<_i143.DiscoveryTaxonomyNode>) {
       return (data as List)
-              .map((e) => deserialize<_i142.DiscoveryTaxonomyNode>(e))
+              .map((e) => deserialize<_i143.DiscoveryTaxonomyNode>(e))
               .toList()
           as T;
     }
-    if (t == List<_i143.AdminDiscoveryHarvestManifestVersion>) {
+    if (t == List<_i144.AdminDiscoveryHarvestManifestVersion>) {
       return (data as List)
               .map(
                 (e) =>
-                    deserialize<_i143.AdminDiscoveryHarvestManifestVersion>(e),
+                    deserialize<_i144.AdminDiscoveryHarvestManifestVersion>(e),
               )
               .toList()
           as T;
     }
-    if (t == List<_i144.DiscoveryHarvestManifestEntry>) {
+    if (t == List<_i145.DiscoveryHarvestManifestEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i144.DiscoveryHarvestManifestEntry>(e))
+              .map((e) => deserialize<_i145.DiscoveryHarvestManifestEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i145.AdminTaxonomyVersion>) {
+    if (t == List<_i146.AdminTaxonomyVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i145.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_i146.AdminTaxonomyVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i146.AdminTaxonomyItem>) {
+    if (t == List<_i147.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i146.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_i147.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i147.MetricPoint>) {
+    if (t == List<_i148.MetricPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i147.MetricPoint>(e))
+              .map((e) => deserialize<_i148.MetricPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i148.SessionResult>) {
+    if (t == List<_i149.SessionResult>) {
       return (data as List)
-              .map((e) => deserialize<_i148.SessionResult>(e))
+              .map((e) => deserialize<_i149.SessionResult>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<({_i149.AuthSuccess auth, String operator})>()) {
+    if (t == _i1.getType<({_i150.AuthSuccess auth, String operator})>()) {
       return (
-            auth: deserialize<_i149.AuthSuccess>(
+            auth: deserialize<_i150.AuthSuccess>(
               ((data as Map)['n'] as Map)['auth'],
             ),
             operator: deserialize<String>(data['n']['operator']),
           )
           as T;
     }
-    if (t == _i1.getType<({_i150.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i151.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i150.ByteData>(
+            challenge: deserialize<_i151.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -1664,10 +1672,10 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     try {
-      return _i151.Protocol().deserialize<T>(data, t);
+      return _i152.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i149.Protocol().deserialize<T>(data, t);
+      return _i150.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -1781,39 +1789,40 @@ class Protocol extends _i1.SerializationManager {
       _i104.MetricPoint => 'MetricPoint',
       _i105.OpeningPeriod => 'OpeningPeriod',
       _i106.ParticipantView => 'ParticipantView',
-      _i107.PlaceDetailField => 'PlaceDetailField',
-      _i108.PlaceDetailPolicy => 'PlaceDetailPolicy',
-      _i109.PlaceDetailRefreshState => 'PlaceDetailRefreshState',
-      _i110.PlaceDetailResult => 'PlaceDetailResult',
-      _i111.PlaceInsight => 'PlaceInsight',
-      _i112.PlaceRanking => 'PlaceRanking',
-      _i113.PlaceSnapshot => 'PlaceSnapshot',
-      _i114.PoiIdentity => 'PoiIdentity',
-      _i115.PoiIssueSource => 'PoiIssueSource',
-      _i116.PoiIssueStatus => 'PoiIssueStatus',
-      _i117.PoiIssueType => 'PoiIssueType',
-      _i118.RefreshJobPage => 'RefreshJobPage',
-      _i119.RefreshJobView => 'RefreshJobView',
-      _i120.ReverseGeocodeResult => 'ReverseGeocodeResult',
-      _i121.RouteEstimate => 'RouteEstimate',
-      _i122.RouteEstimatePolicy => 'RouteEstimatePolicy',
-      _i123.RouteOriginMode => 'RouteOriginMode',
-      _i124.SessionBundle => 'SessionBundle',
-      _i125.SessionEvent => 'SessionEvent',
-      _i126.SessionEventType => 'SessionEventType',
-      _i127.SessionMode => 'SessionMode',
-      _i128.SessionProgress => 'SessionProgress',
-      _i129.SessionResult => 'SessionResult',
-      _i130.SessionResultTally => 'SessionResultTally',
-      _i131.SessionStatus => 'SessionStatus',
-      _i132.SessionView => 'SessionView',
-      _i133.SwipeCommand => 'SwipeCommand',
-      _i134.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i135.TaxonomyItem => 'TaxonomyItem',
-      _i136.TaxonomyKind => 'TaxonomyKind',
-      _i137.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i138.TaxonomyStatus => 'TaxonomyStatus',
-      _i139.TaxonomyValidation => 'TaxonomyValidation',
+      _i107.PhotoPolicy => 'PhotoPolicy',
+      _i108.PlaceDetailField => 'PlaceDetailField',
+      _i109.PlaceDetailPolicy => 'PlaceDetailPolicy',
+      _i110.PlaceDetailRefreshState => 'PlaceDetailRefreshState',
+      _i111.PlaceDetailResult => 'PlaceDetailResult',
+      _i112.PlaceInsight => 'PlaceInsight',
+      _i113.PlaceRanking => 'PlaceRanking',
+      _i114.PlaceSnapshot => 'PlaceSnapshot',
+      _i115.PoiIdentity => 'PoiIdentity',
+      _i116.PoiIssueSource => 'PoiIssueSource',
+      _i117.PoiIssueStatus => 'PoiIssueStatus',
+      _i118.PoiIssueType => 'PoiIssueType',
+      _i119.RefreshJobPage => 'RefreshJobPage',
+      _i120.RefreshJobView => 'RefreshJobView',
+      _i121.ReverseGeocodeResult => 'ReverseGeocodeResult',
+      _i122.RouteEstimate => 'RouteEstimate',
+      _i123.RouteEstimatePolicy => 'RouteEstimatePolicy',
+      _i124.RouteOriginMode => 'RouteOriginMode',
+      _i125.SessionBundle => 'SessionBundle',
+      _i126.SessionEvent => 'SessionEvent',
+      _i127.SessionEventType => 'SessionEventType',
+      _i128.SessionMode => 'SessionMode',
+      _i129.SessionProgress => 'SessionProgress',
+      _i130.SessionResult => 'SessionResult',
+      _i131.SessionResultTally => 'SessionResultTally',
+      _i132.SessionStatus => 'SessionStatus',
+      _i133.SessionView => 'SessionView',
+      _i134.SwipeCommand => 'SwipeCommand',
+      _i135.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _i136.TaxonomyItem => 'TaxonomyItem',
+      _i137.TaxonomyKind => 'TaxonomyKind',
+      _i138.TaxonomySnapshot => 'TaxonomySnapshot',
+      _i139.TaxonomyStatus => 'TaxonomyStatus',
+      _i140.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -2038,78 +2047,80 @@ class Protocol extends _i1.SerializationManager {
         return 'OpeningPeriod';
       case _i106.ParticipantView():
         return 'ParticipantView';
-      case _i107.PlaceDetailField():
+      case _i107.PhotoPolicy():
+        return 'PhotoPolicy';
+      case _i108.PlaceDetailField():
         return 'PlaceDetailField';
-      case _i108.PlaceDetailPolicy():
+      case _i109.PlaceDetailPolicy():
         return 'PlaceDetailPolicy';
-      case _i109.PlaceDetailRefreshState():
+      case _i110.PlaceDetailRefreshState():
         return 'PlaceDetailRefreshState';
-      case _i110.PlaceDetailResult():
+      case _i111.PlaceDetailResult():
         return 'PlaceDetailResult';
-      case _i111.PlaceInsight():
+      case _i112.PlaceInsight():
         return 'PlaceInsight';
-      case _i112.PlaceRanking():
+      case _i113.PlaceRanking():
         return 'PlaceRanking';
-      case _i113.PlaceSnapshot():
+      case _i114.PlaceSnapshot():
         return 'PlaceSnapshot';
-      case _i114.PoiIdentity():
+      case _i115.PoiIdentity():
         return 'PoiIdentity';
-      case _i115.PoiIssueSource():
+      case _i116.PoiIssueSource():
         return 'PoiIssueSource';
-      case _i116.PoiIssueStatus():
+      case _i117.PoiIssueStatus():
         return 'PoiIssueStatus';
-      case _i117.PoiIssueType():
+      case _i118.PoiIssueType():
         return 'PoiIssueType';
-      case _i118.RefreshJobPage():
+      case _i119.RefreshJobPage():
         return 'RefreshJobPage';
-      case _i119.RefreshJobView():
+      case _i120.RefreshJobView():
         return 'RefreshJobView';
-      case _i120.ReverseGeocodeResult():
+      case _i121.ReverseGeocodeResult():
         return 'ReverseGeocodeResult';
-      case _i121.RouteEstimate():
+      case _i122.RouteEstimate():
         return 'RouteEstimate';
-      case _i122.RouteEstimatePolicy():
+      case _i123.RouteEstimatePolicy():
         return 'RouteEstimatePolicy';
-      case _i123.RouteOriginMode():
+      case _i124.RouteOriginMode():
         return 'RouteOriginMode';
-      case _i124.SessionBundle():
+      case _i125.SessionBundle():
         return 'SessionBundle';
-      case _i125.SessionEvent():
+      case _i126.SessionEvent():
         return 'SessionEvent';
-      case _i126.SessionEventType():
+      case _i127.SessionEventType():
         return 'SessionEventType';
-      case _i127.SessionMode():
+      case _i128.SessionMode():
         return 'SessionMode';
-      case _i128.SessionProgress():
+      case _i129.SessionProgress():
         return 'SessionProgress';
-      case _i129.SessionResult():
+      case _i130.SessionResult():
         return 'SessionResult';
-      case _i130.SessionResultTally():
+      case _i131.SessionResultTally():
         return 'SessionResultTally';
-      case _i131.SessionStatus():
+      case _i132.SessionStatus():
         return 'SessionStatus';
-      case _i132.SessionView():
+      case _i133.SessionView():
         return 'SessionView';
-      case _i133.SwipeCommand():
+      case _i134.SwipeCommand():
         return 'SwipeCommand';
-      case _i134.TaxonomyCanarySample():
+      case _i135.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i135.TaxonomyItem():
+      case _i136.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i136.TaxonomyKind():
+      case _i137.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i137.TaxonomySnapshot():
+      case _i138.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i138.TaxonomyStatus():
+      case _i139.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i139.TaxonomyValidation():
+      case _i140.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
-    className = _i151.Protocol().getClassNameForObject(data);
+    className = _i152.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i149.Protocol().getClassNameForObject(data);
+    className = _i150.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -2439,112 +2450,115 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'ParticipantView') {
       return deserialize<_i106.ParticipantView>(data['data']);
     }
+    if (dataClassName == 'PhotoPolicy') {
+      return deserialize<_i107.PhotoPolicy>(data['data']);
+    }
     if (dataClassName == 'PlaceDetailField') {
-      return deserialize<_i107.PlaceDetailField>(data['data']);
+      return deserialize<_i108.PlaceDetailField>(data['data']);
     }
     if (dataClassName == 'PlaceDetailPolicy') {
-      return deserialize<_i108.PlaceDetailPolicy>(data['data']);
+      return deserialize<_i109.PlaceDetailPolicy>(data['data']);
     }
     if (dataClassName == 'PlaceDetailRefreshState') {
-      return deserialize<_i109.PlaceDetailRefreshState>(data['data']);
+      return deserialize<_i110.PlaceDetailRefreshState>(data['data']);
     }
     if (dataClassName == 'PlaceDetailResult') {
-      return deserialize<_i110.PlaceDetailResult>(data['data']);
+      return deserialize<_i111.PlaceDetailResult>(data['data']);
     }
     if (dataClassName == 'PlaceInsight') {
-      return deserialize<_i111.PlaceInsight>(data['data']);
+      return deserialize<_i112.PlaceInsight>(data['data']);
     }
     if (dataClassName == 'PlaceRanking') {
-      return deserialize<_i112.PlaceRanking>(data['data']);
+      return deserialize<_i113.PlaceRanking>(data['data']);
     }
     if (dataClassName == 'PlaceSnapshot') {
-      return deserialize<_i113.PlaceSnapshot>(data['data']);
+      return deserialize<_i114.PlaceSnapshot>(data['data']);
     }
     if (dataClassName == 'PoiIdentity') {
-      return deserialize<_i114.PoiIdentity>(data['data']);
+      return deserialize<_i115.PoiIdentity>(data['data']);
     }
     if (dataClassName == 'PoiIssueSource') {
-      return deserialize<_i115.PoiIssueSource>(data['data']);
+      return deserialize<_i116.PoiIssueSource>(data['data']);
     }
     if (dataClassName == 'PoiIssueStatus') {
-      return deserialize<_i116.PoiIssueStatus>(data['data']);
+      return deserialize<_i117.PoiIssueStatus>(data['data']);
     }
     if (dataClassName == 'PoiIssueType') {
-      return deserialize<_i117.PoiIssueType>(data['data']);
+      return deserialize<_i118.PoiIssueType>(data['data']);
     }
     if (dataClassName == 'RefreshJobPage') {
-      return deserialize<_i118.RefreshJobPage>(data['data']);
+      return deserialize<_i119.RefreshJobPage>(data['data']);
     }
     if (dataClassName == 'RefreshJobView') {
-      return deserialize<_i119.RefreshJobView>(data['data']);
+      return deserialize<_i120.RefreshJobView>(data['data']);
     }
     if (dataClassName == 'ReverseGeocodeResult') {
-      return deserialize<_i120.ReverseGeocodeResult>(data['data']);
+      return deserialize<_i121.ReverseGeocodeResult>(data['data']);
     }
     if (dataClassName == 'RouteEstimate') {
-      return deserialize<_i121.RouteEstimate>(data['data']);
+      return deserialize<_i122.RouteEstimate>(data['data']);
     }
     if (dataClassName == 'RouteEstimatePolicy') {
-      return deserialize<_i122.RouteEstimatePolicy>(data['data']);
+      return deserialize<_i123.RouteEstimatePolicy>(data['data']);
     }
     if (dataClassName == 'RouteOriginMode') {
-      return deserialize<_i123.RouteOriginMode>(data['data']);
+      return deserialize<_i124.RouteOriginMode>(data['data']);
     }
     if (dataClassName == 'SessionBundle') {
-      return deserialize<_i124.SessionBundle>(data['data']);
+      return deserialize<_i125.SessionBundle>(data['data']);
     }
     if (dataClassName == 'SessionEvent') {
-      return deserialize<_i125.SessionEvent>(data['data']);
+      return deserialize<_i126.SessionEvent>(data['data']);
     }
     if (dataClassName == 'SessionEventType') {
-      return deserialize<_i126.SessionEventType>(data['data']);
+      return deserialize<_i127.SessionEventType>(data['data']);
     }
     if (dataClassName == 'SessionMode') {
-      return deserialize<_i127.SessionMode>(data['data']);
+      return deserialize<_i128.SessionMode>(data['data']);
     }
     if (dataClassName == 'SessionProgress') {
-      return deserialize<_i128.SessionProgress>(data['data']);
+      return deserialize<_i129.SessionProgress>(data['data']);
     }
     if (dataClassName == 'SessionResult') {
-      return deserialize<_i129.SessionResult>(data['data']);
+      return deserialize<_i130.SessionResult>(data['data']);
     }
     if (dataClassName == 'SessionResultTally') {
-      return deserialize<_i130.SessionResultTally>(data['data']);
+      return deserialize<_i131.SessionResultTally>(data['data']);
     }
     if (dataClassName == 'SessionStatus') {
-      return deserialize<_i131.SessionStatus>(data['data']);
+      return deserialize<_i132.SessionStatus>(data['data']);
     }
     if (dataClassName == 'SessionView') {
-      return deserialize<_i132.SessionView>(data['data']);
+      return deserialize<_i133.SessionView>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i133.SwipeCommand>(data['data']);
+      return deserialize<_i134.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i134.TaxonomyCanarySample>(data['data']);
+      return deserialize<_i135.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i135.TaxonomyItem>(data['data']);
+      return deserialize<_i136.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i136.TaxonomyKind>(data['data']);
+      return deserialize<_i137.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i137.TaxonomySnapshot>(data['data']);
+      return deserialize<_i138.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i138.TaxonomyStatus>(data['data']);
+      return deserialize<_i139.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i139.TaxonomyValidation>(data['data']);
+      return deserialize<_i140.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i151.Protocol().deserializeByClassName(data);
+      return _i152.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i149.Protocol().deserializeByClassName(data);
+      return _i150.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -2558,7 +2572,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i149.AuthSuccess auth, String operator})) {
+    if (record is ({_i150.AuthSuccess auth, String operator})) {
       return {
         "n": {
           "auth": record.auth.toJson(),
@@ -2566,7 +2580,7 @@ class Protocol extends _i1.SerializationManager {
         },
       };
     }
-    if (record is ({_i150.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i151.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -2575,10 +2589,10 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i151.Protocol().mapRecordToJson(record);
+      return _i152.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i149.Protocol().mapRecordToJson(record);
+      return _i150.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

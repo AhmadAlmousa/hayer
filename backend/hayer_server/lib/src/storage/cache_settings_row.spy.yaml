@@ -42,6 +42,10 @@ fields:
   detailRefreshMaximumRequests: int, default=3
   detailRefreshMaximumSeconds: int, default=20
   detailRefreshCooldownMinutes: int, default=60
+  photoFetchCount: int, default=6
+  photoWidth: int, default=1200
+  photoCacheCount: int, default=400
+  photoCacheDays: int, default=14
   updatedBy: String
   updatedAt: DateTime
 indexes:
