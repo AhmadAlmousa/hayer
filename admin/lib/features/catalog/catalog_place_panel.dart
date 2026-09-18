@@ -347,28 +347,33 @@ class _CatalogPlacePanelState extends State<CatalogPlacePanel> {
           else ...[
             Text('${snapshot.photoUrls.length} cached'),
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final url in snapshot.photoUrls.take(6))
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      url,
+            // Every photo, scrolled rather than the first six: the per-place
+            // limit is now a policy knob, and an operator checking a place
+            // needs to see what it actually carries.
+            SizedBox(
+              height: 96,
+              child: ListView.separated(
+                key: const Key('catalog-photos'),
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.photoUrls.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                itemBuilder: (context, index) => ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    snapshot.photoUrls[index],
+                    width: 96,
+                    height: 96,
+                    cacheWidth: 192,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Container(
                       width: 96,
                       height: 96,
-                      cacheWidth: 192,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(
-                        width: 96,
-                        height: 96,
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.broken_image_outlined),
-                      ),
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      child: const Icon(Icons.broken_image_outlined),
                     ),
                   ),
-              ],
+                ),
+              ),
             ),
           ],
         ]),
@@ -495,7 +500,6 @@ class _ReasonDialogState extends State<_ReasonDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final reason = _controller.text.trim();
     return AlertDialog(
       title: Text(widget.title),
       content: TextField(
@@ -503,8 +507,11 @@ class _ReasonDialogState extends State<_ReasonDialog> {
         controller: _controller,
         autofocus: true,
         maxLength: 500,
-        onChanged: (_) => setState(() {}),
-        decoration: const InputDecoration(labelText: 'Required reason'),
+        decoration: const InputDecoration(
+          labelText: 'Reason (optional)',
+          helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+          helperMaxLines: 3,
+        ),
       ),
       actions: [
         TextButton(
@@ -513,9 +520,7 @@ class _ReasonDialogState extends State<_ReasonDialog> {
         ),
         FilledButton(
           key: const Key('catalog-reason-confirm'),
-          onPressed: reason.length < 4
-              ? null
-              : () => Navigator.pop(context, reason),
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
           child: const Text('Confirm'),
         ),
       ],

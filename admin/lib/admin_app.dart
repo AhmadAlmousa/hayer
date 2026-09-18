@@ -1900,8 +1900,11 @@ class _ReasonDialogState extends State<_ReasonDialog> {
       controller: _controller,
       autofocus: true,
       maxLength: 500,
-      onChanged: (_) => setState(() {}),
-      decoration: const InputDecoration(labelText: 'Required reason'),
+      decoration: const InputDecoration(
+        labelText: 'Reason (optional)',
+        helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+        helperMaxLines: 3,
+      ),
     ),
     actions: [
       TextButton(
@@ -1909,9 +1912,7 @@ class _ReasonDialogState extends State<_ReasonDialog> {
         child: const Text('Cancel'),
       ),
       FilledButton(
-        onPressed: _controller.text.trim().length < 4
-            ? null
-            : () => Navigator.pop(context, _controller.text.trim()),
+        onPressed: () => Navigator.pop(context, _controller.text.trim()),
         child: const Text('Confirm'),
       ),
     ],

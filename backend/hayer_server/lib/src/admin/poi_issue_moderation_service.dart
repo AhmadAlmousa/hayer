@@ -20,8 +20,8 @@ abstract final class PoiIssueModerationService {
     String? sourceEvidence,
   }) async {
     _validateOperator(operatorName);
-    _validateReason(reason);
-    if (sourceEvidence != null) _validateReason(sourceEvidence);
+    reason = _reason(reason);
+    if (sourceEvidence != null) _validateEvidence(sourceEvidence);
     if ((action == PoiIssueModerationAction.resolve ||
             action == PoiIssueModerationAction.dismiss) &&
         sourceEvidence == null) {
@@ -157,11 +157,30 @@ abstract final class PoiIssueModerationService {
     }
   }
 
-  static void _validateReason(String value) {
+  /// What an operator gave as the reason, ready to store.
+  ///
+  /// Optional, like every other admin reason: a blank one becomes
+  /// [_unexplained] so the audit row still reads honestly. Source evidence is
+  /// not covered by this and stays required, because closing a report is a
+  /// claim about the place that someone has to be able to check.
+  static String _reason(String value) {
+    final trimmed = value.trim();
+    if (trimmed.length > 500) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'Keep the reason under 500 characters.',
+      );
+    }
+    return trimmed.isEmpty ? _unexplained : trimmed;
+  }
+
+  static const _unexplained = 'No reason given';
+
+  static void _validateEvidence(String value) {
     if (value.trim().length < 4 || value.trim().length > 500) {
       throw ApiException(
         code: 'bad_request',
-        message: 'Enter a reason between 4 and 500 characters.',
+        message: 'Enter source evidence between 4 and 500 characters.',
       );
     }
   }

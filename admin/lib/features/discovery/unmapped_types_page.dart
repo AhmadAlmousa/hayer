@@ -377,9 +377,10 @@ class _MapTypeDialogState extends State<_MapTypeDialog> {
                     minLines: 1,
                     maxLines: 3,
                     maxLength: 500,
-                    onChanged: (_) => setState(() {}),
                     decoration: const InputDecoration(
-                      labelText: 'Reason (required)',
+                      labelText: 'Reason (optional)',
+                      helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+                      helperMaxLines: 3,
                     ),
                   ),
                 ],
@@ -393,7 +394,7 @@ class _MapTypeDialogState extends State<_MapTypeDialog> {
         if (_nodes.isNotEmpty)
           FilledButton(
             key: const Key('map-type-confirm'),
-            onPressed: selected == null || _reason.text.trim().length < 4
+            onPressed: selected == null
                 ? null
                 : () => Navigator.pop(
                     context,
