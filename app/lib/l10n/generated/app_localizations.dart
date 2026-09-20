@@ -1679,7 +1679,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataLocationBody.
   ///
   /// In en, this message translates to:
-  /// **'The search location you pick — your current position or a place you searched for — is sent to Hayer with your radius to find places nearby. Addresses come from OpenStreetMap, and place details, photos, and ratings come from Google Maps. If you ask for travel time from where you are, that position is sent with the request. In Got time, Hayer receives the map area you search, not your position. If you allow location, the map opens around you, so that first area is near you, and distances to places are worked out on this device. Hayer does not follow your position in the background.'**
+  /// **'The search location you pick — your current position or a place you searched for — is sent to Hayer with your radius to find places nearby. Addresses come from OpenStreetMap, and place details, photos, and ratings come from Google Maps. If you ask for travel time from where you are, that position is sent with the request. In Explore, Hayer receives the map area you search, not your position. If you allow location, the map opens around you, so that first area is near you, and distances to places are worked out on this device. Hayer does not follow your position in the background.'**
   String get dataLocationBody;
 
   /// No description provided for @dataGroupTitle.
@@ -1703,7 +1703,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataDeviceBody.
   ///
   /// In en, this message translates to:
-  /// **'Saved places and their notes, the name you last used, the room you can resume, the last area you searched in Got time, a Got time link kept while it was unavailable, and any swipes that have not reached the server yet stay here. Nothing is synced to an account, so uninstalling Hayer removes them.'**
+  /// **'Saved places and their notes, the name you last used, the room you can resume, the last area you searched in Explore, an Explore link kept while it was unavailable, and any swipes that have not reached the server yet stay here. Nothing is synced to an account, so uninstalling Hayer removes them.'**
   String get dataDeviceBody;
 
   /// No description provided for @dataMeasurementTitle.
@@ -1727,7 +1727,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataEraseBody.
   ///
   /// In en, this message translates to:
-  /// **'Erasing deletes saved places and notes, the remembered name, the resumable room, the last Got time area and any kept Got time link, and the anonymous sign-in. Rooms expire on the server on their own; erasing here does not remove what the server has already recorded.'**
+  /// **'Erasing deletes saved places and notes, the remembered name, the resumable room, the last Explore area and any kept Explore link, and the anonymous sign-in. Rooms expire on the server on their own; erasing here does not remove what the server has already recorded.'**
   String get dataEraseBody;
 
   /// No description provided for @dataEraseAction.
@@ -1787,7 +1787,7 @@ abstract class AppLocalizations {
   /// No description provided for @inAHurry.
   ///
   /// In en, this message translates to:
-  /// **'In a hurry'**
+  /// **'Quick Pick'**
   String get inAHurry;
 
   /// No description provided for @inAHurryDescription.
@@ -1817,7 +1817,7 @@ abstract class AppLocalizations {
   /// No description provided for @gotTime.
   ///
   /// In en, this message translates to:
-  /// **'Got time'**
+  /// **'Explore'**
   String get gotTime;
 
   /// No description provided for @gotTimeDescription.
@@ -1847,25 +1847,25 @@ abstract class AppLocalizations {
   /// No description provided for @discoveryUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Got time isn’t available right now. Try again later.'**
+  /// **'Explore isn’t available right now. Try again later.'**
   String get discoveryUnavailable;
 
   /// No description provided for @discoveryChecking.
   ///
   /// In en, this message translates to:
-  /// **'Checking whether Got time is available'**
+  /// **'Checking whether Explore is available'**
   String get discoveryChecking;
 
   /// No description provided for @discoveryLinkSavedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Got time link is saved'**
+  /// **'Your Explore link is saved'**
   String get discoveryLinkSavedTitle;
 
   /// No description provided for @discoveryLinkReady.
   ///
   /// In en, this message translates to:
-  /// **'Got time is available now.'**
+  /// **'Explore is available now.'**
   String get discoveryLinkReady;
 
   /// No description provided for @openDiscoveryLink.
@@ -1883,7 +1883,7 @@ abstract class AppLocalizations {
   /// No description provided for @discoveryStillUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Got time still isn’t available. Your link is kept.'**
+  /// **'Explore still isn’t available. Your link is kept.'**
   String get discoveryStillUnavailable;
 
   /// No description provided for @discoveryThisArea.
@@ -2159,7 +2159,7 @@ abstract class AppLocalizations {
   /// No description provided for @discoveryUnsupportedArea.
   ///
   /// In en, this message translates to:
-  /// **'Got time covers the Gulf countries only. Move the map there and search again.'**
+  /// **'Explore covers the Gulf countries only. Move the map there and search again.'**
   String get discoveryUnsupportedArea;
 
   /// No description provided for @discoveryBadQuery.

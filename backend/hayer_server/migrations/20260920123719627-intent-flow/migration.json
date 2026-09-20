@@ -1,0 +1,40 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "hayer_session",
+        "schema": "public",
+        "addColumns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "intent",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "protocol:PlaceIntentQuery?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "intentBatchCount",
+            "columnType": 6,
+            "isNullable": true,
+            "columnDefault": "1",
+            "dartType": "int?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

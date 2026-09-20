@@ -26,6 +26,8 @@ class SessionMapper {
     createdAt: row.createdAt,
     expiresAt: row.expiresAt,
     freshnessWarning: row.freshnessWarning,
+    intent: row.intent,
+    intentBatchCount: row.intentBatchCount,
   );
 
   static ParticipantView participant(ParticipantRow row) => ParticipantView(

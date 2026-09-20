@@ -11,7 +11,7 @@ import 'discover_view.dart';
 import 'discovery_config_controller.dart';
 import 'pending_discovery_link_controller.dart';
 
-/// The "Got time" discovery surface.
+/// The Explore discovery surface.
 ///
 /// Discovery ships dark, but a shared link or App Link can still open this
 /// route. It revalidates the discovery configuration before showing anything.

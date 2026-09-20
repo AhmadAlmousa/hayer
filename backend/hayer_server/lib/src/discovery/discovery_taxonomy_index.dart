@@ -1,4 +1,5 @@
 import '../generated/protocol.dart';
+import 'discovery_contract.dart';
 import 'discovery_taxonomy_service.dart';
 
 /// A published Discover tree indexed for query preparation.
@@ -12,6 +13,10 @@ class DiscoveryTaxonomyIndex {
     void visit(DiscoveryTaxonomyNode node, String? parentId) {
       _nodes[node.id] = node;
       _parents[node.id] = parentId;
+      final inheritedGroup = parentId == null ? null : _groups[parentId];
+      _groups[node.id] = node.selectionGroupRoot == true
+          ? node.id
+          : inheritedGroup;
       for (final alias in node.typeAliases) {
         final key = DiscoveryTaxonomyService.normalizeAlias(alias);
         if (key.isEmpty) continue;
@@ -32,9 +37,14 @@ class DiscoveryTaxonomyIndex {
 
   final Map<String, DiscoveryTaxonomyNode> _nodes = {};
   final Map<String, String?> _parents = {};
+  final Map<String, String?> _groups = {};
 
   /// Normalized alias to the id of the single node that owns it.
   final Map<String, String> aliasOwners = {};
+
+  DiscoveryTaxonomyNode? nodeFor(String id) => _nodes[id];
+
+  String? selectionGroupFor(String id) => _groups[id];
 
   /// Validates [raw] ids and removes any id already covered by a selected
   /// ancestor, returning a sorted canonical selection.
@@ -60,6 +70,39 @@ class DiscoveryTaxonomyIndex {
       return false;
     });
     return selected.toList()..sort();
+  }
+
+  /// A canonical consumer selection: one curated group, no redundant
+  /// descendants and at most [maximum] entries.
+  List<String> canonicalIntentSelection(
+    List<String> raw, {
+    required String selectionGroupId,
+    int maximum = 5,
+  }) {
+    final canonical = canonicalSelection(
+      raw,
+      otherCategoryId: DiscoveryContract.otherCategoryId,
+    );
+    if (canonical.isEmpty || canonical.length > maximum) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'Choose between one and $maximum categories.',
+      );
+    }
+    if (!_nodes.containsKey(selectionGroupId) ||
+        _groups[selectionGroupId] != selectionGroupId ||
+        canonical.any(
+          (id) =>
+              id == DiscoveryContract.otherCategoryId ||
+              _nodes[id]?.selectable != true ||
+              _groups[id] != selectionGroupId,
+        )) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'Selected categories must belong to one selection group.',
+      );
+    }
+    return canonical;
   }
 
   /// Every node id a selection covers: each selected node and its descendants.

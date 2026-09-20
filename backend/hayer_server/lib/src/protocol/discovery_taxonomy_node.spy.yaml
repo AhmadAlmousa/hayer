@@ -6,3 +6,9 @@ fields:
   emoji: String
   typeAliases: List<String>
   children: List<DiscoveryTaxonomyNode>
+  # Optional while old published JSON documents remain readable. The taxonomy
+  # service resolves nulls to compatibility defaults before consumer use.
+  selectable: bool?
+  selectionGroupRoot: bool?
+  searchQueryEn: String?
+  searchQueryAr: String?

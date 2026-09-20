@@ -11,7 +11,6 @@ class DiscoverEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   Future<DiscoveryTaxonomySnapshot> taxonomy(Session session) async {
-    await DiscoveryContract.requireEnabled(session);
     return DiscoveryTaxonomyService.publicSnapshot(session);
   }
 

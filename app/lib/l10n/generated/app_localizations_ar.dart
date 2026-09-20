@@ -893,7 +893,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dataLocationBody =>
-      'يُرسَل موقع البحث الذي تختاره — موقعك الحالي أو مكان بحثت عنه — إلى حيّر مع نطاق البحث للعثور على الأماكن القريبة. العناوين من OpenStreetMap، وتفاصيل الأماكن وصورها وتقييماتها من خرائط Google. وإذا طلبت زمن الوصول من مكانك، يُرسَل موقعك مع الطلب. وفي «عندي وقت» يستلم حيّر منطقة الخريطة التي تبحث فيها، لا موقعك. وإذا سمحت بالموقع تُفتح الخريطة حولك، فتكون أول منطقة قريبة منك، وتُحسب المسافات إلى الأماكن على هذا الجهاز. لا يتتبع حيّر موقعك في الخلفية.';
+      'يُرسَل موقع البحث الذي تختاره — موقعك الحالي أو مكان بحثت عنه — إلى حيّر مع نطاق البحث للعثور على الأماكن القريبة. العناوين من OpenStreetMap، وتفاصيل الأماكن وصورها وتقييماتها من خرائط Google. وإذا طلبت زمن الوصول من مكانك، يُرسَل موقعك مع الطلب. وفي الاستكشاف يستلم حيّر منطقة الخريطة التي تبحث فيها، لا موقعك. وإذا سمحت بالموقع تُفتح الخريطة حولك، فتكون أول منطقة قريبة منك، وتُحسب المسافات إلى الأماكن على هذا الجهاز. لا يتتبع حيّر موقعك في الخلفية.';
 
   @override
   String get dataGroupTitle => 'ما تراه مجموعتك';
@@ -907,7 +907,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dataDeviceBody =>
-      'تبقى هنا الأماكن المحفوظة وملاحظاتها، والاسم الذي استخدمته آخر مرة، والغرفة التي يمكنك متابعتها، وآخر منطقة بحثت فيها في «عندي وقت»، ورابط «عندي وقت» المحفوظ حين لم يكن متاحاً، وأي سحبات لم تصل إلى الخادم بعد. لا شيء يتزامن مع حساب، لذا تُحذف بإزالة حيّر.';
+      'تبقى هنا الأماكن المحفوظة وملاحظاتها، والاسم الذي استخدمته آخر مرة، والغرفة التي يمكنك متابعتها، وآخر منطقة بحثت فيها في الاستكشاف، ورابط الاستكشاف المحفوظ حين لم يكن متاحاً، وأي سحبات لم تصل إلى الخادم بعد. لا شيء يتزامن مع حساب، لذا تُحذف بإزالة حيّر.';
 
   @override
   String get dataMeasurementTitle => 'القياس';
@@ -921,7 +921,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dataEraseBody =>
-      'يحذف المسح الأماكن المحفوظة وملاحظاتها، والاسم المحفوظ، والغرفة القابلة للمتابعة، وآخر منطقة في «عندي وقت» وأي رابط محفوظ له، وتسجيل الدخول المجهول. تنتهي صلاحية الغرف على الخادم من تلقاء نفسها، والمسح هنا لا يحذف ما سجّله الخادم سابقاً.';
+      'يحذف المسح الأماكن المحفوظة وملاحظاتها، والاسم المحفوظ، والغرفة القابلة للمتابعة، وآخر منطقة في الاستكشاف وأي رابط محفوظ له، وتسجيل الدخول المجهول. تنتهي صلاحية الغرف على الخادم من تلقاء نفسها، والمسح هنا لا يحذف ما سجّله الخادم سابقاً.';
 
   @override
   String get dataEraseAction => 'امسح البيانات من هذا الجهاز';
@@ -959,7 +959,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeTimeQuestion => 'كم عندك وقت؟';
 
   @override
-  String get inAHurry => 'مستعجل';
+  String get inAHurry => 'اختيار سريع';
 
   @override
   String get inAHurryDescription =>
@@ -986,7 +986,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inAHurryDuration => '~60 ثانية';
 
   @override
-  String get gotTime => 'عندي وقت';
+  String get gotTime => 'استكشاف';
 
   @override
   String get gotTimeDescription => 'تصفّح كل الأماكن على الخريطة على طريقتك';
@@ -1001,16 +1001,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get gotTimeFullMap => 'الخريطة كاملة';
 
   @override
-  String get discoveryUnavailable => '«عندي وقت» غير متاح حالياً. حاول لاحقاً.';
+  String get discoveryUnavailable => 'الاستكشاف غير متاح حالياً. حاول لاحقاً.';
 
   @override
-  String get discoveryChecking => 'جارٍ التحقق من توفر «عندي وقت»';
+  String get discoveryChecking => 'جارٍ التحقق من توفر الاستكشاف';
 
   @override
-  String get discoveryLinkSavedTitle => 'رابط «عندي وقت» محفوظ';
+  String get discoveryLinkSavedTitle => 'رابط الاستكشاف محفوظ';
 
   @override
-  String get discoveryLinkReady => '«عندي وقت» متاح الآن.';
+  String get discoveryLinkReady => 'الاستكشاف متاح الآن.';
 
   @override
   String get openDiscoveryLink => 'افتح الرابط';
@@ -1020,7 +1020,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get discoveryStillUnavailable =>
-      '«عندي وقت» لا يزال غير متاح. احتفظنا برابطك.';
+      'الاستكشاف لا يزال غير متاح. احتفظنا برابطك.';
 
   @override
   String get discoveryThisArea => 'هذه المنطقة';
@@ -1253,7 +1253,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get discoveryUnsupportedArea =>
-      '«عندي وقت» يغطي دول الخليج فقط. حرّك الخريطة إليها وابحث مجدداً.';
+      'الاستكشاف يغطي دول الخليج فقط. حرّك الخريطة إليها وابحث مجدداً.';
 
   @override
   String get discoveryBadQuery =>

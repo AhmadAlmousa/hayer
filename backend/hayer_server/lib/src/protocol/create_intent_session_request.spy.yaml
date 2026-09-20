@@ -1,0 +1,8 @@
+class: CreateIntentSessionRequest
+fields:
+  mode: SessionMode
+  intent: PlaceIntentQuery
+  displayName: String?
+  consensusRule: ConsensusRule
+  matchingTiming: MatchingTiming
+  analyticsContext: ClientAnalyticsContext?

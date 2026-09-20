@@ -16,7 +16,8 @@ import '../session_mode.dart' as _i2;
 import '../consensus_rule.dart' as _i3;
 import '../matching_timing.dart' as _i4;
 import '../session_status.dart' as _i5;
-import 'package:hayer_server/src/generated/protocol.dart' as _i6;
+import '../place_intent_query.dart' as _i6;
+import 'package:hayer_server/src/generated/protocol.dart' as _i7;
 
 abstract class HayerSessionRow
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -46,9 +47,11 @@ abstract class HayerSessionRow
     this.decisionAt,
     required this.revision,
     this.freshnessWarning,
+    this.intent,
+    int? intentBatchCount,
     required this.createdAt,
     required this.expiresAt,
-  });
+  }) : intentBatchCount = intentBatchCount ?? 1;
 
   factory HayerSessionRow({
     _i1.UuidValue? id,
@@ -76,6 +79,8 @@ abstract class HayerSessionRow
     DateTime? decisionAt,
     required int revision,
     String? freshnessWarning,
+    _i6.PlaceIntentQuery? intent,
+    int? intentBatchCount,
     required DateTime createdAt,
     required DateTime expiresAt,
   }) = _HayerSessionRowImpl;
@@ -90,7 +95,7 @@ abstract class HayerSessionRow
       hostUserId: jsonSerialization['hostUserId'] as String,
       mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
       categoryId: jsonSerialization['categoryId'] as String,
-      subcategoryIds: _i6.Protocol().deserialize<List<String>>(
+      subcategoryIds: _i7.Protocol().deserialize<List<String>>(
         jsonSerialization['subcategoryIds'],
       ),
       priceLevel: jsonSerialization['priceLevel'] as int?,
@@ -121,6 +126,12 @@ abstract class HayerSessionRow
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['decisionAt']),
       revision: jsonSerialization['revision'] as int,
       freshnessWarning: jsonSerialization['freshnessWarning'] as String?,
+      intent: jsonSerialization['intent'] == null
+          ? null
+          : _i7.Protocol().deserialize<_i6.PlaceIntentQuery>(
+              jsonSerialization['intent'],
+            ),
+      intentBatchCount: jsonSerialization['intentBatchCount'] as int?,
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
@@ -185,6 +196,10 @@ abstract class HayerSessionRow
 
   String? freshnessWarning;
 
+  _i6.PlaceIntentQuery? intent;
+
+  int? intentBatchCount;
+
   DateTime createdAt;
 
   DateTime expiresAt;
@@ -221,6 +236,8 @@ abstract class HayerSessionRow
     DateTime? decisionAt,
     int? revision,
     String? freshnessWarning,
+    _i6.PlaceIntentQuery? intent,
+    int? intentBatchCount,
     DateTime? createdAt,
     DateTime? expiresAt,
   });
@@ -253,6 +270,8 @@ abstract class HayerSessionRow
       if (decisionAt != null) 'decisionAt': decisionAt?.toJson(),
       'revision': revision,
       if (freshnessWarning != null) 'freshnessWarning': freshnessWarning,
+      if (intent != null) 'intent': intent?.toJson(),
+      if (intentBatchCount != null) 'intentBatchCount': intentBatchCount,
       'createdAt': createdAt.toJson(),
       'expiresAt': expiresAt.toJson(),
     };
@@ -322,6 +341,8 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     DateTime? decisionAt,
     required int revision,
     String? freshnessWarning,
+    _i6.PlaceIntentQuery? intent,
+    int? intentBatchCount,
     required DateTime createdAt,
     required DateTime expiresAt,
   }) : super._(
@@ -350,6 +371,8 @@ class _HayerSessionRowImpl extends HayerSessionRow {
          decisionAt: decisionAt,
          revision: revision,
          freshnessWarning: freshnessWarning,
+         intent: intent,
+         intentBatchCount: intentBatchCount,
          createdAt: createdAt,
          expiresAt: expiresAt,
        );
@@ -384,6 +407,8 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     Object? decisionAt = _Undefined,
     int? revision,
     Object? freshnessWarning = _Undefined,
+    Object? intent = _Undefined,
+    Object? intentBatchCount = _Undefined,
     DateTime? createdAt,
     DateTime? expiresAt,
   }) {
@@ -420,6 +445,12 @@ class _HayerSessionRowImpl extends HayerSessionRow {
       freshnessWarning: freshnessWarning is String?
           ? freshnessWarning
           : this.freshnessWarning,
+      intent: intent is _i6.PlaceIntentQuery?
+          ? intent
+          : this.intent?.copyWith(),
+      intentBatchCount: intentBatchCount is int?
+          ? intentBatchCount
+          : this.intentBatchCount,
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
     );
@@ -566,6 +597,18 @@ class HayerSessionRowUpdateTable extends _i1.UpdateTable<HayerSessionRowTable> {
         value,
       );
 
+  _i1.ColumnValue<_i6.PlaceIntentQuery, _i6.PlaceIntentQuery> intent(
+    _i6.PlaceIntentQuery? value,
+  ) => _i1.ColumnValue(
+    table.intent,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> intentBatchCount(int? value) => _i1.ColumnValue(
+    table.intentBatchCount,
+    value,
+  );
+
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
         table.createdAt,
@@ -683,6 +726,15 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
       'freshnessWarning',
       this,
     );
+    intent = _i1.ColumnSerializable<_i6.PlaceIntentQuery>(
+      'intent',
+      this,
+    );
+    intentBatchCount = _i1.ColumnInt(
+      'intentBatchCount',
+      this,
+      hasDefault: true,
+    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -743,6 +795,10 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnString freshnessWarning;
 
+  late final _i1.ColumnSerializable<_i6.PlaceIntentQuery> intent;
+
+  late final _i1.ColumnInt intentBatchCount;
+
   late final _i1.ColumnDateTime createdAt;
 
   late final _i1.ColumnDateTime expiresAt;
@@ -774,6 +830,8 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
     decisionAt,
     revision,
     freshnessWarning,
+    intent,
+    intentBatchCount,
     createdAt,
     expiresAt,
   ];

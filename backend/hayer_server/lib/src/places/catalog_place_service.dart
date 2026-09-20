@@ -118,17 +118,21 @@ class CatalogPlaceService {
     required String countryCode,
     bool forceRefresh = false,
     void Function(ProviderOperation operation)? onProviderOperation,
+    List<PlaceQuery>? queryOverride,
+    Set<String>? requiredCategoryIdsOverride,
   }) async {
-    final queries = await TaxonomyService.resolve(
-      session,
-      categoryId,
-      subcategoryIds,
-    );
+    final queries =
+        queryOverride ??
+        await TaxonomyService.resolve(
+          session,
+          categoryId,
+          subcategoryIds,
+        );
     final settings = await _settings(session);
     final now = DateTime.now().toUtc();
-    final requiredCategoryIds = subcategoryIds.isEmpty
-        ? {categoryId}
-        : subcategoryIds.toSet();
+    final requiredCategoryIds =
+        requiredCategoryIdsOverride ??
+        (subcategoryIds.isEmpty ? {categoryId} : subcategoryIds.toSet());
     final coverageCategories = {categoryId, ...subcategoryIds}.toList()..sort();
     final coverageKey = _coverageKey(
       categoryIds: coverageCategories,
@@ -211,6 +215,7 @@ class CatalogPlaceService {
           countryCode: countryCode,
           now: now,
           queries: queries,
+          requiredCategoryIds: requiredCategoryIds,
           onProviderOperation: onProviderOperation,
         ),
       );
@@ -273,6 +278,7 @@ class CatalogPlaceService {
     required String countryCode,
     required DateTime now,
     required List<PlaceQuery> queries,
+    required Set<String> requiredCategoryIds,
     void Function(ProviderOperation operation)? onProviderOperation,
   }) async {
     final typedSource = source;
@@ -375,9 +381,7 @@ class CatalogPlaceService {
           radiusMeters: radiusMeters,
           countryCode: countryCode,
           seenAfter: now.subtract(Duration(days: settings.staleFallbackDays)),
-          requiredCategoryIds: subcategoryIds.isEmpty
-              ? {categoryId}
-              : subcategoryIds.toSet(),
+          requiredCategoryIds: requiredCategoryIds,
           maximumPriceLevel: maximumPriceLevel,
         );
         deck = policy.select(

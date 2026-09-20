@@ -16,7 +16,8 @@ import 'session_mode.dart' as _i2;
 import 'consensus_rule.dart' as _i3;
 import 'matching_timing.dart' as _i4;
 import 'session_status.dart' as _i5;
-import 'package:hayer_server/src/generated/protocol.dart' as _i6;
+import 'place_intent_query.dart' as _i6;
+import 'package:hayer_server/src/generated/protocol.dart' as _i7;
 
 abstract class SessionView
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -43,6 +44,8 @@ abstract class SessionView
     required this.createdAt,
     required this.expiresAt,
     this.freshnessWarning,
+    this.intent,
+    this.intentBatchCount,
   });
 
   factory SessionView({
@@ -68,6 +71,8 @@ abstract class SessionView
     required DateTime createdAt,
     required DateTime expiresAt,
     String? freshnessWarning,
+    _i6.PlaceIntentQuery? intent,
+    int? intentBatchCount,
   }) = _SessionViewImpl;
 
   factory SessionView.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -76,7 +81,7 @@ abstract class SessionView
       code: jsonSerialization['code'] as String,
       mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
       categoryId: jsonSerialization['categoryId'] as String,
-      subcategoryIds: _i6.Protocol().deserialize<List<String>>(
+      subcategoryIds: _i7.Protocol().deserialize<List<String>>(
         jsonSerialization['subcategoryIds'],
       ),
       priceLevel: jsonSerialization['priceLevel'] as int?,
@@ -108,6 +113,12 @@ abstract class SessionView
         jsonSerialization['expiresAt'],
       ),
       freshnessWarning: jsonSerialization['freshnessWarning'] as String?,
+      intent: jsonSerialization['intent'] == null
+          ? null
+          : _i7.Protocol().deserialize<_i6.PlaceIntentQuery>(
+              jsonSerialization['intent'],
+            ),
+      intentBatchCount: jsonSerialization['intentBatchCount'] as int?,
     );
   }
 
@@ -155,6 +166,10 @@ abstract class SessionView
 
   String? freshnessWarning;
 
+  _i6.PlaceIntentQuery? intent;
+
+  int? intentBatchCount;
+
   /// Returns a shallow copy of this [SessionView]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -181,6 +196,8 @@ abstract class SessionView
     DateTime? createdAt,
     DateTime? expiresAt,
     String? freshnessWarning,
+    _i6.PlaceIntentQuery? intent,
+    int? intentBatchCount,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -208,6 +225,8 @@ abstract class SessionView
       'createdAt': createdAt.toJson(),
       'expiresAt': expiresAt.toJson(),
       if (freshnessWarning != null) 'freshnessWarning': freshnessWarning,
+      if (intent != null) 'intent': intent?.toJson(),
+      if (intentBatchCount != null) 'intentBatchCount': intentBatchCount,
     };
   }
 
@@ -237,6 +256,8 @@ abstract class SessionView
       'createdAt': createdAt.toJson(),
       'expiresAt': expiresAt.toJson(),
       if (freshnessWarning != null) 'freshnessWarning': freshnessWarning,
+      if (intent != null) 'intent': intent?.toJsonForProtocol(),
+      if (intentBatchCount != null) 'intentBatchCount': intentBatchCount,
     };
   }
 
@@ -272,6 +293,8 @@ class _SessionViewImpl extends SessionView {
     required DateTime createdAt,
     required DateTime expiresAt,
     String? freshnessWarning,
+    _i6.PlaceIntentQuery? intent,
+    int? intentBatchCount,
   }) : super._(
          sessionId: sessionId,
          code: code,
@@ -295,6 +318,8 @@ class _SessionViewImpl extends SessionView {
          createdAt: createdAt,
          expiresAt: expiresAt,
          freshnessWarning: freshnessWarning,
+         intent: intent,
+         intentBatchCount: intentBatchCount,
        );
 
   /// Returns a shallow copy of this [SessionView]
@@ -324,6 +349,8 @@ class _SessionViewImpl extends SessionView {
     DateTime? createdAt,
     DateTime? expiresAt,
     Object? freshnessWarning = _Undefined,
+    Object? intent = _Undefined,
+    Object? intentBatchCount = _Undefined,
   }) {
     return SessionView(
       sessionId: sessionId ?? this.sessionId,
@@ -355,6 +382,12 @@ class _SessionViewImpl extends SessionView {
       freshnessWarning: freshnessWarning is String?
           ? freshnessWarning
           : this.freshnessWarning,
+      intent: intent is _i6.PlaceIntentQuery?
+          ? intent
+          : this.intent?.copyWith(),
+      intentBatchCount: intentBatchCount is int?
+          ? intentBatchCount
+          : this.intentBatchCount,
     );
   }
 }

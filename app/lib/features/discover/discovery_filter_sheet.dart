@@ -13,6 +13,7 @@ import 'discovery_facets_controller.dart';
 import 'discovery_filter_text.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_search.dart';
+import 'discovery_sort_text.dart';
 
 /// How long the draft stays unchanged before its matches are counted.
 const discoveryPreviewDelay = Duration(milliseconds: 400);
@@ -249,6 +250,40 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
                 children: [
+                  _Section(
+                    title: strings.discoveryFilterTextHint,
+                    child: TextField(
+                      key: const ValueKey('discovery-filter-text'),
+                      controller: _text,
+                      maxLength: maxDiscoveryTextLength,
+                      textInputAction: TextInputAction.search,
+                      onChanged: (value) => _edit(_draft.copyWith(text: value)),
+                      decoration: InputDecoration(
+                        counterText: '',
+                        prefixIcon: const Icon(Icons.search_rounded),
+                        hintText: strings.discoveryFilterTextHint,
+                      ),
+                    ),
+                  ),
+                  _Section(
+                    title: strings.sortBy,
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final sort in DiscoverySort.values)
+                          ChoiceChip(
+                            key: ValueKey(
+                              'discovery-refine-sort-${sort.token}',
+                            ),
+                            label: Text(discoverySortLabel(strings, sort)),
+                            selected: _draft.sort == sort,
+                            onSelected: (_) =>
+                                _edit(_draft.copyWith(sort: sort)),
+                          ),
+                      ],
+                    ),
+                  ),
                   _Section(
                     title: strings.discoveryFilterReviews,
                     child: _ReviewBands(

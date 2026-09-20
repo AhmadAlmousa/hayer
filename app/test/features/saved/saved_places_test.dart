@@ -7,7 +7,6 @@ import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/data/saved_place_store.dart';
 import 'package:hayer_app/data/saved_places_repository.dart';
 import 'package:hayer_app/domain/saved_place.dart';
-import 'package:hayer_app/domain/shortlist_draft.dart';
 import 'package:hayer_app/features/saved/save_place_button.dart';
 import 'package:hayer_app/features/saved/saved_places_screen.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
@@ -38,45 +37,22 @@ void main() {
     expect(find.text('Save place'), findsOneWidget);
   });
 
-  testWidgets('saved screen explains privacy and starts selected shortlist', (
+  testWidgets('saved screen is a private bookmark list, not a setup flow', (
     tester,
   ) async {
     final store = _MemorySavedPlaceStore()..places = [_saved('a'), _saved('b')];
     final repository = SavedPlacesRepository(store: store);
-    late ShortlistDraft openedDraft;
-    final router = GoRouter(
-      initialLocation: '/saved',
-      routes: [
-        GoRoute(
-          path: '/saved',
-          builder: (_, _) => const SavedPlacesScreen(),
-          routes: [
-            GoRoute(
-              path: 'start',
-              builder: (_, state) {
-                openedDraft = state.extra! as ShortlistDraft;
-                return const Scaffold(body: Text('Shortlist setup opened'));
-              },
-            ),
-          ],
-        ),
-      ],
+    await _pump(
+      tester,
+      repository: repository,
+      home: const SavedPlacesScreen(),
     );
-    addTearDown(router.dispose);
-    await _pump(tester, repository: repository, router: router);
 
     expect(find.text('Private on this device'), findsOneWidget);
     expect(find.textContaining('not synced or exportable'), findsOneWidget);
-    await tester.tap(find.byType(Checkbox).at(0));
-    await tester.pump();
-    await tester.tap(find.byType(Checkbox).at(1));
-    await tester.pump();
-    expect(find.text('2 selected'), findsOneWidget);
-    await tester.tap(find.text('Start shortlist (2)'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Shortlist setup opened'), findsOneWidget);
-    expect(openedDraft.places.map((saved) => saved.place.placeId), {'a', 'b'});
+    expect(find.byType(Checkbox), findsNothing);
+    expect(find.textContaining('Start shortlist'), findsNothing);
+    expect(find.byIcon(Icons.favorite_rounded), findsNWidgets(2));
   });
 
   testWidgets('collection and private note are editable on device', (

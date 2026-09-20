@@ -19,7 +19,7 @@ const _debounceDelay = Duration(milliseconds: 350);
 /// Typing at least [_minimumQuery] characters asks the server once the typing
 /// pauses. Every reply is dropped unless it answers the newest keystroke, so a
 /// slow reply can never overwrite a newer list. Both modes use this: "In a
-/// hurry" picks the area to swipe in, and "Got time" moves the map.
+/// Quick Pick chooses a swipe area, while Explore moves the map.
 ///
 /// The field's text belongs to the caller, which also decides what choosing a
 /// suggestion means; the suggestions themselves belong here. Clear them

@@ -92,6 +92,49 @@ void main() {
       });
       expect(index.coveredNodeIds(['other']), isEmpty);
     });
+
+    test('consumer selections stay in one explicit logical group', () {
+      final index = DiscoveryTaxonomyIndex([
+        _node(
+          'food',
+          selectable: false,
+          children: [
+            _node(
+              'restaurants',
+              selectable: true,
+              groupRoot: true,
+              children: [
+                _node('japanese', selectable: true),
+                _node('italian', selectable: true),
+              ],
+            ),
+            _node('cafes', selectable: true, groupRoot: true),
+          ],
+        ),
+      ]);
+
+      expect(
+        index.canonicalIntentSelection(
+          ['japanese', 'italian'],
+          selectionGroupId: 'restaurants',
+        ),
+        ['italian', 'japanese'],
+      );
+      expect(
+        index.canonicalIntentSelection(
+          ['restaurants', 'japanese'],
+          selectionGroupId: 'restaurants',
+        ),
+        ['restaurants'],
+      );
+      expect(
+        () => index.canonicalIntentSelection(
+          ['japanese', 'cafes'],
+          selectionGroupId: 'restaurants',
+        ),
+        throwsA(isA<ApiException>()),
+      );
+    });
   });
 }
 
@@ -99,6 +142,8 @@ DiscoveryTaxonomyNode _node(
   String id, {
   List<String> aliases = const [],
   List<DiscoveryTaxonomyNode> children = const [],
+  bool? selectable,
+  bool? groupRoot,
 }) => DiscoveryTaxonomyNode(
   id: id,
   labelEn: id,
@@ -106,4 +151,8 @@ DiscoveryTaxonomyNode _node(
   emoji: '',
   typeAliases: aliases,
   children: children,
+  selectable: selectable,
+  selectionGroupRoot: groupRoot,
+  searchQueryEn: selectable == true ? id : null,
+  searchQueryAr: selectable == true ? 'تصنيف $id' : null,
 );

@@ -67,18 +67,18 @@ void main() {
     // that is what leaves Hayer.
     expect(find.textContaining('OpenStreetMap'), findsOneWidget);
     expect(find.textContaining('Google Maps'), findsOneWidget);
-    // Got time sends the map area searched, not the device position, and
+    // Explore sends the map area searched, not the device position, and
     // keeps the last area and a kept link here, which an erase removes.
     expect(
       find.textContaining('Hayer receives the map area you search'),
       findsOneWidget,
     );
     expect(
-      find.textContaining('the last area you searched in Got time'),
+      find.textContaining('the last area you searched in Explore'),
       findsOneWidget,
     );
     expect(
-      find.textContaining('the last Got time area and any kept Got time link'),
+      find.textContaining('the last Explore area and any kept Explore link'),
       findsOneWidget,
     );
   });

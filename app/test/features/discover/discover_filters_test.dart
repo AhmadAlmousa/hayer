@@ -28,6 +28,18 @@ Future<void> _open(WidgetTester tester, Key key) async {
 }
 
 Future<void> _tapInSheet(WidgetTester tester, Finder finder) async {
+  if (finder.evaluate().isEmpty) {
+    await tester.scrollUntilVisible(
+      finder,
+      240,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const ValueKey('discovery-filters-list')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+  }
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
   await tester.tap(finder);

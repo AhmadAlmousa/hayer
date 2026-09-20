@@ -7,6 +7,7 @@ import '../../core/gcc_currency_symbol.dart';
 import '../../domain/discovery_area.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../setup/setup_data.dart';
+import '../saved/save_place_button.dart';
 
 /// Below this known rating a row warns that a place is rated poorly.
 const discoveryLowRating = 4.0;
@@ -245,6 +246,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
                 ],
               ),
             ),
+            SavePlaceButton(place: place, iconOnly: true),
             ?report,
           ],
         ),
@@ -302,6 +304,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
                 Text(reviews, style: muted.copyWith(fontSize: 11)),
             ],
           ),
+          SavePlaceButton(place: place, iconOnly: true),
           ?report,
         ],
       ),

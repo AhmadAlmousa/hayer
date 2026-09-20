@@ -16,3 +16,6 @@ fields:
   analyticsContext: ClientAnalyticsContext?
   shortlistPlaceIds: List<String>?
   freshDiscoveryCount: int?
+  # Set only by the canonical intent endpoint. Legacy clients continue to use
+  # categoryId/subcategoryIds without knowing this field exists.
+  intent: PlaceIntentQuery?

@@ -24,6 +24,10 @@ abstract class DiscoveryTaxonomyNode
     required this.emoji,
     required this.typeAliases,
     required this.children,
+    this.selectable,
+    this.selectionGroupRoot,
+    this.searchQueryEn,
+    this.searchQueryAr,
   });
 
   factory DiscoveryTaxonomyNode({
@@ -33,6 +37,10 @@ abstract class DiscoveryTaxonomyNode
     required String emoji,
     required List<String> typeAliases,
     required List<_i2.DiscoveryTaxonomyNode> children,
+    bool? selectable,
+    bool? selectionGroupRoot,
+    String? searchQueryEn,
+    String? searchQueryAr,
   }) = _DiscoveryTaxonomyNodeImpl;
 
   factory DiscoveryTaxonomyNode.fromJson(
@@ -49,6 +57,16 @@ abstract class DiscoveryTaxonomyNode
       children: _i3.Protocol().deserialize<List<_i2.DiscoveryTaxonomyNode>>(
         jsonSerialization['children'],
       ),
+      selectable: jsonSerialization['selectable'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['selectable']),
+      selectionGroupRoot: jsonSerialization['selectionGroupRoot'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['selectionGroupRoot'],
+            ),
+      searchQueryEn: jsonSerialization['searchQueryEn'] as String?,
+      searchQueryAr: jsonSerialization['searchQueryAr'] as String?,
     );
   }
 
@@ -64,6 +82,14 @@ abstract class DiscoveryTaxonomyNode
 
   List<_i2.DiscoveryTaxonomyNode> children;
 
+  bool? selectable;
+
+  bool? selectionGroupRoot;
+
+  String? searchQueryEn;
+
+  String? searchQueryAr;
+
   /// Returns a shallow copy of this [DiscoveryTaxonomyNode]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -74,6 +100,10 @@ abstract class DiscoveryTaxonomyNode
     String? emoji,
     List<String>? typeAliases,
     List<_i2.DiscoveryTaxonomyNode>? children,
+    bool? selectable,
+    bool? selectionGroupRoot,
+    String? searchQueryEn,
+    String? searchQueryAr,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,6 +115,10 @@ abstract class DiscoveryTaxonomyNode
       'emoji': emoji,
       'typeAliases': typeAliases.toJson(),
       'children': children.toJson(valueToJson: (v) => v.toJson()),
+      if (selectable != null) 'selectable': selectable,
+      if (selectionGroupRoot != null) 'selectionGroupRoot': selectionGroupRoot,
+      if (searchQueryEn != null) 'searchQueryEn': searchQueryEn,
+      if (searchQueryAr != null) 'searchQueryAr': searchQueryAr,
     };
   }
 
@@ -98,6 +132,10 @@ abstract class DiscoveryTaxonomyNode
       'emoji': emoji,
       'typeAliases': typeAliases.toJson(),
       'children': children.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (selectable != null) 'selectable': selectable,
+      if (selectionGroupRoot != null) 'selectionGroupRoot': selectionGroupRoot,
+      if (searchQueryEn != null) 'searchQueryEn': searchQueryEn,
+      if (searchQueryAr != null) 'searchQueryAr': searchQueryAr,
     };
   }
 
@@ -107,6 +145,8 @@ abstract class DiscoveryTaxonomyNode
   }
 }
 
+class _Undefined {}
+
 class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
   _DiscoveryTaxonomyNodeImpl({
     required String id,
@@ -115,6 +155,10 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
     required String emoji,
     required List<String> typeAliases,
     required List<_i2.DiscoveryTaxonomyNode> children,
+    bool? selectable,
+    bool? selectionGroupRoot,
+    String? searchQueryEn,
+    String? searchQueryAr,
   }) : super._(
          id: id,
          labelEn: labelEn,
@@ -122,6 +166,10 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
          emoji: emoji,
          typeAliases: typeAliases,
          children: children,
+         selectable: selectable,
+         selectionGroupRoot: selectionGroupRoot,
+         searchQueryEn: searchQueryEn,
+         searchQueryAr: searchQueryAr,
        );
 
   /// Returns a shallow copy of this [DiscoveryTaxonomyNode]
@@ -135,6 +183,10 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
     String? emoji,
     List<String>? typeAliases,
     List<_i2.DiscoveryTaxonomyNode>? children,
+    Object? selectable = _Undefined,
+    Object? selectionGroupRoot = _Undefined,
+    Object? searchQueryEn = _Undefined,
+    Object? searchQueryAr = _Undefined,
   }) {
     return DiscoveryTaxonomyNode(
       id: id ?? this.id,
@@ -143,6 +195,16 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
       emoji: emoji ?? this.emoji,
       typeAliases: typeAliases ?? this.typeAliases.map((e0) => e0).toList(),
       children: children ?? this.children.map((e0) => e0.copyWith()).toList(),
+      selectable: selectable is bool? ? selectable : this.selectable,
+      selectionGroupRoot: selectionGroupRoot is bool?
+          ? selectionGroupRoot
+          : this.selectionGroupRoot,
+      searchQueryEn: searchQueryEn is String?
+          ? searchQueryEn
+          : this.searchQueryEn,
+      searchQueryAr: searchQueryAr is String?
+          ? searchQueryAr
+          : this.searchQueryAr,
     );
   }
 }

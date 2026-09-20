@@ -26,7 +26,11 @@ import '../../core/widgets/place_details_sheet.dart';
 import '../../core/widgets/session_sync_status.dart';
 import '../../data/session_realtime_listener.dart';
 import '../../domain/session_results.dart';
+import '../../domain/discovery_url_query.dart' as discovery_link;
 import '../../l10n/generated/app_localizations.dart';
+import '../discover/discovery_filter_sheet.dart';
+import '../intent/intent_copy.dart';
+import '../intent/place_intent_controller.dart';
 import 'destination_choice_controls.dart';
 import '../saved/save_place_button.dart';
 import '../report/report_place_issue_sheet.dart';
@@ -57,6 +61,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   bool _resultsViewRecorded = false;
   bool _degraded = false;
   bool _syncFailed = false;
+  bool _extending = false;
+  discovery_link.DiscoveryUrlQuery? _refine;
 
   @override
   void initState() {
@@ -176,6 +182,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         setState(() {
           _results = nextResults;
           _bundle = nextBundle;
+          _refine ??= _queryFor(nextBundle.session.intent);
           _routeOrigin = routeOrigin;
           _error = null;
           _syncFailed = false;
@@ -223,6 +230,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   ) ??
                   item.match),
       );
+    }
+    final refine = _refine;
+    if (refine != null) {
+      values.removeWhere((item) => !_matchesRefine(item.place, refine));
     }
     values.sort(
       (a, b) => switch (_sort) {
@@ -287,8 +298,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               winner == null
                   ? strings.chooseDestination
                   : '${choices.isComplete ? strings.groupChoice : strings.leadingChoice}: ${winner.name}',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
             Text(
@@ -345,6 +357,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
+    final intentCopy = IntentCopy(context);
     setBrowserPageTitle('${strings.results} — ${strings.appName}');
     final bundle = _bundle;
     final values = _visible;
@@ -508,6 +521,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                             spacing: 8,
                             runSpacing: 8,
                             children: [
+                              ActionChip(
+                                avatar: const Icon(
+                                  Icons.tune_rounded,
+                                  size: 18,
+                                ),
+                                label: Text(
+                                  switch (_refine?.sheetFilterCount) {
+                                    final count? when count > 0 =>
+                                      '${strings.discoveryFiltersTitle} ($count)',
+                                    _ => strings.discoveryFiltersTitle,
+                                  },
+                                ),
+                                onPressed: _openRefine,
+                              ),
                               Text(
                                 strings.sortBy,
                                 style: Theme.of(context).textTheme.labelLarge
@@ -581,12 +608,39 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 child: AdaptiveActions(
                   children: [
                     OutlinedButton.icon(
-                      onPressed: () => context.go('/setup'),
+                      onPressed: () => context.go('/'),
                       icon: const Icon(Icons.search_rounded),
                       label: Text(
                         strings.newSearch,
                       ),
                     ),
+                    if (bundle?.session.intent != null)
+                      OutlinedButton.icon(
+                        onPressed: _openExplore,
+                        icon: const Icon(Icons.travel_explore_rounded),
+                        label: Text(intentCopy.explore),
+                      ),
+                    if (bundle?.session.mode == SessionMode.solo &&
+                        bundle?.session.intent != null &&
+                        bundle?.session.intentBatchCount == 1)
+                      FilledButton.tonalIcon(
+                        onPressed: _extending ? null : _extend,
+                        icon: _extending
+                            ? const SizedBox.square(
+                                dimension: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.add_rounded),
+                        label: Text(intentCopy.tenMore),
+                      )
+                    else if (bundle?.session.intent != null)
+                      OutlinedButton.icon(
+                        onPressed: _openDecideTogether,
+                        icon: const Icon(Icons.groups_rounded),
+                        label: Text(intentCopy.decideTogether),
+                      ),
                     FilledButton.icon(
                       onPressed: values.isEmpty
                           ? null
@@ -603,6 +657,152 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               ),
             ),
     );
+  }
+
+  Future<void> _openRefine() async {
+    final committed = _refine;
+    if (committed == null) return;
+    final next = await showDiscoveryFilterSheet(
+      context,
+      committed: committed,
+    );
+    if (next != null && mounted) setState(() => _refine = next);
+  }
+
+  Future<void> _extend() async {
+    final bundle = _bundle;
+    if (bundle == null || _extending) return;
+    setState(() => _extending = true);
+    try {
+      final next = await ref
+          .read(sessionRepositoryProvider)
+          .extendSolo(
+            sessionId: widget.sessionId,
+            expectedRevision: bundle.session.revision,
+          );
+      if (mounted) {
+        context.go('/swipe/${next.session.sessionId}', extra: next);
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error is ApiException
+                  ? error.message
+                  : 'Could not load more places.',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _extending = false);
+    }
+  }
+
+  void _openExplore() {
+    final intent = _bundle?.session.intent;
+    if (intent == null) return;
+    _adoptResultContext(intent);
+    context.go(ref.read(placeIntentProvider).toDiscoveryQuery().location);
+  }
+
+  void _openDecideTogether() {
+    final intent = _bundle?.session.intent;
+    if (intent == null) return;
+    _adoptResultContext(intent);
+    context.go('/next');
+  }
+
+  void _adoptResultContext(PlaceIntentQuery intent) {
+    final controller = ref.read(placeIntentProvider.notifier)..adopt(intent);
+    final refine = _refine;
+    if (refine == null) return;
+    controller.setRefinements(
+      sort: DiscoverSort.values[refine.sort.index],
+      reviewBands: [
+        for (final value in refine.reviewBands)
+          DiscoverReviewBand.values[value.index],
+      ],
+      exactPriceLevel: refine.priceLevel,
+      minimumRating: refine.minimumRating?.value,
+      hoursWindows: [
+        for (final value in refine.hoursWindows)
+          DiscoverHoursWindow.values[value.index],
+      ],
+      text: refine.text,
+      completeness: [
+        for (final value in refine.completeness)
+          DiscoverCompleteness.values[value.index],
+      ],
+    );
+  }
+
+  static discovery_link.DiscoveryUrlQuery? _queryFor(PlaceIntentQuery? intent) {
+    if (intent == null) return null;
+    return PlaceIntentState(
+      taxonomyRevision: intent.taxonomyRevision,
+      selectionGroupId: intent.selectionGroupId,
+      categoryIds: intent.categoryIds,
+      latitude: intent.anchorLatitude,
+      longitude: intent.anchorLongitude,
+      address: intent.anchorAddress,
+      radiusMeters: intent.radiusMeters,
+      sort: intent.sort,
+      reviewBands: intent.reviewBands,
+      exactPriceLevel: intent.exactPriceLevel,
+      minimumRating: intent.minimumRating,
+      hoursWindows: intent.hoursWindows,
+      text: intent.text,
+      completeness: intent.completeness,
+    ).toDiscoveryQuery();
+  }
+
+  static bool _matchesRefine(
+    PlaceSnapshot place,
+    discovery_link.DiscoveryUrlQuery query,
+  ) {
+    if (query.priceLevel case final price? when place.priceLevel != price) {
+      return false;
+    }
+    if (query.minimumRating case final rating?
+        when (place.rating ?? -1) < rating.value) {
+      return false;
+    }
+    if (query.reviewBands.isNotEmpty &&
+        !query.reviewBands.any((band) {
+          final count = place.reviewCount;
+          return count != null &&
+              count >= band.minimum &&
+              (band.maximum == null || count <= band.maximum!);
+        })) {
+      return false;
+    }
+    if (query.hoursWindows.contains(
+          discovery_link.DiscoveryHoursWindow.openNow,
+        ) &&
+        place.isOpen == false) {
+      return false;
+    }
+    if (query.completeness.any(
+      (requirement) => switch (requirement) {
+        discovery_link.DiscoveryCompleteness.photos => place.photoUrls.isEmpty,
+        discovery_link.DiscoveryCompleteness.hours => place.hours.isEmpty,
+        discovery_link.DiscoveryCompleteness.contact =>
+          place.phoneNumber == null && place.websiteUrl == null,
+        discovery_link.DiscoveryCompleteness.price => place.priceLevel == null,
+      },
+    )) {
+      return false;
+    }
+    final needle = query.text.trim().toLowerCase();
+    return needle.isEmpty ||
+        [
+          place.name,
+          place.primaryType,
+          place.editorialSummary,
+          place.formattedAddress,
+        ].whereType<String>().join(' ').toLowerCase().contains(needle);
   }
 
   Future<void> _shareResults(List<SessionResult> values) async {

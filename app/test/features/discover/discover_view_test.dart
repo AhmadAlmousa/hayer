@@ -390,7 +390,7 @@ void main() {
     expect(fixture.repository.requests.last.query.countryCode, isNull);
     expect(
       find.text(
-        'Got time covers the Gulf countries only. Move the map there and '
+        'Explore covers the Gulf countries only. Move the map there and '
         'search again.',
       ),
       findsOneWidget,

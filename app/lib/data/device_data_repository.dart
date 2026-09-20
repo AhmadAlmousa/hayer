@@ -13,7 +13,7 @@ import 'session_repository.dart';
 /// and what it stores is spread across five keys and a queue: saved places
 /// and their notes, the name a room is joined under, the pointer to the room
 /// that can still be resumed, a discovery link kept for a retry, the last area
-/// searched in Got time, swipes not yet delivered, and the anonymous credential
+/// searched in Explore, swipes not yet delivered, and the anonymous credential
 /// the device signs in with. Each
 /// store knows how to forget its own part; nothing knew how to forget all of
 /// it.

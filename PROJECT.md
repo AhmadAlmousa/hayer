@@ -2063,3 +2063,20 @@ implemented, and M9-K is in progress.
   and after using the app. The lane's place card is always drawn over the map
   and scrolls inside it at large text, since the in-list preview it replaced no
   longer exists. `discovery_upgrade.md` was amended to match.
+- 2026-09-20: Replaced the home-level mode choice with one shared
+  WHAT -> WHERE -> WHAT NEXT intent flow. The published Discover taxonomy is
+  now the consumer taxonomy, selection is constrained to one logical group,
+  parents represent the whole branch, and Quick Pick, Explore, and Decide
+  Together preserve the same category and area context. Current location is
+  the fast path; choosing another area reuses the movable map and optional
+  radius, while the existing Discover filter sheet is the optional Refine
+  surface. Quick Pick creates a fixed ten-place solo session and permits one
+  ten-place extension; multiplayer creation stores the same intent without
+  adding advanced choices to the critical path. The change is additive at the
+  protocol/database boundary so existing create-session clients remain valid;
+  deploy migration `20260920123719627-intent-flow` before the new client.
+  Preflight passed with 217 server, 380 consumer, and 89 admin tests plus clean
+  analysis. Signed `hayer-0.2.1-7.apk` verifies with certificate SHA-256
+  `426f3bf40419183148b4b89e5508f8333a3b526206975b9208e7cf895c9177a6`;
+  artifact SHA-256 is
+  `1cb148e122a7e09381bd6f3df7c451b08c45a7036767ce6bf8e6526dde9d859f`.

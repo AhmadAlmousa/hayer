@@ -173,6 +173,7 @@ void main() {
 
       // Assert
       expect(find.text('50% · 1/2 liked it'), findsOneWidget);
+      await tester.scrollUntilVisible(find.byKey(const ValueKey('b')), 200);
       expect(find.text('100% · 2/2 liked it'), findsOneWidget);
       expect(fixture.endpoint.resultCalls, fetchedOnOpen);
       await _dispose(tester, fixture);

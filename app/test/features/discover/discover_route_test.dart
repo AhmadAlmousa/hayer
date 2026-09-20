@@ -22,8 +22,8 @@ const _riyadh = '24.6,46.6,24.8,46.8';
 
 /// An area, so an opened link is not given the starting area as well.
 const _bbox = 'bbox=$_riyadh';
-const _kept = 'Your Got time link is saved';
-const _unavailable = 'Got time isn’t available right now. Try again later.';
+const _kept = 'Your Explore link is saved';
+const _unavailable = 'Explore isn’t available right now. Try again later.';
 const _retry = ValueKey('pending-discovery-link-retry');
 
 void main() {
@@ -61,7 +61,7 @@ void main() {
 
       expect(router.routeInformationProvider.value.uri.path, '/');
       expect(find.byType(DiscoverScreen), findsNothing);
-      expect(find.text('New search'), findsOneWidget);
+      expect(find.text('WHAT?'), findsOneWidget);
       expect(find.text(_kept), findsOneWidget);
       expect(find.text(_unavailable), findsOneWidget);
       expect(
@@ -124,7 +124,7 @@ void main() {
     // Retry reads again even though the cached answer is still fresh.
     expect(fixture.bootstrap.calls, reads + 1);
     expect(
-      find.text('Got time still isn’t available. Your link is kept.'),
+      find.text('Explore still isn’t available. Your link is kept.'),
       findsOneWidget,
     );
     expect(router.routeInformationProvider.value.uri.path, '/');

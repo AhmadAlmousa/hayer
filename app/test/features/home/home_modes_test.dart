@@ -23,8 +23,8 @@ void main() {
     await _pumpHome(tester, FakeBootstrap(testDiscoveryConfig(enabled: false)));
 
     expect(find.text('New search'), findsOneWidget);
-    expect(find.text('In a hurry'), findsNothing);
-    expect(find.text('Got time'), findsNothing);
+    expect(find.text('Quick Pick'), findsNothing);
+    expect(find.text('Explore'), findsNothing);
     expect(find.text('Saved places'), findsOneWidget);
     expect(find.text('Join a session'), findsOneWidget);
   });
@@ -39,12 +39,12 @@ void main() {
 
     expect(bootstrap.calls, 1);
     expect(find.text('New search'), findsOneWidget);
-    expect(find.text('In a hurry'), findsNothing);
+    expect(find.text('Quick Pick'), findsNothing);
 
     // Answer, so the read's timeout does not outlive the test.
     gate.complete();
     await tester.pumpAndSettle();
-    expect(find.text('In a hurry'), findsOneWidget);
+    expect(find.text('Quick Pick'), findsOneWidget);
   });
 
   testWidgets('with discovery on, home offers both modes at equal weight', (
@@ -55,12 +55,12 @@ void main() {
     expect(find.text('HOW MUCH TIME DO YOU HAVE?'), findsOneWidget);
     expect(find.text('New search'), findsNothing);
     for (final label in [
-      'In a hurry',
+      'Quick Pick',
       'Pick a vibe, swipe a deck, decide in a minute',
       '10 cards',
       'Solo or group',
       '~60 sec',
-      'Got time',
+      'Explore',
       'Dig through every place on the map, your way',
       'Sort & filter',
       'Hidden gems',
@@ -79,14 +79,14 @@ void main() {
   testWidgets('each mode opens its own flow', (tester) async {
     final router = await _pumpHome(tester, FakeBootstrap());
 
-    await tester.tap(find.text('In a hurry'));
+    await tester.tap(find.text('Quick Pick'));
     await tester.pumpAndSettle();
     expect(find.text('setup route'), findsOneWidget);
 
     router.pop();
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Got time'));
-    await tester.tap(find.text('Got time'));
+    await tester.ensureVisible(find.text('Explore'));
+    await tester.tap(find.text('Explore'));
     await tester.pumpAndSettle();
     expect(find.text('discover route'), findsOneWidget);
   });
@@ -95,7 +95,7 @@ void main() {
     (
       'on',
       () => FakeBootstrap(),
-      ['مستعجل', 'عندي وقت', 'افتح الرابط', 'تجاهل', 'انضم إلى جلسة'],
+      ['اختيار سريع', 'استكشاف', 'افتح الرابط', 'تجاهل', 'انضم إلى جلسة'],
     ),
     (
       'off',
@@ -126,7 +126,7 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
-      expect(find.text('رابط «عندي وقت» محفوظ'), findsOneWidget);
+      expect(find.text('رابط الاستكشاف محفوظ'), findsOneWidget);
       for (final label in labels) {
         await tester.ensureVisible(find.text(label));
         await tester.pumpAndSettle();

@@ -27,6 +27,7 @@ import 'discovery_place_card.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
 import 'discovery_search_field.dart';
+import '../intent/place_intent_controller.dart';
 import 'discovery_search.dart';
 import 'discovery_selection_controller.dart';
 import 'discovery_sort_text.dart';
@@ -142,6 +143,10 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
       return;
     }
     if (_normalizeCategories()) return;
+    final taxonomy = ref.read(discoveryTaxonomyProvider).value;
+    if (taxonomy != null) {
+      ref.read(placeIntentProvider.notifier).adoptDiscovery(taxonomy, _query);
+    }
     _labelArea(viewport);
     unawaited(ref.read(discoveryAreaStoreProvider).write(viewport));
     ref
@@ -450,6 +455,22 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     );
   }
 
+  void _quickPick() {
+    final snapshot = ref.read(discoveryTaxonomyProvider).value;
+    final adopted =
+        snapshot != null &&
+        ref.read(placeIntentProvider.notifier).adoptDiscovery(snapshot, _query);
+    if (!adopted) {
+      _notify(
+        Localizations.localeOf(context).languageCode == 'ar'
+            ? 'اختر فئات من مجموعة واحدة وقرّب الخريطة إلى 10 كم أو أقل.'
+            : 'Choose categories from one group and zoom to 10 km or less.',
+      );
+      return;
+    }
+    context.go('/next');
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
@@ -558,6 +579,20 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                       onCategories: _openCategories,
                       onApply: _apply,
                     ),
+                    if (viewport != null && _query.categoryIds.isNotEmpty)
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: TextButton.icon(
+                          key: const ValueKey('discover-quick-pick'),
+                          onPressed: _quickPick,
+                          icon: const Icon(Icons.bolt_rounded),
+                          label: Text(
+                            Localizations.localeOf(context).languageCode == 'ar'
+                                ? 'اختيار سريع لهذه الأماكن'
+                                : 'Quick Pick these places',
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

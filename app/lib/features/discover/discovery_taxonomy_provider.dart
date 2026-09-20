@@ -10,15 +10,10 @@ import 'discovery_facets_controller.dart';
 ///
 /// Read again whenever the configuration names a new tree revision. A failed
 /// read is not retried on its own; the category sheet offers a retry.
-final discoveryTaxonomyProvider =
-    FutureProvider.autoDispose<DiscoveryTaxonomySnapshot>((ref) {
-      ref.watch(
-        discoveryConfigProvider.select(
-          (availability) => availability.config?.taxonomyRevision,
-        ),
-      );
-      return ref.read(discoveryRepositoryProvider).taxonomy();
-    }, retry: (_, _) => null);
+final discoveryTaxonomyProvider = FutureProvider<DiscoveryTaxonomySnapshot>(
+  (ref) => ref.read(discoveryRepositoryProvider).taxonomy(),
+  retry: (_, _) => null,
+);
 
 /// The category tree counted over the latest facets, or null until the tree
 /// and the counts are both loaded and describe the same tree revision.

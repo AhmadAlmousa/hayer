@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../core/page_title.dart';
@@ -9,7 +8,6 @@ import '../../core/place_photo.dart';
 import '../../core/place_photo_cache.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../domain/saved_place.dart';
-import '../../domain/shortlist_draft.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'saved_places_controller.dart';
 
@@ -22,7 +20,6 @@ class SavedPlacesScreen extends ConsumerStatefulWidget {
 
 class _SavedPlacesScreenState extends ConsumerState<SavedPlacesScreen> {
   SavedPlaceCollection _collection = SavedPlaceCollection.wantToTry;
-  final _selectedIds = <String>{};
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +37,7 @@ class _SavedPlacesScreenState extends ConsumerState<SavedPlacesScreen> {
             onRefresh: ref.read(savedPlacesControllerProvider.notifier).reload,
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: [
                 Card.filled(
                   child: ListTile(
@@ -95,16 +92,6 @@ class _SavedPlacesScreenState extends ConsumerState<SavedPlacesScreen> {
                   }),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  strings.selectForShortlist,
-                  style:
-                      Theme.of(
-                            context,
-                          ).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w900),
-                ),
-                if (_selectedIds.isNotEmpty)
-                  Text(strings.selectedPlacesCount(_selectedIds.length)),
                 if (state.loading && state.places.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(32),
@@ -128,17 +115,9 @@ class _SavedPlacesScreenState extends ConsumerState<SavedPlacesScreen> {
                   for (final saved in visible)
                     _SavedPlaceTile(
                       saved: saved,
-                      selected: _selectedIds.contains(saved.place.placeId),
                       saving: state.savingPlaceIds.contains(
                         saved.place.placeId,
                       ),
-                      onSelected: (selected) => setState(() {
-                        if (selected) {
-                          _selectedIds.add(saved.place.placeId);
-                        } else {
-                          _selectedIds.remove(saved.place.placeId);
-                        }
-                      }),
                       onEdit: () => _edit(saved),
                     ),
               ],
@@ -146,38 +125,7 @@ class _SavedPlacesScreenState extends ConsumerState<SavedPlacesScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.all(16),
-        child: FilledButton.icon(
-          onPressed: _selectedIds.length >= 2 ? _startShortlist : null,
-          icon: const Icon(Icons.playlist_add_check_circle_rounded),
-          label: Text(strings.startShortlist(_selectedIds.length)),
-        ),
-      ),
     );
-  }
-
-  void _startShortlist() {
-    final strings = AppLocalizations.of(context)!;
-    final selected = ref
-        .read(savedPlacesControllerProvider)
-        .places
-        .where((saved) => _selectedIds.contains(saved.place.placeId))
-        .toList(growable: false);
-    if (selected.length < 2) {
-      _message(strings.minimumShortlist);
-      return;
-    }
-    final draft = ShortlistDraft.fromSavedPlaces(selected);
-    if (!draft.fitsSupportedArea) {
-      _message(strings.shortlistAreaTooWide);
-      return;
-    }
-    if (draft.categoryId == null) {
-      _message(strings.shortlistCategoryUnavailable);
-      return;
-    }
-    context.push('/saved/start', extra: draft);
   }
 
   Future<void> _edit(SavedPlace saved) async {
@@ -192,7 +140,6 @@ class _SavedPlacesScreenState extends ConsumerState<SavedPlacesScreen> {
       switch (action) {
         case _SavedPlaceDelete():
           await controller.remove(saved.place.placeId);
-          if (mounted) setState(() => _selectedIds.remove(saved.place.placeId));
         case _SavedPlaceSave(:final collection, :final note):
           await controller.update(
             placeId: saved.place.placeId,
@@ -312,16 +259,12 @@ class _EditSavedPlaceDialogState extends State<_EditSavedPlaceDialog> {
 class _SavedPlaceTile extends ConsumerWidget {
   const _SavedPlaceTile({
     required this.saved,
-    required this.selected,
     required this.saving,
-    required this.onSelected,
     required this.onEdit,
   });
 
   final SavedPlace saved;
-  final bool selected;
   final bool saving;
-  final ValueChanged<bool> onSelected;
   final VoidCallback onEdit;
 
   @override
@@ -330,10 +273,7 @@ class _SavedPlaceTile extends ConsumerWidget {
     return Card(
       child: ListTile(
         enabled: !saving,
-        leading: Checkbox(
-          value: selected,
-          onChanged: saving ? null : (value) => onSelected(value ?? false),
-        ),
+        leading: const Icon(Icons.favorite_rounded),
         title: Text(
           place.name,
           style: const TextStyle(fontWeight: FontWeight.w900),
@@ -369,7 +309,7 @@ class _SavedPlaceTile extends ConsumerWidget {
                   ),
                 ),
         ),
-        onTap: saving ? null : () => onSelected(!selected),
+        onTap: saving ? null : onEdit,
       ),
     );
   }

@@ -308,6 +308,10 @@ abstract final class DiscoveryTaxonomyService {
             .where((value) => value.isNotEmpty)
             .toList(growable: false),
         children: node.children.map(normalizeNode).toList(growable: false),
+        selectable: node.selectable,
+        selectionGroupRoot: node.selectionGroupRoot,
+        searchQueryEn: _trimmed(node.searchQueryEn),
+        searchQueryAr: _trimmed(node.searchQueryAr),
       );
 
   static List<String> validate(List<DiscoveryTaxonomyNode> roots) {
@@ -320,9 +324,16 @@ abstract final class DiscoveryTaxonomyService {
       errors.add('The taxonomy must contain at least one root.');
     }
 
-    void visit(DiscoveryTaxonomyNode node, int depth) {
+    void visit(
+      DiscoveryTaxonomyNode node,
+      int depth,
+      String? selectionGroupId,
+    ) {
       nodeCount++;
       final path = node.id.isEmpty ? '<missing id>' : node.id;
+      final startsGroup = node.selectionGroupRoot ?? false;
+      final groupId = startsGroup ? node.id : selectionGroupId;
+      final selectable = node.selectable ?? true;
       if (depth > maxDepth) {
         errors.add('$path: The taxonomy cannot exceed $maxDepth levels.');
       }
@@ -346,6 +357,28 @@ abstract final class DiscoveryTaxonomyService {
       if (node.emoji.length > 16) {
         errors.add('$path: Emoji must be at most 16 characters.');
       }
+      if (startsGroup && !selectable) {
+        errors.add('$path: A selection-group root must be selectable.');
+      }
+      if (selectable && groupId == null) {
+        errors.add(
+          '$path: A selectable node must belong to a selection group.',
+        );
+      }
+      if (selectable) {
+        if ((node.searchQueryEn ?? '').trim().length < 2 ||
+            (node.searchQueryEn ?? '').trim().length > 120) {
+          errors.add(
+            '$path: A selectable node needs a 2-120 character English search query.',
+          );
+        }
+        if ((node.searchQueryAr ?? '').trim().length < 2 ||
+            (node.searchQueryAr ?? '').trim().length > 120) {
+          errors.add(
+            '$path: A selectable node needs a 2-120 character Arabic search query.',
+          );
+        }
+      }
       for (final rawAlias in node.typeAliases) {
         final alias = normalizeAlias(rawAlias);
         if (alias.isEmpty || alias.length > 160) {
@@ -360,12 +393,12 @@ abstract final class DiscoveryTaxonomyService {
         }
       }
       for (final child in node.children) {
-        visit(child, depth + 1);
+        visit(child, depth + 1, groupId);
       }
     }
 
-    for (final root in roots) {
-      visit(root, 1);
+    for (final root in _withCompatibilityMetadata(roots)) {
+      visit(root, 1, null);
     }
     if (nodeCount > maxNodes) {
       errors.add('The taxonomy can contain at most $maxNodes nodes.');
@@ -374,17 +407,66 @@ abstract final class DiscoveryTaxonomyService {
   }
 
   static String encode(List<DiscoveryTaxonomyNode> roots) => jsonEncode(
-    roots.map((root) => root.toJsonForProtocol()).toList(growable: false),
+    _withCompatibilityMetadata(
+      roots,
+    ).map((root) => root.toJsonForProtocol()).toList(growable: false),
   );
 
   static List<DiscoveryTaxonomyNode> decode(String document) =>
-      (jsonDecode(document) as List)
-          .map(
-            (value) => DiscoveryTaxonomyNode.fromJson(
-              (value as Map).cast<String, dynamic>(),
-            ),
-          )
-          .toList(growable: false);
+      _withCompatibilityMetadata(
+        (jsonDecode(document) as List)
+            .map(
+              (value) => DiscoveryTaxonomyNode.fromJson(
+                (value as Map).cast<String, dynamic>(),
+              ),
+            )
+            .toList(growable: false),
+      );
+
+  /// Gives documents published before the unified flow explicit semantics.
+  ///
+  /// Existing roots are structural containers and their immediate children
+  /// are the curated initial selection groups. Once a draft is saved these
+  /// values are serialized explicitly, so later tree depth does not define
+  /// selection behavior.
+  static List<DiscoveryTaxonomyNode> _withCompatibilityMetadata(
+    List<DiscoveryTaxonomyNode> roots,
+  ) {
+    DiscoveryTaxonomyNode visit(DiscoveryTaxonomyNode node, int depth) {
+      final aliases = node.typeAliases;
+      final selectable = node.selectable ?? depth > 1;
+      final groupRoot = node.selectionGroupRoot ?? depth == 2;
+      String fallbackQuery(String label, {required bool arabic}) {
+        final matching = aliases.where(
+          (alias) => RegExp(r'[\u0600-\u06ff]').hasMatch(alias) == arabic,
+        );
+        return matching.isNotEmpty
+            ? matching.first
+            : label.trim().toLowerCase();
+      }
+
+      return node.copyWith(
+        selectable: selectable,
+        selectionGroupRoot: groupRoot,
+        searchQueryEn: selectable
+            ? _trimmed(node.searchQueryEn) ??
+                  fallbackQuery(node.labelEn, arabic: false)
+            : null,
+        searchQueryAr: selectable
+            ? _trimmed(node.searchQueryAr) ??
+                  fallbackQuery(node.labelAr, arabic: true)
+            : null,
+        children: [for (final child in node.children) visit(child, depth + 1)],
+      );
+    }
+
+    return [for (final root in roots) visit(root, 1)];
+  }
+
+  static String? _trimmed(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
 
   static AdminDiscoveryTaxonomyVersion view(
     DiscoveryTaxonomyVersionRow row,

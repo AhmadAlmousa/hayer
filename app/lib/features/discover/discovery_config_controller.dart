@@ -29,7 +29,7 @@ final discoveryConfigProvider =
       DiscoveryConfigController.new,
     );
 
-/// Whether the "Got time" discovery mode is available.
+/// Whether Explore is available.
 ///
 /// False until a supported configuration says otherwise, so home keeps its
 /// single search while the answer is unknown or unreachable.

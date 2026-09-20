@@ -27,6 +27,8 @@ fields:
   decisionAt: DateTime?
   revision: int
   freshnessWarning: String?
+  intent: PlaceIntentQuery?
+  intentBatchCount: int?, default=1
   createdAt: DateTime
   expiresAt: DateTime
 indexes:

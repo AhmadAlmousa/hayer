@@ -47,17 +47,19 @@ import 'package:hayer_server/src/generated/discover_query.dart' as _i27;
 import 'package:hayer_server/src/generated/discover_query_context.dart' as _i28;
 import 'package:hayer_server/src/generated/poi_identity.dart' as _i29;
 import 'package:hayer_server/src/generated/discover_viewport.dart' as _i30;
-import 'package:hayer_server/src/generated/create_session_request.dart' as _i31;
+import 'package:hayer_server/src/generated/create_intent_session_request.dart'
+    as _i31;
+import 'package:hayer_server/src/generated/create_session_request.dart' as _i32;
 import 'package:hayer_server/src/generated/client_analytics_context.dart'
-    as _i32;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i33;
-import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i34;
-import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i35;
-import 'package:hayer_server/src/generated/protocol.dart' as _i36;
+    as _i33;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _i34;
+import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i35;
+import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i36;
+import 'package:hayer_server/src/generated/protocol.dart' as _i37;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i37;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i38;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i39;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -1730,12 +1732,37 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'hayerSession',
       endpoint: endpoints['hayerSession']!,
       methodConnectors: {
+        'createFromIntent': _i1.MethodConnector(
+          name: 'createFromIntent',
+          params: {
+            'request': _i1.ParameterDescription(
+              name: 'request',
+              type: _i1.getType<_i31.CreateIntentSessionRequest>(),
+              nullable: false,
+            ),
+            'idempotencyKey': _i1.ParameterDescription(
+              name: 'idempotencyKey',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
+                  .createFromIntent(
+                    session,
+                    request: params['request'],
+                    idempotencyKey: params['idempotencyKey'],
+                  ),
+        ),
         'create': _i1.MethodConnector(
           name: 'create',
           params: {
             'request': _i1.ParameterDescription(
               name: 'request',
-              type: _i1.getType<_i31.CreateSessionRequest>(),
+              type: _i1.getType<_i32.CreateSessionRequest>(),
               nullable: false,
             ),
             'idempotencyKey': _i1.ParameterDescription(
@@ -1755,6 +1782,37 @@ class Endpoints extends _i1.EndpointDispatch {
                     idempotencyKey: params['idempotencyKey'],
                   ),
         ),
+        'extendSolo': _i1.MethodConnector(
+          name: 'extendSolo',
+          params: {
+            'sessionId': _i1.ParameterDescription(
+              name: 'sessionId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'expectedRevision': _i1.ParameterDescription(
+              name: 'expectedRevision',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'idempotencyKey': _i1.ParameterDescription(
+              name: 'idempotencyKey',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hayerSession'] as _i5.HayerSessionEndpoint)
+                  .extendSolo(
+                    session,
+                    sessionId: params['sessionId'],
+                    expectedRevision: params['expectedRevision'],
+                    idempotencyKey: params['idempotencyKey'],
+                  ),
+        ),
         'join': _i1.MethodConnector(
           name: 'join',
           params: {
@@ -1770,7 +1828,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'analyticsContext': _i1.ParameterDescription(
               name: 'analyticsContext',
-              type: _i1.getType<_i32.ClientAnalyticsContext?>(),
+              type: _i1.getType<_i33.ClientAnalyticsContext?>(),
               nullable: true,
             ),
           },
@@ -1848,7 +1906,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'command': _i1.ParameterDescription(
               name: 'command',
-              type: _i1.getType<_i33.SwipeCommand>(),
+              type: _i1.getType<_i34.SwipeCommand>(),
               nullable: false,
             ),
           },
@@ -1882,7 +1940,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'analyticsContext': _i1.ParameterDescription(
               name: 'analyticsContext',
-              type: _i1.getType<_i32.ClientAnalyticsContext?>(),
+              type: _i1.getType<_i33.ClientAnalyticsContext?>(),
               nullable: true,
             ),
           },
@@ -1904,7 +1962,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'event': _i1.ParameterDescription(
               name: 'event',
-              type: _i1.getType<_i34.ClientAnalyticsEvent>(),
+              type: _i1.getType<_i35.ClientAnalyticsEvent>(),
               nullable: false,
             ),
           },
@@ -1999,7 +2057,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'issueType': _i1.ParameterDescription(
               name: 'issueType',
-              type: _i1.getType<_i35.PoiIssueType>(),
+              type: _i1.getType<_i36.PoiIssueType>(),
               nullable: false,
             ),
             'details': _i1.ParameterDescription(
@@ -2176,7 +2234,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'issueType': _i1.ParameterDescription(
               name: 'issueType',
-              type: _i1.getType<_i35.PoiIssueType>(),
+              type: _i1.getType<_i36.PoiIssueType>(),
               nullable: false,
             ),
             'details': _i1.ParameterDescription(
@@ -2262,7 +2320,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   (endpoints['adminEnrollment'] as _i9.AdminEnrollmentEndpoint)
                       .begin(session)
                       .then(
-                        (record) => _i36.Protocol().mapRecordToJson(record),
+                        (record) => _i37.Protocol().mapRecordToJson(record),
                       ),
         ),
       },
@@ -2331,14 +2389,14 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['passkeyIdp'] as _i12.PasskeyIdpEndpoint)
                   .createChallenge(session)
-                  .then((record) => _i36.Protocol().mapRecordToJson(record)),
+                  .then((record) => _i37.Protocol().mapRecordToJson(record)),
         ),
         'register': _i1.MethodConnector(
           name: 'register',
           params: {
             'registrationRequest': _i1.ParameterDescription(
               name: 'registrationRequest',
-              type: _i1.getType<_i37.PasskeyRegistrationRequest>(),
+              type: _i1.getType<_i38.PasskeyRegistrationRequest>(),
               nullable: false,
             ),
           },
@@ -2357,7 +2415,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'loginRequest': _i1.ParameterDescription(
               name: 'loginRequest',
-              type: _i1.getType<_i37.PasskeyLoginRequest>(),
+              type: _i1.getType<_i38.PasskeyLoginRequest>(),
               nullable: false,
             ),
           },
@@ -2383,9 +2441,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i37.Endpoints()
+    modules['serverpod_auth_idp'] = _i38.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i38.Endpoints()
+    modules['serverpod_auth_core'] = _i39.Endpoints()
       ..initializeEndpoints(server);
   }
 }

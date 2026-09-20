@@ -1,0 +1,16 @@
+class: PlaceIntentQuery
+fields:
+  taxonomyRevision: int
+  selectionGroupId: String
+  categoryIds: List<String>
+  anchorLatitude: double
+  anchorLongitude: double
+  anchorAddress: String?
+  radiusMeters: int
+  sort: DiscoverSort
+  reviewBands: List<DiscoverReviewBand>
+  exactPriceLevel: int?
+  minimumRating: double?
+  hoursWindows: List<DiscoverHoursWindow>
+  text: String
+  completeness: List<DiscoverCompleteness>

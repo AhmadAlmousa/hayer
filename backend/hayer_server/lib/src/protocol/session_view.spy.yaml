@@ -22,3 +22,5 @@ fields:
   createdAt: DateTime
   expiresAt: DateTime
   freshnessWarning: String?
+  intent: PlaceIntentQuery?
+  intentBatchCount: int?

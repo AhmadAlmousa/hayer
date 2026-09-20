@@ -16,7 +16,8 @@ import 'session_mode.dart' as _i2;
 import 'consensus_rule.dart' as _i3;
 import 'matching_timing.dart' as _i4;
 import 'client_analytics_context.dart' as _i5;
-import 'package:hayer_server/src/generated/protocol.dart' as _i6;
+import 'place_intent_query.dart' as _i6;
+import 'package:hayer_server/src/generated/protocol.dart' as _i7;
 
 abstract class CreateSessionRequest
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -37,6 +38,7 @@ abstract class CreateSessionRequest
     this.analyticsContext,
     this.shortlistPlaceIds,
     this.freshDiscoveryCount,
+    this.intent,
   });
 
   factory CreateSessionRequest({
@@ -56,6 +58,7 @@ abstract class CreateSessionRequest
     _i5.ClientAnalyticsContext? analyticsContext,
     List<String>? shortlistPlaceIds,
     int? freshDiscoveryCount,
+    _i6.PlaceIntentQuery? intent,
   }) = _CreateSessionRequestImpl;
 
   factory CreateSessionRequest.fromJson(
@@ -64,7 +67,7 @@ abstract class CreateSessionRequest
     return CreateSessionRequest(
       mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
       categoryId: jsonSerialization['categoryId'] as String,
-      subcategoryIds: _i6.Protocol().deserialize<List<String>>(
+      subcategoryIds: _i7.Protocol().deserialize<List<String>>(
         jsonSerialization['subcategoryIds'],
       ),
       priceLevel: jsonSerialization['priceLevel'] as int?,
@@ -85,15 +88,20 @@ abstract class CreateSessionRequest
       ),
       analyticsContext: jsonSerialization['analyticsContext'] == null
           ? null
-          : _i6.Protocol().deserialize<_i5.ClientAnalyticsContext>(
+          : _i7.Protocol().deserialize<_i5.ClientAnalyticsContext>(
               jsonSerialization['analyticsContext'],
             ),
       shortlistPlaceIds: jsonSerialization['shortlistPlaceIds'] == null
           ? null
-          : _i6.Protocol().deserialize<List<String>>(
+          : _i7.Protocol().deserialize<List<String>>(
               jsonSerialization['shortlistPlaceIds'],
             ),
       freshDiscoveryCount: jsonSerialization['freshDiscoveryCount'] as int?,
+      intent: jsonSerialization['intent'] == null
+          ? null
+          : _i7.Protocol().deserialize<_i6.PlaceIntentQuery>(
+              jsonSerialization['intent'],
+            ),
     );
   }
 
@@ -129,6 +137,8 @@ abstract class CreateSessionRequest
 
   int? freshDiscoveryCount;
 
+  _i6.PlaceIntentQuery? intent;
+
   /// Returns a shallow copy of this [CreateSessionRequest]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -149,6 +159,7 @@ abstract class CreateSessionRequest
     _i5.ClientAnalyticsContext? analyticsContext,
     List<String>? shortlistPlaceIds,
     int? freshDiscoveryCount,
+    _i6.PlaceIntentQuery? intent,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -173,6 +184,7 @@ abstract class CreateSessionRequest
         'shortlistPlaceIds': shortlistPlaceIds?.toJson(),
       if (freshDiscoveryCount != null)
         'freshDiscoveryCount': freshDiscoveryCount,
+      if (intent != null) 'intent': intent?.toJson(),
     };
   }
 
@@ -199,6 +211,7 @@ abstract class CreateSessionRequest
         'shortlistPlaceIds': shortlistPlaceIds?.toJson(),
       if (freshDiscoveryCount != null)
         'freshDiscoveryCount': freshDiscoveryCount,
+      if (intent != null) 'intent': intent?.toJsonForProtocol(),
     };
   }
 
@@ -228,6 +241,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     _i5.ClientAnalyticsContext? analyticsContext,
     List<String>? shortlistPlaceIds,
     int? freshDiscoveryCount,
+    _i6.PlaceIntentQuery? intent,
   }) : super._(
          mode: mode,
          categoryId: categoryId,
@@ -245,6 +259,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
          analyticsContext: analyticsContext,
          shortlistPlaceIds: shortlistPlaceIds,
          freshDiscoveryCount: freshDiscoveryCount,
+         intent: intent,
        );
 
   /// Returns a shallow copy of this [CreateSessionRequest]
@@ -268,6 +283,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     Object? analyticsContext = _Undefined,
     Object? shortlistPlaceIds = _Undefined,
     Object? freshDiscoveryCount = _Undefined,
+    Object? intent = _Undefined,
   }) {
     return CreateSessionRequest(
       mode: mode ?? this.mode,
@@ -295,6 +311,9 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
       freshDiscoveryCount: freshDiscoveryCount is int?
           ? freshDiscoveryCount
           : this.freshDiscoveryCount,
+      intent: intent is _i6.PlaceIntentQuery?
+          ? intent
+          : this.intent?.copyWith(),
     );
   }
 }

@@ -123,6 +123,48 @@ class SessionRepository {
     return bundle;
   }
 
+  Future<SessionBundle> createFromIntent(
+    CreateIntentSessionRequest request, {
+    String language = 'en',
+  }) async {
+    final idempotencyKey = _uuid.v7();
+    final context = _newSessionContext(language);
+    final requestWithAnalytics = request.copyWith(analyticsContext: context);
+    final bundle = await retryOnceAfterTransientFailure(
+      action: () => withAnonymousAuthentication(
+        client,
+        () => client.hayerSession.createFromIntent(
+          request: requestWithAnalytics,
+          idempotencyKey: idempotencyKey,
+        ),
+      ),
+      isTransient: _isTransientClientFailure,
+    );
+    _rememberJourney(bundle.session.sessionId, context.journeyId);
+    await remember(bundle.session.sessionId);
+    return bundle;
+  }
+
+  Future<SessionBundle> extendSolo({
+    required String sessionId,
+    required int expectedRevision,
+  }) async {
+    final idempotencyKey = _uuid.v7();
+    final bundle = await retryOnceAfterTransientFailure(
+      action: () => withAnonymousAuthentication(
+        client,
+        () => client.hayerSession.extendSolo(
+          sessionId: sessionId,
+          expectedRevision: expectedRevision,
+          idempotencyKey: idempotencyKey,
+        ),
+      ),
+      isTransient: _isTransientClientFailure,
+    );
+    await remember(bundle.session.sessionId);
+    return bundle;
+  }
+
   Future<SessionBundle> join(
     String code,
     String displayName, {

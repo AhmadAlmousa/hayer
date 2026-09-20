@@ -5,11 +5,14 @@ import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../analytics/product_analytics.dart';
+import '../discovery/discovery_taxonomy_index.dart';
+import '../discovery/discovery_taxonomy_service.dart';
 import '../generated/protocol.dart';
 import '../places/catalog_place_service.dart';
 import '../places/city_resolution_service.dart';
 import '../places/place_services.dart';
 import '../places/place_availability.dart';
+import '../places/intent_place_service.dart';
 import '../places/place_source.dart';
 import '../places/taxonomy_service.dart';
 import '../places/route_estimate_policy_service.dart';
@@ -35,6 +38,32 @@ class HayerSessionEndpoint extends Endpoint {
     AnalyticsMetric.syncRecovered,
     AnalyticsMetric.syncTerminalFailure,
   };
+
+  /// Creates Quick Pick and Decide Together sessions from the shared intent.
+  Future<SessionBundle> createFromIntent(
+    Session session, {
+    required CreateIntentSessionRequest request,
+    required String idempotencyKey,
+  }) => create(
+    session,
+    request: CreateSessionRequest(
+      mode: request.mode,
+      categoryId: request.intent.selectionGroupId,
+      subcategoryIds: request.intent.categoryIds,
+      priceLevel: request.intent.exactPriceLevel,
+      anchorLatitude: request.intent.anchorLatitude,
+      anchorLongitude: request.intent.anchorLongitude,
+      anchorAddress: request.intent.anchorAddress,
+      radiusMeters: request.intent.radiusMeters,
+      deckSize: 10,
+      displayName: request.displayName,
+      consensusRule: request.consensusRule,
+      matchingTiming: request.matchingTiming,
+      analyticsContext: request.analyticsContext,
+      intent: request.intent,
+    ),
+    idempotencyKey: idempotencyKey,
+  );
 
   Future<SessionBundle> create(
     Session session, {
@@ -129,19 +158,30 @@ class HayerSessionEndpoint extends Endpoint {
               50,
               max(baseCandidateCount * 3, baseCandidateCount + 10),
             );
-      final fresh = requestedFresh == 0
-          ? const <PlaceSnapshot>[]
-          : await catalog.buildDeck(
-              session,
-              categoryId: request.categoryId,
-              subcategoryIds: request.subcategoryIds,
-              latitude: request.anchorLatitude,
-              longitude: request.anchorLongitude,
-              radiusMeters: request.radiusMeters,
-              deckSize: candidateCount,
-              maximumPriceLevel: request.priceLevel,
-              countryCode: countryCode,
-            );
+      late final List<PlaceSnapshot> fresh;
+      if (requestedFresh == 0) {
+        fresh = const [];
+      } else if (request.intent case final intent?) {
+        fresh = await IntentPlaceService.build(
+          session,
+          catalog: catalog,
+          intent: intent,
+          countryCode: countryCode,
+          candidateCount: max(50, candidateCount),
+        );
+      } else {
+        fresh = await catalog.buildDeck(
+          session,
+          categoryId: request.categoryId,
+          subcategoryIds: request.subcategoryIds,
+          latitude: request.anchorLatitude,
+          longitude: request.anchorLongitude,
+          radiusMeters: request.radiusMeters,
+          deckSize: candidateCount,
+          maximumPriceLevel: request.priceLevel,
+          countryCode: countryCode,
+        );
+      }
       final shortlistedIds = shortlistIds.toSet();
       candidates = [
         ...shortlist,
@@ -235,6 +275,8 @@ class HayerSessionEndpoint extends Endpoint {
       freshnessWarning: deck.any((place) => place.isStale)
           ? 'Some place details may be out of date.'
           : null,
+      intent: request.intent,
+      intentBatchCount: request.intent == null ? null : 1,
       createdAt: now,
       expiresAt: now.add(const Duration(hours: 24)),
     );
@@ -427,6 +469,219 @@ class HayerSessionEndpoint extends Endpoint {
       return sessionId;
     });
     return _loadById(session, persistedSessionId, userId: userId);
+  }
+
+  /// Appends one and only one extra Quick Pick batch to a solo intent session.
+  Future<SessionBundle> extendSolo(
+    Session session, {
+    required String sessionId,
+    required int expectedRevision,
+    required String idempotencyKey,
+  }) async {
+    final userId = _userId(session);
+    if (idempotencyKey.length < 8 || idempotencyKey.length > 128) {
+      throw ApiException(code: 'bad_request', message: 'Retry key is invalid.');
+    }
+    await RateLimiter.check(
+      session,
+      operation: 'session-extend',
+      subject: userId,
+      limit: 10,
+      window: const Duration(hours: 1),
+    );
+    final scope = 'extend-session:$sessionId';
+    final requestHash = sha256
+        .convert(utf8.encode('$sessionId:$expectedRevision'))
+        .toString();
+    final prior = await IdempotencyRow.db.findFirstRow(
+      session,
+      where: (table) =>
+          table.scope.equals(scope) &
+          table.userId.equals(userId) &
+          table.idempotencyKey.equals(idempotencyKey),
+    );
+    if (prior != null) {
+      if (prior.requestHash != requestHash) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'This retry key was already used for a different request.',
+        );
+      }
+      return _loadById(session, sessionId, userId: userId);
+    }
+
+    final row = await HayerSessionRow.db.findFirstRow(
+      session,
+      where: (table) => table.sessionId.equals(sessionId),
+    );
+    if (row == null) {
+      throw ApiException(code: 'not_found', message: 'Session not found.');
+    }
+    await _requireMembership(session, sessionId, userId);
+    if (row.mode != SessionMode.solo ||
+        row.intent == null ||
+        (row.intentBatchCount ?? 0) != 1) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'This session cannot load another Quick Pick batch.',
+      );
+    }
+    if (row.revision != expectedRevision) {
+      throw ApiException(
+        code: 'conflict',
+        message: 'This session changed. Reload before adding places.',
+      );
+    }
+    if (!DateTime.now().toUtc().isBefore(row.expiresAt)) {
+      throw ApiException(
+        code: 'session_expired',
+        message: 'This session has expired.',
+      );
+    }
+    final existingPlaces = await SessionPlaceRow.db.find(
+      session,
+      where: (table) => table.sessionId.equals(sessionId),
+      orderBy: (table) => table.deckOrder,
+    );
+    late final List<PlaceSnapshot> candidates;
+    try {
+      final services = await PlaceServices.forSession(session);
+      candidates = await IntentPlaceService.build(
+        session,
+        catalog: CatalogPlaceService(
+          source: services.source,
+          calibrationVersion: services.calibration.version,
+        ),
+        intent: row.intent!,
+        countryCode: row.countryCode,
+      );
+    } on PlaceSourceException catch (error) {
+      throw ApiException(code: error.code, message: error.message);
+    }
+    final existingIds = existingPlaces.map((place) => place.placeId).toSet();
+    final additions = candidates
+        .where((place) => !existingIds.contains(place.placeId))
+        .take(10)
+        .toList(growable: false);
+    if (additions.isEmpty) {
+      throw ApiException(
+        code: 'no_places',
+        message: 'No more places matched this search. Try Explore instead.',
+      );
+    }
+
+    await session.db.transaction((transaction) async {
+      final locked = await HayerSessionRow.db.findFirstRow(
+        session,
+        where: (table) => table.sessionId.equals(sessionId),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      if (locked == null) {
+        throw ApiException(code: 'not_found', message: 'Session not found.');
+      }
+      await _requireMembership(
+        session,
+        sessionId,
+        userId,
+        transaction: transaction,
+      );
+      final concurrentKey = await IdempotencyRow.db.findFirstRow(
+        session,
+        where: (table) =>
+            table.scope.equals(scope) &
+            table.userId.equals(userId) &
+            table.idempotencyKey.equals(idempotencyKey),
+        transaction: transaction,
+      );
+      if (concurrentKey != null) {
+        if (concurrentKey.requestHash != requestHash) {
+          throw ApiException(
+            code: 'conflict',
+            message: 'This retry key was already used for a different request.',
+          );
+        }
+        return;
+      }
+      if (locked.revision != expectedRevision ||
+          locked.mode != SessionMode.solo ||
+          locked.intent == null ||
+          (locked.intentBatchCount ?? 0) != 1) {
+        throw ApiException(
+          code: 'conflict',
+          message: 'This session changed. Reload before adding places.',
+        );
+      }
+      final now = DateTime.now().toUtc();
+      if (!now.isBefore(locked.expiresAt)) {
+        throw ApiException(
+          code: 'session_expired',
+          message: 'This session has expired.',
+        );
+      }
+      await SessionPlaceRow.db.insert(
+        session,
+        [
+          for (var index = 0; index < additions.length; index++)
+            SessionPlaceRow(
+              sessionId: sessionId,
+              placeId: additions[index].placeId,
+              deckOrder: existingPlaces.length + index,
+              snapshot: additions[index],
+            ),
+        ],
+        transaction: transaction,
+      );
+      final participant = await ParticipantRow.db.findFirstRow(
+        session,
+        where: (table) =>
+            table.sessionId.equals(sessionId) & table.userId.equals(userId),
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      participant!
+        ..hasCompleted = false
+        ..lastSeenAt = now;
+      await ParticipantRow.db.updateRow(
+        session,
+        participant,
+        transaction: transaction,
+      );
+      locked
+        ..deckSizeRequested = existingPlaces.length + 10
+        ..deckSizeActual = existingPlaces.length + additions.length
+        ..intentBatchCount = 2
+        ..status = SessionStatus.active
+        ..matchedPlaceId = null
+        ..decisionAt = null
+        ..revision += 1
+        ..freshnessWarning =
+            [
+              ...existingPlaces.map((place) => place.snapshot),
+              ...additions,
+            ].any((place) => place.isStale)
+            ? 'Some place details may be out of date.'
+            : null;
+      await HayerSessionRow.db.updateRow(
+        session,
+        locked,
+        transaction: transaction,
+      );
+      await IdempotencyRow.db.insertRow(
+        session,
+        IdempotencyRow(
+          scope: scope,
+          userId: userId,
+          idempotencyKey: idempotencyKey,
+          requestHash: requestHash,
+          responseId: sessionId,
+          createdAt: now,
+          expiresAt: now.add(const Duration(hours: 24)),
+        ),
+        transaction: transaction,
+      );
+    });
+    return _loadById(session, sessionId, userId: userId);
   }
 
   Future<SessionBundle> join(
@@ -1451,17 +1706,55 @@ class HayerSessionEndpoint extends Endpoint {
     CreateSessionRequest request,
     String idempotencyKey,
   ) async {
-    try {
-      await TaxonomyService.resolve(
-        session,
-        request.categoryId,
-        request.subcategoryIds,
-      );
-    } on ArgumentError {
-      throw ApiException(
-        code: 'bad_request',
-        message: 'The selected category is invalid.',
-      );
+    if (request.intent case final intent?) {
+      final active = await DiscoveryTaxonomyService.activeRow(session);
+      if (intent.taxonomyRevision != active.revision) {
+        throw ApiException(
+          code: 'taxonomy_changed',
+          message: 'Categories changed. Review your selection and try again.',
+        );
+      }
+      final canonicalCategoryIds =
+          DiscoveryTaxonomyIndex(
+            DiscoveryTaxonomyService.decode(active.documentJson),
+          ).canonicalIntentSelection(
+            intent.categoryIds,
+            selectionGroupId: intent.selectionGroupId,
+          );
+      if (intent.categoryIds.length != canonicalCategoryIds.length ||
+          !intent.categoryIds.toSet().containsAll(canonicalCategoryIds) ||
+          request.categoryId != intent.selectionGroupId ||
+          request.subcategoryIds
+              .toSet()
+              .difference(intent.categoryIds.toSet())
+              .isNotEmpty ||
+          request.subcategoryIds.length != intent.categoryIds.length ||
+          request.anchorLatitude != intent.anchorLatitude ||
+          request.anchorLongitude != intent.anchorLongitude ||
+          request.radiusMeters != intent.radiusMeters ||
+          request.priceLevel != intent.exactPriceLevel ||
+          request.deckSize != 10 ||
+          request.shortlistPlaceIds != null ||
+          request.freshDiscoveryCount != null) {
+        throw ApiException(
+          code: 'bad_request',
+          message: 'The shared setup context is inconsistent.',
+        );
+      }
+      _validateIntent(intent);
+    } else {
+      try {
+        await TaxonomyService.resolve(
+          session,
+          request.categoryId,
+          request.subcategoryIds,
+        );
+      } on ArgumentError {
+        throw ApiException(
+          code: 'bad_request',
+          message: 'The selected category is invalid.',
+        );
+      }
     }
     if (!request.anchorLatitude.isFinite ||
         !request.anchorLongitude.isFinite ||
@@ -1525,6 +1818,19 @@ class HayerSessionEndpoint extends Endpoint {
     }
     if (idempotencyKey.length < 8 || idempotencyKey.length > 128) {
       throw ApiException(code: 'bad_request', message: 'Retry key is invalid.');
+    }
+  }
+
+  void _validateIntent(PlaceIntentQuery intent) {
+    if (intent.text.runes.length > 256 ||
+        (intent.exactPriceLevel != null &&
+            (intent.exactPriceLevel! < 1 || intent.exactPriceLevel! > 4)) ||
+        (intent.minimumRating != null &&
+            (intent.minimumRating! < 0 || intent.minimumRating! > 5))) {
+      throw ApiException(
+        code: 'bad_request',
+        message: 'One or more optional preferences are invalid.',
+      );
     }
   }
 

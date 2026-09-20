@@ -31,7 +31,7 @@ class SavePlaceButton extends ConsumerWidget {
     final saving = state.savingPlaceIds.contains(place.placeId);
     final tooltip = saved ? strings.removeSavedPlace : strings.savePlace;
     final icon = Icon(
-      saved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+      saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
     );
     Future<void> toggle() async {
       try {
