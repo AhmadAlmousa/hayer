@@ -55,9 +55,14 @@ abstract class CacheSettingsRow
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
+    int? photoFetchCount,
+    int? photoWidth,
+    int? photoCacheCount,
+    int? photoCacheDays,
     required this.updatedBy,
     required this.updatedAt,
   }) : routeEstimatesEnabled = routeEstimatesEnabled ?? true,
@@ -86,7 +91,7 @@ abstract class CacheSettingsRow
            discoveryHarvestDesiredCandidatesPerQuery ?? 50,
        discoveryHarvestMaximumSeconds = discoveryHarvestMaximumSeconds ?? 300,
        discoveryHarvestCooldownMinutes = discoveryHarvestCooldownMinutes ?? 60,
-       discoveryUserHarvestsPerHour = discoveryUserHarvestsPerHour ?? 3,
+       discoveryUserHarvestsPerHour = discoveryUserHarvestsPerHour ?? 12,
        discoveryBrowseRequestsPerMinute =
            discoveryBrowseRequestsPerMinute ?? 30,
        discoveryFacetRequestsPerMinute = discoveryFacetRequestsPerMinute ?? 60,
@@ -94,9 +99,14 @@ abstract class CacheSettingsRow
            discoveryQueryTimeoutMilliseconds ?? 2000,
        discoveryMaximumPageSize = discoveryMaximumPageSize ?? 100,
        discoveryMaximumMapPoints = discoveryMaximumMapPoints ?? 2000,
+       discoveryTypeAutoMapEnabled = discoveryTypeAutoMapEnabled ?? true,
        detailRefreshMaximumRequests = detailRefreshMaximumRequests ?? 3,
        detailRefreshMaximumSeconds = detailRefreshMaximumSeconds ?? 20,
-       detailRefreshCooldownMinutes = detailRefreshCooldownMinutes ?? 60;
+       detailRefreshCooldownMinutes = detailRefreshCooldownMinutes ?? 60,
+       photoFetchCount = photoFetchCount ?? 6,
+       photoWidth = photoWidth ?? 1200,
+       photoCacheCount = photoCacheCount ?? 400,
+       photoCacheDays = photoCacheDays ?? 14;
 
   factory CacheSettingsRow({
     _i1.UuidValue? id,
@@ -136,9 +146,14 @@ abstract class CacheSettingsRow
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
+    int? photoFetchCount,
+    int? photoWidth,
+    int? photoCacheCount,
+    int? photoCacheDays,
     required String updatedBy,
     required DateTime updatedAt,
   }) = _CacheSettingsRowImpl;
@@ -230,12 +245,22 @@ abstract class CacheSettingsRow
           jsonSerialization['discoveryMaximumPageSize'] as int?,
       discoveryMaximumMapPoints:
           jsonSerialization['discoveryMaximumMapPoints'] as int?,
+      discoveryTypeAutoMapEnabled:
+          jsonSerialization['discoveryTypeAutoMapEnabled'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['discoveryTypeAutoMapEnabled'],
+            ),
       detailRefreshMaximumRequests:
           jsonSerialization['detailRefreshMaximumRequests'] as int?,
       detailRefreshMaximumSeconds:
           jsonSerialization['detailRefreshMaximumSeconds'] as int?,
       detailRefreshCooldownMinutes:
           jsonSerialization['detailRefreshCooldownMinutes'] as int?,
+      photoFetchCount: jsonSerialization['photoFetchCount'] as int?,
+      photoWidth: jsonSerialization['photoWidth'] as int?,
+      photoCacheCount: jsonSerialization['photoCacheCount'] as int?,
+      photoCacheDays: jsonSerialization['photoCacheDays'] as int?,
       updatedBy: jsonSerialization['updatedBy'] as String,
       updatedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
@@ -322,11 +347,21 @@ abstract class CacheSettingsRow
 
   int discoveryMaximumMapPoints;
 
+  bool discoveryTypeAutoMapEnabled;
+
   int detailRefreshMaximumRequests;
 
   int detailRefreshMaximumSeconds;
 
   int detailRefreshCooldownMinutes;
+
+  int photoFetchCount;
+
+  int photoWidth;
+
+  int photoCacheCount;
+
+  int photoCacheDays;
 
   String updatedBy;
 
@@ -376,9 +411,14 @@ abstract class CacheSettingsRow
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
+    int? photoFetchCount,
+    int? photoWidth,
+    int? photoCacheCount,
+    int? photoCacheDays,
     String? updatedBy,
     DateTime? updatedAt,
   });
@@ -425,9 +465,14 @@ abstract class CacheSettingsRow
       'discoveryQueryTimeoutMilliseconds': discoveryQueryTimeoutMilliseconds,
       'discoveryMaximumPageSize': discoveryMaximumPageSize,
       'discoveryMaximumMapPoints': discoveryMaximumMapPoints,
+      'discoveryTypeAutoMapEnabled': discoveryTypeAutoMapEnabled,
       'detailRefreshMaximumRequests': detailRefreshMaximumRequests,
       'detailRefreshMaximumSeconds': detailRefreshMaximumSeconds,
       'detailRefreshCooldownMinutes': detailRefreshCooldownMinutes,
+      'photoFetchCount': photoFetchCount,
+      'photoWidth': photoWidth,
+      'photoCacheCount': photoCacheCount,
+      'photoCacheDays': photoCacheDays,
       'updatedBy': updatedBy,
       'updatedAt': updatedAt.toJson(),
     };
@@ -509,9 +554,14 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
+    int? photoFetchCount,
+    int? photoWidth,
+    int? photoCacheCount,
+    int? photoCacheDays,
     required String updatedBy,
     required DateTime updatedAt,
   }) : super._(
@@ -554,9 +604,14 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
          discoveryQueryTimeoutMilliseconds: discoveryQueryTimeoutMilliseconds,
          discoveryMaximumPageSize: discoveryMaximumPageSize,
          discoveryMaximumMapPoints: discoveryMaximumMapPoints,
+         discoveryTypeAutoMapEnabled: discoveryTypeAutoMapEnabled,
          detailRefreshMaximumRequests: detailRefreshMaximumRequests,
          detailRefreshMaximumSeconds: detailRefreshMaximumSeconds,
          detailRefreshCooldownMinutes: detailRefreshCooldownMinutes,
+         photoFetchCount: photoFetchCount,
+         photoWidth: photoWidth,
+         photoCacheCount: photoCacheCount,
+         photoCacheDays: photoCacheDays,
          updatedBy: updatedBy,
          updatedAt: updatedAt,
        );
@@ -603,9 +658,14 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? discoveryQueryTimeoutMilliseconds,
     int? discoveryMaximumPageSize,
     int? discoveryMaximumMapPoints,
+    bool? discoveryTypeAutoMapEnabled,
     int? detailRefreshMaximumRequests,
     int? detailRefreshMaximumSeconds,
     int? detailRefreshCooldownMinutes,
+    int? photoFetchCount,
+    int? photoWidth,
+    int? photoCacheCount,
+    int? photoCacheDays,
     String? updatedBy,
     DateTime? updatedAt,
   }) {
@@ -681,12 +741,18 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
           discoveryMaximumPageSize ?? this.discoveryMaximumPageSize,
       discoveryMaximumMapPoints:
           discoveryMaximumMapPoints ?? this.discoveryMaximumMapPoints,
+      discoveryTypeAutoMapEnabled:
+          discoveryTypeAutoMapEnabled ?? this.discoveryTypeAutoMapEnabled,
       detailRefreshMaximumRequests:
           detailRefreshMaximumRequests ?? this.detailRefreshMaximumRequests,
       detailRefreshMaximumSeconds:
           detailRefreshMaximumSeconds ?? this.detailRefreshMaximumSeconds,
       detailRefreshCooldownMinutes:
           detailRefreshCooldownMinutes ?? this.detailRefreshCooldownMinutes,
+      photoFetchCount: photoFetchCount ?? this.photoFetchCount,
+      photoWidth: photoWidth ?? this.photoWidth,
+      photoCacheCount: photoCacheCount ?? this.photoCacheCount,
+      photoCacheDays: photoCacheDays ?? this.photoCacheDays,
       updatedBy: updatedBy ?? this.updatedBy,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -906,6 +972,12 @@ class CacheSettingsRowUpdateTable
         value,
       );
 
+  _i1.ColumnValue<bool, bool> discoveryTypeAutoMapEnabled(bool value) =>
+      _i1.ColumnValue(
+        table.discoveryTypeAutoMapEnabled,
+        value,
+      );
+
   _i1.ColumnValue<int, int> detailRefreshMaximumRequests(int value) =>
       _i1.ColumnValue(
         table.detailRefreshMaximumRequests,
@@ -923,6 +995,26 @@ class CacheSettingsRowUpdateTable
         table.detailRefreshCooldownMinutes,
         value,
       );
+
+  _i1.ColumnValue<int, int> photoFetchCount(int value) => _i1.ColumnValue(
+    table.photoFetchCount,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> photoWidth(int value) => _i1.ColumnValue(
+    table.photoWidth,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> photoCacheCount(int value) => _i1.ColumnValue(
+    table.photoCacheCount,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> photoCacheDays(int value) => _i1.ColumnValue(
+    table.photoCacheDays,
+    value,
+  );
 
   _i1.ColumnValue<String, String> updatedBy(String value) => _i1.ColumnValue(
     table.updatedBy,
@@ -1113,6 +1205,11 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
       this,
       hasDefault: true,
     );
+    discoveryTypeAutoMapEnabled = _i1.ColumnBool(
+      'discoveryTypeAutoMapEnabled',
+      this,
+      hasDefault: true,
+    );
     detailRefreshMaximumRequests = _i1.ColumnInt(
       'detailRefreshMaximumRequests',
       this,
@@ -1125,6 +1222,26 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
     );
     detailRefreshCooldownMinutes = _i1.ColumnInt(
       'detailRefreshCooldownMinutes',
+      this,
+      hasDefault: true,
+    );
+    photoFetchCount = _i1.ColumnInt(
+      'photoFetchCount',
+      this,
+      hasDefault: true,
+    );
+    photoWidth = _i1.ColumnInt(
+      'photoWidth',
+      this,
+      hasDefault: true,
+    );
+    photoCacheCount = _i1.ColumnInt(
+      'photoCacheCount',
+      this,
+      hasDefault: true,
+    );
+    photoCacheDays = _i1.ColumnInt(
+      'photoCacheDays',
       this,
       hasDefault: true,
     );
@@ -1212,11 +1329,21 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnInt discoveryMaximumMapPoints;
 
+  late final _i1.ColumnBool discoveryTypeAutoMapEnabled;
+
   late final _i1.ColumnInt detailRefreshMaximumRequests;
 
   late final _i1.ColumnInt detailRefreshMaximumSeconds;
 
   late final _i1.ColumnInt detailRefreshCooldownMinutes;
+
+  late final _i1.ColumnInt photoFetchCount;
+
+  late final _i1.ColumnInt photoWidth;
+
+  late final _i1.ColumnInt photoCacheCount;
+
+  late final _i1.ColumnInt photoCacheDays;
 
   late final _i1.ColumnString updatedBy;
 
@@ -1261,9 +1388,14 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
     discoveryQueryTimeoutMilliseconds,
     discoveryMaximumPageSize,
     discoveryMaximumMapPoints,
+    discoveryTypeAutoMapEnabled,
     detailRefreshMaximumRequests,
     detailRefreshMaximumSeconds,
     detailRefreshCooldownMinutes,
+    photoFetchCount,
+    photoWidth,
+    photoCacheCount,
+    photoCacheDays,
     updatedBy,
     updatedAt,
   ];

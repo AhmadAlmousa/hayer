@@ -211,6 +211,52 @@ GROUP BY stats.id
     );
   }
 
+  /// What the Discover type auto-mapper has attached, newest first.
+  ///
+  /// The tree editor marks these aliases so an operator can tell a guess from
+  /// a deliberate mapping, and the unmapped-types page shows when the mapper
+  /// last ran. A node an operator has since renamed or removed still shows its
+  /// id, because the assignment is a fact about what happened.
+  static Future<AdminDiscoveryAutoMapReport> autoMappedTypes(
+    Session session, {
+    int recent = 50,
+  }) async {
+    final policy = await DiscoveryPolicyService.load(session);
+    final rows = await DiscoveryTypeAutoMapRow.db.find(
+      session,
+      orderBy: (table) => table.mappedAt,
+      orderDescending: true,
+      limit: recent.clamp(1, 200),
+    );
+    final total = await DiscoveryTypeAutoMapRow.db.count(session);
+    final labels = <String, String>{};
+    void visit(DiscoveryTaxonomyNode node) {
+      labels[node.id] = node.labelEn;
+      node.children.forEach(visit);
+    }
+
+    DiscoveryTaxonomyService.decode(
+      (await DiscoveryTaxonomyService.activeRow(session)).documentJson,
+    ).forEach(visit);
+
+    return AdminDiscoveryAutoMapReport(
+      enabled: policy.discovery?.typeAutoMapEnabled ?? false,
+      mappedTypeCount: total,
+      lastMappedAt: rows.isEmpty ? null : rows.first.mappedAt,
+      recent: [
+        for (final row in rows)
+          AdminDiscoveryAutoMappedType(
+            primaryType: row.primaryType,
+            typeKey: row.typeKey,
+            nodeId: row.nodeId,
+            nodeLabel: labels[row.nodeId] ?? row.nodeId,
+            rule: row.rule,
+            mappedAt: row.mappedAt,
+          ),
+      ],
+    );
+  }
+
   static String _escapeLike(String value) => value
       .replaceAll(r'\', r'\\')
       .replaceAll('%', r'\%')

@@ -757,7 +757,11 @@ Future<String?> _askReason(BuildContext context, String title) async {
         autofocus: true,
         minLines: 2,
         maxLines: 5,
-        decoration: const InputDecoration(labelText: 'Reason (required)'),
+        decoration: const InputDecoration(
+          labelText: 'Reason (optional)',
+          helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+          helperMaxLines: 3,
+        ),
       ),
       actions: [
         TextButton(
@@ -765,11 +769,7 @@ Future<String?> _askReason(BuildContext context, String title) async {
           child: const Text('Cancel'),
         ),
         FilledButton(
-          onPressed: () {
-            if (controller.text.trim().length >= 4) {
-              Navigator.pop(context, controller.text.trim());
-            }
-          },
+          onPressed: () => Navigator.pop(context, controller.text.trim()),
           child: const Text('Continue'),
         ),
       ],

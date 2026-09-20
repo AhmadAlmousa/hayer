@@ -97,6 +97,7 @@ class DiscoveryPolicyFields {
   DiscoveryPolicyFields(DiscoveryPolicy policy)
     : _saved = policy,
       enabled = policy.enabled,
+      typeAutoMapEnabled = policy.typeAutoMapEnabled,
       bestFormula = policy.scoring.bestFormula {
     for (final knob in DiscoveryKnob.values) {
       controllers[knob] = TextEditingController(
@@ -107,12 +108,14 @@ class DiscoveryPolicyFields {
 
   DiscoveryPolicy _saved;
   bool enabled;
+  bool typeAutoMapEnabled;
   DiscoveryBestFormula bestFormula;
   final controllers = <DiscoveryKnob, TextEditingController>{};
 
   void reset(DiscoveryPolicy policy) {
     _saved = policy;
     enabled = policy.enabled;
+    typeAutoMapEnabled = policy.typeAutoMapEnabled;
     bestFormula = policy.scoring.bestFormula;
     for (final knob in DiscoveryKnob.values) {
       controllers[knob]!.text = '${knob.readFrom(policy)}';
@@ -158,6 +161,7 @@ class DiscoveryPolicyFields {
     queryTimeoutMilliseconds: _whole(DiscoveryKnob.queryTimeoutMilliseconds),
     maximumPageSize: _whole(DiscoveryKnob.maximumPageSize),
     maximumMapPoints: _whole(DiscoveryKnob.maximumMapPoints),
+    typeAutoMapEnabled: typeAutoMapEnabled,
   );
 
   int _whole(DiscoveryKnob knob) =>
@@ -236,12 +240,97 @@ class PlaceDetailPolicyFields {
   }
 }
 
+enum PhotoKnob {
+  fetchCount(
+    'Photos kept per place',
+    'How many photos to keep the next time a place is observed. 1 to 10. '
+        'More photos to swipe through in the place card, and a larger '
+        'catalog row. Places already stored keep what they have until they '
+        'are searched again. Default 6.',
+  ),
+  width(
+    'Photo width in pixels',
+    'The width photos are requested at. 400 to 2400. Higher is sharper on '
+        'large screens and heavier to download and cache. Default 1200.',
+  ),
+  cacheCount(
+    'Photos cached per device',
+    'How many photo files one device keeps before evicting the oldest. 20 '
+        'to 2000. Higher means less re-downloading while browsing, and more '
+        'storage used on the phone. Default 400.',
+  ),
+  cacheDays(
+    'Days a cached photo lasts',
+    'How long a downloaded photo stays usable before it is fetched again. 1 '
+        'to 90. Default 14.',
+  );
+
+  const PhotoKnob(this.label, this.help);
+
+  final String label;
+  final String help;
+
+  int readFrom(PhotoPolicy policy) => switch (this) {
+    PhotoKnob.fetchCount => policy.fetchCount,
+    PhotoKnob.width => policy.width,
+    PhotoKnob.cacheCount => policy.cacheCount,
+    PhotoKnob.cacheDays => policy.cacheDays,
+  };
+}
+
+/// The shared photo section of the policy form. Sent only when edited, like
+/// the others.
+class PhotoPolicyFields {
+  PhotoPolicyFields(PhotoPolicy policy) : _saved = policy {
+    for (final knob in PhotoKnob.values) {
+      controllers[knob] = TextEditingController(
+        text: '${knob.readFrom(policy)}',
+      );
+    }
+  }
+
+  PhotoPolicy _saved;
+  final controllers = <PhotoKnob, TextEditingController>{};
+
+  void reset(PhotoPolicy policy) {
+    _saved = policy;
+    for (final knob in PhotoKnob.values) {
+      controllers[knob]!.text = '${knob.readFrom(policy)}';
+    }
+  }
+
+  PhotoPolicy? changes() {
+    final edited = build();
+    return jsonEncode(edited.toJson()) == jsonEncode(_saved.toJson())
+        ? null
+        : edited;
+  }
+
+  PhotoPolicy build() => PhotoPolicy(
+    fetchCount: _whole(PhotoKnob.fetchCount),
+    width: _whole(PhotoKnob.width),
+    cacheCount: _whole(PhotoKnob.cacheCount),
+    cacheDays: _whole(PhotoKnob.cacheDays),
+  );
+
+  int _whole(PhotoKnob knob) =>
+      int.tryParse(controllers[knob]!.text.trim()) ??
+      (throw FormatException('${knob.label} needs a whole number.'));
+
+  void dispose() {
+    for (final controller in controllers.values) {
+      controller.dispose();
+    }
+  }
+}
+
 /// The Discover and detail-refresh controls under the existing policy form.
 class DiscoveryPolicySection extends StatelessWidget {
   const DiscoveryPolicySection({
     super.key,
     required this.discovery,
     required this.detailRefresh,
+    required this.photos,
     required this.onChanged,
   });
 
@@ -251,12 +340,16 @@ class DiscoveryPolicySection extends StatelessWidget {
   /// Null while the server reports no detail-refresh limits.
   final PlaceDetailPolicyFields? detailRefresh;
 
+  /// Null while the server reports no photo settings.
+  final PhotoPolicyFields? photos;
+
   final VoidCallback onChanged;
 
   @override
   Widget build(BuildContext context) {
     final discovery = this.discovery;
     final detailRefresh = this.detailRefresh;
+    final photos = this.photos;
     final theme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -287,6 +380,25 @@ class DiscoveryPolicySection extends StatelessWidget {
             value: discovery.enabled,
             onChanged: (value) {
               discovery.enabled = value;
+              onChanged();
+            },
+          ),
+          SwitchListTile(
+            key: const Key('policy-discovery-type-auto-map'),
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Map new place types automatically'),
+            subtitle: const Text(
+              'After each exploration, types the source returned that the '
+              'Discover tree does not claim are attached to the node they '
+              'name: "Lebanese restaurant" under Restaurants → Middle Eastern '
+              '→ Lebanese. Off, each one counts under Other until an operator '
+              'maps it on the Unmapped types page. Default: on. Nothing is '
+              'ever renamed, moved or removed, and a type nothing matches '
+              'still waits for you there.',
+            ),
+            value: discovery.typeAutoMapEnabled,
+            onChanged: (value) {
+              discovery.typeAutoMapEnabled = value;
               onChanged();
             },
           ),
@@ -370,6 +482,43 @@ class DiscoveryPolicySection extends StatelessWidget {
                     controller: detailRefresh.controllers[knob],
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(labelText: knob.label),
+                  ),
+                ),
+            ],
+          ),
+        const SizedBox(height: 28),
+        const Divider(),
+        const SizedBox(height: 20),
+        Text('Place photos', style: theme.titleLarge),
+        const SizedBox(height: 4),
+        Text(
+          'How many photos a place carries and how long devices keep them. '
+          'Swipe and Discover share these, whatever the Discover switch says.',
+          style: theme.bodyMedium,
+        ),
+        const SizedBox(height: 12),
+        if (photos == null)
+          const _SectionUnavailable(
+            'This server does not report photo settings yet. Saving leaves '
+            'them as they are.',
+          )
+        else
+          Wrap(
+            spacing: 14,
+            runSpacing: 24,
+            children: [
+              for (final knob in PhotoKnob.values)
+                SizedBox(
+                  width: 320,
+                  child: TextField(
+                    key: Key('policy-photos-${knob.name}'),
+                    controller: photos.controllers[knob],
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: knob.label,
+                      helperText: knob.help,
+                      helperMaxLines: 5,
+                    ),
                   ),
                 ),
             ],

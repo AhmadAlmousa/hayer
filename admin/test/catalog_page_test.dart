@@ -291,7 +291,7 @@ void main() {
     expect(find.byType(Dialog), findsNothing);
   });
 
-  testWidgets('quarantining from the info card asks for a reason and reloads', (
+  testWidgets('quarantining from the info card offers a reason and reloads', (
     tester,
   ) async {
     await pump(tester);
@@ -301,11 +301,12 @@ void main() {
 
     await tester.tap(find.byKey(const Key('catalog-moderate')));
     await tester.pumpAndSettle();
+    // The reason is optional, so confirming is available straight away.
     expect(
       tester
           .widget<FilledButton>(find.byKey(const Key('catalog-reason-confirm')))
           .onPressed,
-      isNull,
+      isNotNull,
     );
     await tester.enterText(
       find.byKey(const Key('catalog-reason')),

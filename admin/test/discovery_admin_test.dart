@@ -56,6 +56,74 @@ void main() {
       expect(operations.savedPolicy!.detailRefresh, isNull);
     });
 
+    testWidgets('saves without making the operator type a reason', (
+      tester,
+    ) async {
+      final operations = _FakeDiscoveryOperations(
+        discoveryPolicy: _discoveryPolicy(),
+      );
+      await _pumpDashboard(tester, operations, '/settings');
+
+      await _enter(
+        tester,
+        find.byKey(const Key('policy-discovery-gemMinimumRating')),
+        '4.4',
+      );
+      await _tap(tester, find.text('Save policy'));
+      // Confirm is available with the reason box untouched.
+      final confirm = find.widgetWithText(FilledButton, 'Confirm');
+      expect(tester.widget<FilledButton>(confirm).onPressed, isNotNull);
+      await tester.tap(confirm);
+      await tester.pumpAndSettle();
+
+      expect(operations.savedPolicy!.discovery!.scoring.gemMinimumRating, 4.4);
+      expect(operations.lastReason, '');
+    });
+
+    testWidgets('sends photo settings only when they were edited', (
+      tester,
+    ) async {
+      final operations = _FakeDiscoveryOperations(
+        discoveryPolicy: _discoveryPolicy(),
+        photoPolicy: PhotoPolicy(
+          fetchCount: 6,
+          width: 1200,
+          cacheCount: 400,
+          cacheDays: 14,
+        ),
+      );
+      await _pumpDashboard(tester, operations, '/settings');
+
+      expect(find.text('Place photos'), findsOneWidget);
+      await _enter(
+        tester,
+        find.byKey(const Key('policy-photos-fetchCount')),
+        '9',
+      );
+      await _savePolicy(tester);
+
+      expect(operations.savedPolicy!.photos!.fetchCount, 9);
+      // Untouched, so they keep the values the server already holds.
+      expect(operations.savedPolicy!.photos!.width, 1200);
+      expect(operations.savedPolicy!.discovery, isNull);
+
+      // An untouched section goes back to being left out entirely.
+      await _savePolicy(tester);
+      expect(operations.savedPolicy!.photos, isNull);
+    });
+
+    testWidgets('explains a server with no photo settings', (tester) async {
+      final operations = _FakeDiscoveryOperations(
+        discoveryPolicy: _discoveryPolicy(),
+      );
+      await _pumpDashboard(tester, operations, '/settings');
+
+      expect(
+        find.textContaining('does not report photo settings yet'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('names a malformed Discover knob instead of saving', (
       tester,
     ) async {
@@ -240,6 +308,32 @@ void main() {
         [0, 0],
       ]);
       expect(discoveryNodeAt(saved, [1]).typeAliases, ['hotel']);
+    });
+
+    testWidgets('the page says what was mapped without an operator', (
+      tester,
+    ) async {
+      final operations = _FakeDiscoveryOperations();
+      await _pumpDashboard(tester, operations, '/discover-types');
+
+      expect(find.text('Automatic mapping is on'), findsOneWidget);
+      expect(find.textContaining('It has mapped 3 types'), findsOneWidget);
+      expect(find.text('Lebanese restaurant → Lebanese'), findsOneWidget);
+      // The list below stays what it always was: what it could not place.
+      expect(find.text('pastry_shop'), findsOneWidget);
+    });
+
+    testWidgets('with mapping off the page says every type waits here', (
+      tester,
+    ) async {
+      final operations = _FakeDiscoveryOperations()..autoMapEnabled = false;
+      await _pumpDashboard(tester, operations, '/discover-types');
+
+      expect(find.text('Automatic mapping is off'), findsOneWidget);
+      expect(
+        find.textContaining('Every new type waits here for you'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the issue filter reaches the server', (tester) async {
@@ -541,12 +635,14 @@ class _FakeDiscoveryOperations implements AdminOperations {
     this.available = true,
     this.discoveryPolicy,
     this.detailPolicy,
+    this.photoPolicy,
   });
 
   /// False answers every Discover call as a server that does not offer it.
   final bool available;
   final DiscoveryPolicy? discoveryPolicy;
   final PlaceDetailPolicy? detailPolicy;
+  final PhotoPolicy? photoPolicy;
 
   CachePolicy? savedPolicy;
   String? lastReason;
@@ -560,6 +656,7 @@ class _FakeDiscoveryOperations implements AdminOperations {
   int? publishedTaxonomyRevision;
   (String, int)? taxonomyRollback;
   DiscoveryTypeMappingIssue? unmappedIssue;
+  bool autoMapEnabled = true;
   AdminDiscoveryHarvestManifestVersion manifest = _manifestVersion(
     'core-v3',
     7,
@@ -598,6 +695,7 @@ class _FakeDiscoveryOperations implements AdminOperations {
     updatedAt: DateTime.utc(2026, 9, 7),
     discovery: discoveryPolicy,
     detailRefresh: detailPolicy,
+    photos: photoPolicy,
   );
 
   @override
@@ -606,6 +704,7 @@ class _FakeDiscoveryOperations implements AdminOperations {
     required CachePolicy policy,
   }) async {
     savedPolicy = policy;
+    lastReason = reason;
     return policy;
   }
 
@@ -710,6 +809,26 @@ class _FakeDiscoveryOperations implements AdminOperations {
       total: items.length,
       page: page,
       pageSize: pageSize,
+    );
+  }
+
+  @override
+  Future<AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes() async {
+    _check();
+    return AdminDiscoveryAutoMapReport(
+      enabled: autoMapEnabled,
+      mappedTypeCount: 3,
+      lastMappedAt: DateTime.utc(2026, 9, 18, 9, 30),
+      recent: [
+        AdminDiscoveryAutoMappedType(
+          primaryType: 'Lebanese restaurant',
+          typeKey: 'lebanese restaurant',
+          nodeId: 'food_lebanese',
+          nodeLabel: 'Lebanese',
+          rule: 'branch',
+          mappedAt: DateTime.utc(2026, 9, 18, 9, 30),
+        ),
+      ],
     );
   }
 
@@ -921,6 +1040,7 @@ DiscoveryPolicy _discoveryPolicy() => DiscoveryPolicy(
   queryTimeoutMilliseconds: 2500,
   maximumPageSize: 50,
   maximumMapPoints: 2000,
+  typeAutoMapEnabled: true,
 );
 
 DiscoveryTaxonomyNode _node(

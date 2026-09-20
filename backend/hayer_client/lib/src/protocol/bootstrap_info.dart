@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i2;
+import 'photo_policy.dart' as _i2;
+import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
 
 abstract class BootstrapInfo implements _i1.SerializableModel {
   BootstrapInfo._({
@@ -24,6 +25,7 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
     required this.taxonomyVersion,
     required this.configVersion,
     required this.serverTime,
+    this.photos,
   });
 
   factory BootstrapInfo({
@@ -35,6 +37,7 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
     required String taxonomyVersion,
     required int configVersion,
     required DateTime serverTime,
+    _i2.PhotoPolicy? photos,
   }) = _BootstrapInfoImpl;
 
   factory BootstrapInfo.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,10 +47,10 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
       updateRequired: _i1.BoolJsonExtension.fromJson(
         jsonSerialization['updateRequired'],
       ),
-      supportedCountries: _i2.Protocol().deserialize<List<String>>(
+      supportedCountries: _i3.Protocol().deserialize<List<String>>(
         jsonSerialization['supportedCountries'],
       ),
-      certifiedCountries: _i2.Protocol().deserialize<List<String>>(
+      certifiedCountries: _i3.Protocol().deserialize<List<String>>(
         jsonSerialization['certifiedCountries'],
       ),
       taxonomyVersion: jsonSerialization['taxonomyVersion'] as String,
@@ -55,6 +58,11 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
       serverTime: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['serverTime'],
       ),
+      photos: jsonSerialization['photos'] == null
+          ? null
+          : _i3.Protocol().deserialize<_i2.PhotoPolicy>(
+              jsonSerialization['photos'],
+            ),
     );
   }
 
@@ -74,6 +82,8 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
 
   DateTime serverTime;
 
+  _i2.PhotoPolicy? photos;
+
   /// Returns a shallow copy of this [BootstrapInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -86,6 +96,7 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
     String? taxonomyVersion,
     int? configVersion,
     DateTime? serverTime,
+    _i2.PhotoPolicy? photos,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -99,6 +110,7 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
       'taxonomyVersion': taxonomyVersion,
       'configVersion': configVersion,
       'serverTime': serverTime.toJson(),
+      if (photos != null) 'photos': photos?.toJson(),
     };
   }
 
@@ -107,6 +119,8 @@ abstract class BootstrapInfo implements _i1.SerializableModel {
     return _i1.SerializationManager.encode(this);
   }
 }
+
+class _Undefined {}
 
 class _BootstrapInfoImpl extends BootstrapInfo {
   _BootstrapInfoImpl({
@@ -118,6 +132,7 @@ class _BootstrapInfoImpl extends BootstrapInfo {
     required String taxonomyVersion,
     required int configVersion,
     required DateTime serverTime,
+    _i2.PhotoPolicy? photos,
   }) : super._(
          minimumBuild: minimumBuild,
          latestBuild: latestBuild,
@@ -127,6 +142,7 @@ class _BootstrapInfoImpl extends BootstrapInfo {
          taxonomyVersion: taxonomyVersion,
          configVersion: configVersion,
          serverTime: serverTime,
+         photos: photos,
        );
 
   /// Returns a shallow copy of this [BootstrapInfo]
@@ -142,6 +158,7 @@ class _BootstrapInfoImpl extends BootstrapInfo {
     String? taxonomyVersion,
     int? configVersion,
     DateTime? serverTime,
+    Object? photos = _Undefined,
   }) {
     return BootstrapInfo(
       minimumBuild: minimumBuild ?? this.minimumBuild,
@@ -156,6 +173,7 @@ class _BootstrapInfoImpl extends BootstrapInfo {
       taxonomyVersion: taxonomyVersion ?? this.taxonomyVersion,
       configVersion: configVersion ?? this.configVersion,
       serverTime: serverTime ?? this.serverTime,
+      photos: photos is _i2.PhotoPolicy? ? photos : this.photos?.copyWith(),
     );
   }
 }

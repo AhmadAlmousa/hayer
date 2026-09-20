@@ -126,6 +126,10 @@ class DiscoveryPlaceCard extends ConsumerWidget {
               Expanded(
                 child: Text(
                   strings.discoveryPreviewTitle,
+                  // One line, so the header stays the height of its close
+                  // button and the body scrolls in what the map leaves.
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: colors.primary,
@@ -140,7 +144,7 @@ class DiscoveryPlaceCard extends ConsumerWidget {
               ),
             ],
           ),
-          // The card is bounded by the space above the sheet; at large text
+          // The card is bounded by the map it rides on; at large text
           // sizes its contents scroll inside that rather than overflow it.
           Flexible(child: SingleChildScrollView(child: body)),
         ],

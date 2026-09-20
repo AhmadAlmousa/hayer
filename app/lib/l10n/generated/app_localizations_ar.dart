@@ -1077,12 +1077,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoveryLoadingPlaces => 'جارٍ تحميل الأماكن';
 
   @override
-  String get discoverySearchThisArea => 'ابحث في هذه المنطقة';
-
-  @override
-  String get discoverySearchingThisArea => 'جارٍ البحث في هذه المنطقة…';
-
-  @override
   String get discoveryShowMyLocation => 'اعرض موقعي';
 
   @override
@@ -1289,10 +1283,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoveryFiltersReset => 'استعادة';
 
   @override
-  String get discoveryFilterText => 'ابحث في الأسماء والأوصاف';
+  String get discoveryFilterTextHint => 'مثلاً: سطح أو كنافة';
 
   @override
-  String get discoveryFilterTextHint => 'مثلاً: سطح أو كنافة';
+  String get discoverySearchClear => 'مسح البحث';
 
   @override
   String get discoveryFilterReviews => 'عدد المراجعات';

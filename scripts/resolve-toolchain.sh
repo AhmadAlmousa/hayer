@@ -48,6 +48,21 @@ hayer_resolve_dart() {
     return
   fi
 
+  local flutter_root
+  flutter_root="$(dirname "$(dirname "$flutter_executable")")"
+
+  # Prefer the SDK binary over bin/dart. They are the same Dart, but the
+  # wrapper sources bin/internal/shared.sh, which takes an exclusive flock on
+  # a read-only descriptor. On an NFS mount with local_lock=none the server
+  # rejects that and the wrapper waits forever for a lock nothing holds, so
+  # every script that resolved dart this way hung on this host. The SDK binary
+  # has no such preamble. See the same limitation documented at shared.sh:77.
+  local sdk_dart="$flutter_root/bin/cache/dart-sdk/bin/dart"
+  if [[ -x "$sdk_dart" ]]; then
+    printf '%s\n' "$sdk_dart"
+    return
+  fi
+
   local flutter_dart
   flutter_dart="$(dirname "$flutter_executable")/dart"
   if [[ -x "$flutter_dart" ]]; then

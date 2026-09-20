@@ -30,6 +30,7 @@ class _DiscoveryUnmappedTypesPageState
 
   final _search = TextEditingController();
   AdminDiscoveryUnmappedTypePage? _page;
+  AdminDiscoveryAutoMapReport? _autoMapped;
   DiscoveryTypeMappingIssue? _issue;
   Object? _error;
   int _pageIndex = 0;
@@ -63,6 +64,14 @@ class _DiscoveryUnmappedTypesPageState
       });
     } catch (error) {
       if (mounted) setState(() => _error = error);
+    }
+    // The mapper's own record is a separate read, and an older server that
+    // does not answer it must not hide the list below.
+    try {
+      final report = await widget.operations.discoveryAutoMappedTypes();
+      if (mounted) setState(() => _autoMapped = report);
+    } catch (_) {
+      if (mounted) setState(() => _autoMapped = null);
     }
   }
 
@@ -119,6 +128,10 @@ class _DiscoveryUnmappedTypesPageState
             ],
           ),
           const SizedBox(height: 14),
+          if (_autoMapped case final report?) ...[
+            _autoMapCard(report),
+            const SizedBox(height: 14),
+          ],
           if (page == null)
             error == null
                 ? const Center(
@@ -170,6 +183,83 @@ class _DiscoveryUnmappedTypesPageState
         ],
       ),
     );
+  }
+
+  /// What the auto-mapper has done, above the list of what it could not do.
+  Widget _autoMapCard(AdminDiscoveryAutoMapReport report) {
+    final theme = Theme.of(context).textTheme;
+    final last = report.lastMappedAt;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  report.enabled
+                      ? Icons.auto_awesome_rounded
+                      : Icons.auto_awesome_outlined,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    report.enabled
+                        ? 'Automatic mapping is on'
+                        : 'Automatic mapping is off',
+                    style: theme.titleMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              report.enabled
+                  ? 'After each exploration, types the tree does not claim are '
+                        'attached to the node they name. The types below are '
+                        'the ones it could not place; map those by hand. Turn '
+                        'it off under Policy → Got time discovery.'
+                  : 'Every new type waits here for you. Turn it on under '
+                        'Policy → Got time discovery to have the obvious ones '
+                        'attached as they are observed.',
+              style: theme.bodyMedium,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              last == null
+                  ? 'It has not mapped a type yet.'
+                  : 'It has mapped ${report.mappedTypeCount} '
+                        '${report.mappedTypeCount == 1 ? 'type' : 'types'}, '
+                        'last on ${_stamp(last)}.',
+              style: theme.bodyMedium,
+            ),
+            if (report.recent.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final mapped in report.recent.take(8))
+                    Chip(
+                      label: Text(
+                        '${mapped.primaryType} → ${mapped.nodeLabel}',
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _stamp(DateTime value) {
+    final local = value.toLocal();
+    String two(int part) => part.toString().padLeft(2, '0');
+    return '${local.year}-${two(local.month)}-${two(local.day)} '
+        '${two(local.hour)}:${two(local.minute)}';
   }
 
   Widget _typeCard(AdminDiscoveryUnmappedType item) {
@@ -377,9 +467,10 @@ class _MapTypeDialogState extends State<_MapTypeDialog> {
                     minLines: 1,
                     maxLines: 3,
                     maxLength: 500,
-                    onChanged: (_) => setState(() {}),
                     decoration: const InputDecoration(
-                      labelText: 'Reason (required)',
+                      labelText: 'Reason (optional)',
+                      helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+                      helperMaxLines: 3,
                     ),
                   ),
                 ],
@@ -393,7 +484,7 @@ class _MapTypeDialogState extends State<_MapTypeDialog> {
         if (_nodes.isNotEmpty)
           FilledButton(
             key: const Key('map-type-confirm'),
-            onPressed: selected == null || _reason.text.trim().length < 4
+            onPressed: selected == null
                 ? null
                 : () => Navigator.pop(
                     context,

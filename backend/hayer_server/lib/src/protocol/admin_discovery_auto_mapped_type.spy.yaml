@@ -1,0 +1,10 @@
+### One provider type the Discover auto-mapper attached to a node, so the admin
+### can show which aliases a person chose and which the mapper guessed.
+class: AdminDiscoveryAutoMappedType
+fields:
+  primaryType: String
+  typeKey: String
+  nodeId: String
+  nodeLabel: String
+  rule: String
+  mappedAt: DateTime

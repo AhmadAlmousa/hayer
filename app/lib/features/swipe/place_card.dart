@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:hayer_client/hayer_client.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
@@ -9,13 +10,14 @@ import '../../core/gcc_currency_symbol.dart';
 import '../../core/display_formatters.dart';
 import '../../core/place_links.dart';
 import '../../core/place_photo.dart';
+import '../../core/place_photo_cache.dart';
 import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/place_details_sheet.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../saved/save_place_button.dart';
 import '../report/report_place_issue_sheet.dart';
 
-class PlaceCard extends StatelessWidget {
+class PlaceCard extends ConsumerWidget {
   const PlaceCard({
     super.key,
     required this.place,
@@ -35,9 +37,10 @@ class PlaceCard extends StatelessWidget {
   final VoidCallback? onDetailsClosed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final strings = AppLocalizations.of(context)!;
+    final photoCache = ref.read(placePhotoCacheProvider);
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxHeight < 420 ||
@@ -55,6 +58,7 @@ class PlaceCard extends StatelessWidget {
                       height: 120,
                       child: CachedNetworkImage(
                         imageUrl: place.photoUrls.first,
+                        cacheManager: photoCache,
                         fit: BoxFit.cover,
                         memCacheWidth: placePhotoDecodeWidth(
                           context,
@@ -140,6 +144,7 @@ class PlaceCard extends StatelessWidget {
                 if (place.photoUrls.isNotEmpty)
                   CachedNetworkImage(
                     imageUrl: place.photoUrls.first,
+                    cacheManager: photoCache,
                     fit: BoxFit.cover,
                     // A full-bleed card is usually taller than a 1600 px photo
                     // can cover, so this bound mostly resolves to the source's

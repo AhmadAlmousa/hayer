@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hayer_app/app/router.dart';
 import 'package:hayer_app/app/theme.dart';
 import 'package:hayer_app/core/providers.dart';
-import 'package:hayer_app/features/discover/discovery_coverage_controller.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 import 'package:hayer_app/l10n/localization_delegates.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
@@ -48,10 +47,6 @@ Future<GoRouter> pumpDiscover(
         discoveryAreaStoreProvider.overrideWithValue(fixture.areas),
         locationWarmupProvider.overrideWithValue(fixture.location),
         locationRepositoryProvider.overrideWithValue(fixture.geocoder),
-        // Exploring an empty area on its own is tested where that is the
-        // subject; elsewhere it would start harvests these tests never asked
-        // for. A test that wants it overrides this back to true.
-        discoveryAutoExploreProvider.overrideWithValue(false),
         ...overrides,
       ],
       child: MaterialApp.router(

@@ -16,7 +16,7 @@ other's. From 2026-09-15 Claude holds both lanes, by owner assignment, until
 Codex returns. Back-end work is still logged in `lane-backend.md` on `main`,
 and this log gets a short pointer for each back-end checkpoint.
 
-Last updated: 2026-09-17
+Last updated: 2026-09-20
 
 ## Current state
 
@@ -39,7 +39,10 @@ Last updated: 2026-09-17
   as `060a472` for M9-K. Its back-end half (`c7ad9ee`), the Got time privacy
   copy and an Arabic 200% text pass are done. On 2026-09-17 the web half found
   and fixed a defect that stopped every browser deep link reaching the router;
-  a live host proof, the device checks and the owner items remain. M9-G, H and J are accepted against the real implementations,
+  a live host proof, the device checks and the owner items remain. On
+  2026-09-20 this branch and `main` were merged and `main` fast-forwarded to
+  the result, so the two point at one commit; see the first checkpoint below.
+  M9-G, H and J are accepted against the real implementations,
   with their device checks carried by M9-K. See the checkpoints below and
   `discovery_upgrade.md` §"Implementation plan".
 - Branch `worktree-claude-lane`, merged into `main` on 2026-09-10 together
@@ -68,10 +71,130 @@ Last updated: 2026-09-17
 
 ## Checkpoints
 
+### Lane merged into `main`; Discover reconciled — complete (2026-09-20)
+
+Owner request: make sure the repos are merged into `main`, and the markdown is
+current. This branch was four commits ahead of the merge base and `main` eight,
+and both had rebuilt "Got time follows the map" without seeing the other.
+
+**Rule used.** The owner decided the layout on 2026-09-18, after using the
+app: a fixed 50/50 split, the camera committing itself after 400 ms, no
+"Search this area". The lane's device fixes (2026-09-17) predate that and were
+built on the draggable sheet. Where they disagreed, `main` won; where the lane
+added something independent, it was ported onto the split.
+
+- **Kept from `main`.** The layout, `_cameraSettled` and `_follow`, the search
+  box in the header, the results `ScrollController`, and `_explore`'s
+  once-per-canonical-cell gate.
+- **Ported from the lane onto it.** The place card over the map, the typed
+  address search under the area bar, pin names and row numbers, and the
+  location dot. The card is drawn in the map half at all times, bounded by it,
+  with a one-line title so its header stays the height of its close button and
+  its body scrolls at large text. The area bar keeps its 48dp height.
+- **Dropped as redundant.** The 700 ms auto-search and the "Searching this
+  area…" pill. The empty-area Deepen as well: `main`'s report already asks the
+  server to harvest a new cell, and its quota of twelve an hour assumes that is
+  the only request, so a second explicit one would spend it twice. A test now
+  asserts that an empty area starts no Deepen of its own.
+- **Strings.** Both `.arb` files take `main`'s side, so `discoverySearchThisArea`
+  and `discoverySearchingThisArea` are gone; the generated localizations were
+  regenerated rather than merged by hand.
+- **Tests.** Where a test tapped a row by key, it taps the row's title inside
+  the results list instead, because the card now names the same place and
+  because the row tile's centre sits below the screen on a 390x844 phone. The
+  200% Arabic pass asserts the card still fits the short map.
+
+**Verification.** Pinned `scripts/preflight.sh`, exit 0: 216 server, 375 app
+and 89 admin tests, analyses and formatting clean. Signed `0.2.1+7` built after
+`flutter clean`: SHA-256
+`02391557798af6642f2ff62ddf705fe2a81508669cf901f1bfa1a53fcca3293b`, v2
+signature true (v1 and v3 false), 106,775,616 bytes. No adb device on this
+host, so none of this has run on hardware; the seven device points from
+2026-09-17 stay open, now against the merged layout.
+
+**Preserved, not merged.** This worktree carried 48 uncommitted files that
+overlapped what `main` had since committed: an alternate launcher icon built
+from `references/icon2.png` (1254px, against `main`'s SVG-rendered 1024px one),
+and an alternate admin field-help implementation (`PolicyFieldHelp` with
+per-field "Default N" helper text, against `main`'s `helperText` knobs). They
+are on `backup/claude-lane-uncommitted-20260920`. Nothing was discarded.
+Whether either is wanted is the owner's call.
+
+**Left in the primary worktree, untouched.** `.gitignore`,
+`.codex/rules/flutter.md`, `backend/deploy/docker-compose.yml`, the deleted
+`.agents/skills/*` files, and the untracked files there are not part of this
+merge.
+
+### Admin: automatic type mapping — implemented (2026-09-19)
+
+M9-L's admin half; the server side is in `lane-backend.md`.
+
+- **Policy.** A "Map new place types automatically" switch under Got time
+  discovery, stating what it does, what it does to the app, and its default
+  (on), per the admin field rule.
+- **Unmapped types.** A card above the list says whether mapping is on, how
+  many types it has attached and when it last did, with the most recent
+  assignments as chips. The list underneath is unchanged: it is what the
+  mapper could not place.
+- **Tree editor.** A node whose aliases include ones the mapper chose says so
+  under its alias line, and says that moving one to another node corrects it
+  for good.
+
+Both admin surfaces read `discoveryAutoMappedTypes`; a server that does not
+answer it yet simply shows nothing extra rather than failing the page. 89
+admin tests pass.
+
+### Owner feedback pass: icon, home, hours, photos, Got time — implemented (2026-09-18)
+
+M9-L. The owner used the shipped app and reported seven defects. Six are
+done; the seventh, the Discover type tree, is back-end work and open.
+
+- **Launcher icon.** `app/assets/branding/hayer_icon.png` had a 13%
+  transparent margin and the adaptive background was white, so a white plate
+  showed all the way around the art, and `remove_alpha_ios` flattened the
+  margin to solid white on iOS. `scripts/render-icons.sh` now renders both
+  assets from the full-bleed `hayer_icon.svg` with headless Chrome: the
+  square icon edge to edge, and a separate transparent foreground inside
+  Android's 66% safe zone. The adaptive background and the iOS background are
+  the brand teal `#0E9594`, and the foreground inset is 0 because the render
+  already carries the safe zone. The script fails if a corner comes out white.
+- **Resume.** It was a 76dp tonal button between two 40dp outlined ones. It
+  is now an `OutlinedButton.icon` shaped exactly like Join, with the mode and
+  creation time moved out of the button into a caption beneath it.
+- **Weekly hours.** The graph drew all 24 hours in a fixed 470dp box, most of
+  it empty night. It now derives its window from the hours a place is open,
+  padded and at least eight hours wide, and scales the minute height to fit a
+  190dp grid.
+- **Place photos.** The details gallery was already a paging `PageView`; it
+  looked like one image because the parser kept three photos and often one.
+  The new photo policy raises that, and the client caches them under a named
+  `flutter_cache_manager` config sized by the policy.
+- **Got time.** The surface is a fixed 50/50 split: map above, results below,
+  no drag handle and no in-between state. The results follow the camera and
+  the search box: a 400 ms settle commits the viewport with
+  `Router.neglect`, so panning re-queries the catalog without flooding the
+  back stack, and the "Search this area" button and the "Previous area"
+  label are gone along with `discoverySearchThisArea`. The search box moved
+  out of the filter sheet into the map overlay, on the same debounce. The
+  provider harvest is still gated: it is asked for only when the canonical
+  explore key changes. The coverage strip reports `partial` rather than
+  `unexplored` whenever the area holds known places, so an area with results
+  never claims to be unexplored.
+
+Tests: the Discover suites scroll the results half rather than dragging a
+sheet, and the Arabic 200% pass now rewinds the list before each search
+because `scrollUntilVisible` only moves one way. 371 app tests and 87 admin
+tests pass with clean analyses.
+
 ### "Got time" map and home crowding: seven owner fixes — complete (2026-09-17)
 
 Owner request, from first use of the two-mode home and Discover on a device.
 Seven points, all in this lane.
+
+**Reconciled when this branch merged with `main` (2026-09-20).** This entry
+was written on the draggable-sheet layout. The owner reversed that layout on
+2026-09-18, in commits already on `main`, so four of the seven points changed
+on the way in. Each is marked below; the merge entry above has the outcome.
 
 - **Home crowding** (`features/home/`). `ModeHeroButton` gained an `actions`
   slot, and Resume and Join moved inside the "In a hurry" card: they are
@@ -98,7 +221,11 @@ Seven points, all in this lane.
   panning adds no history entry — **a behaviour change for reviewers: Back now
   leaves Discover rather than retracing every drag.** The "Search this area"
   button is replaced by a "Searching this area…" indicator, since there is no
-  longer anything to tap.
+  longer anything to tap. *Superseded on merge:* `main`'s camera-follow
+  (400 ms settle, `Router.neglect`, no pending viewport) is the same idea
+  decided by the owner a day later, so its 400 ms rule stands, and the
+  indicator, `_autoSearchDelay` and the `discoverySearchThisArea` and
+  `discoverySearchingThisArea` strings are gone. Back still leaves Discover.
 - **An empty area explores itself** (`discovery_coverage_controller.dart`).
   When a committed area comes back with `eligibleCatalogCount == 0` and nothing
   already running, one exploration starts on its own, remembered per viewport
@@ -106,7 +233,12 @@ Seven points, all in this lane.
   `discoveryAutoExploreProvider` gates it; `discover_harness.dart` turns it off
   so existing tests keep their explorations explicit. This spends provider
   budget per newly visited area, bounded by the server's own cooldown and
-  per-user harvest limits.
+  per-user harvest limits. *Removed on merge:* `main`'s `_explore` already
+  reports every new canonical cell, which is what asks the server to harvest
+  it, and it raised the quota to twelve an hour for that reason. An explicit
+  Deepen on top of the report would spend that quota twice on every empty
+  area. `discoveryAutoExploreProvider` is deleted, and its test became one
+  asserting that an empty area is reported and nothing more is started.
 - **An info card on the map** (`discovery_place_card.dart`, new). Selecting a
   pin or a row shows the place over the map: thumbnail, ranked name, rating,
   tag, and Directions, Save and Details. It replaces `DiscoveryPlacePreview`,
@@ -114,8 +246,12 @@ Seven points, all in this lane.
   selected place is usually also a visible row, and two widgets carrying one
   row's keys make every `byKey` finder ambiguous. `_Thumbnail` became
   `DiscoveryPlaceThumbnail` and the tag switch became `discoveryTagLabel`, so
-  the card and the row still say the same things from one place. The card hides
-  when the sheet is raised over the map, which is what the full list means.
+  the card and the row still say the same things from one place. *Reconciled on
+  merge:* the fixed split has no raised sheet, so the card is always drawn, in
+  the map half's lower edge. It is bounded by the map, its title is one line,
+  and its body scrolls inside it at large text; hiding it on a short map would
+  leave a place picked from a far pin with nothing on screen to say so, now
+  that the in-list preview is gone.
 - **A typeable address bar** (`core/widgets/location_search_field.dart`, new).
   The setup screen's autocomplete — the field, its suggestion list, the 350 ms
   debounce and the stale-reply guard — moved into a shared widget that both
@@ -123,9 +259,10 @@ Seven points, all in this lane.
   it; choosing a place commits it as a real search, with its history entry.
   `onTyped` carries the keystroke back to the owner, because setup relies on
   typing superseding an in-flight reverse geocode so a late address cannot land
-  on top of what was typed.
+  on top of what was typed. *On the merged layout* the field opens under the
+  area bar in the header column, and the bar keeps its 48dp height.
 
-**Verification.** 371 app tests pass; `dart analyze --fatal-infos` and
+**Verification (before the merge, on the sheet layout).** 371 app tests pass; `dart analyze --fatal-infos` and
 `dart format --output=none --set-exit-if-changed` are both clean over
 `app/lib` and `app/test`. `flutter build bundle --release` succeeds.
 

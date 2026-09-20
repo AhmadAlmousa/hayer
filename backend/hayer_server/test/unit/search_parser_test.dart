@@ -105,10 +105,59 @@ void main() {
     expect(place.name, 'Pizza House');
     expect(place.priceLevel, 2);
     expect(place.isOpen, isTrue);
-    expect(place.photoUrls.single, endsWith('=w1600'));
+    expect(
+      place.photoUrls.single,
+      endsWith('=w${SearchParser.defaultPhotoWidth}'),
+    );
     expect(place.hours.single.day, 1);
     expect(place.hours.single.openMinutes, 9 * 60);
     expect(place.hours.single.closeMinutes, 17 * 60);
+  });
+
+  test('keeps as many photos as the policy allows, at its width', () {
+    List<Object?> photo(String name) => [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      ['https://lh3.googleusercontent.com/$name=w400-h300'],
+    ];
+    final entry = [
+      null,
+      [
+        'Gallery',
+        24.71,
+        46.67,
+        'place-2',
+        'feature-2',
+        'Art gallery',
+        null,
+        null,
+        null,
+        null,
+        'Riyadh',
+        [for (var index = 0; index < 8; index++) photo('photo$index')],
+        null,
+      ],
+    ];
+    final body =
+        ")]}'\n${jsonEncode([
+          [entry],
+        ])}";
+
+    List<String> photosWith({required int limit, required int width}) =>
+        SearchParser(calibration, photoLimit: limit, photoWidth: width)
+            .parse(body, checkedAt: DateTime.utc(2026, 8, 31))
+            .places
+            .single
+            .photoUrls;
+
+    expect(photosWith(limit: 3, width: 800), hasLength(3));
+    expect(photosWith(limit: 3, width: 800).first, endsWith('=w800'));
+    expect(photosWith(limit: 10, width: 1200), hasLength(8));
+    expect(photosWith(limit: 10, width: 1200).last, endsWith('=w1200'));
   });
 
   test('wraps a focused place node into the list-entry shape', () {

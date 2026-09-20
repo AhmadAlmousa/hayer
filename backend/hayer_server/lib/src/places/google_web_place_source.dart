@@ -18,8 +18,11 @@ class GoogleWebPlaceSource implements PlaceSource {
 
   final PlaceCalibration calibration;
   final GoogleWebSession _session;
-  final SearchParser _parser;
   final SearchPb _pb;
+
+  /// Replaced whenever the photo policy is applied, so parsing stays a pure
+  /// function of its configuration rather than reading settings per response.
+  SearchParser _parser;
 
   void configureRateLimit({
     required int requestsPerMinute,
@@ -28,6 +31,14 @@ class GoogleWebPlaceSource implements PlaceSource {
     requestsPerMinute: requestsPerMinute,
     burst: burst,
   );
+
+  /// Sets how many photos to keep per place, and at what width.
+  ///
+  /// Both come from [PhotoPolicy] and shape what the next observation writes
+  /// into the catalog. Places already stored keep the photos they have until
+  /// they are observed again.
+  void configurePhotos({required int count, required int width}) =>
+      _parser = SearchParser(calibration, photoLimit: count, photoWidth: width);
 
   @override
   Future<List<PlaceCandidate>> search({

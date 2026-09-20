@@ -112,6 +112,32 @@ DiscoveryPoint discoveryViewportCenter(DiscoveryViewport viewport) => (
   longitude: (viewport.west + viewport.east) / 2,
 );
 
+/// A coarse key for the area [viewport] would ask the server to explore.
+///
+/// The server owns the canonical harvest cell: it snaps the centre to a 1 km
+/// grid and rounds the span into a radius bucket, and it dedupes, cools down
+/// and rate-limits on that. This is only the client's guard against asking
+/// again for somewhere it has already asked about, so it approximates that
+/// cell rather than reproducing it — being a little coarse or a little fine
+/// costs at most one extra request that the server then answers from its own
+/// coverage.
+///
+/// Deliberately not the viewport token, which changes on every pan.
+String discoveryExploreKey(DiscoveryViewport viewport) {
+  const gridDegrees = 0.01; // About 1.1 km of latitude.
+  final centre = discoveryViewportCenter(viewport);
+  final row = (centre.latitude / gridDegrees).round();
+  final column = (centre.longitude / gridDegrees).round();
+  // The span matters because a wider view asks for a wider harvest, and the
+  // server buckets it; doubling steps track those buckets closely enough.
+  final span = math.max(
+    viewport.north - viewport.south,
+    viewport.east - viewport.west,
+  );
+  final bucket = span <= 0 ? 0 : (math.log(span) / math.ln2).ceil();
+  return '$row:$column:$bucket';
+}
+
 /// The great-circle distance between two points, in metres.
 double discoveryStraightLineMeters(DiscoveryPoint from, DiscoveryPoint to) {
   const earthRadius = 6371008.8;

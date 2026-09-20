@@ -23,6 +23,73 @@ void main() {
       });
       tearDown(() => _resetTables(sessionBuilder));
 
+      test('a policy save without a reason is accepted and audited', () async {
+        final setup = sessionBuilder.build();
+        try {
+          await CacheSettingsRow.db.insertRow(
+            setup,
+            _cacheSettings(version: 1),
+          );
+        } finally {
+          await setup.close();
+        }
+
+        final session = sessionBuilder.build();
+        try {
+          final saved = await endpoint.updatePolicy(
+            session,
+            reason: '   ',
+            policy: _cachePolicy(version: 1, freshHours: 48),
+          );
+          expect(saved.freshHours, 48);
+
+          final audit = await AdminAuditRow.db.findFirstRow(
+            session,
+            where: (table) => table.action.equals('cache_policy.update'),
+          );
+          // The column is NOT NULL and the trail has to stay readable, so an
+          // omitted reason is recorded as one rather than stored blank.
+          expect(audit?.reason, 'No reason given');
+        } finally {
+          await session.close();
+        }
+      });
+
+      test(
+        'a reason longer than the column allows is still rejected',
+        () async {
+          final setup = sessionBuilder.build();
+          try {
+            await CacheSettingsRow.db.insertRow(
+              setup,
+              _cacheSettings(version: 1),
+            );
+          } finally {
+            await setup.close();
+          }
+
+          final session = sessionBuilder.build();
+          try {
+            await expectLater(
+              endpoint.updatePolicy(
+                session,
+                reason: 'x' * 501,
+                policy: _cachePolicy(version: 1, freshHours: 48),
+              ),
+              throwsA(
+                isA<ApiException>().having(
+                  (e) => e.code,
+                  'code',
+                  'bad_request',
+                ),
+              ),
+            );
+          } finally {
+            await session.close();
+          }
+        },
+      );
+
       test(
         'two saves of the same taxonomy revision commit exactly once',
         () async {

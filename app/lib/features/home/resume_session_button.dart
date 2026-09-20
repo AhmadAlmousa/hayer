@@ -1,10 +1,16 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:hayer_client/hayer_client.dart';
 import 'package:intl/intl.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 
+/// Offers the session still open on this device.
+///
+/// It sits between Saved places and Join on the home screen and is shaped like
+/// them: one outlined row at the Material baseline height. Which session is
+/// being resumed, and when it started, reads as a caption below rather than a
+/// second line inside the button, so the button itself stays the size of its
+/// neighbours.
 class ResumeSessionButton extends StatelessWidget {
   const ResumeSessionButton({
     super.key,
@@ -19,48 +25,37 @@ class ResumeSessionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final strings = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final created = DateFormat.MMMd(locale).add_jm().format(
       bundle.session.createdAt.toLocal(),
     );
     final isSolo = bundle.session.mode == SessionMode.solo;
-    return M3EButton.tonal(
-      size: M3EButtonSize.custom(height: 76, hPadding: 18),
-      onPressed: loading ? null : onPressed,
-      child: Row(
-        children: [
-          loading
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        OutlinedButton.icon(
+          onPressed: loading ? null : onPressed,
+          icon: loading
               ? const SizedBox.square(
-                  dimension: 22,
+                  dimension: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Icon(
-                  isSolo ? Icons.person_rounded : Icons.groups_rounded,
-                  size: 28,
-                ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  strings.resumeSession,
-                  style: const TextStyle(fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${isSolo ? strings.resumeSoloSession : strings.resumeMultiplayerSession} · '
-                  '${strings.createdAt(created)}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
+              : Icon(isSolo ? Icons.person_rounded : Icons.groups_rounded),
+          label: Text(strings.resumeSession),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${isSolo ? strings.resumeSoloSession : strings.resumeMultiplayerSession} · '
+          '${strings.createdAt(created)}',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-          const Icon(Icons.arrow_forward_rounded),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

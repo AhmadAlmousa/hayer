@@ -16,6 +16,7 @@ import 'place_search_policy.dart';
 import 'place_search_service.dart';
 import 'place_source.dart';
 import 'provider_operation.dart';
+import 'search_parser.dart';
 import 'taxonomy.dart';
 import 'taxonomy_service.dart';
 
@@ -279,6 +280,10 @@ class CatalogPlaceService {
       typedSource.configureRateLimit(
         requestsPerMinute: settings.globalRequestsPerMinute,
         burst: settings.globalBurst,
+      );
+      typedSource.configurePhotos(
+        count: settings.photoFetchCount,
+        width: settings.photoWidth,
       );
     }
     final liveSearch = PlaceSearchService(
@@ -587,6 +592,8 @@ class CatalogPlaceService {
       perCreationConcurrency: row?.perCreationConcurrency ?? 3,
       globalRequestsPerMinute: row?.globalRequestsPerMinute ?? 30,
       globalBurst: row?.globalBurst ?? 6,
+      photoFetchCount: row?.photoFetchCount ?? SearchParser.defaultPhotoLimit,
+      photoWidth: row?.photoWidth ?? SearchParser.defaultPhotoWidth,
     );
   }
 
@@ -706,6 +713,8 @@ class _CatalogSettings {
     required this.perCreationConcurrency,
     required this.globalRequestsPerMinute,
     required this.globalBurst,
+    required this.photoFetchCount,
+    required this.photoWidth,
   });
   final int freshHours;
   final int staleFallbackDays;
@@ -713,4 +722,6 @@ class _CatalogSettings {
   final int perCreationConcurrency;
   final int globalRequestsPerMinute;
   final int globalBurst;
+  final int photoFetchCount;
+  final int photoWidth;
 }

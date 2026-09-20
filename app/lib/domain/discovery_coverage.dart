@@ -118,7 +118,14 @@ DiscoveryCoverageStatus discoveryCoverageStatus({
   if (active != null) {
     kind = DiscoveryCoverageKind.exploring;
   } else if (footprints.isEmpty) {
-    kind = DiscoveryCoverageKind.unexplored;
+    // No exploration has claimed this view. That is only "not explored yet"
+    // when we also have nothing here: with places already in the catalog, from
+    // a neighbouring search or the other mode, saying nothing has been looked
+    // at is wrong, and it was what the map said after any pan of a few hundred
+    // metres.
+    kind = coverage.eligibleCatalogCount > 0
+        ? DiscoveryCoverageKind.partial
+        : DiscoveryCoverageKind.unexplored;
   } else if (discoveryBoundsCover([
     for (final footprint in footprints)
       if (footprint.lastSuccessAt != null &&

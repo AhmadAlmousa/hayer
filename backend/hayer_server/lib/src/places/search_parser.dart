@@ -14,9 +14,25 @@ class SearchParseResult {
 }
 
 class SearchParser {
-  const SearchParser(this.calibration);
+  const SearchParser(
+    this.calibration, {
+    this.photoLimit = defaultPhotoLimit,
+    this.photoWidth = defaultPhotoWidth,
+  });
+
+  /// What the parser keeps when nobody has configured it. Both are policy in
+  /// production; these only cover parser tests and the brief window before a
+  /// source reads the settings row.
+  static const defaultPhotoLimit = 6;
+  static const defaultPhotoWidth = 1200;
 
   final PlaceCalibration calibration;
+
+  /// How many photos to keep per place, from [PhotoPolicy.fetchCount].
+  final int photoLimit;
+
+  /// The pixel width photo URLs are rewritten to, from [PhotoPolicy.width].
+  final int photoWidth;
 
   SearchParseResult parse(String body, {required DateTime checkedAt}) {
     final response = GoogleResponse.parse(body);
@@ -172,9 +188,9 @@ class SearchParser {
       final raw = GoogleResponse(photo).stringAt(const [6, 0]);
       final uri = raw == null ? null : Uri.tryParse(raw);
       if (uri != null && calibration.isAllowedImage(uri)) {
-        urls.add(_withWidth(uri, 1600).toString());
+        urls.add(_withWidth(uri, photoWidth).toString());
       }
-      if (urls.length == 3) break;
+      if (urls.length >= photoLimit) break;
     }
     return urls.toList(growable: false);
   }

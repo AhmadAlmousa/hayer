@@ -1107,6 +1107,7 @@ class _PolicyPageState extends State<_PolicyPage> {
   Object? _error;
   DiscoveryPolicyFields? _discovery;
   PlaceDetailPolicyFields? _detailRefresh;
+  PhotoPolicyFields? _photos;
 
   @override
   void initState() {
@@ -1121,6 +1122,7 @@ class _PolicyPageState extends State<_PolicyPage> {
     }
     _discovery?.dispose();
     _detailRefresh?.dispose();
+    _photos?.dispose();
     super.dispose();
   }
 
@@ -1292,6 +1294,7 @@ class _PolicyPageState extends State<_PolicyPage> {
                 DiscoveryPolicySection(
                   discovery: _discovery,
                   detailRefresh: _detailRefresh,
+                  photos: _photos,
                   onChanged: () => setState(() {}),
                 ),
                 const SizedBox(height: 20),
@@ -1329,6 +1332,15 @@ class _PolicyPageState extends State<_PolicyPage> {
         fields.reset(detailRefresh);
       }
     }
+    final photos = value.photos;
+    if (photos != null) {
+      final fields = _photos;
+      if (fields == null) {
+        _photos = PhotoPolicyFields(photos);
+      } else {
+        fields.reset(photos);
+      }
+    }
   }
 
   Future<void> _save() async {
@@ -1341,6 +1353,7 @@ class _PolicyPageState extends State<_PolicyPage> {
       // Each is null unless edited, so the server keeps the stored section.
       final discovery = _discovery?.changes();
       final detailRefresh = _detailRefresh?.changes();
+      final photos = _photos?.changes();
       final now = DateTime.now().toUtc();
       final updated = await widget.operations.updatePolicy(
         reason: reason,
@@ -1364,6 +1377,7 @@ class _PolicyPageState extends State<_PolicyPage> {
           updatedAt: now,
           discovery: discovery,
           detailRefresh: detailRefresh,
+          photos: photos,
         ),
       );
       if (!mounted) return;
@@ -1900,8 +1914,11 @@ class _ReasonDialogState extends State<_ReasonDialog> {
       controller: _controller,
       autofocus: true,
       maxLength: 500,
-      onChanged: (_) => setState(() {}),
-      decoration: const InputDecoration(labelText: 'Required reason'),
+      decoration: const InputDecoration(
+        labelText: 'Reason (optional)',
+        helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+        helperMaxLines: 3,
+      ),
     ),
     actions: [
       TextButton(
@@ -1909,9 +1926,7 @@ class _ReasonDialogState extends State<_ReasonDialog> {
         child: const Text('Cancel'),
       ),
       FilledButton(
-        onPressed: _controller.text.trim().length < 4
-            ? null
-            : () => Navigator.pop(context, _controller.text.trim()),
+        onPressed: () => Navigator.pop(context, _controller.text.trim()),
         child: const Text('Confirm'),
       ),
     ],

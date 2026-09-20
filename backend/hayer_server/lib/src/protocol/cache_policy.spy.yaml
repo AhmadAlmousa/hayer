@@ -18,3 +18,4 @@ fields:
   # Null from older clients means preserve server settings, never reset them.
   discovery: DiscoveryPolicy?
   detailRefresh: PlaceDetailPolicy?
+  photos: PhotoPolicy?

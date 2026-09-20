@@ -171,9 +171,19 @@ void main() {
         fixture,
         '$_riyadhLink&cat=coffee&reviews=1-49&q=late',
       );
+      // The search box is over the map now, searching as it is typed, so the
+      // sheet no longer carries a second copy of it.
+      expect(
+        tester
+            .widget<TextField>(find.byKey(const ValueKey('discovery-search')))
+            .controller
+            ?.text,
+        'late',
+      );
+
       await _open(tester, _filters);
 
-      expect(find.text('Search names and descriptions'), findsOneWidget);
+      expect(find.text('Search names and descriptions'), findsNothing);
       expect(find.textContaining('review text'), findsNothing);
 
       // The list builds lazily, so the amenities exist only once scrolled to.

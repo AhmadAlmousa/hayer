@@ -6,7 +6,25 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 
-const _minuteHeight = .72;
+/// The height the open-hours grid itself gets, excluding its day header.
+///
+/// The vertical scale is derived from this and the span of hours actually on
+/// show, so the graph is always this tall and never scrolls. Before, a fixed
+/// scale over all 24 hours made it 470dp and mostly empty night.
+const _gridHeight = 190.0;
+
+/// The day-name strip above the grid.
+const _weekTitleHeight = 34.0;
+
+/// Bounds on the derived vertical scale, in dp per minute. The floor keeps a
+/// short period from collapsing to a hairline on a 24-hour place; the ceiling
+/// stops a place open two hours a day from drawing one enormous bar.
+const _minMinuteHeight = .1;
+const _maxMinuteHeight = .5;
+
+/// The narrowest window worth drawing, in hours. Below this the grid reads as
+/// a single block with no sense of where the day sits around it.
+const _minWindowHours = 8;
 
 /// A calendar week view that highlights the hours during which a place is open.
 class WeeklyHoursCalendar extends StatefulWidget {
@@ -86,10 +104,17 @@ class _WeeklyHoursCalendarState extends State<WeeklyHoursCalendar> {
       ],
     );
 
+    final window = openingHoursWindow(widget.hours, localNow);
+    final windowMinutes = (window.endHour - window.startHour) * 60;
+    final minuteHeight = (_gridHeight / windowMinutes).clamp(
+      _minMinuteHeight,
+      _maxMinuteHeight,
+    );
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(18),
       child: SizedBox(
-        height: 470,
+        height: _weekTitleHeight + windowMinutes * minuteHeight,
         child: flutter_material.Theme(
           data: calendarTheme,
           child: flutter_material.Material(
@@ -101,13 +126,11 @@ class _WeeklyHoursCalendarState extends State<WeeklyHoursCalendar> {
               minDay: start,
               maxDay: start.add(const Duration(days: 6)),
               startDay: _startDay!,
-              startHour: 0,
-              endHour: 24,
-              heightPerMinute: _minuteHeight,
-              scrollOffset:
-                  ((localNow.hour - 3).clamp(0, 20) * 60) * _minuteHeight,
-              timeLineWidth: 52,
-              weekTitleHeight: 54,
+              startHour: window.startHour,
+              endHour: window.endHour,
+              heightPerMinute: minuteHeight,
+              timeLineWidth: 44,
+              weekTitleHeight: _weekTitleHeight,
               backgroundColor: colors.surfaceContainerLowest,
               weekTitleBackgroundColor: colors.surfaceContainerLow,
               pageViewPhysics: const NeverScrollableScrollPhysics(),
@@ -261,6 +284,55 @@ class _OpenPeriodTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The band of hours the week view draws, as whole hours in `[0, 24]`.
+typedef OpeningHoursWindow = ({int startHour, int endHour});
+
+/// Narrows the week view to the hours [hours] actually covers.
+///
+/// Most places are shut for a third of the day or more, and drawing all 24
+/// hours spent that space on empty night. The window is the union of every
+/// day's open periods, padded an hour each side so the edges of a period are
+/// visible, widened to include [localNow] so the live-time line always has
+/// somewhere to land, and never narrower than [_minWindowHours].
+OpeningHoursWindow openingHoursWindow(
+  List<OpeningPeriod> hours,
+  DateTime localNow,
+) {
+  int? earliest;
+  int? latest;
+  for (var day = DateTime.monday; day <= DateTime.sunday; day++) {
+    for (final segment in openingSegmentsForDay(hours, day)) {
+      if (earliest == null || segment.start < earliest) {
+        earliest = segment.start;
+      }
+      if (latest == null || segment.end > latest) latest = segment.end;
+    }
+  }
+
+  // With no periods at all the caller draws an empty grid; a daytime band
+  // reads better there than midnight to midnight.
+  var start = earliest == null ? 8 : (earliest ~/ 60) - 1;
+  var end = latest == null ? 22 : ((latest + 59) ~/ 60) + 1;
+
+  start = start < localNow.hour ? start : localNow.hour;
+  end = end > localNow.hour + 1 ? end : localNow.hour + 1;
+  start = start.clamp(0, 24);
+  end = end.clamp(0, 24);
+
+  // Grow towards whichever end has room, so a place open only in the evening
+  // keeps its evening in view rather than being recentred on noon.
+  while (end - start < _minWindowHours) {
+    if (end < 24) {
+      end++;
+    } else if (start > 0) {
+      start--;
+    } else {
+      break;
+    }
+  }
+  return (startHour: start, endHour: end);
 }
 
 @immutable

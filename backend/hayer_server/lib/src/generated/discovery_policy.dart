@@ -30,6 +30,7 @@ abstract class DiscoveryPolicy
     required this.queryTimeoutMilliseconds,
     required this.maximumPageSize,
     required this.maximumMapPoints,
+    required this.typeAutoMapEnabled,
   });
 
   factory DiscoveryPolicy({
@@ -45,6 +46,7 @@ abstract class DiscoveryPolicy
     required int queryTimeoutMilliseconds,
     required int maximumPageSize,
     required int maximumMapPoints,
+    required bool typeAutoMapEnabled,
   }) = _DiscoveryPolicyImpl;
 
   factory DiscoveryPolicy.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -69,6 +71,9 @@ abstract class DiscoveryPolicy
           jsonSerialization['queryTimeoutMilliseconds'] as int,
       maximumPageSize: jsonSerialization['maximumPageSize'] as int,
       maximumMapPoints: jsonSerialization['maximumMapPoints'] as int,
+      typeAutoMapEnabled: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['typeAutoMapEnabled'],
+      ),
     );
   }
 
@@ -96,6 +101,8 @@ abstract class DiscoveryPolicy
 
   int maximumMapPoints;
 
+  bool typeAutoMapEnabled;
+
   /// Returns a shallow copy of this [DiscoveryPolicy]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -112,6 +119,7 @@ abstract class DiscoveryPolicy
     int? queryTimeoutMilliseconds,
     int? maximumPageSize,
     int? maximumMapPoints,
+    bool? typeAutoMapEnabled,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -129,6 +137,7 @@ abstract class DiscoveryPolicy
       'queryTimeoutMilliseconds': queryTimeoutMilliseconds,
       'maximumPageSize': maximumPageSize,
       'maximumMapPoints': maximumMapPoints,
+      'typeAutoMapEnabled': typeAutoMapEnabled,
     };
   }
 
@@ -148,6 +157,7 @@ abstract class DiscoveryPolicy
       'queryTimeoutMilliseconds': queryTimeoutMilliseconds,
       'maximumPageSize': maximumPageSize,
       'maximumMapPoints': maximumMapPoints,
+      'typeAutoMapEnabled': typeAutoMapEnabled,
     };
   }
 
@@ -171,6 +181,7 @@ class _DiscoveryPolicyImpl extends DiscoveryPolicy {
     required int queryTimeoutMilliseconds,
     required int maximumPageSize,
     required int maximumMapPoints,
+    required bool typeAutoMapEnabled,
   }) : super._(
          enabled: enabled,
          scoring: scoring,
@@ -184,6 +195,7 @@ class _DiscoveryPolicyImpl extends DiscoveryPolicy {
          queryTimeoutMilliseconds: queryTimeoutMilliseconds,
          maximumPageSize: maximumPageSize,
          maximumMapPoints: maximumMapPoints,
+         typeAutoMapEnabled: typeAutoMapEnabled,
        );
 
   /// Returns a shallow copy of this [DiscoveryPolicy]
@@ -203,6 +215,7 @@ class _DiscoveryPolicyImpl extends DiscoveryPolicy {
     int? queryTimeoutMilliseconds,
     int? maximumPageSize,
     int? maximumMapPoints,
+    bool? typeAutoMapEnabled,
   }) {
     return DiscoveryPolicy(
       enabled: enabled ?? this.enabled,
@@ -225,6 +238,7 @@ class _DiscoveryPolicyImpl extends DiscoveryPolicy {
           queryTimeoutMilliseconds ?? this.queryTimeoutMilliseconds,
       maximumPageSize: maximumPageSize ?? this.maximumPageSize,
       maximumMapPoints: maximumMapPoints ?? this.maximumMapPoints,
+      typeAutoMapEnabled: typeAutoMapEnabled ?? this.typeAutoMapEnabled,
     );
   }
 }

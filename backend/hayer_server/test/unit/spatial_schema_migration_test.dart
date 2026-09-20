@@ -2,24 +2,34 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 
+/// The registered migrations, oldest first.
+Future<List<String>> _registered() async {
+  final entries = await File(
+    'migrations/migration_registry.txt',
+  ).readAsLines();
+  return entries
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty && !line.startsWith('#'))
+      .toList();
+}
+
 void main() {
   const migrationId = '20260901083702427-spatial-schema-repair';
-  const latestMigrationId = '20260915080530543-discovery-harvest-coverage';
   const discoveryMigrationId = '20260914142952104-discovery-catalog-query';
   final migrationDirectory = Directory('migrations/$migrationId');
 
+  /// Read rather than hard-coded: what matters is that whichever migration is
+  /// newest still carries the custom DDL, and naming it here meant every new
+  /// migration broke this test for a reason unrelated to the schema.
+  late final String latestMigrationId;
+
+  setUpAll(() async => latestMigrationId = (await _registered()).last);
+
   group('spatial schema migration', () {
     test('remains registered before the current migration', () async {
-      final entries = await File(
-        'migrations/migration_registry.txt',
-      ).readAsLines();
-      final migrationIds = entries
-          .map((line) => line.trim())
-          .where((line) => line.isNotEmpty && !line.startsWith('#'))
-          .toList();
+      final migrationIds = await _registered();
 
       expect(migrationIds, contains(migrationId));
-      expect(migrationIds.last, latestMigrationId);
       expect(
         migrationIds.indexOf(migrationId),
         lessThan(migrationIds.length - 1),

@@ -177,7 +177,8 @@ void main() {
     expect(repository.deepenRequests, hasLength(2));
   });
 
-  test('an area holding nothing at all explores itself, once', () async {
+  test('an area holding nothing at all is reported, and Deepen stays the '
+      'reader\'s call', () async {
     repository
       ..onBrowse = ((request) async => testBrowsePage(
         coverage: testCoverage(eligible: 0),
@@ -187,14 +188,11 @@ void main() {
     coverage().ensure(testViewport);
     await _settle(10);
 
+    // The report is what asks the server to harvest the area. A second,
+    // explicit request on top of it would spend the harvest quota twice.
     showResults();
     await _settle();
-    expect(repository.deepenRequests, hasLength(1));
-
-    // Reloading the same empty area does not start a second exploration.
-    showResults();
-    await _settle();
-    expect(repository.deepenRequests, hasLength(1));
+    expect(repository.deepenRequests, isEmpty);
   });
 
   test('an area that already holds places is left alone', () async {

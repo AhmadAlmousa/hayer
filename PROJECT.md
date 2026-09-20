@@ -1,6 +1,6 @@
 # Hayer execution and progress tracker
 
-Last updated: 2026-09-16
+Last updated: 2026-09-20
 
 Status: audit remediation active; invited-beta release remains blocked
 
@@ -934,7 +934,10 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   also on 2026-09-14 against generated contracts and mocks. The M9-C and M9-E
   implementations it waited on are merged (`060a472`), an Arabic 200% text
   pass covers its states, its handoffs are settled against the
-  implementations, and device checks belong to M9-K.
+  implementations, and device checks belong to M9-K. Device use on
+  2026-09-17 added a place card over the map, typed-address search, pin names
+  and row numbers and the location dot; they were reconciled with the owner's
+  fixed 50/50 split when the lanes merged on 2026-09-20.
 - [x] M9-H — Place detail, save, share and report (front end). The shared
   sheet's Discover mode with standing and catalog age, Save, sessionless
   reports from the sheet and Worst rated rows, and Share landed on 2026-09-14
@@ -957,6 +960,17 @@ dependencies are in [`discovery_upgrade.md`](discovery_upgrade.md)
   Discover surface's own device checks need the flag on, a live proof of the
   fixed bundle needs the server image rebuilt, and the owner's formula, budget
   and latency review remains; the flag stays off.
+
+- [x] M9-L — Owner feedback pass (both lanes). Seven defects the owner found
+  in the shipped app: the launcher icon's white edge, the oversized Resume
+  button, the 24-hour opening-hours graph, the mandatory admin reason, the
+  single place photo, the Got time layout and its "not explored" report, and
+  the unmapped Discover types. All seven are done (`1b06731`, `c599d2c`,
+  `7e638e5`, `d295d19`, `bbeea5c` and the taxonomy commit). Two decisions in
+  [`discovery_upgrade.md`](discovery_upgrade.md) were reversed by the owner and
+  amended there: the draggable sheet became a fixed 50/50 split, and the
+  committed "Search this area" became a live catalog read with the provider
+  harvest still gated.
 
 Frontend handoff: [`backend/discovery-contracts.md`](backend/discovery-contracts.md).
 Frontend prework was merged into main in `d4b58b7`. No checkpoint above is
@@ -1022,6 +1036,74 @@ implemented, and M9-K is in progress.
 
 ## Evidence log
 
+- 2026-09-20: merged `worktree-claude-lane` and `main` and fast-forwarded
+  `main` to the result. The lane's 2026-09-17 device fixes were written on the
+  draggable sheet that the owner reversed on 2026-09-18, so the merge kept the
+  fixed 50/50 split and ported the card over the map, the typed-address search,
+  pin names and row numbers and the location dot onto it. Two lane behaviours
+  were dropped as redundant with `main`: the 700 ms auto-search, and the
+  empty-area Deepen, which would have spent the harvest quota twice beside
+  `main`'s report. Pinned full preflight passed (exit 0) with clean analyses:
+  216 server, 375 app and 89 admin tests. The signed `0.2.1+7` APK built after
+  `flutter clean` at SHA-256
+  `02391557798af6642f2ff62ddf705fe2a81508669cf901f1bfa1a53fcca3293b` and
+  verifies under APK Signature Scheme v2. No device was available, so the
+  merged Discover layout is untested on hardware. The lane's uncommitted work
+  is kept on `backup/claude-lane-uncommitted-20260920`. Details are in
+  `lane-frontend.md`.
+- 2026-09-19: closed M9-L with the Discover type tree the owner asked not to
+  fill in by hand. `seedRoots()` shipped nine bare roots with no children and
+  no aliases, so every observed type fell under Other and an operator had to
+  map each one through the admin. The seed is now the full nested vocabulary —
+  over 100 nodes, four levels where the vocabulary needs it, each labelled in
+  English and Arabic with the provider spellings it will meet, including the
+  owner's example chain Food & Drinks → Restaurants → Middle Eastern →
+  Lebanese. `DiscoveryTypeAutoMapper` then attaches what the seed misses: after
+  each harvest it reads the observed types the tree does not claim and matches
+  each one by node label, by head noun with its modifier resolved against that
+  noun's subtree ("Lebanese cuisine" reaches Lebanese, "Peruvian restaurant"
+  stops at Restaurants), and leaves anything else for the operator. It only
+  adds aliases, never renames, moves or removes a node, never touches a type an
+  operator has placed, and abandons a run whose result would not validate. Each
+  assignment is recorded in `hayer_discovery_type_automap` and each run in the
+  audit log as `auto-mapper`, which is what lets the admin mark auto-assigned
+  aliases in the tree editor and show the last run above the unmapped list. The
+  new `discoveryTypeAutoMapEnabled` policy flag defaults on. Pinned full
+  preflight passed with clean analyses: 216 server, 371 app and 89 admin tests.
+  The remote PostGIS suite ran 144 tests with one failure, the pre-existing
+  growth-metrics `exploredCells` expectation in
+  `discovery_admin_harvest_test.dart`. The signed `0.2.1+7` APK at SHA-256
+  `70faae6a72a5f6042da5f0992728f1baea74a8788b4319938b28baa710e76b68` is
+  unchanged from the Got time commit, because this slice is server and admin
+  only. Discovery stays disabled. Details are in `lane-backend.md` and
+  `lane-frontend.md`.
+- 2026-09-18: opened M9-L, the owner's feedback pass on the shipped app, and
+  landed six of its seven items. The launcher icon is now rendered from the
+  full-bleed SVG by `scripts/render-icons.sh`, with a teal adaptive background
+  and a separate foreground, so no white edge survives on Android, iOS or the
+  web maskable pair (`1b06731` carries the home-screen half). Resume now looks
+  like Join. The weekly hours graph derives its window from the hours a place
+  is actually open (`c599d2c`). Every admin reason is optional and the audit
+  log records "No reason given" when one is left blank (`7e638e5`). A new
+  photo policy sets how many photos are fetched, at what width, and how many
+  are cached for how long (`d295d19`). Got time is now a fixed 50/50 split,
+  map above and results below, whose results follow the camera and the search
+  box on a 400 ms settle: the catalog read is live, the provider harvest stays
+  gated, a covering harvest of an equal or larger radius satisfies a later
+  request, and an area with known places no longer reports itself unexplored.
+  `discoveryUserHarvestsPerHour` rises from 3 to 12 to match automatic
+  harvesting, by migration and by default. Two locked decisions were reversed
+  by the owner and amended in `discovery_upgrade.md`: requirement 9's
+  draggable sheet, and requirement 2 / architecture item 4's committed
+  "Search this area". Pinned full preflight passed with clean analyses: 202
+  server, 371 app and 87 admin tests. The remote PostGIS suite ran 136 tests
+  with one failure, `discovery_admin_harvest_test.dart`'s growth-metrics
+  `exploredCells` expectation, verified pre-existing on `main` by stashing
+  this work and rerunning. Signed `0.2.1+7` built at SHA-256
+  `70faae6a72a5f6042da5f0992728f1baea74a8788b4319938b28baa710e76b68`
+  (106,529,916 bytes) and verifies under APK Signature Scheme v2. The seeded
+  nested Discover type tree and its auto-mapper remain open. Discovery stays
+  disabled. Details are in `lane-frontend.md` and `lane-backend.md`.
 - 2026-09-13: implemented the F10/F21 source-outage and refresh-truthfulness
   boundary after fast-forwarding Claude's M9-F commit `5863f02`. The core
   server no longer depends on the optional source canary. Dashboard jobs use
@@ -1974,3 +2056,10 @@ implemented, and M9-K is in progress.
   at its usage limit. The worktree split in "Agent worktrees and role split" no
   longer separates the two agents; backend work continues on `main` in the
   primary worktree and keeps logging to `lane-backend.md`.
+- 2026-09-20: the two lanes' Discover work was reconciled rather than
+  concatenated. Where `main`'s owner-decided layout (fixed 50/50 split, camera
+  commits itself after 400 ms, no "Search this area") and the lane's earlier
+  device fixes disagreed, `main` won, because the owner made that call later
+  and after using the app. The lane's place card is always drawn over the map
+  and scrolls inside it at large text, since the in-list preview it replaced no
+  longer exists. `discovery_upgrade.md` was amended to match.

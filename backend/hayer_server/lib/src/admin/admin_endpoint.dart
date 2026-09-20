@@ -165,7 +165,7 @@ class AdminEndpoint extends Endpoint {
     required List<DiscoveryTaxonomyNode> roots,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final saved = await DiscoveryTaxonomyService.saveDraft(
         session,
@@ -198,7 +198,7 @@ class AdminEndpoint extends Endpoint {
     required int revision,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final result = await DiscoveryTaxonomyService.recordValidation(
         session,
@@ -231,7 +231,7 @@ class AdminEndpoint extends Endpoint {
     required int revision,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final before = await DiscoveryTaxonomyService.activeRow(
         session,
@@ -271,7 +271,7 @@ class AdminEndpoint extends Endpoint {
     required int expectedActiveRevision,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final before = await DiscoveryTaxonomyService.activeRow(
         session,
@@ -329,7 +329,7 @@ class AdminEndpoint extends Endpoint {
     required List<DiscoveryHarvestManifestEntry> entries,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final saved = await DiscoveryHarvestManifestService.saveDraft(
         session,
@@ -363,7 +363,7 @@ class AdminEndpoint extends Endpoint {
     required int revision,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final result = await DiscoveryHarvestManifestService.recordValidation(
         session,
@@ -396,7 +396,7 @@ class AdminEndpoint extends Endpoint {
     required int revision,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final before = await DiscoveryHarvestManifestService.activeRow(
         session,
@@ -436,7 +436,7 @@ class AdminEndpoint extends Endpoint {
     required int expectedActiveRevision,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final before = await DiscoveryHarvestManifestService.activeRow(
         session,
@@ -507,6 +507,13 @@ class AdminEndpoint extends Endpoint {
     );
   }
 
+  Future<AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes(
+    Session session,
+  ) async {
+    await _authorize(session);
+    return DiscoveryAdminReads.autoMappedTypes(session);
+  }
+
   Future<DiscoveryGrowthMetrics> discoveryGrowthMetrics(
     Session session, {
     required DateTime from,
@@ -537,7 +544,7 @@ class AdminEndpoint extends Endpoint {
     required List<AdminTaxonomyItem> items,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final draft = await TaxonomyService.saveDraft(
         session,
@@ -573,7 +580,7 @@ class AdminEndpoint extends Endpoint {
     int radiusMeters = 3000,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     _coordinates(location.latitude, location.longitude);
     if (radiusMeters < 500 || radiusMeters > 10000) {
       throw ApiException(
@@ -679,7 +686,7 @@ class AdminEndpoint extends Endpoint {
     required int revision,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final result = await TaxonomyService.publish(
         session,
@@ -707,7 +714,7 @@ class AdminEndpoint extends Endpoint {
     required String version,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final result = await TaxonomyService.rollback(
         session,
@@ -1182,7 +1189,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final policy = await _policyRow(
         session,
@@ -1229,7 +1236,7 @@ class AdminEndpoint extends Endpoint {
     required CachePolicy policy,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final before = await CacheSettingsRow.db.findFirstRow(
         session,
@@ -1329,7 +1336,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final existing = await RefreshJobRow.db.findFirstRow(
         session,
@@ -1373,7 +1380,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     final cancelled = await session.db.transaction((transaction) async {
       final row = await RefreshJobRow.db.findFirstRow(
         session,
@@ -1448,7 +1455,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final rows = await PoiCoverageRow.db.updateWhere(
         session,
@@ -1607,7 +1614,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final candidate = await CalibrationRow.db.findFirstRow(
         session,
@@ -1656,7 +1663,7 @@ class AdminEndpoint extends Endpoint {
     required String reason,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final candidate = await CalibrationRow.db.findFirstRow(
         session,
@@ -1706,7 +1713,7 @@ class AdminEndpoint extends Endpoint {
     required bool quarantine,
   }) async {
     final operatorName = await _authorize(session);
-    _reason(reason);
+    reason = _reason(reason);
     return session.db.transaction((transaction) async {
       final row = await PoiCatalogRow.db.findFirstRow(
         session,
@@ -1957,14 +1964,26 @@ WHERE "metricName" = @name
     return result;
   }
 
-  void _reason(String value) {
-    if (value.trim().length < 4 || value.trim().length > 500) {
+  /// What an operator gave as the reason, ready to store.
+  ///
+  /// A reason is optional: operators asked not to be made to justify routine
+  /// changes. The audit row still needs one, so a blank reason becomes
+  /// [_unexplained] rather than being rejected. The ceiling stays, because an
+  /// unbounded string here would be stored verbatim.
+  String _reason(String value) {
+    final trimmed = value.trim();
+    if (trimmed.length > 500) {
       throw ApiException(
         code: 'bad_request',
-        message: 'Enter a reason between 4 and 500 characters.',
+        message: 'Keep the reason under 500 characters.',
       );
     }
+    return trimmed.isEmpty ? _unexplained : trimmed;
   }
+
+  /// Stands in for an omitted reason, so the audit trail says plainly that
+  /// none was given instead of carrying an empty string.
+  static const _unexplained = 'No reason given';
 
   /// Flattens a policy into the audit row's free-form string map.
   ///

@@ -11,6 +11,7 @@ resolution: workspace
 
 dependencies:
   cached_network_image: ^3.4.1
+  flutter_cache_manager: ^3.4.1
   calendar_view: 2.0.0
   drift: ^2.28.2
   drift_flutter: ^0.2.4
@@ -56,6 +57,7 @@ flutter:
   assets:
     - assets/config.json
     - assets/branding/hayer_icon.png
+    - assets/branding/hayer_icon_foreground.png
   fonts:
     - family: Nunito
       fonts:
@@ -66,11 +68,16 @@ flutter_launcher_icons:
   ios: true
   image_path: assets/branding/hayer_icon.png
   min_sdk_android: 21
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: assets/branding/hayer_icon.png
-  adaptive_icon_foreground_inset: 16
+  # The brand plate the adaptive foreground sits on. A white plate behind art
+  # that carries its own margin is what put a white edge around the icon.
+  adaptive_icon_background: "#0E9594"
+  # Rendered by scripts/render-icons.sh: the art alone, already centred in
+  # Android's safe zone, so no further inset is wanted here.
+  adaptive_icon_foreground: assets/branding/hayer_icon_foreground.png
+  adaptive_icon_foreground_inset: 0
+  # hayer_icon.png is opaque edge to edge, so this strips nothing.
   remove_alpha_ios: true
-  background_color_ios: "#FFFFFF"
+  background_color_ios: "#0E9594"
   web:
     generate: true
     image_path: assets/branding/hayer_icon.png

@@ -126,6 +126,21 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Scrolls the results half, as opposed to an open details sheet.
+  Future<void> scrollResultsTo(WidgetTester tester, Finder finder) async {
+    await tester.scrollUntilVisible(
+      finder,
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byType(DiscoveryResultsSheet),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
+  }
+
   group('standing', () {
     testWidgets('a selected row opens its details, which say where it stands '
         'in the whole search', (tester) async {
@@ -473,8 +488,10 @@ void main() {
       );
 
       for (final id in [1, 2, 3]) {
+        await scrollResultsTo(tester, find.byKey(_report(id)));
         expect(find.byKey(_report(id)), findsOneWidget);
       }
+      await scrollResultsTo(tester, find.byKey(_report(1)));
       await tester.tap(find.byKey(_report(1)));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('poi-issue-wrongLocation')));

@@ -90,6 +90,9 @@ abstract interface class AdminOperations {
     DiscoveryTypeMappingIssue? issue,
   });
 
+  /// What the Discover type auto-mapper has attached, and whether it is on.
+  Future<AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes();
+
   Future<AdminDiscoveryHarvestManifestVersion> discoveryHarvestManifestDraft();
 
   Future<List<AdminDiscoveryHarvestManifestVersion>>
@@ -416,6 +419,10 @@ class ServerpodAdminOperations implements AdminOperations {
     query: query,
     issue: issue,
   );
+
+  @override
+  Future<AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes() =>
+      client.admin.discoveryAutoMappedTypes();
 
   @override
   Future<AdminDiscoveryHarvestManifestVersion>

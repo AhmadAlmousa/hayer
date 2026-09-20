@@ -19,6 +19,7 @@ admin:
   - rollbackDiscoveryHarvestManifest:
   - discoveryHarvestJobs:
   - discoveryUnmappedTypes:
+  - discoveryAutoMappedTypes:
   - discoveryGrowthMetrics:
   - taxonomyDraft:
   - taxonomyHistory:

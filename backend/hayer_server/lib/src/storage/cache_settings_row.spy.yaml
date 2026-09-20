@@ -33,15 +33,23 @@ fields:
   discoveryHarvestDesiredCandidatesPerQuery: int, default=50
   discoveryHarvestMaximumSeconds: int, default=300
   discoveryHarvestCooldownMinutes: int, default=60
-  discoveryUserHarvestsPerHour: int, default=3
+  discoveryUserHarvestsPerHour: int, default=12
   discoveryBrowseRequestsPerMinute: int, default=30
   discoveryFacetRequestsPerMinute: int, default=60
   discoveryQueryTimeoutMilliseconds: int, default=2000
   discoveryMaximumPageSize: int, default=100
   discoveryMaximumMapPoints: int, default=2000
+  # Whether the harvest attaches newly observed provider types to the
+  # Discover tree by itself. Off leaves every new type under Other until an
+  # operator maps it by hand.
+  discoveryTypeAutoMapEnabled: bool, default=true
   detailRefreshMaximumRequests: int, default=3
   detailRefreshMaximumSeconds: int, default=20
   detailRefreshCooldownMinutes: int, default=60
+  photoFetchCount: int, default=6
+  photoWidth: int, default=1200
+  photoCacheCount: int, default=400
+  photoCacheDays: int, default=14
   updatedBy: String
   updatedAt: DateTime
 indexes:

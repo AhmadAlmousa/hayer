@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import 'discovery_taxonomy_seed.dart';
 
 /// Owns the independently versioned taxonomy used by Discover.
 abstract final class DiscoveryTaxonomyService {
@@ -427,29 +428,12 @@ abstract final class DiscoveryTaxonomyService {
     return row;
   }
 
-  static List<DiscoveryTaxonomyNode> seedRoots() => [
-    _seed('food', 'Food & Drinks', 'الأطعمة والمشروبات', '🍹'),
-    _seed('todo', 'Things to Do', 'أنشطة ومعالم', '🏰'),
-    _seed('stay', 'Accommodation', 'أماكن الإقامة', '🏨'),
-    _seed('ent', 'Entertainment', 'الترفيه', '🍿'),
-    _seed('wellness', 'Wellness', 'العافية', '😌'),
-    _seed('tours', 'Tours & Travel', 'الجولات والسفر', '🚌'),
-    _seed('shopping', 'Shopping', 'التسوق', '🛍️'),
-    _seed('sports', 'Activities & Sports', 'الأنشطة والرياضة', '⚽'),
-    _seed('religion', 'Religion & Worship', 'الدين والعبادة', '⛩️'),
-  ];
-
-  static DiscoveryTaxonomyNode _seed(
-    String id,
-    String labelEn,
-    String labelAr,
-    String emoji,
-  ) => DiscoveryTaxonomyNode(
-    id: id,
-    labelEn: labelEn,
-    labelAr: labelAr,
-    emoji: emoji,
-    typeAliases: [],
-    children: [],
-  );
+  /// The vocabulary a fresh database starts with.
+  ///
+  /// It used to be nine bare roots with no children and no aliases, so every
+  /// observed type fell under Other and an operator had to map each one by
+  /// hand. It is now the full nested tree in [DiscoveryTaxonomySeed], which
+  /// `DiscoveryTypeAutoMapper` extends from what the harvest observes.
+  static List<DiscoveryTaxonomyNode> seedRoots() =>
+      DiscoveryTaxonomySeed.roots();
 }

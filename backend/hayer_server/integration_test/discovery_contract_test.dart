@@ -208,6 +208,7 @@ void main() {
             queryTimeoutMilliseconds: 3000,
             maximumPageSize: 100,
             maximumMapPoints: 2000,
+            typeAutoMapEnabled: false,
           );
           final withDiscovery = await admin.updatePolicy(
             session,

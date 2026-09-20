@@ -1922,18 +1922,6 @@ abstract class AppLocalizations {
   /// **'Loading places'**
   String get discoveryLoadingPlaces;
 
-  /// No description provided for @discoverySearchThisArea.
-  ///
-  /// In en, this message translates to:
-  /// **'Search this area'**
-  String get discoverySearchThisArea;
-
-  /// No description provided for @discoverySearchingThisArea.
-  ///
-  /// In en, this message translates to:
-  /// **'Searching this area…'**
-  String get discoverySearchingThisArea;
-
   /// No description provided for @discoveryShowMyLocation.
   ///
   /// In en, this message translates to:
@@ -2222,17 +2210,17 @@ abstract class AppLocalizations {
   /// **'Reset'**
   String get discoveryFiltersReset;
 
-  /// No description provided for @discoveryFilterText.
-  ///
-  /// In en, this message translates to:
-  /// **'Search names and descriptions'**
-  String get discoveryFilterText;
-
   /// No description provided for @discoveryFilterTextHint.
   ///
   /// In en, this message translates to:
   /// **'For example, rooftop or kunafa'**
   String get discoveryFilterTextHint;
+
+  /// No description provided for @discoverySearchClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear the search'**
+  String get discoverySearchClear;
 
   /// No description provided for @discoveryFilterReviews.
   ///

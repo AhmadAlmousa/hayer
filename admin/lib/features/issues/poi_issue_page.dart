@@ -494,8 +494,11 @@ class _ReasonDialogState extends State<_ReasonDialog> {
           controller: _reason,
           autofocus: true,
           maxLength: 500,
-          onChanged: (_) => setState(() {}),
-          decoration: const InputDecoration(labelText: 'Required reason'),
+          decoration: const InputDecoration(
+            labelText: 'Reason (optional)',
+            helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+            helperMaxLines: 3,
+          ),
         ),
       ],
     ),
@@ -505,9 +508,7 @@ class _ReasonDialogState extends State<_ReasonDialog> {
         child: const Text('Cancel'),
       ),
       FilledButton(
-        onPressed: _valid(_reason.text)
-            ? () => Navigator.pop(context, _reason.text.trim())
-            : null,
+        onPressed: () => Navigator.pop(context, _reason.text.trim()),
         child: const Text('Confirm'),
       ),
     ],
@@ -554,8 +555,11 @@ class _CloseReportDialogState extends State<_CloseReportDialog> {
             minLines: 2,
             maxLines: 4,
             maxLength: 500,
-            onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(labelText: 'Resolution'),
+            decoration: const InputDecoration(
+              labelText: 'Resolution (optional)',
+              helperText: 'Optional. Recorded against this change in the admin audit log so it can be explained later. Leave it blank and the log records that no reason was given. It changes nothing else.',
+              helperMaxLines: 3,
+            ),
           ),
           const SizedBox(height: 8),
           TextField(
@@ -580,7 +584,7 @@ class _CloseReportDialogState extends State<_CloseReportDialog> {
       ),
       FilledButton(
         key: const ValueKey('close-poi-issue'),
-        onPressed: _valid(_resolution.text) && _valid(_evidence.text)
+        onPressed: _valid(_evidence.text)
             ? () => Navigator.pop(context, (
                 resolution: _resolution.text.trim(),
                 evidence: _evidence.text.trim(),
@@ -592,6 +596,10 @@ class _CloseReportDialogState extends State<_CloseReportDialog> {
   );
 }
 
+/// Whether source evidence is substantial enough to close a report on.
+///
+/// Reasons are optional everywhere in admin; evidence is not, because closing
+/// a report is a claim about the place that someone has to be able to check.
 bool _valid(String value) {
   final length = value.trim().length;
   return length >= 4 && length <= 500;

@@ -122,17 +122,6 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
     }
   }
 
-  void _editText(String value) {
-    final runes = value.runes;
-    _edit(
-      _draft.copyWith(
-        text: runes.length > maxDiscoveryTextLength
-            ? String.fromCharCodes(runes.take(maxDiscoveryTextLength))
-            : value,
-      ),
-    );
-  }
-
   void _clear() {
     _text.clear();
     _edit(_draft.withoutSheetFilters());
@@ -260,20 +249,6 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
                 children: [
-                  TextField(
-                    key: const ValueKey('discovery-filter-text'),
-                    controller: _text,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      labelText: strings.discoveryFilterText,
-                      hintText: strings.discoveryFilterTextHint,
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    onChanged: _editText,
-                  ),
                   _Section(
                     title: strings.discoveryFilterReviews,
                     child: _ReviewBands(

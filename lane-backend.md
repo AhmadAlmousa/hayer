@@ -87,6 +87,74 @@ Last updated: 2026-09-16
 
 ## Checkpoints
 
+### A Discover tree that fills itself in — implemented (2026-09-19)
+
+M9-L's last item. The owner asked for nested Discover types, mapped without
+an operator doing it by hand.
+
+- **The tree already nested; it was empty.** `DiscoveryTaxonomyNode` is
+  recursive, validated to eight levels, and both the admin editor and the app
+  sheet render it as a tree. What shipped was nine roots with no children and
+  no aliases. `DiscoveryTaxonomySeed` replaces that with the real vocabulary:
+  over 100 nodes, English and Arabic labels, an emoji each, and the provider
+  spellings the harvest will meet, with the owner's example chain
+  Food & Drinks → Restaurants → Middle Eastern → Lebanese in it. It is Dart
+  seed data rather than a migration, so an operator edits and republishes it
+  through the ordinary draft → validate → publish lifecycle.
+- **`DiscoveryTypeAutoMapper`.** The harvest is what learns of a new provider
+  type, so mapping runs at the end of one. It reads the observed types the
+  active tree does not claim and matches each by, in order: a node label,
+  singular or plural; a known head noun whose modifier resolves inside that
+  noun's subtree ("Lebanese cuisine" → Lebanese); the head noun's own node
+  ("Peruvian restaurant" → Restaurants). Anything else is left alone and still
+  appears in the admin unmapped report, which stays the manual escape hatch.
+  The alias goes on the target and comes off every other node, the same rule
+  the admin tree editor applies, so tree-wide alias uniqueness still holds; a
+  run whose result would not validate is abandoned rather than published, and
+  a failure is logged without failing the harvest.
+- **What it did is on the record.** Each assignment is a row in
+  `hayer_discovery_type_automap` (one per type, a later run overwrites its
+  own), and each run is an audit row attributed to `auto-mapper`. The new
+  `discoveryAutoMappedTypes` admin read serves both: the tree editor marks
+  aliases the mapper chose, and the unmapped-types page says whether it is on
+  and when it last ran. `discoveryTypeAutoMapEnabled` defaults on.
+
+Tests: the seed is checked against `validate`, the matching rules are unit
+tested without a database, and four PostGIS cases cover a fresh database's
+vocabulary, a run's writes, a second run being a no-op, and an operator's
+placement never being moved back. 216 server tests pass.
+
+### Optional reason, photo policy and covering coverage — implemented (2026-09-18)
+
+M9-L, the owner's feedback pass. Three back-end halves.
+
+- **The admin reason is optional.** `_reason` no longer demands four
+  characters; a blank one is recorded as "No reason given", so the
+  `NOT NULL` audit column still holds a readable row and no migration or
+  protocol change was needed. The 500-character ceiling stays, and POI issue
+  moderation keeps its 4..500 evidence check, which is a claim about a place
+  rather than a note to the audit log.
+- **Photo policy.** `PhotoPolicy` carries `fetchCount`, `width`,
+  `cacheCount` and `cacheDays`, stored as four columns on
+  `hayer_cache_settings` under the same bounds CHECK as the rest of the
+  policy. `SearchParser` takes its photo limit and width from it instead of
+  the hard-coded 3 and `=w1600`, and `GoogleWebPlaceSource.configurePhotos`
+  applies them per session. The two client numbers reach the app on
+  bootstrap.
+- **Covering coverage.** `_fresh` matched an exact
+  `(country, cellId, radiusMeters)`, so a completed 5 km harvest did not
+  satisfy a later 2 km request over the same centre, and panning a few
+  hundred metres changed the cell entirely and re-reported the area as
+  unexplored. The freshness check now also accepts a covering row: same
+  country, an equal or larger radius bucket whose footprint contains the
+  requested cell, the matching manifest revision, and every enabled query
+  complete. `discoveryUserHarvestsPerHour` rises from 3 to 12 by migration
+  and by default, because harvesting is now automatic rather than a button.
+
+The remote PostGIS suite ran 136 tests with one failure, the growth-metrics
+`exploredCells` expectation in `discovery_admin_harvest_test.dart`, verified
+pre-existing on `main`.
+
 ### Admin catalog reads: map scope, filters, heat grid and place detail — implemented (2026-09-16)
 
 The owner asked for a better admin POI catalog: a heat map of where places

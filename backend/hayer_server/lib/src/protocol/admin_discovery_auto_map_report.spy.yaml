@@ -1,0 +1,12 @@
+### What the Discover type auto-mapper has done, for the unmapped-types page
+### and the tree editor.
+class: AdminDiscoveryAutoMapReport
+fields:
+  ### Whether the harvest is currently allowed to map types by itself.
+  enabled: bool
+  ### How many observed types the mapper has attached in total.
+  mappedTypeCount: int
+  ### When it last attached one, null when it never has.
+  lastMappedAt: DateTime?
+  ### The most recent assignments, newest first.
+  recent: List<AdminDiscoveryAutoMappedType>

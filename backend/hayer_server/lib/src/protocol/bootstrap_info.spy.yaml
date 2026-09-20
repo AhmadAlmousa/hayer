@@ -8,3 +8,7 @@ fields:
   taxonomyVersion: String
   configVersion: int
   serverTime: DateTime
+  # How many photos a device should keep and for how long. Null from an older
+  # server leaves the client on its built-in defaults; photos are shared by
+  # both modes, so this is not behind the discovery flag.
+  photos: PhotoPolicy?

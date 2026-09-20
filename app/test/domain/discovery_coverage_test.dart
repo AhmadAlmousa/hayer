@@ -72,14 +72,24 @@ DiscoveryCoverageStatus _status({
 void main() {
   final yesterday = _now.subtract(const Duration(days: 1));
 
-  test('an area no exploration touched is unexplored, even with places '
-      'known from other searches', () {
-    final status = _status(eligible: 40);
+  test('an area with nothing known and no exploration is unexplored', () {
+    final status = _status(eligible: 0);
 
     expect(status.kind, DiscoveryCoverageKind.unexplored);
-    expect(status.knownPlaces, 40);
+    expect(status.knownPlaces, 0);
     expect(status.lastExploredAt, isNull);
     expect(status.unfinished, isFalse);
+  });
+
+  test('places known from other searches make an untouched area partial', () {
+    // Panning a few hundred metres moves to another canonical cell, which has
+    // no footprint of its own. Calling that "not explored yet" over places we
+    // are already showing is the complaint this guards.
+    final status = _status(eligible: 40);
+
+    expect(status.kind, DiscoveryCoverageKind.partial);
+    expect(status.knownPlaces, 40);
+    expect(status.lastExploredAt, isNull);
   });
 
   test('one completed cell over the whole view explores it', () {
@@ -182,7 +192,9 @@ void main() {
       job: _job(DiscoveryHarvestState.partial),
     );
 
-    expect(status.kind, DiscoveryCoverageKind.unexplored);
+    // Not exploring, which is the point here: the followed job has ended. The
+    // kind is partial rather than unexplored only because places are known.
+    expect(status.kind, DiscoveryCoverageKind.partial);
     expect(status.unfinished, isTrue);
 
     expect(

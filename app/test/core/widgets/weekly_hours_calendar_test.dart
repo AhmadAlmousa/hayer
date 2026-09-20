@@ -32,6 +32,47 @@ void main() {
     expect(tuesday.single.end, 180);
   });
 
+  test('narrows the drawn window to the hours a place is actually open', () {
+    final hours = [
+      for (var day = DateTime.monday; day <= DateTime.sunday; day++)
+        OpeningPeriod(
+          day: day,
+          openMinutes: 17 * 60,
+          closeMinutes: 23 * 60,
+          overnight: false,
+        ),
+    ];
+
+    final window = openingHoursWindow(hours, DateTime(2026, 9, 2, 19));
+
+    // An hour of padding each side of 17:00-23:00, and nothing of the night.
+    expect(window.startHour, 16);
+    expect(window.endHour, 24);
+  });
+
+  test('widens the window to keep the current hour in view', () {
+    final hours = [
+      OpeningPeriod(
+        day: DateTime.monday,
+        openMinutes: 18 * 60,
+        closeMinutes: 22 * 60,
+        overnight: false,
+      ),
+    ];
+
+    final window = openingHoursWindow(hours, DateTime(2026, 9, 2, 9));
+
+    expect(window.startHour, 9);
+    expect(window.endHour, 23);
+  });
+
+  test('draws a daytime band when a place lists no hours', () {
+    final window = openingHoursWindow(const [], DateTime(2026, 9, 2, 12));
+
+    expect(window.startHour, 8);
+    expect(window.endHour, 22);
+  });
+
   testWidgets('uses the locale week start and draws current time across days', (
     tester,
   ) async {

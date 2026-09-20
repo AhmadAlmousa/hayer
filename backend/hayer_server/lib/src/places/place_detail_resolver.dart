@@ -554,6 +554,11 @@ WHERE "provider" = @provider
       requestsPerMinute: policy.globalRequestsPerMinute,
       burst: policy.globalBurst,
     );
+    final photos = policy.photos ?? DiscoveryPolicyService.defaultPhotos();
+    services.source.configurePhotos(
+      count: photos.fetchCount,
+      width: photos.width,
+    );
     return _ServicesSource(services);
   }
 

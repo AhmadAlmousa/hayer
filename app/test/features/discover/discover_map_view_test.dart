@@ -15,9 +15,23 @@ import 'discovery_results_fakes.dart';
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
 const _card = ValueKey('discovery-place-card');
 const _deepen = ValueKey('discovery-deepen');
-const _sheetToggle = ValueKey('discovery-sheet-toggle');
 
 ValueKey<String> _row(int id) => ValueKey('discovery-row-$id');
+
+/// Scrolls the results half down to [finder].
+Future<void> _scrollResultsTo(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    200,
+    scrollable: find
+        .descendant(
+          of: find.byType(DiscoveryResultsSheet),
+          matching: find.byType(Scrollable),
+        )
+        .first,
+  );
+  await tester.pumpAndSettle();
+}
 
 void main() {
   late DiscoverFixture fixture;
@@ -55,7 +69,6 @@ void main() {
             );
 
       await pumpDiscover(tester, fixture, _riyadhLink);
-      await tester.tap(find.byKey(_sheetToggle));
       await tester.pumpAndSettle();
 
       expect(
@@ -133,14 +146,18 @@ void main() {
         'clears it', (tester) async {
       await pumpDiscover(tester, fixture, _riyadhLink);
 
-      // By key, because the card over the map names the same place.
-      await tester.tap(find.byKey(_row(2)));
+      // Within the list, because the card over the map names the same place.
+      final row = find.descendant(
+        of: find.byType(DiscoveryResultsSheet),
+        matching: find.text('2. Place 2'),
+      );
+      await tester.tap(row);
       await tester.pumpAndSettle();
       expect(map(tester).selected?.catalogId, 2);
       expect(rowWidget(tester, 2).selected, isTrue);
       expect(find.byKey(_card), findsOneWidget);
 
-      await tester.tap(find.byKey(_row(2)));
+      await tester.tap(row);
       await tester.pumpAndSettle();
       expect(map(tester).selected, isNull);
       expect(rowWidget(tester, 2).selected, isFalse);
@@ -419,25 +436,39 @@ void main() {
     );
     map(tester).onPlace!(testMapPoint(99));
     await tester.pumpAndSettle();
-    // Over the map, the selected place's card is there to read.
-    expect(tester.takeException(), isNull);
-    expect(find.byKey(_card), findsOneWidget);
-
-    await tester.tap(find.byKey(_sheetToggle));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+    // At twice the system size on a 320pt phone the results header fills the
+    // results half on its own, so everything under it is scrolled to in turn.
+    await _scrollResultsTo(
+      tester,
+      find.byKey(const ValueKey('discovery-coverage')),
+    );
     expect(find.byKey(const ValueKey('discovery-coverage')), findsOneWidget);
-    // The full list covers the map, so the card gives way to it.
-    expect(find.byKey(_card), findsNothing);
     // The strip's details fold away at this size until asked for.
-    expect(find.text('لم يكتمل آخر استكشاف.'), findsNothing);
+    expect(
+      find.text('لم يكتمل آخر استكشاف.', skipOffstage: false),
+      findsNothing,
+    );
 
+    await _scrollResultsTo(
+      tester,
+      find.byKey(const ValueKey('discovery-coverage-toggle')),
+    );
     await tester.tap(find.byKey(const ValueKey('discovery-coverage-toggle')));
     await tester.pumpAndSettle();
-    expect(find.text('لم يكتمل آخر استكشاف.'), findsOneWidget);
+    expect(
+      find.text('لم يكتمل آخر استكشاف.', skipOffstage: false),
+      findsOneWidget,
+    );
+    await _scrollResultsTo(tester, find.byKey(_deepen));
     expect(find.byKey(_deepen), findsOneWidget);
     expect(tester.takeException(), isNull);
+
+    // A far pin's place is not a loaded row, so the card over the map is the
+    // only thing that says what is selected, and it still fits the short map.
+    expect(find.byKey(_card), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.byKey(_row(3)),
