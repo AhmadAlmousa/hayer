@@ -18,7 +18,7 @@ import 'discovery_results_fakes.dart';
 
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
 
-/// The results list, which fills the lower half of the screen.
+/// The results list in the draggable sheet.
 Finder _resultsList() => find
     .descendant(
       of: find.byType(DiscoveryResultsSheet),
@@ -26,8 +26,7 @@ Finder _resultsList() => find
     )
     .first;
 
-/// Brings [finder] into the results half, which shows fewer rows at once than
-/// the old full-height sheet did.
+/// Brings [finder] into the results sheet.
 Future<void> _scrollToResult(WidgetTester tester, Finder finder) async {
   await tester.scrollUntilVisible(finder, 200, scrollable: _resultsList());
   await tester.pumpAndSettle();
@@ -43,6 +42,31 @@ void main() {
   });
 
   group('the starting area', () {
+    testWidgets(
+      'a shared current-distance link uses the area center when location is unavailable',
+      (
+        tester,
+      ) async {
+        final router = await pumpDiscover(
+          tester,
+          fixture,
+          '$_riyadhLink&sort=distance_current',
+        );
+
+        expect(
+          router.routeInformationProvider.value.uri.queryParameters['sort'],
+          'distance_area',
+        );
+        expect(
+          fixture.repository.requests.last.query.sort,
+          DiscoverSort.distanceArea,
+        );
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(router.routeInformationProvider.value.uri.path, '/');
+      },
+    );
+
     testWidgets('is the default city with no location or remembered area, '
         'and replaces the link rather than adding a search', (tester) async {
       final router = await pumpDiscover(tester, fixture, '/discover?v=1');
@@ -78,20 +102,27 @@ void main() {
       expect(fixture.location.prompts, 0);
     });
 
-    testWidgets('is the last area searched when no location is permitted', (
-      tester,
-    ) async {
-      fixture.areas.viewport = DiscoveryViewport.tryCreate(
-        south: 21.4,
-        west: 39.1,
-        north: 21.6,
-        east: 39.3,
-      );
+    testWidgets(
+      'opens 500 m around the last area when location is unavailable',
+      (
+        tester,
+      ) async {
+        fixture.areas.viewport = DiscoveryViewport.tryCreate(
+          south: 21.4,
+          west: 39.1,
+          north: 21.6,
+          east: 39.3,
+        );
 
-      final router = await pumpDiscover(tester, fixture, '/discover?v=1');
+        final router = await pumpDiscover(tester, fixture, '/discover?v=1');
 
-      expect(_committedViewport(router).token, '21.4,39.1,21.6,39.3');
-    });
+        final viewport = _committedViewport(router);
+        final center = discoveryViewportCenter(viewport);
+        expect(center.latitude, closeTo(21.5, 1e-3));
+        expect(center.longitude, closeTo(39.2, 1e-3));
+        expect((viewport.north - viewport.south) * 111320, closeTo(1000, 10));
+      },
+    );
   });
 
   testWidgets('rows show rank, name, rating, review count and one tag by '
@@ -137,12 +168,12 @@ void main() {
     expect(find.text('1. Gem'), findsOneWidget);
     expect(find.text('★ 4.8'), findsOneWidget);
     expect(find.text('💎 Hidden gem · only 320 reviews'), findsOneWidget);
-    expect(find.text('🆕 Added 10 days ago'), findsOneWidget);
-    await _scrollToResult(tester, find.text('⚠️ Rated below 4.0'));
-    expect(find.text('⚠️ Rated below 4.0'), findsOneWidget);
+    expect(find.textContaining('Added 10 days ago'), findsNothing);
+    await _scrollToResult(tester, find.text('⚠️ Rated below 4.0').first);
+    expect(find.text('⚠️ Rated below 4.0'), findsWidgets);
     await _scrollToResult(tester, find.text('🔥 45K reviews'));
     expect(find.text('🔥 45K reviews'), findsOneWidget);
-    expect(find.text('45K reviews'), findsNWidgets(2));
+    expect(find.text('45K reviews'), findsWidgets);
     expect(find.text('Open now'), findsOneWidget);
     await _scrollToResult(tester, find.text('Hours unavailable'));
     expect(find.text('Hours unavailable'), findsOneWidget);
@@ -203,6 +234,70 @@ void main() {
 
     expect(fixture.geocoder.calls, 1);
     expect(find.text('This area · this view'), findsOneWidget);
+  });
+
+  testWidgets(
+    'the area label becomes the address input without a second address bar',
+    (
+      tester,
+    ) async {
+      await pumpDiscover(tester, fixture, _riyadhLink);
+
+      expect(find.byKey(const ValueKey('location-search-field')), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('discovery-area-search')));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('location-search-field')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const ValueKey('discovery-area-search')), findsNothing);
+      expect(find.byKey(const ValueKey('discovery-search')), findsNothing);
+
+      await tester.tap(find.byKey(const ValueKey('discovery-close-search')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('location-search-field')), findsNothing);
+      expect(
+        find.byKey(const ValueKey('discovery-area-search')),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets('place keyword search lives in the results sheet', (
+    tester,
+  ) async {
+    final router = await pumpDiscover(tester, fixture, _riyadhLink);
+
+    expect(find.byKey(const ValueKey('discovery-search')), findsNothing);
+    await tester.tap(
+      find.byKey(const ValueKey('discovery-place-search-toggle')),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const ValueKey('discovery-search')),
+      'kunafa',
+    );
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+    expect(
+      router.routeInformationProvider.value.uri.queryParameters['q'],
+      'kunafa',
+    );
+  });
+
+  testWidgets('results sheet can grow while the map stays behind it', (
+    tester,
+  ) async {
+    await pumpDiscover(tester, fixture, _riyadhLink);
+    final sheet = find.byType(DiscoveryResultsSheet);
+    final initialHeight = tester.getSize(sheet).height;
+    await tester.drag(
+      find.byKey(const ValueKey('discovery-sheet-grip')),
+      const Offset(0, -300),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.getSize(sheet).height, greaterThan(initialHeight));
+    expect(find.byType(DiscoveryMap), findsOneWidget);
   });
 
   test('an area name is the locality, then the city, and never a part of the '
@@ -311,6 +406,32 @@ void main() {
       find.text('Highest rating first, any review count'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('distance sorting uses the selected device location', (
+    tester,
+  ) async {
+    fixture.location.position = testPosition(24.70, 46.70);
+    final router = await pumpDiscover(tester, fixture, _riyadhLink);
+
+    await tester.tap(find.byKey(const ValueKey('discovery-sort')));
+    await tester.pumpAndSettle();
+    final current = find.byKey(
+      const ValueKey('discovery-sort-distanceCurrent'),
+    );
+    await tester.ensureVisible(current);
+    await tester.pumpAndSettle();
+    await tester.tap(current);
+    await tester.pumpAndSettle();
+
+    expect(
+      router.routeInformationProvider.value.uri.queryParameters['sort'],
+      'distance_current',
+    );
+    final query = fixture.repository.requests.last.query;
+    expect(query.sort, DiscoverSort.distanceCurrent);
+    expect(query.originLatitude, 24.70);
+    expect(query.originLongitude, 46.70);
   });
 
   testWidgets('no matches under filters offers to clear them', (tester) async {

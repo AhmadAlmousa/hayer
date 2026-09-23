@@ -8,171 +8,174 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'admin_analytics_overview.dart' as _i2;
-import 'admin_audit_entry.dart' as _i3;
-import 'admin_audit_page.dart' as _i4;
-import 'admin_catalog_category_evidence.dart' as _i5;
-import 'admin_catalog_detail_refresh.dart' as _i6;
-import 'admin_catalog_field.dart' as _i7;
-import 'admin_catalog_freshness.dart' as _i8;
-import 'admin_catalog_heat_cell.dart' as _i9;
-import 'admin_catalog_heatmap.dart' as _i10;
-import 'admin_catalog_lifecycle.dart' as _i11;
-import 'admin_catalog_page.dart' as _i12;
-import 'admin_catalog_place.dart' as _i13;
-import 'admin_catalog_place_detail.dart' as _i14;
-import 'admin_catalog_query.dart' as _i15;
-import 'admin_catalog_report.dart' as _i16;
-import 'admin_catalog_sort.dart' as _i17;
-import 'admin_catalog_status.dart' as _i18;
-import 'admin_catalog_type_count.dart' as _i19;
-import 'admin_discovery_auto_map_report.dart' as _i20;
-import 'admin_discovery_auto_mapped_type.dart' as _i21;
-import 'admin_discovery_harvest_job.dart' as _i22;
-import 'admin_discovery_harvest_job_page.dart' as _i23;
-import 'admin_discovery_harvest_manifest_version.dart' as _i24;
-import 'admin_discovery_taxonomy_version.dart' as _i25;
-import 'admin_discovery_unmapped_type.dart' as _i26;
-import 'admin_discovery_unmapped_type_page.dart' as _i27;
-import 'admin_live_usage.dart' as _i28;
-import 'admin_map_location.dart' as _i29;
-import 'admin_place_analytics.dart' as _i30;
-import 'admin_poi_issue.dart' as _i31;
-import 'admin_poi_issue_page.dart' as _i32;
-import 'admin_taxonomy_item.dart' as _i33;
-import 'admin_taxonomy_version.dart' as _i34;
-import 'admin_usage_analytics.dart' as _i35;
-import 'analytics_breakdown.dart' as _i36;
-import 'analytics_filter.dart' as _i37;
-import 'analytics_granularity.dart' as _i38;
-import 'analytics_heat_cell.dart' as _i39;
-import 'analytics_kpi.dart' as _i40;
-import 'analytics_point.dart' as _i41;
-import 'api_exception.dart' as _i42;
-import 'bootstrap_info.dart' as _i43;
-import 'cache_dashboard_summary.dart' as _i44;
-import 'cache_policy.dart' as _i45;
-import 'calibration_status.dart' as _i46;
-import 'calibration_validation.dart' as _i47;
-import 'catalog_place_page.dart' as _i48;
-import 'catalog_prune_preview.dart' as _i49;
-import 'client_analytics_context.dart' as _i50;
-import 'client_analytics_event.dart' as _i51;
-import 'consensus_rule.dart' as _i52;
-import 'coverage_page.dart' as _i53;
-import 'coverage_record.dart' as _i54;
-import 'create_intent_session_request.dart' as _i55;
-import 'create_session_request.dart' as _i56;
-import 'destination_choice_state.dart' as _i57;
-import 'discover_browse_page.dart' as _i58;
-import 'discover_completeness.dart' as _i59;
-import 'discover_facets.dart' as _i60;
-import 'discover_hours_window.dart' as _i61;
-import 'discover_place.dart' as _i62;
-import 'discover_place_context.dart' as _i63;
-import 'discover_query.dart' as _i64;
-import 'discover_query_context.dart' as _i65;
-import 'discover_review_band.dart' as _i66;
-import 'discover_sort.dart' as _i67;
-import 'discover_viewport.dart' as _i68;
-import 'discovery_area_receipt.dart' as _i69;
-import 'discovery_best_formula.dart' as _i70;
-import 'discovery_client_limits.dart' as _i71;
-import 'discovery_config.dart' as _i72;
-import 'discovery_coverage.dart' as _i73;
-import 'discovery_coverage_footprint.dart' as _i74;
-import 'discovery_growth_metric_breakdown.dart' as _i75;
-import 'discovery_growth_metrics.dart' as _i76;
-import 'discovery_harvest_manifest_entry.dart' as _i77;
-import 'discovery_harvest_manifest_validation.dart' as _i78;
-import 'discovery_harvest_query_kind.dart' as _i79;
-import 'discovery_harvest_query_outcome.dart' as _i80;
-import 'discovery_harvest_query_state.dart' as _i81;
-import 'discovery_harvest_requester.dart' as _i82;
-import 'discovery_harvest_state.dart' as _i83;
-import 'discovery_harvest_status.dart' as _i84;
-import 'discovery_harvest_trigger.dart' as _i85;
-import 'discovery_manifest_status.dart' as _i86;
-import 'discovery_map_aggregate.dart' as _i87;
-import 'discovery_map_mode.dart' as _i88;
-import 'discovery_map_payload.dart' as _i89;
-import 'discovery_map_point.dart' as _i90;
-import 'discovery_metric_mode.dart' as _i91;
-import 'discovery_metric_operation.dart' as _i92;
-import 'discovery_minimum_rating_count.dart' as _i93;
-import 'discovery_policy.dart' as _i94;
-import 'discovery_price_count.dart' as _i95;
-import 'discovery_rating_bucket.dart' as _i96;
-import 'discovery_review_band_count.dart' as _i97;
-import 'discovery_scoring.dart' as _i98;
-import 'discovery_taxonomy_node.dart' as _i99;
-import 'discovery_taxonomy_snapshot.dart' as _i100;
-import 'discovery_taxonomy_validation.dart' as _i101;
-import 'discovery_type_count.dart' as _i102;
-import 'discovery_type_mapping_issue.dart' as _i103;
-import 'job_status.dart' as _i104;
-import 'location_suggestion.dart' as _i105;
-import 'matching_timing.dart' as _i106;
-import 'metric_point.dart' as _i107;
-import 'opening_period.dart' as _i108;
-import 'participant_view.dart' as _i109;
-import 'photo_policy.dart' as _i110;
-import 'place_detail_field.dart' as _i111;
-import 'place_detail_policy.dart' as _i112;
-import 'place_detail_refresh_state.dart' as _i113;
-import 'place_detail_result.dart' as _i114;
-import 'place_insight.dart' as _i115;
-import 'place_intent_query.dart' as _i116;
-import 'place_ranking.dart' as _i117;
-import 'place_snapshot.dart' as _i118;
-import 'poi_identity.dart' as _i119;
-import 'poi_issue_source.dart' as _i120;
-import 'poi_issue_status.dart' as _i121;
-import 'poi_issue_type.dart' as _i122;
-import 'refresh_job_page.dart' as _i123;
-import 'refresh_job_view.dart' as _i124;
-import 'reverse_geocode_result.dart' as _i125;
-import 'route_estimate.dart' as _i126;
-import 'route_estimate_policy.dart' as _i127;
-import 'route_origin_mode.dart' as _i128;
-import 'session_bundle.dart' as _i129;
-import 'session_event.dart' as _i130;
-import 'session_event_type.dart' as _i131;
-import 'session_mode.dart' as _i132;
-import 'session_progress.dart' as _i133;
-import 'session_result.dart' as _i134;
-import 'session_result_tally.dart' as _i135;
-import 'session_status.dart' as _i136;
-import 'session_view.dart' as _i137;
-import 'swipe_command.dart' as _i138;
-import 'taxonomy_canary_sample.dart' as _i139;
-import 'taxonomy_item.dart' as _i140;
-import 'taxonomy_kind.dart' as _i141;
-import 'taxonomy_snapshot.dart' as _i142;
-import 'taxonomy_status.dart' as _i143;
-import 'taxonomy_validation.dart' as _i144;
-import 'package:hayer_client/src/protocol/location_suggestion.dart' as _i145;
-import 'package:hayer_client/src/protocol/admin_discovery_taxonomy_version.dart'
-    as _i146;
-import 'package:hayer_client/src/protocol/discovery_taxonomy_node.dart'
-    as _i147;
+import 'dart:typed_data' as _idt;
 import 'package:hayer_client/src/protocol/admin_discovery_harvest_manifest_version.dart'
-    as _i148;
+    as _igv0hqt4;
+import 'package:hayer_client/src/protocol/admin_discovery_taxonomy_version.dart'
+    as _inkkospb;
+import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart'
+    as _ipqneq0v;
+import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart'
+    as _ieafa337;
 import 'package:hayer_client/src/protocol/discovery_harvest_manifest_entry.dart'
-    as _i149;
-import 'package:hayer_client/src/protocol/admin_taxonomy_version.dart' as _i150;
-import 'package:hayer_client/src/protocol/admin_taxonomy_item.dart' as _i151;
-import 'package:hayer_client/src/protocol/metric_point.dart' as _i152;
-import 'package:hayer_client/src/protocol/session_result.dart' as _i153;
+    as _ipd8hg6m;
+import 'package:hayer_client/src/protocol/discovery_taxonomy_node.dart'
+    as _izsjcp3l;
+import 'package:hayer_client/src/protocol/location_suggestion.dart'
+    as _i2wsj6nh;
+import 'package:hayer_client/src/protocol/metric_point.dart' as _i1gqgxvo;
+import 'package:hayer_client/src/protocol/session_result.dart' as _i7o61s6r;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i154;
-import 'dart:typed_data' as _i155;
+    as _iacc;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i156;
+    as _iaic;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'admin_analytics_overview.dart' as _iecy3fr0;
+import 'admin_audit_entry.dart' as _i62lvi00;
+import 'admin_audit_page.dart' as _ihx02lko;
+import 'admin_catalog_category_evidence.dart' as _ic5j2wzg;
+import 'admin_catalog_detail_refresh.dart' as _iwelc6th;
+import 'admin_catalog_field.dart' as _iyzxy41v;
+import 'admin_catalog_freshness.dart' as _i26vn4oa;
+import 'admin_catalog_heat_cell.dart' as _i1cajeij;
+import 'admin_catalog_heatmap.dart' as _i3fq1ai0;
+import 'admin_catalog_lifecycle.dart' as _ilk0q4cv;
+import 'admin_catalog_page.dart' as _ibbojg7c;
+import 'admin_catalog_place.dart' as _i76u62qe;
+import 'admin_catalog_place_detail.dart' as _ij16u99u;
+import 'admin_catalog_query.dart' as _iyhby1yo;
+import 'admin_catalog_report.dart' as _ie0km1ed;
+import 'admin_catalog_sort.dart' as _i5jj2ihb;
+import 'admin_catalog_status.dart' as _ihehxtqf;
+import 'admin_catalog_type_count.dart' as _i189df3w;
+import 'admin_discovery_auto_map_report.dart' as _ifiwaihh;
+import 'admin_discovery_auto_mapped_type.dart' as _izsiyar5;
+import 'admin_discovery_harvest_job.dart' as _igrd8jdy;
+import 'admin_discovery_harvest_job_page.dart' as _ignnujj0;
+import 'admin_discovery_harvest_manifest_version.dart' as _isqtb0th;
+import 'admin_discovery_taxonomy_version.dart' as _ig5prpr6;
+import 'admin_discovery_unmapped_type.dart' as _io11b7f4;
+import 'admin_discovery_unmapped_type_page.dart' as _ixc8e9r6;
+import 'admin_live_usage.dart' as _i17fquo2;
+import 'admin_map_location.dart' as _irkf0vy6;
+import 'admin_place_analytics.dart' as _iv11hnpe;
+import 'admin_poi_issue.dart' as _i38jre17;
+import 'admin_poi_issue_page.dart' as _iyeluef3;
+import 'admin_taxonomy_item.dart' as _ic97i39b;
+import 'admin_taxonomy_version.dart' as _ixqv2zag;
+import 'admin_usage_analytics.dart' as _ixxf414g;
+import 'analytics_breakdown.dart' as _iky5xq8l;
+import 'analytics_filter.dart' as _ifkni2lr;
+import 'analytics_granularity.dart' as _i87q2y72;
+import 'analytics_heat_cell.dart' as _i58c035v;
+import 'analytics_kpi.dart' as _ixq6s46l;
+import 'analytics_point.dart' as _irt4ny16;
+import 'api_exception.dart' as _iozummgq;
+import 'bootstrap_info.dart' as _ia4tqko8;
+import 'cache_dashboard_summary.dart' as _iiw95en5;
+import 'cache_policy.dart' as _inde67sh;
+import 'calibration_status.dart' as _i77o9qph;
+import 'calibration_validation.dart' as _iupe0u14;
+import 'catalog_place_page.dart' as _idn3ilnl;
+import 'catalog_prune_preview.dart' as _i9cvny8e;
+import 'client_analytics_context.dart' as _iae9jhcw;
+import 'client_analytics_event.dart' as _iyv85p2h;
+import 'consensus_rule.dart' as _idhfk3qj;
+import 'coverage_page.dart' as _iz2o7pxx;
+import 'coverage_record.dart' as _i7dm26zo;
+import 'create_intent_session_request.dart' as _ihgqalvx;
+import 'create_session_request.dart' as _iktms5mb;
+import 'destination_choice_state.dart' as _ivseuofk;
+import 'discover_browse_page.dart' as _ix98zisu;
+import 'discover_completeness.dart' as _i0t9to2g;
+import 'discover_facets.dart' as _icao29qp;
+import 'discover_hours_window.dart' as _i9jnpiw7;
+import 'discover_place.dart' as _iyut1oys;
+import 'discover_place_context.dart' as _ihm9zx9x;
+import 'discover_query.dart' as _ip98t8ku;
+import 'discover_query_context.dart' as _ixfyrpmf;
+import 'discover_review_band.dart' as _ibwysijp;
+import 'discover_sort.dart' as _iijeyvjv;
+import 'discover_viewport.dart' as _i1okvcdc;
+import 'discovery_area_receipt.dart' as _itjfopq1;
+import 'discovery_best_formula.dart' as _iv19bw26;
+import 'discovery_client_limits.dart' as _ii690dam;
+import 'discovery_config.dart' as _iq6b9igw;
+import 'discovery_coverage.dart' as _i8yqti93;
+import 'discovery_coverage_footprint.dart' as _ito6p50m;
+import 'discovery_growth_metric_breakdown.dart' as _i8hpnrba;
+import 'discovery_growth_metrics.dart' as _i4184rq9;
+import 'discovery_harvest_manifest_entry.dart' as _iqg95alk;
+import 'discovery_harvest_manifest_validation.dart' as _iee3r3i8;
+import 'discovery_harvest_query_kind.dart' as _ih0y3xx9;
+import 'discovery_harvest_query_outcome.dart' as _i8d7uscq;
+import 'discovery_harvest_query_state.dart' as _it5gcvsk;
+import 'discovery_harvest_requester.dart' as _ipv2f6f1;
+import 'discovery_harvest_state.dart' as _i4wyetx8;
+import 'discovery_harvest_status.dart' as _iaeap9p2;
+import 'discovery_harvest_trigger.dart' as _ia4mymki;
+import 'discovery_manifest_status.dart' as _in2pelzj;
+import 'discovery_map_aggregate.dart' as _iwyy9blp;
+import 'discovery_map_mode.dart' as _i4gpq0qx;
+import 'discovery_map_payload.dart' as _ijiia6mk;
+import 'discovery_map_point.dart' as _iepk7ohg;
+import 'discovery_metric_mode.dart' as _iwc51qy2;
+import 'discovery_metric_operation.dart' as _ipgnhxya;
+import 'discovery_minimum_rating_count.dart' as _iafesi5t;
+import 'discovery_policy.dart' as _izqxi2bg;
+import 'discovery_price_count.dart' as _ijqf6en4;
+import 'discovery_rating_bucket.dart' as _iinjfol4;
+import 'discovery_review_band_count.dart' as _ijvcgm3f;
+import 'discovery_scoring.dart' as _iphkx6cy;
+import 'discovery_taxonomy_node.dart' as _i3sj4yil;
+import 'discovery_taxonomy_snapshot.dart' as _ic7lkmks;
+import 'discovery_taxonomy_validation.dart' as _iep1g1h3;
+import 'discovery_type_count.dart' as _iaqq99sz;
+import 'discovery_type_mapping_issue.dart' as _i0ly2vwv;
+import 'job_status.dart' as _iayt1i3u;
+import 'location_suggestion.dart' as _iib0mep8;
+import 'matching_timing.dart' as _inbmjteu;
+import 'metric_point.dart' as _icsyqkkq;
+import 'opening_period.dart' as _iutwk5y0;
+import 'participant_view.dart' as _ir2xxgfs;
+import 'photo_policy.dart' as _i8lsha3l;
+import 'place_detail_field.dart' as _iv461aah;
+import 'place_detail_policy.dart' as _iscbu2bm;
+import 'place_detail_refresh_state.dart' as _ik3zwp4j;
+import 'place_detail_result.dart' as _iy4xyr7h;
+import 'place_insight.dart' as _i19nqj1l;
+import 'place_intent_query.dart' as _i151h6s7;
+import 'place_ranking.dart' as _i9zjthc2;
+import 'place_snapshot.dart' as _ikbous9x;
+import 'poi_identity.dart' as _i9yu21jq;
+import 'poi_issue_source.dart' as _i8ciqmoq;
+import 'poi_issue_status.dart' as _ivby6xgm;
+import 'poi_issue_type.dart' as _i19nx1xx;
+import 'refresh_job_page.dart' as _izhbxe72;
+import 'refresh_job_view.dart' as _ij0beg7d;
+import 'reverse_geocode_result.dart' as _ivta80d7;
+import 'route_estimate.dart' as _ii314lch;
+import 'route_estimate_policy.dart' as _i3152jei;
+import 'route_origin_mode.dart' as _itt0gps6;
+import 'session_bundle.dart' as _izl9yd57;
+import 'session_event.dart' as _i7bl1ryg;
+import 'session_event_type.dart' as _iq1mdhv4;
+import 'session_mode.dart' as _i7rc03rf;
+import 'session_progress.dart' as _iwezvyyw;
+import 'session_result.dart' as _iqxkkqmu;
+import 'session_result_tally.dart' as _itcvdkdx;
+import 'session_status.dart' as _ikvaqfz2;
+import 'session_view.dart' as _ivtyz9dh;
+import 'swipe_command.dart' as _ik5o5i6z;
+import 'taxonomy_canary_sample.dart' as _itt2qz3g;
+import 'taxonomy_item.dart' as _ikn8u775;
+import 'taxonomy_kind.dart' as _ikgwnnlq;
+import 'taxonomy_snapshot.dart' as _i74orctc;
+import 'taxonomy_status.dart' as _ix2svfdk;
+import 'taxonomy_validation.dart' as _i984jawl;
 export 'admin_analytics_overview.dart';
 export 'admin_audit_entry.dart';
 export 'admin_audit_page.dart';
@@ -318,12 +321,12 @@ export 'taxonomy_status.dart';
 export 'taxonomy_validation.dart';
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -345,1014 +348,1141 @@ class Protocol extends _i1.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i2.AdminAnalyticsOverview) {
-      return _i2.AdminAnalyticsOverview.fromJson(data) as T;
+    if (t == _iecy3fr0.AdminAnalyticsOverview) {
+      return _iecy3fr0.AdminAnalyticsOverview.fromJson(data) as T;
     }
-    if (t == _i3.AdminAuditEntry) {
-      return _i3.AdminAuditEntry.fromJson(data) as T;
+    if (t == _i62lvi00.AdminAuditEntry) {
+      return _i62lvi00.AdminAuditEntry.fromJson(data) as T;
     }
-    if (t == _i4.AdminAuditPage) {
-      return _i4.AdminAuditPage.fromJson(data) as T;
+    if (t == _ihx02lko.AdminAuditPage) {
+      return _ihx02lko.AdminAuditPage.fromJson(data) as T;
     }
-    if (t == _i5.AdminCatalogCategoryEvidence) {
-      return _i5.AdminCatalogCategoryEvidence.fromJson(data) as T;
+    if (t == _ic5j2wzg.AdminCatalogCategoryEvidence) {
+      return _ic5j2wzg.AdminCatalogCategoryEvidence.fromJson(data) as T;
     }
-    if (t == _i6.AdminCatalogDetailRefresh) {
-      return _i6.AdminCatalogDetailRefresh.fromJson(data) as T;
+    if (t == _iwelc6th.AdminCatalogDetailRefresh) {
+      return _iwelc6th.AdminCatalogDetailRefresh.fromJson(data) as T;
     }
-    if (t == _i7.AdminCatalogField) {
-      return _i7.AdminCatalogField.fromJson(data) as T;
+    if (t == _iyzxy41v.AdminCatalogField) {
+      return _iyzxy41v.AdminCatalogField.fromJson(data) as T;
     }
-    if (t == _i8.AdminCatalogFreshness) {
-      return _i8.AdminCatalogFreshness.fromJson(data) as T;
+    if (t == _i26vn4oa.AdminCatalogFreshness) {
+      return _i26vn4oa.AdminCatalogFreshness.fromJson(data) as T;
     }
-    if (t == _i9.AdminCatalogHeatCell) {
-      return _i9.AdminCatalogHeatCell.fromJson(data) as T;
+    if (t == _i1cajeij.AdminCatalogHeatCell) {
+      return _i1cajeij.AdminCatalogHeatCell.fromJson(data) as T;
     }
-    if (t == _i10.AdminCatalogHeatmap) {
-      return _i10.AdminCatalogHeatmap.fromJson(data) as T;
+    if (t == _i3fq1ai0.AdminCatalogHeatmap) {
+      return _i3fq1ai0.AdminCatalogHeatmap.fromJson(data) as T;
     }
-    if (t == _i11.AdminCatalogLifecycle) {
-      return _i11.AdminCatalogLifecycle.fromJson(data) as T;
+    if (t == _ilk0q4cv.AdminCatalogLifecycle) {
+      return _ilk0q4cv.AdminCatalogLifecycle.fromJson(data) as T;
     }
-    if (t == _i12.AdminCatalogPage) {
-      return _i12.AdminCatalogPage.fromJson(data) as T;
+    if (t == _ibbojg7c.AdminCatalogPage) {
+      return _ibbojg7c.AdminCatalogPage.fromJson(data) as T;
     }
-    if (t == _i13.AdminCatalogPlace) {
-      return _i13.AdminCatalogPlace.fromJson(data) as T;
+    if (t == _i76u62qe.AdminCatalogPlace) {
+      return _i76u62qe.AdminCatalogPlace.fromJson(data) as T;
     }
-    if (t == _i14.AdminCatalogPlaceDetail) {
-      return _i14.AdminCatalogPlaceDetail.fromJson(data) as T;
+    if (t == _ij16u99u.AdminCatalogPlaceDetail) {
+      return _ij16u99u.AdminCatalogPlaceDetail.fromJson(data) as T;
     }
-    if (t == _i15.AdminCatalogQuery) {
-      return _i15.AdminCatalogQuery.fromJson(data) as T;
+    if (t == _iyhby1yo.AdminCatalogQuery) {
+      return _iyhby1yo.AdminCatalogQuery.fromJson(data) as T;
     }
-    if (t == _i16.AdminCatalogReport) {
-      return _i16.AdminCatalogReport.fromJson(data) as T;
+    if (t == _ie0km1ed.AdminCatalogReport) {
+      return _ie0km1ed.AdminCatalogReport.fromJson(data) as T;
     }
-    if (t == _i17.AdminCatalogSort) {
-      return _i17.AdminCatalogSort.fromJson(data) as T;
+    if (t == _i5jj2ihb.AdminCatalogSort) {
+      return _i5jj2ihb.AdminCatalogSort.fromJson(data) as T;
     }
-    if (t == _i18.AdminCatalogStatus) {
-      return _i18.AdminCatalogStatus.fromJson(data) as T;
+    if (t == _ihehxtqf.AdminCatalogStatus) {
+      return _ihehxtqf.AdminCatalogStatus.fromJson(data) as T;
     }
-    if (t == _i19.AdminCatalogTypeCount) {
-      return _i19.AdminCatalogTypeCount.fromJson(data) as T;
+    if (t == _i189df3w.AdminCatalogTypeCount) {
+      return _i189df3w.AdminCatalogTypeCount.fromJson(data) as T;
     }
-    if (t == _i20.AdminDiscoveryAutoMapReport) {
-      return _i20.AdminDiscoveryAutoMapReport.fromJson(data) as T;
+    if (t == _ifiwaihh.AdminDiscoveryAutoMapReport) {
+      return _ifiwaihh.AdminDiscoveryAutoMapReport.fromJson(data) as T;
     }
-    if (t == _i21.AdminDiscoveryAutoMappedType) {
-      return _i21.AdminDiscoveryAutoMappedType.fromJson(data) as T;
+    if (t == _izsiyar5.AdminDiscoveryAutoMappedType) {
+      return _izsiyar5.AdminDiscoveryAutoMappedType.fromJson(data) as T;
     }
-    if (t == _i22.AdminDiscoveryHarvestJob) {
-      return _i22.AdminDiscoveryHarvestJob.fromJson(data) as T;
+    if (t == _igrd8jdy.AdminDiscoveryHarvestJob) {
+      return _igrd8jdy.AdminDiscoveryHarvestJob.fromJson(data) as T;
     }
-    if (t == _i23.AdminDiscoveryHarvestJobPage) {
-      return _i23.AdminDiscoveryHarvestJobPage.fromJson(data) as T;
+    if (t == _ignnujj0.AdminDiscoveryHarvestJobPage) {
+      return _ignnujj0.AdminDiscoveryHarvestJobPage.fromJson(data) as T;
     }
-    if (t == _i24.AdminDiscoveryHarvestManifestVersion) {
-      return _i24.AdminDiscoveryHarvestManifestVersion.fromJson(data) as T;
+    if (t == _isqtb0th.AdminDiscoveryHarvestManifestVersion) {
+      return _isqtb0th.AdminDiscoveryHarvestManifestVersion.fromJson(data) as T;
     }
-    if (t == _i25.AdminDiscoveryTaxonomyVersion) {
-      return _i25.AdminDiscoveryTaxonomyVersion.fromJson(data) as T;
+    if (t == _ig5prpr6.AdminDiscoveryTaxonomyVersion) {
+      return _ig5prpr6.AdminDiscoveryTaxonomyVersion.fromJson(data) as T;
     }
-    if (t == _i26.AdminDiscoveryUnmappedType) {
-      return _i26.AdminDiscoveryUnmappedType.fromJson(data) as T;
+    if (t == _io11b7f4.AdminDiscoveryUnmappedType) {
+      return _io11b7f4.AdminDiscoveryUnmappedType.fromJson(data) as T;
     }
-    if (t == _i27.AdminDiscoveryUnmappedTypePage) {
-      return _i27.AdminDiscoveryUnmappedTypePage.fromJson(data) as T;
+    if (t == _ixc8e9r6.AdminDiscoveryUnmappedTypePage) {
+      return _ixc8e9r6.AdminDiscoveryUnmappedTypePage.fromJson(data) as T;
     }
-    if (t == _i28.AdminLiveUsage) {
-      return _i28.AdminLiveUsage.fromJson(data) as T;
+    if (t == _i17fquo2.AdminLiveUsage) {
+      return _i17fquo2.AdminLiveUsage.fromJson(data) as T;
     }
-    if (t == _i29.AdminMapLocation) {
-      return _i29.AdminMapLocation.fromJson(data) as T;
+    if (t == _irkf0vy6.AdminMapLocation) {
+      return _irkf0vy6.AdminMapLocation.fromJson(data) as T;
     }
-    if (t == _i30.AdminPlaceAnalytics) {
-      return _i30.AdminPlaceAnalytics.fromJson(data) as T;
+    if (t == _iv11hnpe.AdminPlaceAnalytics) {
+      return _iv11hnpe.AdminPlaceAnalytics.fromJson(data) as T;
     }
-    if (t == _i31.AdminPoiIssue) {
-      return _i31.AdminPoiIssue.fromJson(data) as T;
+    if (t == _i38jre17.AdminPoiIssue) {
+      return _i38jre17.AdminPoiIssue.fromJson(data) as T;
     }
-    if (t == _i32.AdminPoiIssuePage) {
-      return _i32.AdminPoiIssuePage.fromJson(data) as T;
+    if (t == _iyeluef3.AdminPoiIssuePage) {
+      return _iyeluef3.AdminPoiIssuePage.fromJson(data) as T;
     }
-    if (t == _i33.AdminTaxonomyItem) {
-      return _i33.AdminTaxonomyItem.fromJson(data) as T;
+    if (t == _ic97i39b.AdminTaxonomyItem) {
+      return _ic97i39b.AdminTaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i34.AdminTaxonomyVersion) {
-      return _i34.AdminTaxonomyVersion.fromJson(data) as T;
+    if (t == _ixqv2zag.AdminTaxonomyVersion) {
+      return _ixqv2zag.AdminTaxonomyVersion.fromJson(data) as T;
     }
-    if (t == _i35.AdminUsageAnalytics) {
-      return _i35.AdminUsageAnalytics.fromJson(data) as T;
+    if (t == _ixxf414g.AdminUsageAnalytics) {
+      return _ixxf414g.AdminUsageAnalytics.fromJson(data) as T;
     }
-    if (t == _i36.AnalyticsBreakdown) {
-      return _i36.AnalyticsBreakdown.fromJson(data) as T;
+    if (t == _iky5xq8l.AnalyticsBreakdown) {
+      return _iky5xq8l.AnalyticsBreakdown.fromJson(data) as T;
     }
-    if (t == _i37.AnalyticsFilter) {
-      return _i37.AnalyticsFilter.fromJson(data) as T;
+    if (t == _ifkni2lr.AnalyticsFilter) {
+      return _ifkni2lr.AnalyticsFilter.fromJson(data) as T;
     }
-    if (t == _i38.AnalyticsGranularity) {
-      return _i38.AnalyticsGranularity.fromJson(data) as T;
+    if (t == _i87q2y72.AnalyticsGranularity) {
+      return _i87q2y72.AnalyticsGranularity.fromJson(data) as T;
     }
-    if (t == _i39.AnalyticsHeatCell) {
-      return _i39.AnalyticsHeatCell.fromJson(data) as T;
+    if (t == _i58c035v.AnalyticsHeatCell) {
+      return _i58c035v.AnalyticsHeatCell.fromJson(data) as T;
     }
-    if (t == _i40.AnalyticsKpi) {
-      return _i40.AnalyticsKpi.fromJson(data) as T;
+    if (t == _ixq6s46l.AnalyticsKpi) {
+      return _ixq6s46l.AnalyticsKpi.fromJson(data) as T;
     }
-    if (t == _i41.AnalyticsPoint) {
-      return _i41.AnalyticsPoint.fromJson(data) as T;
+    if (t == _irt4ny16.AnalyticsPoint) {
+      return _irt4ny16.AnalyticsPoint.fromJson(data) as T;
     }
-    if (t == _i42.ApiException) {
-      return _i42.ApiException.fromJson(data) as T;
+    if (t == _iozummgq.ApiException) {
+      return _iozummgq.ApiException.fromJson(data) as T;
     }
-    if (t == _i43.BootstrapInfo) {
-      return _i43.BootstrapInfo.fromJson(data) as T;
+    if (t == _ia4tqko8.BootstrapInfo) {
+      return _ia4tqko8.BootstrapInfo.fromJson(data) as T;
     }
-    if (t == _i44.CacheDashboardSummary) {
-      return _i44.CacheDashboardSummary.fromJson(data) as T;
+    if (t == _iiw95en5.CacheDashboardSummary) {
+      return _iiw95en5.CacheDashboardSummary.fromJson(data) as T;
     }
-    if (t == _i45.CachePolicy) {
-      return _i45.CachePolicy.fromJson(data) as T;
+    if (t == _inde67sh.CachePolicy) {
+      return _inde67sh.CachePolicy.fromJson(data) as T;
     }
-    if (t == _i46.CalibrationStatus) {
-      return _i46.CalibrationStatus.fromJson(data) as T;
+    if (t == _i77o9qph.CalibrationStatus) {
+      return _i77o9qph.CalibrationStatus.fromJson(data) as T;
     }
-    if (t == _i47.CalibrationValidation) {
-      return _i47.CalibrationValidation.fromJson(data) as T;
+    if (t == _iupe0u14.CalibrationValidation) {
+      return _iupe0u14.CalibrationValidation.fromJson(data) as T;
     }
-    if (t == _i48.CatalogPlacePage) {
-      return _i48.CatalogPlacePage.fromJson(data) as T;
+    if (t == _idn3ilnl.CatalogPlacePage) {
+      return _idn3ilnl.CatalogPlacePage.fromJson(data) as T;
     }
-    if (t == _i49.CatalogPrunePreview) {
-      return _i49.CatalogPrunePreview.fromJson(data) as T;
+    if (t == _i9cvny8e.CatalogPrunePreview) {
+      return _i9cvny8e.CatalogPrunePreview.fromJson(data) as T;
     }
-    if (t == _i50.ClientAnalyticsContext) {
-      return _i50.ClientAnalyticsContext.fromJson(data) as T;
+    if (t == _iae9jhcw.ClientAnalyticsContext) {
+      return _iae9jhcw.ClientAnalyticsContext.fromJson(data) as T;
     }
-    if (t == _i51.ClientAnalyticsEvent) {
-      return _i51.ClientAnalyticsEvent.fromJson(data) as T;
+    if (t == _iyv85p2h.ClientAnalyticsEvent) {
+      return _iyv85p2h.ClientAnalyticsEvent.fromJson(data) as T;
     }
-    if (t == _i52.ConsensusRule) {
-      return _i52.ConsensusRule.fromJson(data) as T;
+    if (t == _idhfk3qj.ConsensusRule) {
+      return _idhfk3qj.ConsensusRule.fromJson(data) as T;
     }
-    if (t == _i53.CoveragePage) {
-      return _i53.CoveragePage.fromJson(data) as T;
+    if (t == _iz2o7pxx.CoveragePage) {
+      return _iz2o7pxx.CoveragePage.fromJson(data) as T;
     }
-    if (t == _i54.CoverageRecord) {
-      return _i54.CoverageRecord.fromJson(data) as T;
+    if (t == _i7dm26zo.CoverageRecord) {
+      return _i7dm26zo.CoverageRecord.fromJson(data) as T;
     }
-    if (t == _i55.CreateIntentSessionRequest) {
-      return _i55.CreateIntentSessionRequest.fromJson(data) as T;
+    if (t == _ihgqalvx.CreateIntentSessionRequest) {
+      return _ihgqalvx.CreateIntentSessionRequest.fromJson(data) as T;
     }
-    if (t == _i56.CreateSessionRequest) {
-      return _i56.CreateSessionRequest.fromJson(data) as T;
+    if (t == _iktms5mb.CreateSessionRequest) {
+      return _iktms5mb.CreateSessionRequest.fromJson(data) as T;
     }
-    if (t == _i57.DestinationChoiceState) {
-      return _i57.DestinationChoiceState.fromJson(data) as T;
+    if (t == _ivseuofk.DestinationChoiceState) {
+      return _ivseuofk.DestinationChoiceState.fromJson(data) as T;
     }
-    if (t == _i58.DiscoverBrowsePage) {
-      return _i58.DiscoverBrowsePage.fromJson(data) as T;
+    if (t == _ix98zisu.DiscoverBrowsePage) {
+      return _ix98zisu.DiscoverBrowsePage.fromJson(data) as T;
     }
-    if (t == _i59.DiscoverCompleteness) {
-      return _i59.DiscoverCompleteness.fromJson(data) as T;
+    if (t == _i0t9to2g.DiscoverCompleteness) {
+      return _i0t9to2g.DiscoverCompleteness.fromJson(data) as T;
     }
-    if (t == _i60.DiscoverFacets) {
-      return _i60.DiscoverFacets.fromJson(data) as T;
+    if (t == _icao29qp.DiscoverFacets) {
+      return _icao29qp.DiscoverFacets.fromJson(data) as T;
     }
-    if (t == _i61.DiscoverHoursWindow) {
-      return _i61.DiscoverHoursWindow.fromJson(data) as T;
+    if (t == _i9jnpiw7.DiscoverHoursWindow) {
+      return _i9jnpiw7.DiscoverHoursWindow.fromJson(data) as T;
     }
-    if (t == _i62.DiscoverPlace) {
-      return _i62.DiscoverPlace.fromJson(data) as T;
+    if (t == _iyut1oys.DiscoverPlace) {
+      return _iyut1oys.DiscoverPlace.fromJson(data) as T;
     }
-    if (t == _i63.DiscoverPlaceContext) {
-      return _i63.DiscoverPlaceContext.fromJson(data) as T;
+    if (t == _ihm9zx9x.DiscoverPlaceContext) {
+      return _ihm9zx9x.DiscoverPlaceContext.fromJson(data) as T;
     }
-    if (t == _i64.DiscoverQuery) {
-      return _i64.DiscoverQuery.fromJson(data) as T;
+    if (t == _ip98t8ku.DiscoverQuery) {
+      return _ip98t8ku.DiscoverQuery.fromJson(data) as T;
     }
-    if (t == _i65.DiscoverQueryContext) {
-      return _i65.DiscoverQueryContext.fromJson(data) as T;
+    if (t == _ixfyrpmf.DiscoverQueryContext) {
+      return _ixfyrpmf.DiscoverQueryContext.fromJson(data) as T;
     }
-    if (t == _i66.DiscoverReviewBand) {
-      return _i66.DiscoverReviewBand.fromJson(data) as T;
+    if (t == _ibwysijp.DiscoverReviewBand) {
+      return _ibwysijp.DiscoverReviewBand.fromJson(data) as T;
     }
-    if (t == _i67.DiscoverSort) {
-      return _i67.DiscoverSort.fromJson(data) as T;
+    if (t == _iijeyvjv.DiscoverSort) {
+      return _iijeyvjv.DiscoverSort.fromJson(data) as T;
     }
-    if (t == _i68.DiscoverViewport) {
-      return _i68.DiscoverViewport.fromJson(data) as T;
+    if (t == _i1okvcdc.DiscoverViewport) {
+      return _i1okvcdc.DiscoverViewport.fromJson(data) as T;
     }
-    if (t == _i69.DiscoveryAreaReceipt) {
-      return _i69.DiscoveryAreaReceipt.fromJson(data) as T;
+    if (t == _itjfopq1.DiscoveryAreaReceipt) {
+      return _itjfopq1.DiscoveryAreaReceipt.fromJson(data) as T;
     }
-    if (t == _i70.DiscoveryBestFormula) {
-      return _i70.DiscoveryBestFormula.fromJson(data) as T;
+    if (t == _iv19bw26.DiscoveryBestFormula) {
+      return _iv19bw26.DiscoveryBestFormula.fromJson(data) as T;
     }
-    if (t == _i71.DiscoveryClientLimits) {
-      return _i71.DiscoveryClientLimits.fromJson(data) as T;
+    if (t == _ii690dam.DiscoveryClientLimits) {
+      return _ii690dam.DiscoveryClientLimits.fromJson(data) as T;
     }
-    if (t == _i72.DiscoveryConfig) {
-      return _i72.DiscoveryConfig.fromJson(data) as T;
+    if (t == _iq6b9igw.DiscoveryConfig) {
+      return _iq6b9igw.DiscoveryConfig.fromJson(data) as T;
     }
-    if (t == _i73.DiscoveryCoverage) {
-      return _i73.DiscoveryCoverage.fromJson(data) as T;
+    if (t == _i8yqti93.DiscoveryCoverage) {
+      return _i8yqti93.DiscoveryCoverage.fromJson(data) as T;
     }
-    if (t == _i74.DiscoveryCoverageFootprint) {
-      return _i74.DiscoveryCoverageFootprint.fromJson(data) as T;
+    if (t == _ito6p50m.DiscoveryCoverageFootprint) {
+      return _ito6p50m.DiscoveryCoverageFootprint.fromJson(data) as T;
     }
-    if (t == _i75.DiscoveryGrowthMetricBreakdown) {
-      return _i75.DiscoveryGrowthMetricBreakdown.fromJson(data) as T;
+    if (t == _i8hpnrba.DiscoveryGrowthMetricBreakdown) {
+      return _i8hpnrba.DiscoveryGrowthMetricBreakdown.fromJson(data) as T;
     }
-    if (t == _i76.DiscoveryGrowthMetrics) {
-      return _i76.DiscoveryGrowthMetrics.fromJson(data) as T;
+    if (t == _i4184rq9.DiscoveryGrowthMetrics) {
+      return _i4184rq9.DiscoveryGrowthMetrics.fromJson(data) as T;
     }
-    if (t == _i77.DiscoveryHarvestManifestEntry) {
-      return _i77.DiscoveryHarvestManifestEntry.fromJson(data) as T;
+    if (t == _iqg95alk.DiscoveryHarvestManifestEntry) {
+      return _iqg95alk.DiscoveryHarvestManifestEntry.fromJson(data) as T;
     }
-    if (t == _i78.DiscoveryHarvestManifestValidation) {
-      return _i78.DiscoveryHarvestManifestValidation.fromJson(data) as T;
+    if (t == _iee3r3i8.DiscoveryHarvestManifestValidation) {
+      return _iee3r3i8.DiscoveryHarvestManifestValidation.fromJson(data) as T;
     }
-    if (t == _i79.DiscoveryHarvestQueryKind) {
-      return _i79.DiscoveryHarvestQueryKind.fromJson(data) as T;
+    if (t == _ih0y3xx9.DiscoveryHarvestQueryKind) {
+      return _ih0y3xx9.DiscoveryHarvestQueryKind.fromJson(data) as T;
     }
-    if (t == _i80.DiscoveryHarvestQueryOutcome) {
-      return _i80.DiscoveryHarvestQueryOutcome.fromJson(data) as T;
+    if (t == _i8d7uscq.DiscoveryHarvestQueryOutcome) {
+      return _i8d7uscq.DiscoveryHarvestQueryOutcome.fromJson(data) as T;
     }
-    if (t == _i81.DiscoveryHarvestQueryState) {
-      return _i81.DiscoveryHarvestQueryState.fromJson(data) as T;
+    if (t == _it5gcvsk.DiscoveryHarvestQueryState) {
+      return _it5gcvsk.DiscoveryHarvestQueryState.fromJson(data) as T;
     }
-    if (t == _i82.DiscoveryHarvestRequester) {
-      return _i82.DiscoveryHarvestRequester.fromJson(data) as T;
+    if (t == _ipv2f6f1.DiscoveryHarvestRequester) {
+      return _ipv2f6f1.DiscoveryHarvestRequester.fromJson(data) as T;
     }
-    if (t == _i83.DiscoveryHarvestState) {
-      return _i83.DiscoveryHarvestState.fromJson(data) as T;
+    if (t == _i4wyetx8.DiscoveryHarvestState) {
+      return _i4wyetx8.DiscoveryHarvestState.fromJson(data) as T;
     }
-    if (t == _i84.DiscoveryHarvestStatus) {
-      return _i84.DiscoveryHarvestStatus.fromJson(data) as T;
+    if (t == _iaeap9p2.DiscoveryHarvestStatus) {
+      return _iaeap9p2.DiscoveryHarvestStatus.fromJson(data) as T;
     }
-    if (t == _i85.DiscoveryHarvestTrigger) {
-      return _i85.DiscoveryHarvestTrigger.fromJson(data) as T;
+    if (t == _ia4mymki.DiscoveryHarvestTrigger) {
+      return _ia4mymki.DiscoveryHarvestTrigger.fromJson(data) as T;
     }
-    if (t == _i86.DiscoveryManifestStatus) {
-      return _i86.DiscoveryManifestStatus.fromJson(data) as T;
+    if (t == _in2pelzj.DiscoveryManifestStatus) {
+      return _in2pelzj.DiscoveryManifestStatus.fromJson(data) as T;
     }
-    if (t == _i87.DiscoveryMapAggregate) {
-      return _i87.DiscoveryMapAggregate.fromJson(data) as T;
+    if (t == _iwyy9blp.DiscoveryMapAggregate) {
+      return _iwyy9blp.DiscoveryMapAggregate.fromJson(data) as T;
     }
-    if (t == _i88.DiscoveryMapMode) {
-      return _i88.DiscoveryMapMode.fromJson(data) as T;
+    if (t == _i4gpq0qx.DiscoveryMapMode) {
+      return _i4gpq0qx.DiscoveryMapMode.fromJson(data) as T;
     }
-    if (t == _i89.DiscoveryMapPayload) {
-      return _i89.DiscoveryMapPayload.fromJson(data) as T;
+    if (t == _ijiia6mk.DiscoveryMapPayload) {
+      return _ijiia6mk.DiscoveryMapPayload.fromJson(data) as T;
     }
-    if (t == _i90.DiscoveryMapPoint) {
-      return _i90.DiscoveryMapPoint.fromJson(data) as T;
+    if (t == _iepk7ohg.DiscoveryMapPoint) {
+      return _iepk7ohg.DiscoveryMapPoint.fromJson(data) as T;
     }
-    if (t == _i91.DiscoveryMetricMode) {
-      return _i91.DiscoveryMetricMode.fromJson(data) as T;
+    if (t == _iwc51qy2.DiscoveryMetricMode) {
+      return _iwc51qy2.DiscoveryMetricMode.fromJson(data) as T;
     }
-    if (t == _i92.DiscoveryMetricOperation) {
-      return _i92.DiscoveryMetricOperation.fromJson(data) as T;
+    if (t == _ipgnhxya.DiscoveryMetricOperation) {
+      return _ipgnhxya.DiscoveryMetricOperation.fromJson(data) as T;
     }
-    if (t == _i93.DiscoveryMinimumRatingCount) {
-      return _i93.DiscoveryMinimumRatingCount.fromJson(data) as T;
+    if (t == _iafesi5t.DiscoveryMinimumRatingCount) {
+      return _iafesi5t.DiscoveryMinimumRatingCount.fromJson(data) as T;
     }
-    if (t == _i94.DiscoveryPolicy) {
-      return _i94.DiscoveryPolicy.fromJson(data) as T;
+    if (t == _izqxi2bg.DiscoveryPolicy) {
+      return _izqxi2bg.DiscoveryPolicy.fromJson(data) as T;
     }
-    if (t == _i95.DiscoveryPriceCount) {
-      return _i95.DiscoveryPriceCount.fromJson(data) as T;
+    if (t == _ijqf6en4.DiscoveryPriceCount) {
+      return _ijqf6en4.DiscoveryPriceCount.fromJson(data) as T;
     }
-    if (t == _i96.DiscoveryRatingBucket) {
-      return _i96.DiscoveryRatingBucket.fromJson(data) as T;
+    if (t == _iinjfol4.DiscoveryRatingBucket) {
+      return _iinjfol4.DiscoveryRatingBucket.fromJson(data) as T;
     }
-    if (t == _i97.DiscoveryReviewBandCount) {
-      return _i97.DiscoveryReviewBandCount.fromJson(data) as T;
+    if (t == _ijvcgm3f.DiscoveryReviewBandCount) {
+      return _ijvcgm3f.DiscoveryReviewBandCount.fromJson(data) as T;
     }
-    if (t == _i98.DiscoveryScoring) {
-      return _i98.DiscoveryScoring.fromJson(data) as T;
+    if (t == _iphkx6cy.DiscoveryScoring) {
+      return _iphkx6cy.DiscoveryScoring.fromJson(data) as T;
     }
-    if (t == _i99.DiscoveryTaxonomyNode) {
-      return _i99.DiscoveryTaxonomyNode.fromJson(data) as T;
+    if (t == _i3sj4yil.DiscoveryTaxonomyNode) {
+      return _i3sj4yil.DiscoveryTaxonomyNode.fromJson(data) as T;
     }
-    if (t == _i100.DiscoveryTaxonomySnapshot) {
-      return _i100.DiscoveryTaxonomySnapshot.fromJson(data) as T;
+    if (t == _ic7lkmks.DiscoveryTaxonomySnapshot) {
+      return _ic7lkmks.DiscoveryTaxonomySnapshot.fromJson(data) as T;
     }
-    if (t == _i101.DiscoveryTaxonomyValidation) {
-      return _i101.DiscoveryTaxonomyValidation.fromJson(data) as T;
+    if (t == _iep1g1h3.DiscoveryTaxonomyValidation) {
+      return _iep1g1h3.DiscoveryTaxonomyValidation.fromJson(data) as T;
     }
-    if (t == _i102.DiscoveryTypeCount) {
-      return _i102.DiscoveryTypeCount.fromJson(data) as T;
+    if (t == _iaqq99sz.DiscoveryTypeCount) {
+      return _iaqq99sz.DiscoveryTypeCount.fromJson(data) as T;
     }
-    if (t == _i103.DiscoveryTypeMappingIssue) {
-      return _i103.DiscoveryTypeMappingIssue.fromJson(data) as T;
+    if (t == _i0ly2vwv.DiscoveryTypeMappingIssue) {
+      return _i0ly2vwv.DiscoveryTypeMappingIssue.fromJson(data) as T;
     }
-    if (t == _i104.JobStatus) {
-      return _i104.JobStatus.fromJson(data) as T;
+    if (t == _iayt1i3u.JobStatus) {
+      return _iayt1i3u.JobStatus.fromJson(data) as T;
     }
-    if (t == _i105.LocationSuggestion) {
-      return _i105.LocationSuggestion.fromJson(data) as T;
+    if (t == _iib0mep8.LocationSuggestion) {
+      return _iib0mep8.LocationSuggestion.fromJson(data) as T;
     }
-    if (t == _i106.MatchingTiming) {
-      return _i106.MatchingTiming.fromJson(data) as T;
+    if (t == _inbmjteu.MatchingTiming) {
+      return _inbmjteu.MatchingTiming.fromJson(data) as T;
     }
-    if (t == _i107.MetricPoint) {
-      return _i107.MetricPoint.fromJson(data) as T;
+    if (t == _icsyqkkq.MetricPoint) {
+      return _icsyqkkq.MetricPoint.fromJson(data) as T;
     }
-    if (t == _i108.OpeningPeriod) {
-      return _i108.OpeningPeriod.fromJson(data) as T;
+    if (t == _iutwk5y0.OpeningPeriod) {
+      return _iutwk5y0.OpeningPeriod.fromJson(data) as T;
     }
-    if (t == _i109.ParticipantView) {
-      return _i109.ParticipantView.fromJson(data) as T;
+    if (t == _ir2xxgfs.ParticipantView) {
+      return _ir2xxgfs.ParticipantView.fromJson(data) as T;
     }
-    if (t == _i110.PhotoPolicy) {
-      return _i110.PhotoPolicy.fromJson(data) as T;
+    if (t == _i8lsha3l.PhotoPolicy) {
+      return _i8lsha3l.PhotoPolicy.fromJson(data) as T;
     }
-    if (t == _i111.PlaceDetailField) {
-      return _i111.PlaceDetailField.fromJson(data) as T;
+    if (t == _iv461aah.PlaceDetailField) {
+      return _iv461aah.PlaceDetailField.fromJson(data) as T;
     }
-    if (t == _i112.PlaceDetailPolicy) {
-      return _i112.PlaceDetailPolicy.fromJson(data) as T;
+    if (t == _iscbu2bm.PlaceDetailPolicy) {
+      return _iscbu2bm.PlaceDetailPolicy.fromJson(data) as T;
     }
-    if (t == _i113.PlaceDetailRefreshState) {
-      return _i113.PlaceDetailRefreshState.fromJson(data) as T;
+    if (t == _ik3zwp4j.PlaceDetailRefreshState) {
+      return _ik3zwp4j.PlaceDetailRefreshState.fromJson(data) as T;
     }
-    if (t == _i114.PlaceDetailResult) {
-      return _i114.PlaceDetailResult.fromJson(data) as T;
+    if (t == _iy4xyr7h.PlaceDetailResult) {
+      return _iy4xyr7h.PlaceDetailResult.fromJson(data) as T;
     }
-    if (t == _i115.PlaceInsight) {
-      return _i115.PlaceInsight.fromJson(data) as T;
+    if (t == _i19nqj1l.PlaceInsight) {
+      return _i19nqj1l.PlaceInsight.fromJson(data) as T;
     }
-    if (t == _i116.PlaceIntentQuery) {
-      return _i116.PlaceIntentQuery.fromJson(data) as T;
+    if (t == _i151h6s7.PlaceIntentQuery) {
+      return _i151h6s7.PlaceIntentQuery.fromJson(data) as T;
     }
-    if (t == _i117.PlaceRanking) {
-      return _i117.PlaceRanking.fromJson(data) as T;
+    if (t == _i9zjthc2.PlaceRanking) {
+      return _i9zjthc2.PlaceRanking.fromJson(data) as T;
     }
-    if (t == _i118.PlaceSnapshot) {
-      return _i118.PlaceSnapshot.fromJson(data) as T;
+    if (t == _ikbous9x.PlaceSnapshot) {
+      return _ikbous9x.PlaceSnapshot.fromJson(data) as T;
     }
-    if (t == _i119.PoiIdentity) {
-      return _i119.PoiIdentity.fromJson(data) as T;
+    if (t == _i9yu21jq.PoiIdentity) {
+      return _i9yu21jq.PoiIdentity.fromJson(data) as T;
     }
-    if (t == _i120.PoiIssueSource) {
-      return _i120.PoiIssueSource.fromJson(data) as T;
+    if (t == _i8ciqmoq.PoiIssueSource) {
+      return _i8ciqmoq.PoiIssueSource.fromJson(data) as T;
     }
-    if (t == _i121.PoiIssueStatus) {
-      return _i121.PoiIssueStatus.fromJson(data) as T;
+    if (t == _ivby6xgm.PoiIssueStatus) {
+      return _ivby6xgm.PoiIssueStatus.fromJson(data) as T;
     }
-    if (t == _i122.PoiIssueType) {
-      return _i122.PoiIssueType.fromJson(data) as T;
+    if (t == _i19nx1xx.PoiIssueType) {
+      return _i19nx1xx.PoiIssueType.fromJson(data) as T;
     }
-    if (t == _i123.RefreshJobPage) {
-      return _i123.RefreshJobPage.fromJson(data) as T;
+    if (t == _izhbxe72.RefreshJobPage) {
+      return _izhbxe72.RefreshJobPage.fromJson(data) as T;
     }
-    if (t == _i124.RefreshJobView) {
-      return _i124.RefreshJobView.fromJson(data) as T;
+    if (t == _ij0beg7d.RefreshJobView) {
+      return _ij0beg7d.RefreshJobView.fromJson(data) as T;
     }
-    if (t == _i125.ReverseGeocodeResult) {
-      return _i125.ReverseGeocodeResult.fromJson(data) as T;
+    if (t == _ivta80d7.ReverseGeocodeResult) {
+      return _ivta80d7.ReverseGeocodeResult.fromJson(data) as T;
     }
-    if (t == _i126.RouteEstimate) {
-      return _i126.RouteEstimate.fromJson(data) as T;
+    if (t == _ii314lch.RouteEstimate) {
+      return _ii314lch.RouteEstimate.fromJson(data) as T;
     }
-    if (t == _i127.RouteEstimatePolicy) {
-      return _i127.RouteEstimatePolicy.fromJson(data) as T;
+    if (t == _i3152jei.RouteEstimatePolicy) {
+      return _i3152jei.RouteEstimatePolicy.fromJson(data) as T;
     }
-    if (t == _i128.RouteOriginMode) {
-      return _i128.RouteOriginMode.fromJson(data) as T;
+    if (t == _itt0gps6.RouteOriginMode) {
+      return _itt0gps6.RouteOriginMode.fromJson(data) as T;
     }
-    if (t == _i129.SessionBundle) {
-      return _i129.SessionBundle.fromJson(data) as T;
+    if (t == _izl9yd57.SessionBundle) {
+      return _izl9yd57.SessionBundle.fromJson(data) as T;
     }
-    if (t == _i130.SessionEvent) {
-      return _i130.SessionEvent.fromJson(data) as T;
+    if (t == _i7bl1ryg.SessionEvent) {
+      return _i7bl1ryg.SessionEvent.fromJson(data) as T;
     }
-    if (t == _i131.SessionEventType) {
-      return _i131.SessionEventType.fromJson(data) as T;
+    if (t == _iq1mdhv4.SessionEventType) {
+      return _iq1mdhv4.SessionEventType.fromJson(data) as T;
     }
-    if (t == _i132.SessionMode) {
-      return _i132.SessionMode.fromJson(data) as T;
+    if (t == _i7rc03rf.SessionMode) {
+      return _i7rc03rf.SessionMode.fromJson(data) as T;
     }
-    if (t == _i133.SessionProgress) {
-      return _i133.SessionProgress.fromJson(data) as T;
+    if (t == _iwezvyyw.SessionProgress) {
+      return _iwezvyyw.SessionProgress.fromJson(data) as T;
     }
-    if (t == _i134.SessionResult) {
-      return _i134.SessionResult.fromJson(data) as T;
+    if (t == _iqxkkqmu.SessionResult) {
+      return _iqxkkqmu.SessionResult.fromJson(data) as T;
     }
-    if (t == _i135.SessionResultTally) {
-      return _i135.SessionResultTally.fromJson(data) as T;
+    if (t == _itcvdkdx.SessionResultTally) {
+      return _itcvdkdx.SessionResultTally.fromJson(data) as T;
     }
-    if (t == _i136.SessionStatus) {
-      return _i136.SessionStatus.fromJson(data) as T;
+    if (t == _ikvaqfz2.SessionStatus) {
+      return _ikvaqfz2.SessionStatus.fromJson(data) as T;
     }
-    if (t == _i137.SessionView) {
-      return _i137.SessionView.fromJson(data) as T;
+    if (t == _ivtyz9dh.SessionView) {
+      return _ivtyz9dh.SessionView.fromJson(data) as T;
     }
-    if (t == _i138.SwipeCommand) {
-      return _i138.SwipeCommand.fromJson(data) as T;
+    if (t == _ik5o5i6z.SwipeCommand) {
+      return _ik5o5i6z.SwipeCommand.fromJson(data) as T;
     }
-    if (t == _i139.TaxonomyCanarySample) {
-      return _i139.TaxonomyCanarySample.fromJson(data) as T;
+    if (t == _itt2qz3g.TaxonomyCanarySample) {
+      return _itt2qz3g.TaxonomyCanarySample.fromJson(data) as T;
     }
-    if (t == _i140.TaxonomyItem) {
-      return _i140.TaxonomyItem.fromJson(data) as T;
+    if (t == _ikn8u775.TaxonomyItem) {
+      return _ikn8u775.TaxonomyItem.fromJson(data) as T;
     }
-    if (t == _i141.TaxonomyKind) {
-      return _i141.TaxonomyKind.fromJson(data) as T;
+    if (t == _ikgwnnlq.TaxonomyKind) {
+      return _ikgwnnlq.TaxonomyKind.fromJson(data) as T;
     }
-    if (t == _i142.TaxonomySnapshot) {
-      return _i142.TaxonomySnapshot.fromJson(data) as T;
+    if (t == _i74orctc.TaxonomySnapshot) {
+      return _i74orctc.TaxonomySnapshot.fromJson(data) as T;
     }
-    if (t == _i143.TaxonomyStatus) {
-      return _i143.TaxonomyStatus.fromJson(data) as T;
+    if (t == _ix2svfdk.TaxonomyStatus) {
+      return _ix2svfdk.TaxonomyStatus.fromJson(data) as T;
     }
-    if (t == _i144.TaxonomyValidation) {
-      return _i144.TaxonomyValidation.fromJson(data) as T;
+    if (t == _i984jawl.TaxonomyValidation) {
+      return _i984jawl.TaxonomyValidation.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.AdminAnalyticsOverview?>()) {
-      return (data != null ? _i2.AdminAnalyticsOverview.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i3.AdminAuditEntry?>()) {
-      return (data != null ? _i3.AdminAuditEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i4.AdminAuditPage?>()) {
-      return (data != null ? _i4.AdminAuditPage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.AdminCatalogCategoryEvidence?>()) {
+    if (t == _isc.getType<_iecy3fr0.AdminAnalyticsOverview?>()) {
       return (data != null
-              ? _i5.AdminCatalogCategoryEvidence.fromJson(data)
+              ? _iecy3fr0.AdminAnalyticsOverview.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i6.AdminCatalogDetailRefresh?>()) {
+    if (t == _isc.getType<_i62lvi00.AdminAuditEntry?>()) {
+      return (data != null ? _i62lvi00.AdminAuditEntry.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ihx02lko.AdminAuditPage?>()) {
+      return (data != null ? _ihx02lko.AdminAuditPage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ic5j2wzg.AdminCatalogCategoryEvidence?>()) {
       return (data != null
-              ? _i6.AdminCatalogDetailRefresh.fromJson(data)
+              ? _ic5j2wzg.AdminCatalogCategoryEvidence.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i7.AdminCatalogField?>()) {
-      return (data != null ? _i7.AdminCatalogField.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.AdminCatalogFreshness?>()) {
-      return (data != null ? _i8.AdminCatalogFreshness.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i9.AdminCatalogHeatCell?>()) {
-      return (data != null ? _i9.AdminCatalogHeatCell.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i10.AdminCatalogHeatmap?>()) {
-      return (data != null ? _i10.AdminCatalogHeatmap.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i11.AdminCatalogLifecycle?>()) {
-      return (data != null ? _i11.AdminCatalogLifecycle.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i12.AdminCatalogPage?>()) {
-      return (data != null ? _i12.AdminCatalogPage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i13.AdminCatalogPlace?>()) {
-      return (data != null ? _i13.AdminCatalogPlace.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.AdminCatalogPlaceDetail?>()) {
-      return (data != null ? _i14.AdminCatalogPlaceDetail.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i15.AdminCatalogQuery?>()) {
-      return (data != null ? _i15.AdminCatalogQuery.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i16.AdminCatalogReport?>()) {
-      return (data != null ? _i16.AdminCatalogReport.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i17.AdminCatalogSort?>()) {
-      return (data != null ? _i17.AdminCatalogSort.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.AdminCatalogStatus?>()) {
-      return (data != null ? _i18.AdminCatalogStatus.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i19.AdminCatalogTypeCount?>()) {
-      return (data != null ? _i19.AdminCatalogTypeCount.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i20.AdminDiscoveryAutoMapReport?>()) {
+    if (t == _isc.getType<_iwelc6th.AdminCatalogDetailRefresh?>()) {
       return (data != null
-              ? _i20.AdminDiscoveryAutoMapReport.fromJson(data)
+              ? _iwelc6th.AdminCatalogDetailRefresh.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i21.AdminDiscoveryAutoMappedType?>()) {
+    if (t == _isc.getType<_iyzxy41v.AdminCatalogField?>()) {
+      return (data != null ? _iyzxy41v.AdminCatalogField.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i26vn4oa.AdminCatalogFreshness?>()) {
       return (data != null
-              ? _i21.AdminDiscoveryAutoMappedType.fromJson(data)
+              ? _i26vn4oa.AdminCatalogFreshness.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i22.AdminDiscoveryHarvestJob?>()) {
+    if (t == _isc.getType<_i1cajeij.AdminCatalogHeatCell?>()) {
       return (data != null
-              ? _i22.AdminDiscoveryHarvestJob.fromJson(data)
+              ? _i1cajeij.AdminCatalogHeatCell.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i23.AdminDiscoveryHarvestJobPage?>()) {
+    if (t == _isc.getType<_i3fq1ai0.AdminCatalogHeatmap?>()) {
       return (data != null
-              ? _i23.AdminDiscoveryHarvestJobPage.fromJson(data)
+              ? _i3fq1ai0.AdminCatalogHeatmap.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i24.AdminDiscoveryHarvestManifestVersion?>()) {
+    if (t == _isc.getType<_ilk0q4cv.AdminCatalogLifecycle?>()) {
       return (data != null
-              ? _i24.AdminDiscoveryHarvestManifestVersion.fromJson(data)
+              ? _ilk0q4cv.AdminCatalogLifecycle.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i25.AdminDiscoveryTaxonomyVersion?>()) {
+    if (t == _isc.getType<_ibbojg7c.AdminCatalogPage?>()) {
+      return (data != null ? _ibbojg7c.AdminCatalogPage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i76u62qe.AdminCatalogPlace?>()) {
+      return (data != null ? _i76u62qe.AdminCatalogPlace.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ij16u99u.AdminCatalogPlaceDetail?>()) {
       return (data != null
-              ? _i25.AdminDiscoveryTaxonomyVersion.fromJson(data)
+              ? _ij16u99u.AdminCatalogPlaceDetail.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i26.AdminDiscoveryUnmappedType?>()) {
+    if (t == _isc.getType<_iyhby1yo.AdminCatalogQuery?>()) {
+      return (data != null ? _iyhby1yo.AdminCatalogQuery.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ie0km1ed.AdminCatalogReport?>()) {
+      return (data != null ? _ie0km1ed.AdminCatalogReport.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i5jj2ihb.AdminCatalogSort?>()) {
+      return (data != null ? _i5jj2ihb.AdminCatalogSort.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ihehxtqf.AdminCatalogStatus?>()) {
+      return (data != null ? _ihehxtqf.AdminCatalogStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i189df3w.AdminCatalogTypeCount?>()) {
       return (data != null
-              ? _i26.AdminDiscoveryUnmappedType.fromJson(data)
+              ? _i189df3w.AdminCatalogTypeCount.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i27.AdminDiscoveryUnmappedTypePage?>()) {
+    if (t == _isc.getType<_ifiwaihh.AdminDiscoveryAutoMapReport?>()) {
       return (data != null
-              ? _i27.AdminDiscoveryUnmappedTypePage.fromJson(data)
+              ? _ifiwaihh.AdminDiscoveryAutoMapReport.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i28.AdminLiveUsage?>()) {
-      return (data != null ? _i28.AdminLiveUsage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i29.AdminMapLocation?>()) {
-      return (data != null ? _i29.AdminMapLocation.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i30.AdminPlaceAnalytics?>()) {
-      return (data != null ? _i30.AdminPlaceAnalytics.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i31.AdminPoiIssue?>()) {
-      return (data != null ? _i31.AdminPoiIssue.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i32.AdminPoiIssuePage?>()) {
-      return (data != null ? _i32.AdminPoiIssuePage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i33.AdminTaxonomyItem?>()) {
-      return (data != null ? _i33.AdminTaxonomyItem.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i34.AdminTaxonomyVersion?>()) {
-      return (data != null ? _i34.AdminTaxonomyVersion.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i35.AdminUsageAnalytics?>()) {
-      return (data != null ? _i35.AdminUsageAnalytics.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i36.AnalyticsBreakdown?>()) {
-      return (data != null ? _i36.AnalyticsBreakdown.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i37.AnalyticsFilter?>()) {
-      return (data != null ? _i37.AnalyticsFilter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i38.AnalyticsGranularity?>()) {
-      return (data != null ? _i38.AnalyticsGranularity.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i39.AnalyticsHeatCell?>()) {
-      return (data != null ? _i39.AnalyticsHeatCell.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i40.AnalyticsKpi?>()) {
-      return (data != null ? _i40.AnalyticsKpi.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i41.AnalyticsPoint?>()) {
-      return (data != null ? _i41.AnalyticsPoint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i42.ApiException?>()) {
-      return (data != null ? _i42.ApiException.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i43.BootstrapInfo?>()) {
-      return (data != null ? _i43.BootstrapInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i44.CacheDashboardSummary?>()) {
-      return (data != null ? _i44.CacheDashboardSummary.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i45.CachePolicy?>()) {
-      return (data != null ? _i45.CachePolicy.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i46.CalibrationStatus?>()) {
-      return (data != null ? _i46.CalibrationStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i47.CalibrationValidation?>()) {
-      return (data != null ? _i47.CalibrationValidation.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i48.CatalogPlacePage?>()) {
-      return (data != null ? _i48.CatalogPlacePage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i49.CatalogPrunePreview?>()) {
-      return (data != null ? _i49.CatalogPrunePreview.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i50.ClientAnalyticsContext?>()) {
-      return (data != null ? _i50.ClientAnalyticsContext.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i51.ClientAnalyticsEvent?>()) {
-      return (data != null ? _i51.ClientAnalyticsEvent.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i52.ConsensusRule?>()) {
-      return (data != null ? _i52.ConsensusRule.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i53.CoveragePage?>()) {
-      return (data != null ? _i53.CoveragePage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i54.CoverageRecord?>()) {
-      return (data != null ? _i54.CoverageRecord.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i55.CreateIntentSessionRequest?>()) {
+    if (t == _isc.getType<_izsiyar5.AdminDiscoveryAutoMappedType?>()) {
       return (data != null
-              ? _i55.CreateIntentSessionRequest.fromJson(data)
+              ? _izsiyar5.AdminDiscoveryAutoMappedType.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i56.CreateSessionRequest?>()) {
-      return (data != null ? _i56.CreateSessionRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i57.DestinationChoiceState?>()) {
-      return (data != null ? _i57.DestinationChoiceState.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i58.DiscoverBrowsePage?>()) {
-      return (data != null ? _i58.DiscoverBrowsePage.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i59.DiscoverCompleteness?>()) {
-      return (data != null ? _i59.DiscoverCompleteness.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i60.DiscoverFacets?>()) {
-      return (data != null ? _i60.DiscoverFacets.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i61.DiscoverHoursWindow?>()) {
-      return (data != null ? _i61.DiscoverHoursWindow.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i62.DiscoverPlace?>()) {
-      return (data != null ? _i62.DiscoverPlace.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i63.DiscoverPlaceContext?>()) {
-      return (data != null ? _i63.DiscoverPlaceContext.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i64.DiscoverQuery?>()) {
-      return (data != null ? _i64.DiscoverQuery.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i65.DiscoverQueryContext?>()) {
-      return (data != null ? _i65.DiscoverQueryContext.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i66.DiscoverReviewBand?>()) {
-      return (data != null ? _i66.DiscoverReviewBand.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i67.DiscoverSort?>()) {
-      return (data != null ? _i67.DiscoverSort.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i68.DiscoverViewport?>()) {
-      return (data != null ? _i68.DiscoverViewport.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i69.DiscoveryAreaReceipt?>()) {
-      return (data != null ? _i69.DiscoveryAreaReceipt.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i70.DiscoveryBestFormula?>()) {
-      return (data != null ? _i70.DiscoveryBestFormula.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i71.DiscoveryClientLimits?>()) {
-      return (data != null ? _i71.DiscoveryClientLimits.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i72.DiscoveryConfig?>()) {
-      return (data != null ? _i72.DiscoveryConfig.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i73.DiscoveryCoverage?>()) {
-      return (data != null ? _i73.DiscoveryCoverage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i74.DiscoveryCoverageFootprint?>()) {
+    if (t == _isc.getType<_igrd8jdy.AdminDiscoveryHarvestJob?>()) {
       return (data != null
-              ? _i74.DiscoveryCoverageFootprint.fromJson(data)
+              ? _igrd8jdy.AdminDiscoveryHarvestJob.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i75.DiscoveryGrowthMetricBreakdown?>()) {
+    if (t == _isc.getType<_ignnujj0.AdminDiscoveryHarvestJobPage?>()) {
       return (data != null
-              ? _i75.DiscoveryGrowthMetricBreakdown.fromJson(data)
+              ? _ignnujj0.AdminDiscoveryHarvestJobPage.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i76.DiscoveryGrowthMetrics?>()) {
-      return (data != null ? _i76.DiscoveryGrowthMetrics.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i77.DiscoveryHarvestManifestEntry?>()) {
+    if (t == _isc.getType<_isqtb0th.AdminDiscoveryHarvestManifestVersion?>()) {
       return (data != null
-              ? _i77.DiscoveryHarvestManifestEntry.fromJson(data)
+              ? _isqtb0th.AdminDiscoveryHarvestManifestVersion.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i78.DiscoveryHarvestManifestValidation?>()) {
+    if (t == _isc.getType<_ig5prpr6.AdminDiscoveryTaxonomyVersion?>()) {
       return (data != null
-              ? _i78.DiscoveryHarvestManifestValidation.fromJson(data)
+              ? _ig5prpr6.AdminDiscoveryTaxonomyVersion.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i79.DiscoveryHarvestQueryKind?>()) {
+    if (t == _isc.getType<_io11b7f4.AdminDiscoveryUnmappedType?>()) {
       return (data != null
-              ? _i79.DiscoveryHarvestQueryKind.fromJson(data)
+              ? _io11b7f4.AdminDiscoveryUnmappedType.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i80.DiscoveryHarvestQueryOutcome?>()) {
+    if (t == _isc.getType<_ixc8e9r6.AdminDiscoveryUnmappedTypePage?>()) {
       return (data != null
-              ? _i80.DiscoveryHarvestQueryOutcome.fromJson(data)
+              ? _ixc8e9r6.AdminDiscoveryUnmappedTypePage.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i81.DiscoveryHarvestQueryState?>()) {
+    if (t == _isc.getType<_i17fquo2.AdminLiveUsage?>()) {
+      return (data != null ? _i17fquo2.AdminLiveUsage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_irkf0vy6.AdminMapLocation?>()) {
+      return (data != null ? _irkf0vy6.AdminMapLocation.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iv11hnpe.AdminPlaceAnalytics?>()) {
       return (data != null
-              ? _i81.DiscoveryHarvestQueryState.fromJson(data)
+              ? _iv11hnpe.AdminPlaceAnalytics.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i82.DiscoveryHarvestRequester?>()) {
+    if (t == _isc.getType<_i38jre17.AdminPoiIssue?>()) {
+      return (data != null ? _i38jre17.AdminPoiIssue.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iyeluef3.AdminPoiIssuePage?>()) {
+      return (data != null ? _iyeluef3.AdminPoiIssuePage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ic97i39b.AdminTaxonomyItem?>()) {
+      return (data != null ? _ic97i39b.AdminTaxonomyItem.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ixqv2zag.AdminTaxonomyVersion?>()) {
       return (data != null
-              ? _i82.DiscoveryHarvestRequester.fromJson(data)
+              ? _ixqv2zag.AdminTaxonomyVersion.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i83.DiscoveryHarvestState?>()) {
-      return (data != null ? _i83.DiscoveryHarvestState.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i84.DiscoveryHarvestStatus?>()) {
-      return (data != null ? _i84.DiscoveryHarvestStatus.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i85.DiscoveryHarvestTrigger?>()) {
-      return (data != null ? _i85.DiscoveryHarvestTrigger.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i86.DiscoveryManifestStatus?>()) {
-      return (data != null ? _i86.DiscoveryManifestStatus.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i87.DiscoveryMapAggregate?>()) {
-      return (data != null ? _i87.DiscoveryMapAggregate.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i88.DiscoveryMapMode?>()) {
-      return (data != null ? _i88.DiscoveryMapMode.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i89.DiscoveryMapPayload?>()) {
-      return (data != null ? _i89.DiscoveryMapPayload.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i90.DiscoveryMapPoint?>()) {
-      return (data != null ? _i90.DiscoveryMapPoint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i91.DiscoveryMetricMode?>()) {
-      return (data != null ? _i91.DiscoveryMetricMode.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i92.DiscoveryMetricOperation?>()) {
+    if (t == _isc.getType<_ixxf414g.AdminUsageAnalytics?>()) {
       return (data != null
-              ? _i92.DiscoveryMetricOperation.fromJson(data)
+              ? _ixxf414g.AdminUsageAnalytics.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i93.DiscoveryMinimumRatingCount?>()) {
+    if (t == _isc.getType<_iky5xq8l.AnalyticsBreakdown?>()) {
+      return (data != null ? _iky5xq8l.AnalyticsBreakdown.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ifkni2lr.AnalyticsFilter?>()) {
+      return (data != null ? _ifkni2lr.AnalyticsFilter.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i87q2y72.AnalyticsGranularity?>()) {
       return (data != null
-              ? _i93.DiscoveryMinimumRatingCount.fromJson(data)
+              ? _i87q2y72.AnalyticsGranularity.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i94.DiscoveryPolicy?>()) {
-      return (data != null ? _i94.DiscoveryPolicy.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i95.DiscoveryPriceCount?>()) {
-      return (data != null ? _i95.DiscoveryPriceCount.fromJson(data) : null)
+    if (t == _isc.getType<_i58c035v.AnalyticsHeatCell?>()) {
+      return (data != null ? _i58c035v.AnalyticsHeatCell.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i96.DiscoveryRatingBucket?>()) {
-      return (data != null ? _i96.DiscoveryRatingBucket.fromJson(data) : null)
+    if (t == _isc.getType<_ixq6s46l.AnalyticsKpi?>()) {
+      return (data != null ? _ixq6s46l.AnalyticsKpi.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_irt4ny16.AnalyticsPoint?>()) {
+      return (data != null ? _irt4ny16.AnalyticsPoint.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i97.DiscoveryReviewBandCount?>()) {
+    if (t == _isc.getType<_iozummgq.ApiException?>()) {
+      return (data != null ? _iozummgq.ApiException.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ia4tqko8.BootstrapInfo?>()) {
+      return (data != null ? _ia4tqko8.BootstrapInfo.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iiw95en5.CacheDashboardSummary?>()) {
       return (data != null
-              ? _i97.DiscoveryReviewBandCount.fromJson(data)
+              ? _iiw95en5.CacheDashboardSummary.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i98.DiscoveryScoring?>()) {
-      return (data != null ? _i98.DiscoveryScoring.fromJson(data) : null) as T;
+    if (t == _isc.getType<_inde67sh.CachePolicy?>()) {
+      return (data != null ? _inde67sh.CachePolicy.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i99.DiscoveryTaxonomyNode?>()) {
-      return (data != null ? _i99.DiscoveryTaxonomyNode.fromJson(data) : null)
+    if (t == _isc.getType<_i77o9qph.CalibrationStatus?>()) {
+      return (data != null ? _i77o9qph.CalibrationStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i100.DiscoveryTaxonomySnapshot?>()) {
+    if (t == _isc.getType<_iupe0u14.CalibrationValidation?>()) {
       return (data != null
-              ? _i100.DiscoveryTaxonomySnapshot.fromJson(data)
+              ? _iupe0u14.CalibrationValidation.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i101.DiscoveryTaxonomyValidation?>()) {
+    if (t == _isc.getType<_idn3ilnl.CatalogPlacePage?>()) {
+      return (data != null ? _idn3ilnl.CatalogPlacePage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i9cvny8e.CatalogPrunePreview?>()) {
       return (data != null
-              ? _i101.DiscoveryTaxonomyValidation.fromJson(data)
+              ? _i9cvny8e.CatalogPrunePreview.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i102.DiscoveryTypeCount?>()) {
-      return (data != null ? _i102.DiscoveryTypeCount.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i103.DiscoveryTypeMappingIssue?>()) {
+    if (t == _isc.getType<_iae9jhcw.ClientAnalyticsContext?>()) {
       return (data != null
-              ? _i103.DiscoveryTypeMappingIssue.fromJson(data)
+              ? _iae9jhcw.ClientAnalyticsContext.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i104.JobStatus?>()) {
-      return (data != null ? _i104.JobStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i105.LocationSuggestion?>()) {
-      return (data != null ? _i105.LocationSuggestion.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i106.MatchingTiming?>()) {
-      return (data != null ? _i106.MatchingTiming.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i107.MetricPoint?>()) {
-      return (data != null ? _i107.MetricPoint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i108.OpeningPeriod?>()) {
-      return (data != null ? _i108.OpeningPeriod.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i109.ParticipantView?>()) {
-      return (data != null ? _i109.ParticipantView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i110.PhotoPolicy?>()) {
-      return (data != null ? _i110.PhotoPolicy.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i111.PlaceDetailField?>()) {
-      return (data != null ? _i111.PlaceDetailField.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i112.PlaceDetailPolicy?>()) {
-      return (data != null ? _i112.PlaceDetailPolicy.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i113.PlaceDetailRefreshState?>()) {
+    if (t == _isc.getType<_iyv85p2h.ClientAnalyticsEvent?>()) {
       return (data != null
-              ? _i113.PlaceDetailRefreshState.fromJson(data)
+              ? _iyv85p2h.ClientAnalyticsEvent.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i114.PlaceDetailResult?>()) {
-      return (data != null ? _i114.PlaceDetailResult.fromJson(data) : null)
+    if (t == _isc.getType<_idhfk3qj.ConsensusRule?>()) {
+      return (data != null ? _idhfk3qj.ConsensusRule.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i115.PlaceInsight?>()) {
-      return (data != null ? _i115.PlaceInsight.fromJson(data) : null) as T;
+    if (t == _isc.getType<_iz2o7pxx.CoveragePage?>()) {
+      return (data != null ? _iz2o7pxx.CoveragePage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i116.PlaceIntentQuery?>()) {
-      return (data != null ? _i116.PlaceIntentQuery.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i117.PlaceRanking?>()) {
-      return (data != null ? _i117.PlaceRanking.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i118.PlaceSnapshot?>()) {
-      return (data != null ? _i118.PlaceSnapshot.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i119.PoiIdentity?>()) {
-      return (data != null ? _i119.PoiIdentity.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i120.PoiIssueSource?>()) {
-      return (data != null ? _i120.PoiIssueSource.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i121.PoiIssueStatus?>()) {
-      return (data != null ? _i121.PoiIssueStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i122.PoiIssueType?>()) {
-      return (data != null ? _i122.PoiIssueType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i123.RefreshJobPage?>()) {
-      return (data != null ? _i123.RefreshJobPage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i124.RefreshJobView?>()) {
-      return (data != null ? _i124.RefreshJobView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i125.ReverseGeocodeResult?>()) {
-      return (data != null ? _i125.ReverseGeocodeResult.fromJson(data) : null)
+    if (t == _isc.getType<_i7dm26zo.CoverageRecord?>()) {
+      return (data != null ? _i7dm26zo.CoverageRecord.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i126.RouteEstimate?>()) {
-      return (data != null ? _i126.RouteEstimate.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i127.RouteEstimatePolicy?>()) {
-      return (data != null ? _i127.RouteEstimatePolicy.fromJson(data) : null)
+    if (t == _isc.getType<_ihgqalvx.CreateIntentSessionRequest?>()) {
+      return (data != null
+              ? _ihgqalvx.CreateIntentSessionRequest.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i128.RouteOriginMode?>()) {
-      return (data != null ? _i128.RouteOriginMode.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i129.SessionBundle?>()) {
-      return (data != null ? _i129.SessionBundle.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i130.SessionEvent?>()) {
-      return (data != null ? _i130.SessionEvent.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i131.SessionEventType?>()) {
-      return (data != null ? _i131.SessionEventType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i132.SessionMode?>()) {
-      return (data != null ? _i132.SessionMode.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i133.SessionProgress?>()) {
-      return (data != null ? _i133.SessionProgress.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i134.SessionResult?>()) {
-      return (data != null ? _i134.SessionResult.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i135.SessionResultTally?>()) {
-      return (data != null ? _i135.SessionResultTally.fromJson(data) : null)
+    if (t == _isc.getType<_iktms5mb.CreateSessionRequest?>()) {
+      return (data != null
+              ? _iktms5mb.CreateSessionRequest.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i136.SessionStatus?>()) {
-      return (data != null ? _i136.SessionStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i137.SessionView?>()) {
-      return (data != null ? _i137.SessionView.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i138.SwipeCommand?>()) {
-      return (data != null ? _i138.SwipeCommand.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i139.TaxonomyCanarySample?>()) {
-      return (data != null ? _i139.TaxonomyCanarySample.fromJson(data) : null)
+    if (t == _isc.getType<_ivseuofk.DestinationChoiceState?>()) {
+      return (data != null
+              ? _ivseuofk.DestinationChoiceState.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i140.TaxonomyItem?>()) {
-      return (data != null ? _i140.TaxonomyItem.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i141.TaxonomyKind?>()) {
-      return (data != null ? _i141.TaxonomyKind.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i142.TaxonomySnapshot?>()) {
-      return (data != null ? _i142.TaxonomySnapshot.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i143.TaxonomyStatus?>()) {
-      return (data != null ? _i143.TaxonomyStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i144.TaxonomyValidation?>()) {
-      return (data != null ? _i144.TaxonomyValidation.fromJson(data) : null)
+    if (t == _isc.getType<_ix98zisu.DiscoverBrowsePage?>()) {
+      return (data != null ? _ix98zisu.DiscoverBrowsePage.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i40.AnalyticsKpi>) {
+    if (t == _isc.getType<_i0t9to2g.DiscoverCompleteness?>()) {
+      return (data != null
+              ? _i0t9to2g.DiscoverCompleteness.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_icao29qp.DiscoverFacets?>()) {
+      return (data != null ? _icao29qp.DiscoverFacets.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i9jnpiw7.DiscoverHoursWindow?>()) {
+      return (data != null
+              ? _i9jnpiw7.DiscoverHoursWindow.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iyut1oys.DiscoverPlace?>()) {
+      return (data != null ? _iyut1oys.DiscoverPlace.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ihm9zx9x.DiscoverPlaceContext?>()) {
+      return (data != null
+              ? _ihm9zx9x.DiscoverPlaceContext.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ip98t8ku.DiscoverQuery?>()) {
+      return (data != null ? _ip98t8ku.DiscoverQuery.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ixfyrpmf.DiscoverQueryContext?>()) {
+      return (data != null
+              ? _ixfyrpmf.DiscoverQueryContext.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ibwysijp.DiscoverReviewBand?>()) {
+      return (data != null ? _ibwysijp.DiscoverReviewBand.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iijeyvjv.DiscoverSort?>()) {
+      return (data != null ? _iijeyvjv.DiscoverSort.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i1okvcdc.DiscoverViewport?>()) {
+      return (data != null ? _i1okvcdc.DiscoverViewport.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_itjfopq1.DiscoveryAreaReceipt?>()) {
+      return (data != null
+              ? _itjfopq1.DiscoveryAreaReceipt.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iv19bw26.DiscoveryBestFormula?>()) {
+      return (data != null
+              ? _iv19bw26.DiscoveryBestFormula.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ii690dam.DiscoveryClientLimits?>()) {
+      return (data != null
+              ? _ii690dam.DiscoveryClientLimits.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iq6b9igw.DiscoveryConfig?>()) {
+      return (data != null ? _iq6b9igw.DiscoveryConfig.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i8yqti93.DiscoveryCoverage?>()) {
+      return (data != null ? _i8yqti93.DiscoveryCoverage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ito6p50m.DiscoveryCoverageFootprint?>()) {
+      return (data != null
+              ? _ito6p50m.DiscoveryCoverageFootprint.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i8hpnrba.DiscoveryGrowthMetricBreakdown?>()) {
+      return (data != null
+              ? _i8hpnrba.DiscoveryGrowthMetricBreakdown.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i4184rq9.DiscoveryGrowthMetrics?>()) {
+      return (data != null
+              ? _i4184rq9.DiscoveryGrowthMetrics.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iqg95alk.DiscoveryHarvestManifestEntry?>()) {
+      return (data != null
+              ? _iqg95alk.DiscoveryHarvestManifestEntry.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iee3r3i8.DiscoveryHarvestManifestValidation?>()) {
+      return (data != null
+              ? _iee3r3i8.DiscoveryHarvestManifestValidation.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ih0y3xx9.DiscoveryHarvestQueryKind?>()) {
+      return (data != null
+              ? _ih0y3xx9.DiscoveryHarvestQueryKind.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i8d7uscq.DiscoveryHarvestQueryOutcome?>()) {
+      return (data != null
+              ? _i8d7uscq.DiscoveryHarvestQueryOutcome.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_it5gcvsk.DiscoveryHarvestQueryState?>()) {
+      return (data != null
+              ? _it5gcvsk.DiscoveryHarvestQueryState.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ipv2f6f1.DiscoveryHarvestRequester?>()) {
+      return (data != null
+              ? _ipv2f6f1.DiscoveryHarvestRequester.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i4wyetx8.DiscoveryHarvestState?>()) {
+      return (data != null
+              ? _i4wyetx8.DiscoveryHarvestState.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iaeap9p2.DiscoveryHarvestStatus?>()) {
+      return (data != null
+              ? _iaeap9p2.DiscoveryHarvestStatus.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ia4mymki.DiscoveryHarvestTrigger?>()) {
+      return (data != null
+              ? _ia4mymki.DiscoveryHarvestTrigger.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_in2pelzj.DiscoveryManifestStatus?>()) {
+      return (data != null
+              ? _in2pelzj.DiscoveryManifestStatus.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iwyy9blp.DiscoveryMapAggregate?>()) {
+      return (data != null
+              ? _iwyy9blp.DiscoveryMapAggregate.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i4gpq0qx.DiscoveryMapMode?>()) {
+      return (data != null ? _i4gpq0qx.DiscoveryMapMode.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ijiia6mk.DiscoveryMapPayload?>()) {
+      return (data != null
+              ? _ijiia6mk.DiscoveryMapPayload.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iepk7ohg.DiscoveryMapPoint?>()) {
+      return (data != null ? _iepk7ohg.DiscoveryMapPoint.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iwc51qy2.DiscoveryMetricMode?>()) {
+      return (data != null
+              ? _iwc51qy2.DiscoveryMetricMode.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ipgnhxya.DiscoveryMetricOperation?>()) {
+      return (data != null
+              ? _ipgnhxya.DiscoveryMetricOperation.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iafesi5t.DiscoveryMinimumRatingCount?>()) {
+      return (data != null
+              ? _iafesi5t.DiscoveryMinimumRatingCount.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_izqxi2bg.DiscoveryPolicy?>()) {
+      return (data != null ? _izqxi2bg.DiscoveryPolicy.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ijqf6en4.DiscoveryPriceCount?>()) {
+      return (data != null
+              ? _ijqf6en4.DiscoveryPriceCount.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iinjfol4.DiscoveryRatingBucket?>()) {
+      return (data != null
+              ? _iinjfol4.DiscoveryRatingBucket.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ijvcgm3f.DiscoveryReviewBandCount?>()) {
+      return (data != null
+              ? _ijvcgm3f.DiscoveryReviewBandCount.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iphkx6cy.DiscoveryScoring?>()) {
+      return (data != null ? _iphkx6cy.DiscoveryScoring.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i3sj4yil.DiscoveryTaxonomyNode?>()) {
+      return (data != null
+              ? _i3sj4yil.DiscoveryTaxonomyNode.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ic7lkmks.DiscoveryTaxonomySnapshot?>()) {
+      return (data != null
+              ? _ic7lkmks.DiscoveryTaxonomySnapshot.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iep1g1h3.DiscoveryTaxonomyValidation?>()) {
+      return (data != null
+              ? _iep1g1h3.DiscoveryTaxonomyValidation.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iaqq99sz.DiscoveryTypeCount?>()) {
+      return (data != null ? _iaqq99sz.DiscoveryTypeCount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i0ly2vwv.DiscoveryTypeMappingIssue?>()) {
+      return (data != null
+              ? _i0ly2vwv.DiscoveryTypeMappingIssue.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iayt1i3u.JobStatus?>()) {
+      return (data != null ? _iayt1i3u.JobStatus.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iib0mep8.LocationSuggestion?>()) {
+      return (data != null ? _iib0mep8.LocationSuggestion.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_inbmjteu.MatchingTiming?>()) {
+      return (data != null ? _inbmjteu.MatchingTiming.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_icsyqkkq.MetricPoint?>()) {
+      return (data != null ? _icsyqkkq.MetricPoint.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iutwk5y0.OpeningPeriod?>()) {
+      return (data != null ? _iutwk5y0.OpeningPeriod.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ir2xxgfs.ParticipantView?>()) {
+      return (data != null ? _ir2xxgfs.ParticipantView.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i8lsha3l.PhotoPolicy?>()) {
+      return (data != null ? _i8lsha3l.PhotoPolicy.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iv461aah.PlaceDetailField?>()) {
+      return (data != null ? _iv461aah.PlaceDetailField.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iscbu2bm.PlaceDetailPolicy?>()) {
+      return (data != null ? _iscbu2bm.PlaceDetailPolicy.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ik3zwp4j.PlaceDetailRefreshState?>()) {
+      return (data != null
+              ? _ik3zwp4j.PlaceDetailRefreshState.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iy4xyr7h.PlaceDetailResult?>()) {
+      return (data != null ? _iy4xyr7h.PlaceDetailResult.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i19nqj1l.PlaceInsight?>()) {
+      return (data != null ? _i19nqj1l.PlaceInsight.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i151h6s7.PlaceIntentQuery?>()) {
+      return (data != null ? _i151h6s7.PlaceIntentQuery.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i9zjthc2.PlaceRanking?>()) {
+      return (data != null ? _i9zjthc2.PlaceRanking.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ikbous9x.PlaceSnapshot?>()) {
+      return (data != null ? _ikbous9x.PlaceSnapshot.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i9yu21jq.PoiIdentity?>()) {
+      return (data != null ? _i9yu21jq.PoiIdentity.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i8ciqmoq.PoiIssueSource?>()) {
+      return (data != null ? _i8ciqmoq.PoiIssueSource.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ivby6xgm.PoiIssueStatus?>()) {
+      return (data != null ? _ivby6xgm.PoiIssueStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i19nx1xx.PoiIssueType?>()) {
+      return (data != null ? _i19nx1xx.PoiIssueType.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_izhbxe72.RefreshJobPage?>()) {
+      return (data != null ? _izhbxe72.RefreshJobPage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ij0beg7d.RefreshJobView?>()) {
+      return (data != null ? _ij0beg7d.RefreshJobView.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ivta80d7.ReverseGeocodeResult?>()) {
+      return (data != null
+              ? _ivta80d7.ReverseGeocodeResult.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ii314lch.RouteEstimate?>()) {
+      return (data != null ? _ii314lch.RouteEstimate.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i3152jei.RouteEstimatePolicy?>()) {
+      return (data != null
+              ? _i3152jei.RouteEstimatePolicy.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_itt0gps6.RouteOriginMode?>()) {
+      return (data != null ? _itt0gps6.RouteOriginMode.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_izl9yd57.SessionBundle?>()) {
+      return (data != null ? _izl9yd57.SessionBundle.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i7bl1ryg.SessionEvent?>()) {
+      return (data != null ? _i7bl1ryg.SessionEvent.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iq1mdhv4.SessionEventType?>()) {
+      return (data != null ? _iq1mdhv4.SessionEventType.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i7rc03rf.SessionMode?>()) {
+      return (data != null ? _i7rc03rf.SessionMode.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iwezvyyw.SessionProgress?>()) {
+      return (data != null ? _iwezvyyw.SessionProgress.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iqxkkqmu.SessionResult?>()) {
+      return (data != null ? _iqxkkqmu.SessionResult.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_itcvdkdx.SessionResultTally?>()) {
+      return (data != null ? _itcvdkdx.SessionResultTally.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ikvaqfz2.SessionStatus?>()) {
+      return (data != null ? _ikvaqfz2.SessionStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ivtyz9dh.SessionView?>()) {
+      return (data != null ? _ivtyz9dh.SessionView.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ik5o5i6z.SwipeCommand?>()) {
+      return (data != null ? _ik5o5i6z.SwipeCommand.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_itt2qz3g.TaxonomyCanarySample?>()) {
+      return (data != null
+              ? _itt2qz3g.TaxonomyCanarySample.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ikn8u775.TaxonomyItem?>()) {
+      return (data != null ? _ikn8u775.TaxonomyItem.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ikgwnnlq.TaxonomyKind?>()) {
+      return (data != null ? _ikgwnnlq.TaxonomyKind.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i74orctc.TaxonomySnapshot?>()) {
+      return (data != null ? _i74orctc.TaxonomySnapshot.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ix2svfdk.TaxonomyStatus?>()) {
+      return (data != null ? _ix2svfdk.TaxonomyStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i984jawl.TaxonomyValidation?>()) {
+      return (data != null ? _i984jawl.TaxonomyValidation.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_ixq6s46l.AnalyticsKpi>) {
       return (data as List)
-              .map((e) => deserialize<_i40.AnalyticsKpi>(e))
+              .map((e) => deserialize<_ixq6s46l.AnalyticsKpi>(e))
               .toList()
           as T;
     }
-    if (t == List<_i41.AnalyticsPoint>) {
+    if (t == List<_irt4ny16.AnalyticsPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i41.AnalyticsPoint>(e))
+              .map((e) => deserialize<_irt4ny16.AnalyticsPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i36.AnalyticsBreakdown>) {
+    if (t == List<_iky5xq8l.AnalyticsBreakdown>) {
       return (data as List)
-              .map((e) => deserialize<_i36.AnalyticsBreakdown>(e))
+              .map((e) => deserialize<_iky5xq8l.AnalyticsBreakdown>(e))
               .toList()
           as T;
     }
@@ -1362,7 +1492,7 @@ class Protocol extends _i1.SerializationManager {
           )
           as T;
     }
-    if (t == _i1.getType<Map<String, String>?>()) {
+    if (t == _isc.getType<Map<String, String>?>()) {
       return (data != null
               ? (data as Map).map(
                   (k, v) =>
@@ -1371,141 +1501,149 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == List<_i3.AdminAuditEntry>) {
+    if (t == List<_i62lvi00.AdminAuditEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i3.AdminAuditEntry>(e))
+              .map((e) => deserialize<_i62lvi00.AdminAuditEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i9.AdminCatalogHeatCell>) {
+    if (t == List<_i1cajeij.AdminCatalogHeatCell>) {
       return (data as List)
-              .map((e) => deserialize<_i9.AdminCatalogHeatCell>(e))
+              .map((e) => deserialize<_i1cajeij.AdminCatalogHeatCell>(e))
               .toList()
           as T;
     }
-    if (t == List<_i13.AdminCatalogPlace>) {
+    if (t == List<_i76u62qe.AdminCatalogPlace>) {
       return (data as List)
-              .map((e) => deserialize<_i13.AdminCatalogPlace>(e))
+              .map((e) => deserialize<_i76u62qe.AdminCatalogPlace>(e))
               .toList()
           as T;
     }
-    if (t == List<_i19.AdminCatalogTypeCount>) {
+    if (t == List<_i189df3w.AdminCatalogTypeCount>) {
       return (data as List)
-              .map((e) => deserialize<_i19.AdminCatalogTypeCount>(e))
+              .map((e) => deserialize<_i189df3w.AdminCatalogTypeCount>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i7.AdminCatalogField>) {
+    if (t == List<_iyzxy41v.AdminCatalogField>) {
       return (data as List)
-              .map((e) => deserialize<_i7.AdminCatalogField>(e))
+              .map((e) => deserialize<_iyzxy41v.AdminCatalogField>(e))
               .toList()
           as T;
     }
-    if (t == List<_i5.AdminCatalogCategoryEvidence>) {
+    if (t == List<_ic5j2wzg.AdminCatalogCategoryEvidence>) {
       return (data as List)
-              .map((e) => deserialize<_i5.AdminCatalogCategoryEvidence>(e))
+              .map(
+                (e) => deserialize<_ic5j2wzg.AdminCatalogCategoryEvidence>(e),
+              )
               .toList()
           as T;
     }
-    if (t == List<_i16.AdminCatalogReport>) {
+    if (t == List<_ie0km1ed.AdminCatalogReport>) {
       return (data as List)
-              .map((e) => deserialize<_i16.AdminCatalogReport>(e))
+              .map((e) => deserialize<_ie0km1ed.AdminCatalogReport>(e))
               .toList()
           as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == _i1.getType<List<int>?>()) {
+    if (t == _isc.getType<List<int>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<int>(e)).toList()
               : null)
           as T;
     }
-    if (t == _i1.getType<List<_i7.AdminCatalogField>?>()) {
+    if (t == _isc.getType<List<_iyzxy41v.AdminCatalogField>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i7.AdminCatalogField>(e))
+                    .map((e) => deserialize<_iyzxy41v.AdminCatalogField>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i21.AdminDiscoveryAutoMappedType>) {
+    if (t == List<_izsiyar5.AdminDiscoveryAutoMappedType>) {
       return (data as List)
-              .map((e) => deserialize<_i21.AdminDiscoveryAutoMappedType>(e))
+              .map(
+                (e) => deserialize<_izsiyar5.AdminDiscoveryAutoMappedType>(e),
+              )
               .toList()
           as T;
     }
-    if (t == List<_i77.DiscoveryHarvestManifestEntry>) {
+    if (t == List<_iqg95alk.DiscoveryHarvestManifestEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i77.DiscoveryHarvestManifestEntry>(e))
+              .map(
+                (e) => deserialize<_iqg95alk.DiscoveryHarvestManifestEntry>(e),
+              )
               .toList()
           as T;
     }
-    if (t == List<_i80.DiscoveryHarvestQueryOutcome>) {
+    if (t == List<_i8d7uscq.DiscoveryHarvestQueryOutcome>) {
       return (data as List)
-              .map((e) => deserialize<_i80.DiscoveryHarvestQueryOutcome>(e))
+              .map(
+                (e) => deserialize<_i8d7uscq.DiscoveryHarvestQueryOutcome>(e),
+              )
               .toList()
           as T;
     }
-    if (t == List<_i22.AdminDiscoveryHarvestJob>) {
+    if (t == List<_igrd8jdy.AdminDiscoveryHarvestJob>) {
       return (data as List)
-              .map((e) => deserialize<_i22.AdminDiscoveryHarvestJob>(e))
+              .map((e) => deserialize<_igrd8jdy.AdminDiscoveryHarvestJob>(e))
               .toList()
           as T;
     }
-    if (t == List<_i99.DiscoveryTaxonomyNode>) {
+    if (t == List<_i3sj4yil.DiscoveryTaxonomyNode>) {
       return (data as List)
-              .map((e) => deserialize<_i99.DiscoveryTaxonomyNode>(e))
+              .map((e) => deserialize<_i3sj4yil.DiscoveryTaxonomyNode>(e))
               .toList()
           as T;
     }
-    if (t == List<_i26.AdminDiscoveryUnmappedType>) {
+    if (t == List<_io11b7f4.AdminDiscoveryUnmappedType>) {
       return (data as List)
-              .map((e) => deserialize<_i26.AdminDiscoveryUnmappedType>(e))
+              .map((e) => deserialize<_io11b7f4.AdminDiscoveryUnmappedType>(e))
               .toList()
           as T;
     }
-    if (t == List<_i115.PlaceInsight>) {
+    if (t == List<_i19nqj1l.PlaceInsight>) {
       return (data as List)
-              .map((e) => deserialize<_i115.PlaceInsight>(e))
+              .map((e) => deserialize<_i19nqj1l.PlaceInsight>(e))
               .toList()
           as T;
     }
-    if (t == List<_i31.AdminPoiIssue>) {
+    if (t == List<_i38jre17.AdminPoiIssue>) {
       return (data as List)
-              .map((e) => deserialize<_i31.AdminPoiIssue>(e))
+              .map((e) => deserialize<_i38jre17.AdminPoiIssue>(e))
               .toList()
           as T;
     }
-    if (t == List<_i33.AdminTaxonomyItem>) {
+    if (t == List<_ic97i39b.AdminTaxonomyItem>) {
       return (data as List)
-              .map((e) => deserialize<_i33.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_ic97i39b.AdminTaxonomyItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i39.AnalyticsHeatCell>) {
+    if (t == List<_i58c035v.AnalyticsHeatCell>) {
       return (data as List)
-              .map((e) => deserialize<_i39.AnalyticsHeatCell>(e))
+              .map((e) => deserialize<_i58c035v.AnalyticsHeatCell>(e))
               .toList()
           as T;
     }
-    if (t == List<_i118.PlaceSnapshot>) {
+    if (t == List<_ikbous9x.PlaceSnapshot>) {
       return (data as List)
-              .map((e) => deserialize<_i118.PlaceSnapshot>(e))
+              .map((e) => deserialize<_ikbous9x.PlaceSnapshot>(e))
               .toList()
           as T;
     }
-    if (t == List<_i54.CoverageRecord>) {
+    if (t == List<_i7dm26zo.CoverageRecord>) {
       return (data as List)
-              .map((e) => deserialize<_i54.CoverageRecord>(e))
+              .map((e) => deserialize<_i7dm26zo.CoverageRecord>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<String>?>()) {
+    if (t == _isc.getType<List<String>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<String>(e)).toList()
               : null)
@@ -1517,363 +1655,375 @@ class Protocol extends _i1.SerializationManager {
           )
           as T;
     }
-    if (t == List<_i62.DiscoverPlace>) {
+    if (t == List<_iyut1oys.DiscoverPlace>) {
       return (data as List)
-              .map((e) => deserialize<_i62.DiscoverPlace>(e))
+              .map((e) => deserialize<_iyut1oys.DiscoverPlace>(e))
               .toList()
           as T;
     }
-    if (t == List<_i102.DiscoveryTypeCount>) {
+    if (t == List<_iaqq99sz.DiscoveryTypeCount>) {
       return (data as List)
-              .map((e) => deserialize<_i102.DiscoveryTypeCount>(e))
+              .map((e) => deserialize<_iaqq99sz.DiscoveryTypeCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i97.DiscoveryReviewBandCount>) {
+    if (t == List<_ijvcgm3f.DiscoveryReviewBandCount>) {
       return (data as List)
-              .map((e) => deserialize<_i97.DiscoveryReviewBandCount>(e))
+              .map((e) => deserialize<_ijvcgm3f.DiscoveryReviewBandCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i95.DiscoveryPriceCount>) {
+    if (t == List<_ijqf6en4.DiscoveryPriceCount>) {
       return (data as List)
-              .map((e) => deserialize<_i95.DiscoveryPriceCount>(e))
+              .map((e) => deserialize<_ijqf6en4.DiscoveryPriceCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i96.DiscoveryRatingBucket>) {
+    if (t == List<_iinjfol4.DiscoveryRatingBucket>) {
       return (data as List)
-              .map((e) => deserialize<_i96.DiscoveryRatingBucket>(e))
+              .map((e) => deserialize<_iinjfol4.DiscoveryRatingBucket>(e))
               .toList()
           as T;
     }
-    if (t == List<_i93.DiscoveryMinimumRatingCount>) {
+    if (t == List<_iafesi5t.DiscoveryMinimumRatingCount>) {
       return (data as List)
-              .map((e) => deserialize<_i93.DiscoveryMinimumRatingCount>(e))
+              .map((e) => deserialize<_iafesi5t.DiscoveryMinimumRatingCount>(e))
               .toList()
           as T;
     }
-    if (t == List<_i66.DiscoverReviewBand>) {
+    if (t == List<_ibwysijp.DiscoverReviewBand>) {
       return (data as List)
-              .map((e) => deserialize<_i66.DiscoverReviewBand>(e))
+              .map((e) => deserialize<_ibwysijp.DiscoverReviewBand>(e))
               .toList()
           as T;
     }
-    if (t == List<_i61.DiscoverHoursWindow>) {
+    if (t == List<_i9jnpiw7.DiscoverHoursWindow>) {
       return (data as List)
-              .map((e) => deserialize<_i61.DiscoverHoursWindow>(e))
+              .map((e) => deserialize<_i9jnpiw7.DiscoverHoursWindow>(e))
               .toList()
           as T;
     }
-    if (t == List<_i59.DiscoverCompleteness>) {
+    if (t == List<_i0t9to2g.DiscoverCompleteness>) {
       return (data as List)
-              .map((e) => deserialize<_i59.DiscoverCompleteness>(e))
+              .map((e) => deserialize<_i0t9to2g.DiscoverCompleteness>(e))
               .toList()
           as T;
     }
-    if (t == List<_i74.DiscoveryCoverageFootprint>) {
+    if (t == List<_ito6p50m.DiscoveryCoverageFootprint>) {
       return (data as List)
-              .map((e) => deserialize<_i74.DiscoveryCoverageFootprint>(e))
+              .map((e) => deserialize<_ito6p50m.DiscoveryCoverageFootprint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i84.DiscoveryHarvestStatus>) {
+    if (t == List<_iaeap9p2.DiscoveryHarvestStatus>) {
       return (data as List)
-              .map((e) => deserialize<_i84.DiscoveryHarvestStatus>(e))
+              .map((e) => deserialize<_iaeap9p2.DiscoveryHarvestStatus>(e))
               .toList()
           as T;
     }
-    if (t == List<_i75.DiscoveryGrowthMetricBreakdown>) {
-      return (data as List)
-              .map((e) => deserialize<_i75.DiscoveryGrowthMetricBreakdown>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i90.DiscoveryMapPoint>) {
-      return (data as List)
-              .map((e) => deserialize<_i90.DiscoveryMapPoint>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i87.DiscoveryMapAggregate>) {
-      return (data as List)
-              .map((e) => deserialize<_i87.DiscoveryMapAggregate>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i111.PlaceDetailField>) {
-      return (data as List)
-              .map((e) => deserialize<_i111.PlaceDetailField>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i108.OpeningPeriod>) {
-      return (data as List)
-              .map((e) => deserialize<_i108.OpeningPeriod>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i124.RefreshJobView>) {
-      return (data as List)
-              .map((e) => deserialize<_i124.RefreshJobView>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i109.ParticipantView>) {
-      return (data as List)
-              .map((e) => deserialize<_i109.ParticipantView>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i135.SessionResultTally>) {
-      return (data as List)
-              .map((e) => deserialize<_i135.SessionResultTally>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i140.TaxonomyItem>) {
-      return (data as List)
-              .map((e) => deserialize<_i140.TaxonomyItem>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i139.TaxonomyCanarySample>) {
-      return (data as List)
-              .map((e) => deserialize<_i139.TaxonomyCanarySample>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i145.LocationSuggestion>) {
-      return (data as List)
-              .map((e) => deserialize<_i145.LocationSuggestion>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i146.AdminDiscoveryTaxonomyVersion>) {
-      return (data as List)
-              .map((e) => deserialize<_i146.AdminDiscoveryTaxonomyVersion>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i147.DiscoveryTaxonomyNode>) {
-      return (data as List)
-              .map((e) => deserialize<_i147.DiscoveryTaxonomyNode>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i148.AdminDiscoveryHarvestManifestVersion>) {
+    if (t == List<_i8hpnrba.DiscoveryGrowthMetricBreakdown>) {
       return (data as List)
               .map(
-                (e) =>
-                    deserialize<_i148.AdminDiscoveryHarvestManifestVersion>(e),
+                (e) => deserialize<_i8hpnrba.DiscoveryGrowthMetricBreakdown>(e),
               )
               .toList()
           as T;
     }
-    if (t == List<_i149.DiscoveryHarvestManifestEntry>) {
+    if (t == List<_iepk7ohg.DiscoveryMapPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i149.DiscoveryHarvestManifestEntry>(e))
+              .map((e) => deserialize<_iepk7ohg.DiscoveryMapPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i150.AdminTaxonomyVersion>) {
+    if (t == List<_iwyy9blp.DiscoveryMapAggregate>) {
       return (data as List)
-              .map((e) => deserialize<_i150.AdminTaxonomyVersion>(e))
+              .map((e) => deserialize<_iwyy9blp.DiscoveryMapAggregate>(e))
               .toList()
           as T;
     }
-    if (t == List<_i151.AdminTaxonomyItem>) {
+    if (t == List<_iv461aah.PlaceDetailField>) {
       return (data as List)
-              .map((e) => deserialize<_i151.AdminTaxonomyItem>(e))
+              .map((e) => deserialize<_iv461aah.PlaceDetailField>(e))
               .toList()
           as T;
     }
-    if (t == List<_i152.MetricPoint>) {
+    if (t == List<_iutwk5y0.OpeningPeriod>) {
       return (data as List)
-              .map((e) => deserialize<_i152.MetricPoint>(e))
+              .map((e) => deserialize<_iutwk5y0.OpeningPeriod>(e))
               .toList()
           as T;
     }
-    if (t == List<_i153.SessionResult>) {
+    if (t == List<_ij0beg7d.RefreshJobView>) {
       return (data as List)
-              .map((e) => deserialize<_i153.SessionResult>(e))
+              .map((e) => deserialize<_ij0beg7d.RefreshJobView>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<({_i154.AuthSuccess auth, String operator})>()) {
+    if (t == List<_ir2xxgfs.ParticipantView>) {
+      return (data as List)
+              .map((e) => deserialize<_ir2xxgfs.ParticipantView>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_itcvdkdx.SessionResultTally>) {
+      return (data as List)
+              .map((e) => deserialize<_itcvdkdx.SessionResultTally>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_ikn8u775.TaxonomyItem>) {
+      return (data as List)
+              .map((e) => deserialize<_ikn8u775.TaxonomyItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_itt2qz3g.TaxonomyCanarySample>) {
+      return (data as List)
+              .map((e) => deserialize<_itt2qz3g.TaxonomyCanarySample>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i2wsj6nh.LocationSuggestion>) {
+      return (data as List)
+              .map((e) => deserialize<_i2wsj6nh.LocationSuggestion>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_inkkospb.AdminDiscoveryTaxonomyVersion>) {
+      return (data as List)
+              .map(
+                (e) => deserialize<_inkkospb.AdminDiscoveryTaxonomyVersion>(e),
+              )
+              .toList()
+          as T;
+    }
+    if (t == List<_izsjcp3l.DiscoveryTaxonomyNode>) {
+      return (data as List)
+              .map((e) => deserialize<_izsjcp3l.DiscoveryTaxonomyNode>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_igv0hqt4.AdminDiscoveryHarvestManifestVersion>) {
+      return (data as List)
+              .map(
+                (e) =>
+                    deserialize<_igv0hqt4.AdminDiscoveryHarvestManifestVersion>(
+                      e,
+                    ),
+              )
+              .toList()
+          as T;
+    }
+    if (t == List<_ipd8hg6m.DiscoveryHarvestManifestEntry>) {
+      return (data as List)
+              .map(
+                (e) => deserialize<_ipd8hg6m.DiscoveryHarvestManifestEntry>(e),
+              )
+              .toList()
+          as T;
+    }
+    if (t == List<_ieafa337.AdminTaxonomyVersion>) {
+      return (data as List)
+              .map((e) => deserialize<_ieafa337.AdminTaxonomyVersion>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_ipqneq0v.AdminTaxonomyItem>) {
+      return (data as List)
+              .map((e) => deserialize<_ipqneq0v.AdminTaxonomyItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i1gqgxvo.MetricPoint>) {
+      return (data as List)
+              .map((e) => deserialize<_i1gqgxvo.MetricPoint>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i7o61s6r.SessionResult>) {
+      return (data as List)
+              .map((e) => deserialize<_i7o61s6r.SessionResult>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<({_iacc.AuthSuccess auth, String operator})>()) {
       return (
-            auth: deserialize<_i154.AuthSuccess>(
+            auth: deserialize<_iacc.AuthSuccess>(
               ((data as Map)['n'] as Map)['auth'],
             ),
             operator: deserialize<String>(data['n']['operator']),
           )
           as T;
     }
-    if (t == _i1.getType<({_i155.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _isc.getType<({_idt.ByteData challenge, _isc.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i155.ByteData>(
+            challenge: deserialize<_idt.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
+            id: deserialize<_isc.UuidValue>(data['n']['id']),
           )
           as T;
     }
     try {
-      return _i156.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iaic.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i154.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.AdminAnalyticsOverview => 'AdminAnalyticsOverview',
-      _i3.AdminAuditEntry => 'AdminAuditEntry',
-      _i4.AdminAuditPage => 'AdminAuditPage',
-      _i5.AdminCatalogCategoryEvidence => 'AdminCatalogCategoryEvidence',
-      _i6.AdminCatalogDetailRefresh => 'AdminCatalogDetailRefresh',
-      _i7.AdminCatalogField => 'AdminCatalogField',
-      _i8.AdminCatalogFreshness => 'AdminCatalogFreshness',
-      _i9.AdminCatalogHeatCell => 'AdminCatalogHeatCell',
-      _i10.AdminCatalogHeatmap => 'AdminCatalogHeatmap',
-      _i11.AdminCatalogLifecycle => 'AdminCatalogLifecycle',
-      _i12.AdminCatalogPage => 'AdminCatalogPage',
-      _i13.AdminCatalogPlace => 'AdminCatalogPlace',
-      _i14.AdminCatalogPlaceDetail => 'AdminCatalogPlaceDetail',
-      _i15.AdminCatalogQuery => 'AdminCatalogQuery',
-      _i16.AdminCatalogReport => 'AdminCatalogReport',
-      _i17.AdminCatalogSort => 'AdminCatalogSort',
-      _i18.AdminCatalogStatus => 'AdminCatalogStatus',
-      _i19.AdminCatalogTypeCount => 'AdminCatalogTypeCount',
-      _i20.AdminDiscoveryAutoMapReport => 'AdminDiscoveryAutoMapReport',
-      _i21.AdminDiscoveryAutoMappedType => 'AdminDiscoveryAutoMappedType',
-      _i22.AdminDiscoveryHarvestJob => 'AdminDiscoveryHarvestJob',
-      _i23.AdminDiscoveryHarvestJobPage => 'AdminDiscoveryHarvestJobPage',
-      _i24.AdminDiscoveryHarvestManifestVersion =>
+      _iecy3fr0.AdminAnalyticsOverview => 'AdminAnalyticsOverview',
+      _i62lvi00.AdminAuditEntry => 'AdminAuditEntry',
+      _ihx02lko.AdminAuditPage => 'AdminAuditPage',
+      _ic5j2wzg.AdminCatalogCategoryEvidence => 'AdminCatalogCategoryEvidence',
+      _iwelc6th.AdminCatalogDetailRefresh => 'AdminCatalogDetailRefresh',
+      _iyzxy41v.AdminCatalogField => 'AdminCatalogField',
+      _i26vn4oa.AdminCatalogFreshness => 'AdminCatalogFreshness',
+      _i1cajeij.AdminCatalogHeatCell => 'AdminCatalogHeatCell',
+      _i3fq1ai0.AdminCatalogHeatmap => 'AdminCatalogHeatmap',
+      _ilk0q4cv.AdminCatalogLifecycle => 'AdminCatalogLifecycle',
+      _ibbojg7c.AdminCatalogPage => 'AdminCatalogPage',
+      _i76u62qe.AdminCatalogPlace => 'AdminCatalogPlace',
+      _ij16u99u.AdminCatalogPlaceDetail => 'AdminCatalogPlaceDetail',
+      _iyhby1yo.AdminCatalogQuery => 'AdminCatalogQuery',
+      _ie0km1ed.AdminCatalogReport => 'AdminCatalogReport',
+      _i5jj2ihb.AdminCatalogSort => 'AdminCatalogSort',
+      _ihehxtqf.AdminCatalogStatus => 'AdminCatalogStatus',
+      _i189df3w.AdminCatalogTypeCount => 'AdminCatalogTypeCount',
+      _ifiwaihh.AdminDiscoveryAutoMapReport => 'AdminDiscoveryAutoMapReport',
+      _izsiyar5.AdminDiscoveryAutoMappedType => 'AdminDiscoveryAutoMappedType',
+      _igrd8jdy.AdminDiscoveryHarvestJob => 'AdminDiscoveryHarvestJob',
+      _ignnujj0.AdminDiscoveryHarvestJobPage => 'AdminDiscoveryHarvestJobPage',
+      _isqtb0th.AdminDiscoveryHarvestManifestVersion =>
         'AdminDiscoveryHarvestManifestVersion',
-      _i25.AdminDiscoveryTaxonomyVersion => 'AdminDiscoveryTaxonomyVersion',
-      _i26.AdminDiscoveryUnmappedType => 'AdminDiscoveryUnmappedType',
-      _i27.AdminDiscoveryUnmappedTypePage => 'AdminDiscoveryUnmappedTypePage',
-      _i28.AdminLiveUsage => 'AdminLiveUsage',
-      _i29.AdminMapLocation => 'AdminMapLocation',
-      _i30.AdminPlaceAnalytics => 'AdminPlaceAnalytics',
-      _i31.AdminPoiIssue => 'AdminPoiIssue',
-      _i32.AdminPoiIssuePage => 'AdminPoiIssuePage',
-      _i33.AdminTaxonomyItem => 'AdminTaxonomyItem',
-      _i34.AdminTaxonomyVersion => 'AdminTaxonomyVersion',
-      _i35.AdminUsageAnalytics => 'AdminUsageAnalytics',
-      _i36.AnalyticsBreakdown => 'AnalyticsBreakdown',
-      _i37.AnalyticsFilter => 'AnalyticsFilter',
-      _i38.AnalyticsGranularity => 'AnalyticsGranularity',
-      _i39.AnalyticsHeatCell => 'AnalyticsHeatCell',
-      _i40.AnalyticsKpi => 'AnalyticsKpi',
-      _i41.AnalyticsPoint => 'AnalyticsPoint',
-      _i42.ApiException => 'ApiException',
-      _i43.BootstrapInfo => 'BootstrapInfo',
-      _i44.CacheDashboardSummary => 'CacheDashboardSummary',
-      _i45.CachePolicy => 'CachePolicy',
-      _i46.CalibrationStatus => 'CalibrationStatus',
-      _i47.CalibrationValidation => 'CalibrationValidation',
-      _i48.CatalogPlacePage => 'CatalogPlacePage',
-      _i49.CatalogPrunePreview => 'CatalogPrunePreview',
-      _i50.ClientAnalyticsContext => 'ClientAnalyticsContext',
-      _i51.ClientAnalyticsEvent => 'ClientAnalyticsEvent',
-      _i52.ConsensusRule => 'ConsensusRule',
-      _i53.CoveragePage => 'CoveragePage',
-      _i54.CoverageRecord => 'CoverageRecord',
-      _i55.CreateIntentSessionRequest => 'CreateIntentSessionRequest',
-      _i56.CreateSessionRequest => 'CreateSessionRequest',
-      _i57.DestinationChoiceState => 'DestinationChoiceState',
-      _i58.DiscoverBrowsePage => 'DiscoverBrowsePage',
-      _i59.DiscoverCompleteness => 'DiscoverCompleteness',
-      _i60.DiscoverFacets => 'DiscoverFacets',
-      _i61.DiscoverHoursWindow => 'DiscoverHoursWindow',
-      _i62.DiscoverPlace => 'DiscoverPlace',
-      _i63.DiscoverPlaceContext => 'DiscoverPlaceContext',
-      _i64.DiscoverQuery => 'DiscoverQuery',
-      _i65.DiscoverQueryContext => 'DiscoverQueryContext',
-      _i66.DiscoverReviewBand => 'DiscoverReviewBand',
-      _i67.DiscoverSort => 'DiscoverSort',
-      _i68.DiscoverViewport => 'DiscoverViewport',
-      _i69.DiscoveryAreaReceipt => 'DiscoveryAreaReceipt',
-      _i70.DiscoveryBestFormula => 'DiscoveryBestFormula',
-      _i71.DiscoveryClientLimits => 'DiscoveryClientLimits',
-      _i72.DiscoveryConfig => 'DiscoveryConfig',
-      _i73.DiscoveryCoverage => 'DiscoveryCoverage',
-      _i74.DiscoveryCoverageFootprint => 'DiscoveryCoverageFootprint',
-      _i75.DiscoveryGrowthMetricBreakdown => 'DiscoveryGrowthMetricBreakdown',
-      _i76.DiscoveryGrowthMetrics => 'DiscoveryGrowthMetrics',
-      _i77.DiscoveryHarvestManifestEntry => 'DiscoveryHarvestManifestEntry',
-      _i78.DiscoveryHarvestManifestValidation =>
+      _ig5prpr6.AdminDiscoveryTaxonomyVersion =>
+        'AdminDiscoveryTaxonomyVersion',
+      _io11b7f4.AdminDiscoveryUnmappedType => 'AdminDiscoveryUnmappedType',
+      _ixc8e9r6.AdminDiscoveryUnmappedTypePage =>
+        'AdminDiscoveryUnmappedTypePage',
+      _i17fquo2.AdminLiveUsage => 'AdminLiveUsage',
+      _irkf0vy6.AdminMapLocation => 'AdminMapLocation',
+      _iv11hnpe.AdminPlaceAnalytics => 'AdminPlaceAnalytics',
+      _i38jre17.AdminPoiIssue => 'AdminPoiIssue',
+      _iyeluef3.AdminPoiIssuePage => 'AdminPoiIssuePage',
+      _ic97i39b.AdminTaxonomyItem => 'AdminTaxonomyItem',
+      _ixqv2zag.AdminTaxonomyVersion => 'AdminTaxonomyVersion',
+      _ixxf414g.AdminUsageAnalytics => 'AdminUsageAnalytics',
+      _iky5xq8l.AnalyticsBreakdown => 'AnalyticsBreakdown',
+      _ifkni2lr.AnalyticsFilter => 'AnalyticsFilter',
+      _i87q2y72.AnalyticsGranularity => 'AnalyticsGranularity',
+      _i58c035v.AnalyticsHeatCell => 'AnalyticsHeatCell',
+      _ixq6s46l.AnalyticsKpi => 'AnalyticsKpi',
+      _irt4ny16.AnalyticsPoint => 'AnalyticsPoint',
+      _iozummgq.ApiException => 'ApiException',
+      _ia4tqko8.BootstrapInfo => 'BootstrapInfo',
+      _iiw95en5.CacheDashboardSummary => 'CacheDashboardSummary',
+      _inde67sh.CachePolicy => 'CachePolicy',
+      _i77o9qph.CalibrationStatus => 'CalibrationStatus',
+      _iupe0u14.CalibrationValidation => 'CalibrationValidation',
+      _idn3ilnl.CatalogPlacePage => 'CatalogPlacePage',
+      _i9cvny8e.CatalogPrunePreview => 'CatalogPrunePreview',
+      _iae9jhcw.ClientAnalyticsContext => 'ClientAnalyticsContext',
+      _iyv85p2h.ClientAnalyticsEvent => 'ClientAnalyticsEvent',
+      _idhfk3qj.ConsensusRule => 'ConsensusRule',
+      _iz2o7pxx.CoveragePage => 'CoveragePage',
+      _i7dm26zo.CoverageRecord => 'CoverageRecord',
+      _ihgqalvx.CreateIntentSessionRequest => 'CreateIntentSessionRequest',
+      _iktms5mb.CreateSessionRequest => 'CreateSessionRequest',
+      _ivseuofk.DestinationChoiceState => 'DestinationChoiceState',
+      _ix98zisu.DiscoverBrowsePage => 'DiscoverBrowsePage',
+      _i0t9to2g.DiscoverCompleteness => 'DiscoverCompleteness',
+      _icao29qp.DiscoverFacets => 'DiscoverFacets',
+      _i9jnpiw7.DiscoverHoursWindow => 'DiscoverHoursWindow',
+      _iyut1oys.DiscoverPlace => 'DiscoverPlace',
+      _ihm9zx9x.DiscoverPlaceContext => 'DiscoverPlaceContext',
+      _ip98t8ku.DiscoverQuery => 'DiscoverQuery',
+      _ixfyrpmf.DiscoverQueryContext => 'DiscoverQueryContext',
+      _ibwysijp.DiscoverReviewBand => 'DiscoverReviewBand',
+      _iijeyvjv.DiscoverSort => 'DiscoverSort',
+      _i1okvcdc.DiscoverViewport => 'DiscoverViewport',
+      _itjfopq1.DiscoveryAreaReceipt => 'DiscoveryAreaReceipt',
+      _iv19bw26.DiscoveryBestFormula => 'DiscoveryBestFormula',
+      _ii690dam.DiscoveryClientLimits => 'DiscoveryClientLimits',
+      _iq6b9igw.DiscoveryConfig => 'DiscoveryConfig',
+      _i8yqti93.DiscoveryCoverage => 'DiscoveryCoverage',
+      _ito6p50m.DiscoveryCoverageFootprint => 'DiscoveryCoverageFootprint',
+      _i8hpnrba.DiscoveryGrowthMetricBreakdown =>
+        'DiscoveryGrowthMetricBreakdown',
+      _i4184rq9.DiscoveryGrowthMetrics => 'DiscoveryGrowthMetrics',
+      _iqg95alk.DiscoveryHarvestManifestEntry =>
+        'DiscoveryHarvestManifestEntry',
+      _iee3r3i8.DiscoveryHarvestManifestValidation =>
         'DiscoveryHarvestManifestValidation',
-      _i79.DiscoveryHarvestQueryKind => 'DiscoveryHarvestQueryKind',
-      _i80.DiscoveryHarvestQueryOutcome => 'DiscoveryHarvestQueryOutcome',
-      _i81.DiscoveryHarvestQueryState => 'DiscoveryHarvestQueryState',
-      _i82.DiscoveryHarvestRequester => 'DiscoveryHarvestRequester',
-      _i83.DiscoveryHarvestState => 'DiscoveryHarvestState',
-      _i84.DiscoveryHarvestStatus => 'DiscoveryHarvestStatus',
-      _i85.DiscoveryHarvestTrigger => 'DiscoveryHarvestTrigger',
-      _i86.DiscoveryManifestStatus => 'DiscoveryManifestStatus',
-      _i87.DiscoveryMapAggregate => 'DiscoveryMapAggregate',
-      _i88.DiscoveryMapMode => 'DiscoveryMapMode',
-      _i89.DiscoveryMapPayload => 'DiscoveryMapPayload',
-      _i90.DiscoveryMapPoint => 'DiscoveryMapPoint',
-      _i91.DiscoveryMetricMode => 'DiscoveryMetricMode',
-      _i92.DiscoveryMetricOperation => 'DiscoveryMetricOperation',
-      _i93.DiscoveryMinimumRatingCount => 'DiscoveryMinimumRatingCount',
-      _i94.DiscoveryPolicy => 'DiscoveryPolicy',
-      _i95.DiscoveryPriceCount => 'DiscoveryPriceCount',
-      _i96.DiscoveryRatingBucket => 'DiscoveryRatingBucket',
-      _i97.DiscoveryReviewBandCount => 'DiscoveryReviewBandCount',
-      _i98.DiscoveryScoring => 'DiscoveryScoring',
-      _i99.DiscoveryTaxonomyNode => 'DiscoveryTaxonomyNode',
-      _i100.DiscoveryTaxonomySnapshot => 'DiscoveryTaxonomySnapshot',
-      _i101.DiscoveryTaxonomyValidation => 'DiscoveryTaxonomyValidation',
-      _i102.DiscoveryTypeCount => 'DiscoveryTypeCount',
-      _i103.DiscoveryTypeMappingIssue => 'DiscoveryTypeMappingIssue',
-      _i104.JobStatus => 'JobStatus',
-      _i105.LocationSuggestion => 'LocationSuggestion',
-      _i106.MatchingTiming => 'MatchingTiming',
-      _i107.MetricPoint => 'MetricPoint',
-      _i108.OpeningPeriod => 'OpeningPeriod',
-      _i109.ParticipantView => 'ParticipantView',
-      _i110.PhotoPolicy => 'PhotoPolicy',
-      _i111.PlaceDetailField => 'PlaceDetailField',
-      _i112.PlaceDetailPolicy => 'PlaceDetailPolicy',
-      _i113.PlaceDetailRefreshState => 'PlaceDetailRefreshState',
-      _i114.PlaceDetailResult => 'PlaceDetailResult',
-      _i115.PlaceInsight => 'PlaceInsight',
-      _i116.PlaceIntentQuery => 'PlaceIntentQuery',
-      _i117.PlaceRanking => 'PlaceRanking',
-      _i118.PlaceSnapshot => 'PlaceSnapshot',
-      _i119.PoiIdentity => 'PoiIdentity',
-      _i120.PoiIssueSource => 'PoiIssueSource',
-      _i121.PoiIssueStatus => 'PoiIssueStatus',
-      _i122.PoiIssueType => 'PoiIssueType',
-      _i123.RefreshJobPage => 'RefreshJobPage',
-      _i124.RefreshJobView => 'RefreshJobView',
-      _i125.ReverseGeocodeResult => 'ReverseGeocodeResult',
-      _i126.RouteEstimate => 'RouteEstimate',
-      _i127.RouteEstimatePolicy => 'RouteEstimatePolicy',
-      _i128.RouteOriginMode => 'RouteOriginMode',
-      _i129.SessionBundle => 'SessionBundle',
-      _i130.SessionEvent => 'SessionEvent',
-      _i131.SessionEventType => 'SessionEventType',
-      _i132.SessionMode => 'SessionMode',
-      _i133.SessionProgress => 'SessionProgress',
-      _i134.SessionResult => 'SessionResult',
-      _i135.SessionResultTally => 'SessionResultTally',
-      _i136.SessionStatus => 'SessionStatus',
-      _i137.SessionView => 'SessionView',
-      _i138.SwipeCommand => 'SwipeCommand',
-      _i139.TaxonomyCanarySample => 'TaxonomyCanarySample',
-      _i140.TaxonomyItem => 'TaxonomyItem',
-      _i141.TaxonomyKind => 'TaxonomyKind',
-      _i142.TaxonomySnapshot => 'TaxonomySnapshot',
-      _i143.TaxonomyStatus => 'TaxonomyStatus',
-      _i144.TaxonomyValidation => 'TaxonomyValidation',
+      _ih0y3xx9.DiscoveryHarvestQueryKind => 'DiscoveryHarvestQueryKind',
+      _i8d7uscq.DiscoveryHarvestQueryOutcome => 'DiscoveryHarvestQueryOutcome',
+      _it5gcvsk.DiscoveryHarvestQueryState => 'DiscoveryHarvestQueryState',
+      _ipv2f6f1.DiscoveryHarvestRequester => 'DiscoveryHarvestRequester',
+      _i4wyetx8.DiscoveryHarvestState => 'DiscoveryHarvestState',
+      _iaeap9p2.DiscoveryHarvestStatus => 'DiscoveryHarvestStatus',
+      _ia4mymki.DiscoveryHarvestTrigger => 'DiscoveryHarvestTrigger',
+      _in2pelzj.DiscoveryManifestStatus => 'DiscoveryManifestStatus',
+      _iwyy9blp.DiscoveryMapAggregate => 'DiscoveryMapAggregate',
+      _i4gpq0qx.DiscoveryMapMode => 'DiscoveryMapMode',
+      _ijiia6mk.DiscoveryMapPayload => 'DiscoveryMapPayload',
+      _iepk7ohg.DiscoveryMapPoint => 'DiscoveryMapPoint',
+      _iwc51qy2.DiscoveryMetricMode => 'DiscoveryMetricMode',
+      _ipgnhxya.DiscoveryMetricOperation => 'DiscoveryMetricOperation',
+      _iafesi5t.DiscoveryMinimumRatingCount => 'DiscoveryMinimumRatingCount',
+      _izqxi2bg.DiscoveryPolicy => 'DiscoveryPolicy',
+      _ijqf6en4.DiscoveryPriceCount => 'DiscoveryPriceCount',
+      _iinjfol4.DiscoveryRatingBucket => 'DiscoveryRatingBucket',
+      _ijvcgm3f.DiscoveryReviewBandCount => 'DiscoveryReviewBandCount',
+      _iphkx6cy.DiscoveryScoring => 'DiscoveryScoring',
+      _i3sj4yil.DiscoveryTaxonomyNode => 'DiscoveryTaxonomyNode',
+      _ic7lkmks.DiscoveryTaxonomySnapshot => 'DiscoveryTaxonomySnapshot',
+      _iep1g1h3.DiscoveryTaxonomyValidation => 'DiscoveryTaxonomyValidation',
+      _iaqq99sz.DiscoveryTypeCount => 'DiscoveryTypeCount',
+      _i0ly2vwv.DiscoveryTypeMappingIssue => 'DiscoveryTypeMappingIssue',
+      _iayt1i3u.JobStatus => 'JobStatus',
+      _iib0mep8.LocationSuggestion => 'LocationSuggestion',
+      _inbmjteu.MatchingTiming => 'MatchingTiming',
+      _icsyqkkq.MetricPoint => 'MetricPoint',
+      _iutwk5y0.OpeningPeriod => 'OpeningPeriod',
+      _ir2xxgfs.ParticipantView => 'ParticipantView',
+      _i8lsha3l.PhotoPolicy => 'PhotoPolicy',
+      _iv461aah.PlaceDetailField => 'PlaceDetailField',
+      _iscbu2bm.PlaceDetailPolicy => 'PlaceDetailPolicy',
+      _ik3zwp4j.PlaceDetailRefreshState => 'PlaceDetailRefreshState',
+      _iy4xyr7h.PlaceDetailResult => 'PlaceDetailResult',
+      _i19nqj1l.PlaceInsight => 'PlaceInsight',
+      _i151h6s7.PlaceIntentQuery => 'PlaceIntentQuery',
+      _i9zjthc2.PlaceRanking => 'PlaceRanking',
+      _ikbous9x.PlaceSnapshot => 'PlaceSnapshot',
+      _i9yu21jq.PoiIdentity => 'PoiIdentity',
+      _i8ciqmoq.PoiIssueSource => 'PoiIssueSource',
+      _ivby6xgm.PoiIssueStatus => 'PoiIssueStatus',
+      _i19nx1xx.PoiIssueType => 'PoiIssueType',
+      _izhbxe72.RefreshJobPage => 'RefreshJobPage',
+      _ij0beg7d.RefreshJobView => 'RefreshJobView',
+      _ivta80d7.ReverseGeocodeResult => 'ReverseGeocodeResult',
+      _ii314lch.RouteEstimate => 'RouteEstimate',
+      _i3152jei.RouteEstimatePolicy => 'RouteEstimatePolicy',
+      _itt0gps6.RouteOriginMode => 'RouteOriginMode',
+      _izl9yd57.SessionBundle => 'SessionBundle',
+      _i7bl1ryg.SessionEvent => 'SessionEvent',
+      _iq1mdhv4.SessionEventType => 'SessionEventType',
+      _i7rc03rf.SessionMode => 'SessionMode',
+      _iwezvyyw.SessionProgress => 'SessionProgress',
+      _iqxkkqmu.SessionResult => 'SessionResult',
+      _itcvdkdx.SessionResultTally => 'SessionResultTally',
+      _ikvaqfz2.SessionStatus => 'SessionStatus',
+      _ivtyz9dh.SessionView => 'SessionView',
+      _ik5o5i6z.SwipeCommand => 'SwipeCommand',
+      _itt2qz3g.TaxonomyCanarySample => 'TaxonomyCanarySample',
+      _ikn8u775.TaxonomyItem => 'TaxonomyItem',
+      _ikgwnnlq.TaxonomyKind => 'TaxonomyKind',
+      _i74orctc.TaxonomySnapshot => 'TaxonomySnapshot',
+      _ix2svfdk.TaxonomyStatus => 'TaxonomyStatus',
+      _i984jawl.TaxonomyValidation => 'TaxonomyValidation',
       _ => null,
     };
   }
@@ -1888,300 +2038,304 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.AdminAnalyticsOverview():
+      case _iecy3fr0.AdminAnalyticsOverview():
         return 'AdminAnalyticsOverview';
-      case _i3.AdminAuditEntry():
+      case _i62lvi00.AdminAuditEntry():
         return 'AdminAuditEntry';
-      case _i4.AdminAuditPage():
+      case _ihx02lko.AdminAuditPage():
         return 'AdminAuditPage';
-      case _i5.AdminCatalogCategoryEvidence():
+      case _ic5j2wzg.AdminCatalogCategoryEvidence():
         return 'AdminCatalogCategoryEvidence';
-      case _i6.AdminCatalogDetailRefresh():
+      case _iwelc6th.AdminCatalogDetailRefresh():
         return 'AdminCatalogDetailRefresh';
-      case _i7.AdminCatalogField():
+      case _iyzxy41v.AdminCatalogField():
         return 'AdminCatalogField';
-      case _i8.AdminCatalogFreshness():
+      case _i26vn4oa.AdminCatalogFreshness():
         return 'AdminCatalogFreshness';
-      case _i9.AdminCatalogHeatCell():
+      case _i1cajeij.AdminCatalogHeatCell():
         return 'AdminCatalogHeatCell';
-      case _i10.AdminCatalogHeatmap():
+      case _i3fq1ai0.AdminCatalogHeatmap():
         return 'AdminCatalogHeatmap';
-      case _i11.AdminCatalogLifecycle():
+      case _ilk0q4cv.AdminCatalogLifecycle():
         return 'AdminCatalogLifecycle';
-      case _i12.AdminCatalogPage():
+      case _ibbojg7c.AdminCatalogPage():
         return 'AdminCatalogPage';
-      case _i13.AdminCatalogPlace():
+      case _i76u62qe.AdminCatalogPlace():
         return 'AdminCatalogPlace';
-      case _i14.AdminCatalogPlaceDetail():
+      case _ij16u99u.AdminCatalogPlaceDetail():
         return 'AdminCatalogPlaceDetail';
-      case _i15.AdminCatalogQuery():
+      case _iyhby1yo.AdminCatalogQuery():
         return 'AdminCatalogQuery';
-      case _i16.AdminCatalogReport():
+      case _ie0km1ed.AdminCatalogReport():
         return 'AdminCatalogReport';
-      case _i17.AdminCatalogSort():
+      case _i5jj2ihb.AdminCatalogSort():
         return 'AdminCatalogSort';
-      case _i18.AdminCatalogStatus():
+      case _ihehxtqf.AdminCatalogStatus():
         return 'AdminCatalogStatus';
-      case _i19.AdminCatalogTypeCount():
+      case _i189df3w.AdminCatalogTypeCount():
         return 'AdminCatalogTypeCount';
-      case _i20.AdminDiscoveryAutoMapReport():
+      case _ifiwaihh.AdminDiscoveryAutoMapReport():
         return 'AdminDiscoveryAutoMapReport';
-      case _i21.AdminDiscoveryAutoMappedType():
+      case _izsiyar5.AdminDiscoveryAutoMappedType():
         return 'AdminDiscoveryAutoMappedType';
-      case _i22.AdminDiscoveryHarvestJob():
+      case _igrd8jdy.AdminDiscoveryHarvestJob():
         return 'AdminDiscoveryHarvestJob';
-      case _i23.AdminDiscoveryHarvestJobPage():
+      case _ignnujj0.AdminDiscoveryHarvestJobPage():
         return 'AdminDiscoveryHarvestJobPage';
-      case _i24.AdminDiscoveryHarvestManifestVersion():
+      case _isqtb0th.AdminDiscoveryHarvestManifestVersion():
         return 'AdminDiscoveryHarvestManifestVersion';
-      case _i25.AdminDiscoveryTaxonomyVersion():
+      case _ig5prpr6.AdminDiscoveryTaxonomyVersion():
         return 'AdminDiscoveryTaxonomyVersion';
-      case _i26.AdminDiscoveryUnmappedType():
+      case _io11b7f4.AdminDiscoveryUnmappedType():
         return 'AdminDiscoveryUnmappedType';
-      case _i27.AdminDiscoveryUnmappedTypePage():
+      case _ixc8e9r6.AdminDiscoveryUnmappedTypePage():
         return 'AdminDiscoveryUnmappedTypePage';
-      case _i28.AdminLiveUsage():
+      case _i17fquo2.AdminLiveUsage():
         return 'AdminLiveUsage';
-      case _i29.AdminMapLocation():
+      case _irkf0vy6.AdminMapLocation():
         return 'AdminMapLocation';
-      case _i30.AdminPlaceAnalytics():
+      case _iv11hnpe.AdminPlaceAnalytics():
         return 'AdminPlaceAnalytics';
-      case _i31.AdminPoiIssue():
+      case _i38jre17.AdminPoiIssue():
         return 'AdminPoiIssue';
-      case _i32.AdminPoiIssuePage():
+      case _iyeluef3.AdminPoiIssuePage():
         return 'AdminPoiIssuePage';
-      case _i33.AdminTaxonomyItem():
+      case _ic97i39b.AdminTaxonomyItem():
         return 'AdminTaxonomyItem';
-      case _i34.AdminTaxonomyVersion():
+      case _ixqv2zag.AdminTaxonomyVersion():
         return 'AdminTaxonomyVersion';
-      case _i35.AdminUsageAnalytics():
+      case _ixxf414g.AdminUsageAnalytics():
         return 'AdminUsageAnalytics';
-      case _i36.AnalyticsBreakdown():
+      case _iky5xq8l.AnalyticsBreakdown():
         return 'AnalyticsBreakdown';
-      case _i37.AnalyticsFilter():
+      case _ifkni2lr.AnalyticsFilter():
         return 'AnalyticsFilter';
-      case _i38.AnalyticsGranularity():
+      case _i87q2y72.AnalyticsGranularity():
         return 'AnalyticsGranularity';
-      case _i39.AnalyticsHeatCell():
+      case _i58c035v.AnalyticsHeatCell():
         return 'AnalyticsHeatCell';
-      case _i40.AnalyticsKpi():
+      case _ixq6s46l.AnalyticsKpi():
         return 'AnalyticsKpi';
-      case _i41.AnalyticsPoint():
+      case _irt4ny16.AnalyticsPoint():
         return 'AnalyticsPoint';
-      case _i42.ApiException():
+      case _iozummgq.ApiException():
         return 'ApiException';
-      case _i43.BootstrapInfo():
+      case _ia4tqko8.BootstrapInfo():
         return 'BootstrapInfo';
-      case _i44.CacheDashboardSummary():
+      case _iiw95en5.CacheDashboardSummary():
         return 'CacheDashboardSummary';
-      case _i45.CachePolicy():
+      case _inde67sh.CachePolicy():
         return 'CachePolicy';
-      case _i46.CalibrationStatus():
+      case _i77o9qph.CalibrationStatus():
         return 'CalibrationStatus';
-      case _i47.CalibrationValidation():
+      case _iupe0u14.CalibrationValidation():
         return 'CalibrationValidation';
-      case _i48.CatalogPlacePage():
+      case _idn3ilnl.CatalogPlacePage():
         return 'CatalogPlacePage';
-      case _i49.CatalogPrunePreview():
+      case _i9cvny8e.CatalogPrunePreview():
         return 'CatalogPrunePreview';
-      case _i50.ClientAnalyticsContext():
+      case _iae9jhcw.ClientAnalyticsContext():
         return 'ClientAnalyticsContext';
-      case _i51.ClientAnalyticsEvent():
+      case _iyv85p2h.ClientAnalyticsEvent():
         return 'ClientAnalyticsEvent';
-      case _i52.ConsensusRule():
+      case _idhfk3qj.ConsensusRule():
         return 'ConsensusRule';
-      case _i53.CoveragePage():
+      case _iz2o7pxx.CoveragePage():
         return 'CoveragePage';
-      case _i54.CoverageRecord():
+      case _i7dm26zo.CoverageRecord():
         return 'CoverageRecord';
-      case _i55.CreateIntentSessionRequest():
+      case _ihgqalvx.CreateIntentSessionRequest():
         return 'CreateIntentSessionRequest';
-      case _i56.CreateSessionRequest():
+      case _iktms5mb.CreateSessionRequest():
         return 'CreateSessionRequest';
-      case _i57.DestinationChoiceState():
+      case _ivseuofk.DestinationChoiceState():
         return 'DestinationChoiceState';
-      case _i58.DiscoverBrowsePage():
+      case _ix98zisu.DiscoverBrowsePage():
         return 'DiscoverBrowsePage';
-      case _i59.DiscoverCompleteness():
+      case _i0t9to2g.DiscoverCompleteness():
         return 'DiscoverCompleteness';
-      case _i60.DiscoverFacets():
+      case _icao29qp.DiscoverFacets():
         return 'DiscoverFacets';
-      case _i61.DiscoverHoursWindow():
+      case _i9jnpiw7.DiscoverHoursWindow():
         return 'DiscoverHoursWindow';
-      case _i62.DiscoverPlace():
+      case _iyut1oys.DiscoverPlace():
         return 'DiscoverPlace';
-      case _i63.DiscoverPlaceContext():
+      case _ihm9zx9x.DiscoverPlaceContext():
         return 'DiscoverPlaceContext';
-      case _i64.DiscoverQuery():
+      case _ip98t8ku.DiscoverQuery():
         return 'DiscoverQuery';
-      case _i65.DiscoverQueryContext():
+      case _ixfyrpmf.DiscoverQueryContext():
         return 'DiscoverQueryContext';
-      case _i66.DiscoverReviewBand():
+      case _ibwysijp.DiscoverReviewBand():
         return 'DiscoverReviewBand';
-      case _i67.DiscoverSort():
+      case _iijeyvjv.DiscoverSort():
         return 'DiscoverSort';
-      case _i68.DiscoverViewport():
+      case _i1okvcdc.DiscoverViewport():
         return 'DiscoverViewport';
-      case _i69.DiscoveryAreaReceipt():
+      case _itjfopq1.DiscoveryAreaReceipt():
         return 'DiscoveryAreaReceipt';
-      case _i70.DiscoveryBestFormula():
+      case _iv19bw26.DiscoveryBestFormula():
         return 'DiscoveryBestFormula';
-      case _i71.DiscoveryClientLimits():
+      case _ii690dam.DiscoveryClientLimits():
         return 'DiscoveryClientLimits';
-      case _i72.DiscoveryConfig():
+      case _iq6b9igw.DiscoveryConfig():
         return 'DiscoveryConfig';
-      case _i73.DiscoveryCoverage():
+      case _i8yqti93.DiscoveryCoverage():
         return 'DiscoveryCoverage';
-      case _i74.DiscoveryCoverageFootprint():
+      case _ito6p50m.DiscoveryCoverageFootprint():
         return 'DiscoveryCoverageFootprint';
-      case _i75.DiscoveryGrowthMetricBreakdown():
+      case _i8hpnrba.DiscoveryGrowthMetricBreakdown():
         return 'DiscoveryGrowthMetricBreakdown';
-      case _i76.DiscoveryGrowthMetrics():
+      case _i4184rq9.DiscoveryGrowthMetrics():
         return 'DiscoveryGrowthMetrics';
-      case _i77.DiscoveryHarvestManifestEntry():
+      case _iqg95alk.DiscoveryHarvestManifestEntry():
         return 'DiscoveryHarvestManifestEntry';
-      case _i78.DiscoveryHarvestManifestValidation():
+      case _iee3r3i8.DiscoveryHarvestManifestValidation():
         return 'DiscoveryHarvestManifestValidation';
-      case _i79.DiscoveryHarvestQueryKind():
+      case _ih0y3xx9.DiscoveryHarvestQueryKind():
         return 'DiscoveryHarvestQueryKind';
-      case _i80.DiscoveryHarvestQueryOutcome():
+      case _i8d7uscq.DiscoveryHarvestQueryOutcome():
         return 'DiscoveryHarvestQueryOutcome';
-      case _i81.DiscoveryHarvestQueryState():
+      case _it5gcvsk.DiscoveryHarvestQueryState():
         return 'DiscoveryHarvestQueryState';
-      case _i82.DiscoveryHarvestRequester():
+      case _ipv2f6f1.DiscoveryHarvestRequester():
         return 'DiscoveryHarvestRequester';
-      case _i83.DiscoveryHarvestState():
+      case _i4wyetx8.DiscoveryHarvestState():
         return 'DiscoveryHarvestState';
-      case _i84.DiscoveryHarvestStatus():
+      case _iaeap9p2.DiscoveryHarvestStatus():
         return 'DiscoveryHarvestStatus';
-      case _i85.DiscoveryHarvestTrigger():
+      case _ia4mymki.DiscoveryHarvestTrigger():
         return 'DiscoveryHarvestTrigger';
-      case _i86.DiscoveryManifestStatus():
+      case _in2pelzj.DiscoveryManifestStatus():
         return 'DiscoveryManifestStatus';
-      case _i87.DiscoveryMapAggregate():
+      case _iwyy9blp.DiscoveryMapAggregate():
         return 'DiscoveryMapAggregate';
-      case _i88.DiscoveryMapMode():
+      case _i4gpq0qx.DiscoveryMapMode():
         return 'DiscoveryMapMode';
-      case _i89.DiscoveryMapPayload():
+      case _ijiia6mk.DiscoveryMapPayload():
         return 'DiscoveryMapPayload';
-      case _i90.DiscoveryMapPoint():
+      case _iepk7ohg.DiscoveryMapPoint():
         return 'DiscoveryMapPoint';
-      case _i91.DiscoveryMetricMode():
+      case _iwc51qy2.DiscoveryMetricMode():
         return 'DiscoveryMetricMode';
-      case _i92.DiscoveryMetricOperation():
+      case _ipgnhxya.DiscoveryMetricOperation():
         return 'DiscoveryMetricOperation';
-      case _i93.DiscoveryMinimumRatingCount():
+      case _iafesi5t.DiscoveryMinimumRatingCount():
         return 'DiscoveryMinimumRatingCount';
-      case _i94.DiscoveryPolicy():
+      case _izqxi2bg.DiscoveryPolicy():
         return 'DiscoveryPolicy';
-      case _i95.DiscoveryPriceCount():
+      case _ijqf6en4.DiscoveryPriceCount():
         return 'DiscoveryPriceCount';
-      case _i96.DiscoveryRatingBucket():
+      case _iinjfol4.DiscoveryRatingBucket():
         return 'DiscoveryRatingBucket';
-      case _i97.DiscoveryReviewBandCount():
+      case _ijvcgm3f.DiscoveryReviewBandCount():
         return 'DiscoveryReviewBandCount';
-      case _i98.DiscoveryScoring():
+      case _iphkx6cy.DiscoveryScoring():
         return 'DiscoveryScoring';
-      case _i99.DiscoveryTaxonomyNode():
+      case _i3sj4yil.DiscoveryTaxonomyNode():
         return 'DiscoveryTaxonomyNode';
-      case _i100.DiscoveryTaxonomySnapshot():
+      case _ic7lkmks.DiscoveryTaxonomySnapshot():
         return 'DiscoveryTaxonomySnapshot';
-      case _i101.DiscoveryTaxonomyValidation():
+      case _iep1g1h3.DiscoveryTaxonomyValidation():
         return 'DiscoveryTaxonomyValidation';
-      case _i102.DiscoveryTypeCount():
+      case _iaqq99sz.DiscoveryTypeCount():
         return 'DiscoveryTypeCount';
-      case _i103.DiscoveryTypeMappingIssue():
+      case _i0ly2vwv.DiscoveryTypeMappingIssue():
         return 'DiscoveryTypeMappingIssue';
-      case _i104.JobStatus():
+      case _iayt1i3u.JobStatus():
         return 'JobStatus';
-      case _i105.LocationSuggestion():
+      case _iib0mep8.LocationSuggestion():
         return 'LocationSuggestion';
-      case _i106.MatchingTiming():
+      case _inbmjteu.MatchingTiming():
         return 'MatchingTiming';
-      case _i107.MetricPoint():
+      case _icsyqkkq.MetricPoint():
         return 'MetricPoint';
-      case _i108.OpeningPeriod():
+      case _iutwk5y0.OpeningPeriod():
         return 'OpeningPeriod';
-      case _i109.ParticipantView():
+      case _ir2xxgfs.ParticipantView():
         return 'ParticipantView';
-      case _i110.PhotoPolicy():
+      case _i8lsha3l.PhotoPolicy():
         return 'PhotoPolicy';
-      case _i111.PlaceDetailField():
+      case _iv461aah.PlaceDetailField():
         return 'PlaceDetailField';
-      case _i112.PlaceDetailPolicy():
+      case _iscbu2bm.PlaceDetailPolicy():
         return 'PlaceDetailPolicy';
-      case _i113.PlaceDetailRefreshState():
+      case _ik3zwp4j.PlaceDetailRefreshState():
         return 'PlaceDetailRefreshState';
-      case _i114.PlaceDetailResult():
+      case _iy4xyr7h.PlaceDetailResult():
         return 'PlaceDetailResult';
-      case _i115.PlaceInsight():
+      case _i19nqj1l.PlaceInsight():
         return 'PlaceInsight';
-      case _i116.PlaceIntentQuery():
+      case _i151h6s7.PlaceIntentQuery():
         return 'PlaceIntentQuery';
-      case _i117.PlaceRanking():
+      case _i9zjthc2.PlaceRanking():
         return 'PlaceRanking';
-      case _i118.PlaceSnapshot():
+      case _ikbous9x.PlaceSnapshot():
         return 'PlaceSnapshot';
-      case _i119.PoiIdentity():
+      case _i9yu21jq.PoiIdentity():
         return 'PoiIdentity';
-      case _i120.PoiIssueSource():
+      case _i8ciqmoq.PoiIssueSource():
         return 'PoiIssueSource';
-      case _i121.PoiIssueStatus():
+      case _ivby6xgm.PoiIssueStatus():
         return 'PoiIssueStatus';
-      case _i122.PoiIssueType():
+      case _i19nx1xx.PoiIssueType():
         return 'PoiIssueType';
-      case _i123.RefreshJobPage():
+      case _izhbxe72.RefreshJobPage():
         return 'RefreshJobPage';
-      case _i124.RefreshJobView():
+      case _ij0beg7d.RefreshJobView():
         return 'RefreshJobView';
-      case _i125.ReverseGeocodeResult():
+      case _ivta80d7.ReverseGeocodeResult():
         return 'ReverseGeocodeResult';
-      case _i126.RouteEstimate():
+      case _ii314lch.RouteEstimate():
         return 'RouteEstimate';
-      case _i127.RouteEstimatePolicy():
+      case _i3152jei.RouteEstimatePolicy():
         return 'RouteEstimatePolicy';
-      case _i128.RouteOriginMode():
+      case _itt0gps6.RouteOriginMode():
         return 'RouteOriginMode';
-      case _i129.SessionBundle():
+      case _izl9yd57.SessionBundle():
         return 'SessionBundle';
-      case _i130.SessionEvent():
+      case _i7bl1ryg.SessionEvent():
         return 'SessionEvent';
-      case _i131.SessionEventType():
+      case _iq1mdhv4.SessionEventType():
         return 'SessionEventType';
-      case _i132.SessionMode():
+      case _i7rc03rf.SessionMode():
         return 'SessionMode';
-      case _i133.SessionProgress():
+      case _iwezvyyw.SessionProgress():
         return 'SessionProgress';
-      case _i134.SessionResult():
+      case _iqxkkqmu.SessionResult():
         return 'SessionResult';
-      case _i135.SessionResultTally():
+      case _itcvdkdx.SessionResultTally():
         return 'SessionResultTally';
-      case _i136.SessionStatus():
+      case _ikvaqfz2.SessionStatus():
         return 'SessionStatus';
-      case _i137.SessionView():
+      case _ivtyz9dh.SessionView():
         return 'SessionView';
-      case _i138.SwipeCommand():
+      case _ik5o5i6z.SwipeCommand():
         return 'SwipeCommand';
-      case _i139.TaxonomyCanarySample():
+      case _itt2qz3g.TaxonomyCanarySample():
         return 'TaxonomyCanarySample';
-      case _i140.TaxonomyItem():
+      case _ikn8u775.TaxonomyItem():
         return 'TaxonomyItem';
-      case _i141.TaxonomyKind():
+      case _ikgwnnlq.TaxonomyKind():
         return 'TaxonomyKind';
-      case _i142.TaxonomySnapshot():
+      case _i74orctc.TaxonomySnapshot():
         return 'TaxonomySnapshot';
-      case _i143.TaxonomyStatus():
+      case _ix2svfdk.TaxonomyStatus():
         return 'TaxonomyStatus';
-      case _i144.TaxonomyValidation():
+      case _i984jawl.TaxonomyValidation():
         return 'TaxonomyValidation';
     }
-    className = _i156.Protocol().getClassNameForObject(data);
+    className = _iaic.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_idp.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_idp.$className';
     }
-    className = _i154.Protocol().getClassNameForObject(data);
+    className = _iacc.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_core.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -2193,446 +2347,460 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'AdminAnalyticsOverview') {
-      return deserialize<_i2.AdminAnalyticsOverview>(data['data']);
+      return deserialize<_iecy3fr0.AdminAnalyticsOverview>(data['data']);
     }
     if (dataClassName == 'AdminAuditEntry') {
-      return deserialize<_i3.AdminAuditEntry>(data['data']);
+      return deserialize<_i62lvi00.AdminAuditEntry>(data['data']);
     }
     if (dataClassName == 'AdminAuditPage') {
-      return deserialize<_i4.AdminAuditPage>(data['data']);
+      return deserialize<_ihx02lko.AdminAuditPage>(data['data']);
     }
     if (dataClassName == 'AdminCatalogCategoryEvidence') {
-      return deserialize<_i5.AdminCatalogCategoryEvidence>(data['data']);
+      return deserialize<_ic5j2wzg.AdminCatalogCategoryEvidence>(data['data']);
     }
     if (dataClassName == 'AdminCatalogDetailRefresh') {
-      return deserialize<_i6.AdminCatalogDetailRefresh>(data['data']);
+      return deserialize<_iwelc6th.AdminCatalogDetailRefresh>(data['data']);
     }
     if (dataClassName == 'AdminCatalogField') {
-      return deserialize<_i7.AdminCatalogField>(data['data']);
+      return deserialize<_iyzxy41v.AdminCatalogField>(data['data']);
     }
     if (dataClassName == 'AdminCatalogFreshness') {
-      return deserialize<_i8.AdminCatalogFreshness>(data['data']);
+      return deserialize<_i26vn4oa.AdminCatalogFreshness>(data['data']);
     }
     if (dataClassName == 'AdminCatalogHeatCell') {
-      return deserialize<_i9.AdminCatalogHeatCell>(data['data']);
+      return deserialize<_i1cajeij.AdminCatalogHeatCell>(data['data']);
     }
     if (dataClassName == 'AdminCatalogHeatmap') {
-      return deserialize<_i10.AdminCatalogHeatmap>(data['data']);
+      return deserialize<_i3fq1ai0.AdminCatalogHeatmap>(data['data']);
     }
     if (dataClassName == 'AdminCatalogLifecycle') {
-      return deserialize<_i11.AdminCatalogLifecycle>(data['data']);
+      return deserialize<_ilk0q4cv.AdminCatalogLifecycle>(data['data']);
     }
     if (dataClassName == 'AdminCatalogPage') {
-      return deserialize<_i12.AdminCatalogPage>(data['data']);
+      return deserialize<_ibbojg7c.AdminCatalogPage>(data['data']);
     }
     if (dataClassName == 'AdminCatalogPlace') {
-      return deserialize<_i13.AdminCatalogPlace>(data['data']);
+      return deserialize<_i76u62qe.AdminCatalogPlace>(data['data']);
     }
     if (dataClassName == 'AdminCatalogPlaceDetail') {
-      return deserialize<_i14.AdminCatalogPlaceDetail>(data['data']);
+      return deserialize<_ij16u99u.AdminCatalogPlaceDetail>(data['data']);
     }
     if (dataClassName == 'AdminCatalogQuery') {
-      return deserialize<_i15.AdminCatalogQuery>(data['data']);
+      return deserialize<_iyhby1yo.AdminCatalogQuery>(data['data']);
     }
     if (dataClassName == 'AdminCatalogReport') {
-      return deserialize<_i16.AdminCatalogReport>(data['data']);
+      return deserialize<_ie0km1ed.AdminCatalogReport>(data['data']);
     }
     if (dataClassName == 'AdminCatalogSort') {
-      return deserialize<_i17.AdminCatalogSort>(data['data']);
+      return deserialize<_i5jj2ihb.AdminCatalogSort>(data['data']);
     }
     if (dataClassName == 'AdminCatalogStatus') {
-      return deserialize<_i18.AdminCatalogStatus>(data['data']);
+      return deserialize<_ihehxtqf.AdminCatalogStatus>(data['data']);
     }
     if (dataClassName == 'AdminCatalogTypeCount') {
-      return deserialize<_i19.AdminCatalogTypeCount>(data['data']);
+      return deserialize<_i189df3w.AdminCatalogTypeCount>(data['data']);
     }
     if (dataClassName == 'AdminDiscoveryAutoMapReport') {
-      return deserialize<_i20.AdminDiscoveryAutoMapReport>(data['data']);
+      return deserialize<_ifiwaihh.AdminDiscoveryAutoMapReport>(data['data']);
     }
     if (dataClassName == 'AdminDiscoveryAutoMappedType') {
-      return deserialize<_i21.AdminDiscoveryAutoMappedType>(data['data']);
+      return deserialize<_izsiyar5.AdminDiscoveryAutoMappedType>(data['data']);
     }
     if (dataClassName == 'AdminDiscoveryHarvestJob') {
-      return deserialize<_i22.AdminDiscoveryHarvestJob>(data['data']);
+      return deserialize<_igrd8jdy.AdminDiscoveryHarvestJob>(data['data']);
     }
     if (dataClassName == 'AdminDiscoveryHarvestJobPage') {
-      return deserialize<_i23.AdminDiscoveryHarvestJobPage>(data['data']);
+      return deserialize<_ignnujj0.AdminDiscoveryHarvestJobPage>(data['data']);
     }
     if (dataClassName == 'AdminDiscoveryHarvestManifestVersion') {
-      return deserialize<_i24.AdminDiscoveryHarvestManifestVersion>(
+      return deserialize<_isqtb0th.AdminDiscoveryHarvestManifestVersion>(
         data['data'],
       );
     }
     if (dataClassName == 'AdminDiscoveryTaxonomyVersion') {
-      return deserialize<_i25.AdminDiscoveryTaxonomyVersion>(data['data']);
+      return deserialize<_ig5prpr6.AdminDiscoveryTaxonomyVersion>(data['data']);
     }
     if (dataClassName == 'AdminDiscoveryUnmappedType') {
-      return deserialize<_i26.AdminDiscoveryUnmappedType>(data['data']);
+      return deserialize<_io11b7f4.AdminDiscoveryUnmappedType>(data['data']);
     }
     if (dataClassName == 'AdminDiscoveryUnmappedTypePage') {
-      return deserialize<_i27.AdminDiscoveryUnmappedTypePage>(data['data']);
+      return deserialize<_ixc8e9r6.AdminDiscoveryUnmappedTypePage>(
+        data['data'],
+      );
     }
     if (dataClassName == 'AdminLiveUsage') {
-      return deserialize<_i28.AdminLiveUsage>(data['data']);
+      return deserialize<_i17fquo2.AdminLiveUsage>(data['data']);
     }
     if (dataClassName == 'AdminMapLocation') {
-      return deserialize<_i29.AdminMapLocation>(data['data']);
+      return deserialize<_irkf0vy6.AdminMapLocation>(data['data']);
     }
     if (dataClassName == 'AdminPlaceAnalytics') {
-      return deserialize<_i30.AdminPlaceAnalytics>(data['data']);
+      return deserialize<_iv11hnpe.AdminPlaceAnalytics>(data['data']);
     }
     if (dataClassName == 'AdminPoiIssue') {
-      return deserialize<_i31.AdminPoiIssue>(data['data']);
+      return deserialize<_i38jre17.AdminPoiIssue>(data['data']);
     }
     if (dataClassName == 'AdminPoiIssuePage') {
-      return deserialize<_i32.AdminPoiIssuePage>(data['data']);
+      return deserialize<_iyeluef3.AdminPoiIssuePage>(data['data']);
     }
     if (dataClassName == 'AdminTaxonomyItem') {
-      return deserialize<_i33.AdminTaxonomyItem>(data['data']);
+      return deserialize<_ic97i39b.AdminTaxonomyItem>(data['data']);
     }
     if (dataClassName == 'AdminTaxonomyVersion') {
-      return deserialize<_i34.AdminTaxonomyVersion>(data['data']);
+      return deserialize<_ixqv2zag.AdminTaxonomyVersion>(data['data']);
     }
     if (dataClassName == 'AdminUsageAnalytics') {
-      return deserialize<_i35.AdminUsageAnalytics>(data['data']);
+      return deserialize<_ixxf414g.AdminUsageAnalytics>(data['data']);
     }
     if (dataClassName == 'AnalyticsBreakdown') {
-      return deserialize<_i36.AnalyticsBreakdown>(data['data']);
+      return deserialize<_iky5xq8l.AnalyticsBreakdown>(data['data']);
     }
     if (dataClassName == 'AnalyticsFilter') {
-      return deserialize<_i37.AnalyticsFilter>(data['data']);
+      return deserialize<_ifkni2lr.AnalyticsFilter>(data['data']);
     }
     if (dataClassName == 'AnalyticsGranularity') {
-      return deserialize<_i38.AnalyticsGranularity>(data['data']);
+      return deserialize<_i87q2y72.AnalyticsGranularity>(data['data']);
     }
     if (dataClassName == 'AnalyticsHeatCell') {
-      return deserialize<_i39.AnalyticsHeatCell>(data['data']);
+      return deserialize<_i58c035v.AnalyticsHeatCell>(data['data']);
     }
     if (dataClassName == 'AnalyticsKpi') {
-      return deserialize<_i40.AnalyticsKpi>(data['data']);
+      return deserialize<_ixq6s46l.AnalyticsKpi>(data['data']);
     }
     if (dataClassName == 'AnalyticsPoint') {
-      return deserialize<_i41.AnalyticsPoint>(data['data']);
+      return deserialize<_irt4ny16.AnalyticsPoint>(data['data']);
     }
     if (dataClassName == 'ApiException') {
-      return deserialize<_i42.ApiException>(data['data']);
+      return deserialize<_iozummgq.ApiException>(data['data']);
     }
     if (dataClassName == 'BootstrapInfo') {
-      return deserialize<_i43.BootstrapInfo>(data['data']);
+      return deserialize<_ia4tqko8.BootstrapInfo>(data['data']);
     }
     if (dataClassName == 'CacheDashboardSummary') {
-      return deserialize<_i44.CacheDashboardSummary>(data['data']);
+      return deserialize<_iiw95en5.CacheDashboardSummary>(data['data']);
     }
     if (dataClassName == 'CachePolicy') {
-      return deserialize<_i45.CachePolicy>(data['data']);
+      return deserialize<_inde67sh.CachePolicy>(data['data']);
     }
     if (dataClassName == 'CalibrationStatus') {
-      return deserialize<_i46.CalibrationStatus>(data['data']);
+      return deserialize<_i77o9qph.CalibrationStatus>(data['data']);
     }
     if (dataClassName == 'CalibrationValidation') {
-      return deserialize<_i47.CalibrationValidation>(data['data']);
+      return deserialize<_iupe0u14.CalibrationValidation>(data['data']);
     }
     if (dataClassName == 'CatalogPlacePage') {
-      return deserialize<_i48.CatalogPlacePage>(data['data']);
+      return deserialize<_idn3ilnl.CatalogPlacePage>(data['data']);
     }
     if (dataClassName == 'CatalogPrunePreview') {
-      return deserialize<_i49.CatalogPrunePreview>(data['data']);
+      return deserialize<_i9cvny8e.CatalogPrunePreview>(data['data']);
     }
     if (dataClassName == 'ClientAnalyticsContext') {
-      return deserialize<_i50.ClientAnalyticsContext>(data['data']);
+      return deserialize<_iae9jhcw.ClientAnalyticsContext>(data['data']);
     }
     if (dataClassName == 'ClientAnalyticsEvent') {
-      return deserialize<_i51.ClientAnalyticsEvent>(data['data']);
+      return deserialize<_iyv85p2h.ClientAnalyticsEvent>(data['data']);
     }
     if (dataClassName == 'ConsensusRule') {
-      return deserialize<_i52.ConsensusRule>(data['data']);
+      return deserialize<_idhfk3qj.ConsensusRule>(data['data']);
     }
     if (dataClassName == 'CoveragePage') {
-      return deserialize<_i53.CoveragePage>(data['data']);
+      return deserialize<_iz2o7pxx.CoveragePage>(data['data']);
     }
     if (dataClassName == 'CoverageRecord') {
-      return deserialize<_i54.CoverageRecord>(data['data']);
+      return deserialize<_i7dm26zo.CoverageRecord>(data['data']);
     }
     if (dataClassName == 'CreateIntentSessionRequest') {
-      return deserialize<_i55.CreateIntentSessionRequest>(data['data']);
+      return deserialize<_ihgqalvx.CreateIntentSessionRequest>(data['data']);
     }
     if (dataClassName == 'CreateSessionRequest') {
-      return deserialize<_i56.CreateSessionRequest>(data['data']);
+      return deserialize<_iktms5mb.CreateSessionRequest>(data['data']);
     }
     if (dataClassName == 'DestinationChoiceState') {
-      return deserialize<_i57.DestinationChoiceState>(data['data']);
+      return deserialize<_ivseuofk.DestinationChoiceState>(data['data']);
     }
     if (dataClassName == 'DiscoverBrowsePage') {
-      return deserialize<_i58.DiscoverBrowsePage>(data['data']);
+      return deserialize<_ix98zisu.DiscoverBrowsePage>(data['data']);
     }
     if (dataClassName == 'DiscoverCompleteness') {
-      return deserialize<_i59.DiscoverCompleteness>(data['data']);
+      return deserialize<_i0t9to2g.DiscoverCompleteness>(data['data']);
     }
     if (dataClassName == 'DiscoverFacets') {
-      return deserialize<_i60.DiscoverFacets>(data['data']);
+      return deserialize<_icao29qp.DiscoverFacets>(data['data']);
     }
     if (dataClassName == 'DiscoverHoursWindow') {
-      return deserialize<_i61.DiscoverHoursWindow>(data['data']);
+      return deserialize<_i9jnpiw7.DiscoverHoursWindow>(data['data']);
     }
     if (dataClassName == 'DiscoverPlace') {
-      return deserialize<_i62.DiscoverPlace>(data['data']);
+      return deserialize<_iyut1oys.DiscoverPlace>(data['data']);
     }
     if (dataClassName == 'DiscoverPlaceContext') {
-      return deserialize<_i63.DiscoverPlaceContext>(data['data']);
+      return deserialize<_ihm9zx9x.DiscoverPlaceContext>(data['data']);
     }
     if (dataClassName == 'DiscoverQuery') {
-      return deserialize<_i64.DiscoverQuery>(data['data']);
+      return deserialize<_ip98t8ku.DiscoverQuery>(data['data']);
     }
     if (dataClassName == 'DiscoverQueryContext') {
-      return deserialize<_i65.DiscoverQueryContext>(data['data']);
+      return deserialize<_ixfyrpmf.DiscoverQueryContext>(data['data']);
     }
     if (dataClassName == 'DiscoverReviewBand') {
-      return deserialize<_i66.DiscoverReviewBand>(data['data']);
+      return deserialize<_ibwysijp.DiscoverReviewBand>(data['data']);
     }
     if (dataClassName == 'DiscoverSort') {
-      return deserialize<_i67.DiscoverSort>(data['data']);
+      return deserialize<_iijeyvjv.DiscoverSort>(data['data']);
     }
     if (dataClassName == 'DiscoverViewport') {
-      return deserialize<_i68.DiscoverViewport>(data['data']);
+      return deserialize<_i1okvcdc.DiscoverViewport>(data['data']);
     }
     if (dataClassName == 'DiscoveryAreaReceipt') {
-      return deserialize<_i69.DiscoveryAreaReceipt>(data['data']);
+      return deserialize<_itjfopq1.DiscoveryAreaReceipt>(data['data']);
     }
     if (dataClassName == 'DiscoveryBestFormula') {
-      return deserialize<_i70.DiscoveryBestFormula>(data['data']);
+      return deserialize<_iv19bw26.DiscoveryBestFormula>(data['data']);
     }
     if (dataClassName == 'DiscoveryClientLimits') {
-      return deserialize<_i71.DiscoveryClientLimits>(data['data']);
+      return deserialize<_ii690dam.DiscoveryClientLimits>(data['data']);
     }
     if (dataClassName == 'DiscoveryConfig') {
-      return deserialize<_i72.DiscoveryConfig>(data['data']);
+      return deserialize<_iq6b9igw.DiscoveryConfig>(data['data']);
     }
     if (dataClassName == 'DiscoveryCoverage') {
-      return deserialize<_i73.DiscoveryCoverage>(data['data']);
+      return deserialize<_i8yqti93.DiscoveryCoverage>(data['data']);
     }
     if (dataClassName == 'DiscoveryCoverageFootprint') {
-      return deserialize<_i74.DiscoveryCoverageFootprint>(data['data']);
+      return deserialize<_ito6p50m.DiscoveryCoverageFootprint>(data['data']);
     }
     if (dataClassName == 'DiscoveryGrowthMetricBreakdown') {
-      return deserialize<_i75.DiscoveryGrowthMetricBreakdown>(data['data']);
+      return deserialize<_i8hpnrba.DiscoveryGrowthMetricBreakdown>(
+        data['data'],
+      );
     }
     if (dataClassName == 'DiscoveryGrowthMetrics') {
-      return deserialize<_i76.DiscoveryGrowthMetrics>(data['data']);
+      return deserialize<_i4184rq9.DiscoveryGrowthMetrics>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestManifestEntry') {
-      return deserialize<_i77.DiscoveryHarvestManifestEntry>(data['data']);
+      return deserialize<_iqg95alk.DiscoveryHarvestManifestEntry>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestManifestValidation') {
-      return deserialize<_i78.DiscoveryHarvestManifestValidation>(data['data']);
+      return deserialize<_iee3r3i8.DiscoveryHarvestManifestValidation>(
+        data['data'],
+      );
     }
     if (dataClassName == 'DiscoveryHarvestQueryKind') {
-      return deserialize<_i79.DiscoveryHarvestQueryKind>(data['data']);
+      return deserialize<_ih0y3xx9.DiscoveryHarvestQueryKind>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestQueryOutcome') {
-      return deserialize<_i80.DiscoveryHarvestQueryOutcome>(data['data']);
+      return deserialize<_i8d7uscq.DiscoveryHarvestQueryOutcome>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestQueryState') {
-      return deserialize<_i81.DiscoveryHarvestQueryState>(data['data']);
+      return deserialize<_it5gcvsk.DiscoveryHarvestQueryState>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestRequester') {
-      return deserialize<_i82.DiscoveryHarvestRequester>(data['data']);
+      return deserialize<_ipv2f6f1.DiscoveryHarvestRequester>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestState') {
-      return deserialize<_i83.DiscoveryHarvestState>(data['data']);
+      return deserialize<_i4wyetx8.DiscoveryHarvestState>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestStatus') {
-      return deserialize<_i84.DiscoveryHarvestStatus>(data['data']);
+      return deserialize<_iaeap9p2.DiscoveryHarvestStatus>(data['data']);
     }
     if (dataClassName == 'DiscoveryHarvestTrigger') {
-      return deserialize<_i85.DiscoveryHarvestTrigger>(data['data']);
+      return deserialize<_ia4mymki.DiscoveryHarvestTrigger>(data['data']);
     }
     if (dataClassName == 'DiscoveryManifestStatus') {
-      return deserialize<_i86.DiscoveryManifestStatus>(data['data']);
+      return deserialize<_in2pelzj.DiscoveryManifestStatus>(data['data']);
     }
     if (dataClassName == 'DiscoveryMapAggregate') {
-      return deserialize<_i87.DiscoveryMapAggregate>(data['data']);
+      return deserialize<_iwyy9blp.DiscoveryMapAggregate>(data['data']);
     }
     if (dataClassName == 'DiscoveryMapMode') {
-      return deserialize<_i88.DiscoveryMapMode>(data['data']);
+      return deserialize<_i4gpq0qx.DiscoveryMapMode>(data['data']);
     }
     if (dataClassName == 'DiscoveryMapPayload') {
-      return deserialize<_i89.DiscoveryMapPayload>(data['data']);
+      return deserialize<_ijiia6mk.DiscoveryMapPayload>(data['data']);
     }
     if (dataClassName == 'DiscoveryMapPoint') {
-      return deserialize<_i90.DiscoveryMapPoint>(data['data']);
+      return deserialize<_iepk7ohg.DiscoveryMapPoint>(data['data']);
     }
     if (dataClassName == 'DiscoveryMetricMode') {
-      return deserialize<_i91.DiscoveryMetricMode>(data['data']);
+      return deserialize<_iwc51qy2.DiscoveryMetricMode>(data['data']);
     }
     if (dataClassName == 'DiscoveryMetricOperation') {
-      return deserialize<_i92.DiscoveryMetricOperation>(data['data']);
+      return deserialize<_ipgnhxya.DiscoveryMetricOperation>(data['data']);
     }
     if (dataClassName == 'DiscoveryMinimumRatingCount') {
-      return deserialize<_i93.DiscoveryMinimumRatingCount>(data['data']);
+      return deserialize<_iafesi5t.DiscoveryMinimumRatingCount>(data['data']);
     }
     if (dataClassName == 'DiscoveryPolicy') {
-      return deserialize<_i94.DiscoveryPolicy>(data['data']);
+      return deserialize<_izqxi2bg.DiscoveryPolicy>(data['data']);
     }
     if (dataClassName == 'DiscoveryPriceCount') {
-      return deserialize<_i95.DiscoveryPriceCount>(data['data']);
+      return deserialize<_ijqf6en4.DiscoveryPriceCount>(data['data']);
     }
     if (dataClassName == 'DiscoveryRatingBucket') {
-      return deserialize<_i96.DiscoveryRatingBucket>(data['data']);
+      return deserialize<_iinjfol4.DiscoveryRatingBucket>(data['data']);
     }
     if (dataClassName == 'DiscoveryReviewBandCount') {
-      return deserialize<_i97.DiscoveryReviewBandCount>(data['data']);
+      return deserialize<_ijvcgm3f.DiscoveryReviewBandCount>(data['data']);
     }
     if (dataClassName == 'DiscoveryScoring') {
-      return deserialize<_i98.DiscoveryScoring>(data['data']);
+      return deserialize<_iphkx6cy.DiscoveryScoring>(data['data']);
     }
     if (dataClassName == 'DiscoveryTaxonomyNode') {
-      return deserialize<_i99.DiscoveryTaxonomyNode>(data['data']);
+      return deserialize<_i3sj4yil.DiscoveryTaxonomyNode>(data['data']);
     }
     if (dataClassName == 'DiscoveryTaxonomySnapshot') {
-      return deserialize<_i100.DiscoveryTaxonomySnapshot>(data['data']);
+      return deserialize<_ic7lkmks.DiscoveryTaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'DiscoveryTaxonomyValidation') {
-      return deserialize<_i101.DiscoveryTaxonomyValidation>(data['data']);
+      return deserialize<_iep1g1h3.DiscoveryTaxonomyValidation>(data['data']);
     }
     if (dataClassName == 'DiscoveryTypeCount') {
-      return deserialize<_i102.DiscoveryTypeCount>(data['data']);
+      return deserialize<_iaqq99sz.DiscoveryTypeCount>(data['data']);
     }
     if (dataClassName == 'DiscoveryTypeMappingIssue') {
-      return deserialize<_i103.DiscoveryTypeMappingIssue>(data['data']);
+      return deserialize<_i0ly2vwv.DiscoveryTypeMappingIssue>(data['data']);
     }
     if (dataClassName == 'JobStatus') {
-      return deserialize<_i104.JobStatus>(data['data']);
+      return deserialize<_iayt1i3u.JobStatus>(data['data']);
     }
     if (dataClassName == 'LocationSuggestion') {
-      return deserialize<_i105.LocationSuggestion>(data['data']);
+      return deserialize<_iib0mep8.LocationSuggestion>(data['data']);
     }
     if (dataClassName == 'MatchingTiming') {
-      return deserialize<_i106.MatchingTiming>(data['data']);
+      return deserialize<_inbmjteu.MatchingTiming>(data['data']);
     }
     if (dataClassName == 'MetricPoint') {
-      return deserialize<_i107.MetricPoint>(data['data']);
+      return deserialize<_icsyqkkq.MetricPoint>(data['data']);
     }
     if (dataClassName == 'OpeningPeriod') {
-      return deserialize<_i108.OpeningPeriod>(data['data']);
+      return deserialize<_iutwk5y0.OpeningPeriod>(data['data']);
     }
     if (dataClassName == 'ParticipantView') {
-      return deserialize<_i109.ParticipantView>(data['data']);
+      return deserialize<_ir2xxgfs.ParticipantView>(data['data']);
     }
     if (dataClassName == 'PhotoPolicy') {
-      return deserialize<_i110.PhotoPolicy>(data['data']);
+      return deserialize<_i8lsha3l.PhotoPolicy>(data['data']);
     }
     if (dataClassName == 'PlaceDetailField') {
-      return deserialize<_i111.PlaceDetailField>(data['data']);
+      return deserialize<_iv461aah.PlaceDetailField>(data['data']);
     }
     if (dataClassName == 'PlaceDetailPolicy') {
-      return deserialize<_i112.PlaceDetailPolicy>(data['data']);
+      return deserialize<_iscbu2bm.PlaceDetailPolicy>(data['data']);
     }
     if (dataClassName == 'PlaceDetailRefreshState') {
-      return deserialize<_i113.PlaceDetailRefreshState>(data['data']);
+      return deserialize<_ik3zwp4j.PlaceDetailRefreshState>(data['data']);
     }
     if (dataClassName == 'PlaceDetailResult') {
-      return deserialize<_i114.PlaceDetailResult>(data['data']);
+      return deserialize<_iy4xyr7h.PlaceDetailResult>(data['data']);
     }
     if (dataClassName == 'PlaceInsight') {
-      return deserialize<_i115.PlaceInsight>(data['data']);
+      return deserialize<_i19nqj1l.PlaceInsight>(data['data']);
     }
     if (dataClassName == 'PlaceIntentQuery') {
-      return deserialize<_i116.PlaceIntentQuery>(data['data']);
+      return deserialize<_i151h6s7.PlaceIntentQuery>(data['data']);
     }
     if (dataClassName == 'PlaceRanking') {
-      return deserialize<_i117.PlaceRanking>(data['data']);
+      return deserialize<_i9zjthc2.PlaceRanking>(data['data']);
     }
     if (dataClassName == 'PlaceSnapshot') {
-      return deserialize<_i118.PlaceSnapshot>(data['data']);
+      return deserialize<_ikbous9x.PlaceSnapshot>(data['data']);
     }
     if (dataClassName == 'PoiIdentity') {
-      return deserialize<_i119.PoiIdentity>(data['data']);
+      return deserialize<_i9yu21jq.PoiIdentity>(data['data']);
     }
     if (dataClassName == 'PoiIssueSource') {
-      return deserialize<_i120.PoiIssueSource>(data['data']);
+      return deserialize<_i8ciqmoq.PoiIssueSource>(data['data']);
     }
     if (dataClassName == 'PoiIssueStatus') {
-      return deserialize<_i121.PoiIssueStatus>(data['data']);
+      return deserialize<_ivby6xgm.PoiIssueStatus>(data['data']);
     }
     if (dataClassName == 'PoiIssueType') {
-      return deserialize<_i122.PoiIssueType>(data['data']);
+      return deserialize<_i19nx1xx.PoiIssueType>(data['data']);
     }
     if (dataClassName == 'RefreshJobPage') {
-      return deserialize<_i123.RefreshJobPage>(data['data']);
+      return deserialize<_izhbxe72.RefreshJobPage>(data['data']);
     }
     if (dataClassName == 'RefreshJobView') {
-      return deserialize<_i124.RefreshJobView>(data['data']);
+      return deserialize<_ij0beg7d.RefreshJobView>(data['data']);
     }
     if (dataClassName == 'ReverseGeocodeResult') {
-      return deserialize<_i125.ReverseGeocodeResult>(data['data']);
+      return deserialize<_ivta80d7.ReverseGeocodeResult>(data['data']);
     }
     if (dataClassName == 'RouteEstimate') {
-      return deserialize<_i126.RouteEstimate>(data['data']);
+      return deserialize<_ii314lch.RouteEstimate>(data['data']);
     }
     if (dataClassName == 'RouteEstimatePolicy') {
-      return deserialize<_i127.RouteEstimatePolicy>(data['data']);
+      return deserialize<_i3152jei.RouteEstimatePolicy>(data['data']);
     }
     if (dataClassName == 'RouteOriginMode') {
-      return deserialize<_i128.RouteOriginMode>(data['data']);
+      return deserialize<_itt0gps6.RouteOriginMode>(data['data']);
     }
     if (dataClassName == 'SessionBundle') {
-      return deserialize<_i129.SessionBundle>(data['data']);
+      return deserialize<_izl9yd57.SessionBundle>(data['data']);
     }
     if (dataClassName == 'SessionEvent') {
-      return deserialize<_i130.SessionEvent>(data['data']);
+      return deserialize<_i7bl1ryg.SessionEvent>(data['data']);
     }
     if (dataClassName == 'SessionEventType') {
-      return deserialize<_i131.SessionEventType>(data['data']);
+      return deserialize<_iq1mdhv4.SessionEventType>(data['data']);
     }
     if (dataClassName == 'SessionMode') {
-      return deserialize<_i132.SessionMode>(data['data']);
+      return deserialize<_i7rc03rf.SessionMode>(data['data']);
     }
     if (dataClassName == 'SessionProgress') {
-      return deserialize<_i133.SessionProgress>(data['data']);
+      return deserialize<_iwezvyyw.SessionProgress>(data['data']);
     }
     if (dataClassName == 'SessionResult') {
-      return deserialize<_i134.SessionResult>(data['data']);
+      return deserialize<_iqxkkqmu.SessionResult>(data['data']);
     }
     if (dataClassName == 'SessionResultTally') {
-      return deserialize<_i135.SessionResultTally>(data['data']);
+      return deserialize<_itcvdkdx.SessionResultTally>(data['data']);
     }
     if (dataClassName == 'SessionStatus') {
-      return deserialize<_i136.SessionStatus>(data['data']);
+      return deserialize<_ikvaqfz2.SessionStatus>(data['data']);
     }
     if (dataClassName == 'SessionView') {
-      return deserialize<_i137.SessionView>(data['data']);
+      return deserialize<_ivtyz9dh.SessionView>(data['data']);
     }
     if (dataClassName == 'SwipeCommand') {
-      return deserialize<_i138.SwipeCommand>(data['data']);
+      return deserialize<_ik5o5i6z.SwipeCommand>(data['data']);
     }
     if (dataClassName == 'TaxonomyCanarySample') {
-      return deserialize<_i139.TaxonomyCanarySample>(data['data']);
+      return deserialize<_itt2qz3g.TaxonomyCanarySample>(data['data']);
     }
     if (dataClassName == 'TaxonomyItem') {
-      return deserialize<_i140.TaxonomyItem>(data['data']);
+      return deserialize<_ikn8u775.TaxonomyItem>(data['data']);
     }
     if (dataClassName == 'TaxonomyKind') {
-      return deserialize<_i141.TaxonomyKind>(data['data']);
+      return deserialize<_ikgwnnlq.TaxonomyKind>(data['data']);
     }
     if (dataClassName == 'TaxonomySnapshot') {
-      return deserialize<_i142.TaxonomySnapshot>(data['data']);
+      return deserialize<_i74orctc.TaxonomySnapshot>(data['data']);
     }
     if (dataClassName == 'TaxonomyStatus') {
-      return deserialize<_i143.TaxonomyStatus>(data['data']);
+      return deserialize<_ix2svfdk.TaxonomyStatus>(data['data']);
     }
     if (dataClassName == 'TaxonomyValidation') {
-      return deserialize<_i144.TaxonomyValidation>(data['data']);
+      return deserialize<_i984jawl.TaxonomyValidation>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i156.Protocol().deserializeByClassName(data);
+      return _iaic.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i154.Protocol().deserializeByClassName(data);
+      return _iacc.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
+
+  void _registerHostProtocols() {
+    _iaic.Protocol().registerHostProtocol('hayer', this);
+    _iacc.Protocol().registerHostProtocol('hayer', this);
+  }
+
+  @override
+  String getModuleName() => 'hayer';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
@@ -2643,7 +2811,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i154.AuthSuccess auth, String operator})) {
+    if (record is ({_iacc.AuthSuccess auth, String operator})) {
       return {
         "n": {
           "auth": record.auth.toJson(),
@@ -2651,7 +2819,7 @@ class Protocol extends _i1.SerializationManager {
         },
       };
     }
-    if (record is ({_i155.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_idt.ByteData challenge, _isc.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -2660,10 +2828,10 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i156.Protocol().mapRecordToJson(record);
+      return _iaic.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i154.Protocol().mapRecordToJson(record);
+      return _iacc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

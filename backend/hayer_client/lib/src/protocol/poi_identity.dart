@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class PoiIdentity implements _i1.SerializableModel {
+abstract class PoiIdentity
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   PoiIdentity._({
     required this.provider,
     required this.placeId,
@@ -37,7 +37,7 @@ abstract class PoiIdentity implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [PoiIdentity]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   PoiIdentity copyWith({
     String? provider,
     String? placeId,
@@ -52,8 +52,17 @@ abstract class PoiIdentity implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'PoiIdentity',
+      'provider': provider,
+      'placeId': placeId,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -68,7 +77,7 @@ class _PoiIdentityImpl extends PoiIdentity {
 
   /// Returns a shallow copy of this [PoiIdentity]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   PoiIdentity copyWith({
     String? provider,

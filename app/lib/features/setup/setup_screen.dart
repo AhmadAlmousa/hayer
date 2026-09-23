@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
 import 'package:intl/intl.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../app/theme.dart';
 import '../../core/display_formatters.dart';
@@ -406,23 +405,10 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         const SizedBox(height: 8),
         Align(
           alignment: AlignmentDirectional.centerStart,
-          child: M3ESplitButton<VisitTimeChoice>.tonal(
-            label: switch (_visitTimeChoice) {
-              VisitTimeChoice.anyTime => strings.anyTime,
-              VisitTimeChoice.openNow => strings.openNow,
-              VisitTimeChoice.custom => strings.customTime,
-            },
-            leadingIcon: switch (_visitTimeChoice) {
-              VisitTimeChoice.anyTime => Icons.all_inclusive_rounded,
-              VisitTimeChoice.openNow => Icons.schedule_rounded,
-              VisitTimeChoice.custom => Icons.event_available_rounded,
-            },
-            size: M3EButtonSize.md,
-            selectedValue: _visitTimeChoice,
-            onPressed: _visitTimeChoice == VisitTimeChoice.custom
-                ? _pickVisitTime
-                : () {},
-            onSelected: (value) {
+          child: DropdownButton<VisitTimeChoice>(
+            value: _visitTimeChoice,
+            onChanged: (value) {
+              if (value == null) return;
               if (value == VisitTimeChoice.custom) {
                 _pickVisitTime();
               } else {
@@ -433,15 +419,15 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               }
             },
             items: [
-              M3ESplitButtonItem<VisitTimeChoice>(
+              DropdownMenuItem<VisitTimeChoice>(
                 value: VisitTimeChoice.anyTime,
                 child: Text(strings.anyTime),
               ),
-              M3ESplitButtonItem<VisitTimeChoice>(
+              DropdownMenuItem<VisitTimeChoice>(
                 value: VisitTimeChoice.openNow,
                 child: Text(strings.openNow),
               ),
-              M3ESplitButtonItem<VisitTimeChoice>(
+              DropdownMenuItem<VisitTimeChoice>(
                 value: VisitTimeChoice.custom,
                 child: Text(strings.customTime),
               ),

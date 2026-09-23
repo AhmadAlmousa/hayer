@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class IdempotencyRow
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   IdempotencyRow._({
     this.id,
     required this.scope,
@@ -27,7 +26,7 @@ abstract class IdempotencyRow
   });
 
   factory IdempotencyRow({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String scope,
     required String userId,
     required String idempotencyKey,
@@ -41,16 +40,16 @@ abstract class IdempotencyRow
     return IdempotencyRow(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       scope: jsonSerialization['scope'] as String,
       userId: jsonSerialization['userId'] as String,
       idempotencyKey: jsonSerialization['idempotencyKey'] as String,
       requestHash: jsonSerialization['requestHash'] as String,
       responseId: jsonSerialization['responseId'] as String,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
-      expiresAt: _i1.DateTimeJsonExtension.fromJson(
+      expiresAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiresAt'],
       ),
     );
@@ -61,7 +60,7 @@ abstract class IdempotencyRow
   static const db = IdempotencyRowRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String scope;
 
@@ -78,13 +77,13 @@ abstract class IdempotencyRow
   DateTime expiresAt;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [IdempotencyRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   IdempotencyRow copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? scope,
     String? userId,
     String? idempotencyKey,
@@ -118,12 +117,11 @@ abstract class IdempotencyRow
   }
 
   static IdempotencyRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<IdempotencyRowTable>? where,
+    _is.WhereExpressionBuilder<IdempotencyRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<IdempotencyRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<IdempotencyRowTable>? orderByList,
+    _is.OrderByBuilder<IdempotencyRowTable>? orderBy,
+    _is.OrderByListBuilder<IdempotencyRowTable>? orderByList,
     IdempotencyRowInclude? include,
   }) {
     return IdempotencyRowIncludeList._(
@@ -131,7 +129,6 @@ abstract class IdempotencyRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(IdempotencyRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(IdempotencyRow.t),
       include: include,
     );
@@ -139,7 +136,7 @@ abstract class IdempotencyRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -147,7 +144,7 @@ class _Undefined {}
 
 class _IdempotencyRowImpl extends IdempotencyRow {
   _IdempotencyRowImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String scope,
     required String userId,
     required String idempotencyKey,
@@ -168,7 +165,7 @@ class _IdempotencyRowImpl extends IdempotencyRow {
 
   /// Returns a shallow copy of this [IdempotencyRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   IdempotencyRow copyWith({
     Object? id = _Undefined,
@@ -181,7 +178,7 @@ class _IdempotencyRowImpl extends IdempotencyRow {
     DateTime? expiresAt,
   }) {
     return IdempotencyRow(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       scope: scope ?? this.scope,
       userId: userId ?? this.userId,
       idempotencyKey: idempotencyKey ?? this.idempotencyKey,
@@ -193,77 +190,77 @@ class _IdempotencyRowImpl extends IdempotencyRow {
   }
 }
 
-class IdempotencyRowUpdateTable extends _i1.UpdateTable<IdempotencyRowTable> {
+class IdempotencyRowUpdateTable extends _is.UpdateTable<IdempotencyRowTable> {
   IdempotencyRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> scope(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> scope(String value) => _is.ColumnValue(
     table.scope,
     value,
   );
 
-  _i1.ColumnValue<String, String> userId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userId(String value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<String, String> idempotencyKey(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> idempotencyKey(String value) =>
+      _is.ColumnValue(
         table.idempotencyKey,
         value,
       );
 
-  _i1.ColumnValue<String, String> requestHash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> requestHash(String value) => _is.ColumnValue(
     table.requestHash,
     value,
   );
 
-  _i1.ColumnValue<String, String> responseId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> responseId(String value) => _is.ColumnValue(
     table.responseId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> expiresAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> expiresAt(DateTime value) =>
+      _is.ColumnValue(
         table.expiresAt,
         value,
       );
 }
 
-class IdempotencyRowTable extends _i1.Table<_i1.UuidValue?> {
+class IdempotencyRowTable extends _is.Table<_is.UuidValue?> {
   IdempotencyRowTable({super.tableRelation})
     : super(tableName: 'hayer_idempotency') {
     updateTable = IdempotencyRowUpdateTable(this);
-    scope = _i1.ColumnString(
+    scope = _is.ColumnString(
       'scope',
       this,
     );
-    userId = _i1.ColumnString(
+    userId = _is.ColumnString(
       'userId',
       this,
     );
-    idempotencyKey = _i1.ColumnString(
+    idempotencyKey = _is.ColumnString(
       'idempotencyKey',
       this,
     );
-    requestHash = _i1.ColumnString(
+    requestHash = _is.ColumnString(
       'requestHash',
       this,
     );
-    responseId = _i1.ColumnString(
+    responseId = _is.ColumnString(
       'responseId',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    expiresAt = _i1.ColumnDateTime(
+    expiresAt = _is.ColumnDateTime(
       'expiresAt',
       this,
     );
@@ -271,22 +268,22 @@ class IdempotencyRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final IdempotencyRowUpdateTable updateTable;
 
-  late final _i1.ColumnString scope;
+  late final _is.ColumnString scope;
 
-  late final _i1.ColumnString userId;
+  late final _is.ColumnString userId;
 
-  late final _i1.ColumnString idempotencyKey;
+  late final _is.ColumnString idempotencyKey;
 
-  late final _i1.ColumnString requestHash;
+  late final _is.ColumnString requestHash;
 
-  late final _i1.ColumnString responseId;
+  late final _is.ColumnString responseId;
 
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  late final _i1.ColumnDateTime expiresAt;
+  late final _is.ColumnDateTime expiresAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     scope,
     userId,
@@ -298,23 +295,22 @@ class IdempotencyRowTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class IdempotencyRowInclude extends _i1.IncludeObject {
+class IdempotencyRowInclude extends _is.IncludeObject {
   IdempotencyRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => IdempotencyRow.t;
+  _is.Table<_is.UuidValue?> get table => IdempotencyRow.t;
 }
 
-class IdempotencyRowIncludeList extends _i1.IncludeList {
+class IdempotencyRowIncludeList extends _is.IncludeList {
   IdempotencyRowIncludeList._({
-    _i1.WhereExpressionBuilder<IdempotencyRowTable>? where,
+    _is.WhereExpressionBuilder<IdempotencyRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -322,10 +318,10 @@ class IdempotencyRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => IdempotencyRow.t;
+  _is.Table<_is.UuidValue?> get table => IdempotencyRow.t;
 }
 
 class IdempotencyRowRepository {
@@ -354,22 +350,20 @@ class IdempotencyRowRepository {
   /// );
   /// ```
   Future<List<IdempotencyRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<IdempotencyRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<IdempotencyRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<IdempotencyRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<IdempotencyRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<IdempotencyRowTable>? orderBy,
+    _is.OrderByListBuilder<IdempotencyRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<IdempotencyRow>(
       where: where?.call(IdempotencyRow.t),
       orderBy: orderBy?.call(IdempotencyRow.t),
       orderByList: orderByList?.call(IdempotencyRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -396,21 +390,19 @@ class IdempotencyRowRepository {
   /// );
   /// ```
   Future<IdempotencyRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<IdempotencyRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<IdempotencyRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<IdempotencyRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<IdempotencyRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<IdempotencyRowTable>? orderBy,
+    _is.OrderByListBuilder<IdempotencyRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<IdempotencyRow>(
       where: where?.call(IdempotencyRow.t),
       orderBy: orderBy?.call(IdempotencyRow.t),
       orderByList: orderByList?.call(IdempotencyRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -420,11 +412,11 @@ class IdempotencyRowRepository {
 
   /// Finds a single [IdempotencyRow] by its [id] or null if no such row exists.
   Future<IdempotencyRow?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<IdempotencyRow>(
       id,
@@ -444,16 +436,22 @@ class IdempotencyRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<IdempotencyRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<IdempotencyRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<IdempotencyRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -461,12 +459,81 @@ class IdempotencyRowRepository {
   ///
   /// The returned [IdempotencyRow] will have its `id` field set.
   Future<IdempotencyRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     IdempotencyRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<IdempotencyRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [IdempotencyRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [IdempotencyRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<IdempotencyRow>> upsert(
+    _is.DatabaseSession session,
+    List<IdempotencyRow> rows, {
+    required _is.ColumnSelections<IdempotencyRowTable> conflictColumns,
+    _is.ColumnSelections<IdempotencyRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<IdempotencyRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<IdempotencyRow>(
+      rows,
+      conflictColumns: conflictColumns(IdempotencyRow.t),
+      updateColumns: updateColumns?.call(IdempotencyRow.t),
+      updateWhere: updateWhere?.call(IdempotencyRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [IdempotencyRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [IdempotencyRow] will have its `id` field set.
+  Future<IdempotencyRow?> upsertRow(
+    _is.DatabaseSession session,
+    IdempotencyRow row, {
+    required _is.ColumnSelections<IdempotencyRowTable> conflictColumns,
+    _is.ColumnSelections<IdempotencyRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<IdempotencyRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<IdempotencyRow>(
+      row,
+      conflictColumns: conflictColumns(IdempotencyRow.t),
+      updateColumns: updateColumns?.call(IdempotencyRow.t),
+      updateWhere: updateWhere?.call(IdempotencyRow.t),
       transaction: transaction,
     );
   }
@@ -476,16 +543,22 @@ class IdempotencyRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<IdempotencyRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<IdempotencyRow> rows, {
-    _i1.ColumnSelections<IdempotencyRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<IdempotencyRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<IdempotencyRow>(
       rows,
       columns: columns?.call(IdempotencyRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -493,10 +566,10 @@ class IdempotencyRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<IdempotencyRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     IdempotencyRow row, {
-    _i1.ColumnSelections<IdempotencyRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<IdempotencyRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<IdempotencyRow>(
       row,
@@ -508,10 +581,10 @@ class IdempotencyRowRepository {
   /// Updates a single [IdempotencyRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<IdempotencyRow?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<IdempotencyRowUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<IdempotencyRowUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<IdempotencyRow>(
       id,
@@ -522,16 +595,20 @@ class IdempotencyRowRepository {
 
   /// Updates all [IdempotencyRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<IdempotencyRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<IdempotencyRowUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<IdempotencyRowTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<IdempotencyRowUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<IdempotencyRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<IdempotencyRowTable>? orderBy,
-    _i1.OrderByListBuilder<IdempotencyRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<IdempotencyRowTable>? orderBy,
+    _is.OrderByListBuilder<IdempotencyRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<IdempotencyRow>(
       columnValues: columnValues(IdempotencyRow.t.updateTable),
@@ -540,30 +617,44 @@ class IdempotencyRowRepository {
       offset: offset,
       orderBy: orderBy?.call(IdempotencyRow.t),
       orderByList: orderByList?.call(IdempotencyRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [IdempotencyRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<IdempotencyRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<IdempotencyRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<IdempotencyRowTable>? orderBy,
+    _is.OrderByListBuilder<IdempotencyRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<IdempotencyRow>(
       rows,
+      orderBy: orderBy?.call(IdempotencyRow.t),
+      orderByList: orderByList?.call(IdempotencyRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [IdempotencyRow].
   Future<IdempotencyRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     IdempotencyRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<IdempotencyRow>(
       row,
@@ -572,24 +663,37 @@ class IdempotencyRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<IdempotencyRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<IdempotencyRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<IdempotencyRowTable> where,
+    _is.OrderByBuilder<IdempotencyRowTable>? orderBy,
+    _is.OrderByListBuilder<IdempotencyRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<IdempotencyRow>(
       where: where(IdempotencyRow.t),
+      orderBy: orderBy?.call(IdempotencyRow.t),
+      orderByList: orderByList?.call(IdempotencyRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<IdempotencyRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<IdempotencyRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<IdempotencyRow>(
       where: where?.call(IdempotencyRow.t),
@@ -600,11 +704,11 @@ class IdempotencyRowRepository {
 
   /// Acquires row-level locks on [IdempotencyRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<IdempotencyRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<IdempotencyRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<IdempotencyRow>(
       where: where(IdempotencyRow.t),

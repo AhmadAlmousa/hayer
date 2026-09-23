@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discovery_client_limits.dart' as _ii690dam;
+import 'discovery_scoring.dart' as _iphkx6cy;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discovery_scoring.dart' as _i2;
-import 'discovery_client_limits.dart' as _i3;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i4;
-
-abstract class DiscoveryConfig implements _i1.SerializableModel {
+abstract class DiscoveryConfig
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryConfig._({
     required this.contractVersion,
     required this.enabled,
@@ -41,8 +41,8 @@ abstract class DiscoveryConfig implements _i1.SerializableModel {
     required DateTime serverTime,
     required DateTime expiresAt,
     required List<String> supportedCountries,
-    required _i2.DiscoveryScoring scoring,
-    required _i3.DiscoveryClientLimits limits,
+    required _iphkx6cy.DiscoveryScoring scoring,
+    required _ii690dam.DiscoveryClientLimits limits,
     required bool amenitiesAvailable,
     required bool reviewTextSearchAvailable,
   }) = _DiscoveryConfigImpl;
@@ -50,31 +50,31 @@ abstract class DiscoveryConfig implements _i1.SerializableModel {
   factory DiscoveryConfig.fromJson(Map<String, dynamic> jsonSerialization) {
     return DiscoveryConfig(
       contractVersion: jsonSerialization['contractVersion'] as int,
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
-      detailsAvailable: _i1.BoolJsonExtension.fromJson(
+      enabled: _isc.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      detailsAvailable: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['detailsAvailable'],
       ),
       policyRevision: jsonSerialization['policyRevision'] as int,
       taxonomyRevision: jsonSerialization['taxonomyRevision'] as int,
-      serverTime: _i1.DateTimeJsonExtension.fromJson(
+      serverTime: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['serverTime'],
       ),
-      expiresAt: _i1.DateTimeJsonExtension.fromJson(
+      expiresAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiresAt'],
       ),
-      supportedCountries: _i4.Protocol().deserialize<List<String>>(
+      supportedCountries: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['supportedCountries'],
       ),
-      scoring: _i4.Protocol().deserialize<_i2.DiscoveryScoring>(
+      scoring: _iynev3sz.Protocol().deserialize<_iphkx6cy.DiscoveryScoring>(
         jsonSerialization['scoring'],
       ),
-      limits: _i4.Protocol().deserialize<_i3.DiscoveryClientLimits>(
+      limits: _iynev3sz.Protocol().deserialize<_ii690dam.DiscoveryClientLimits>(
         jsonSerialization['limits'],
       ),
-      amenitiesAvailable: _i1.BoolJsonExtension.fromJson(
+      amenitiesAvailable: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['amenitiesAvailable'],
       ),
-      reviewTextSearchAvailable: _i1.BoolJsonExtension.fromJson(
+      reviewTextSearchAvailable: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['reviewTextSearchAvailable'],
       ),
     );
@@ -96,9 +96,9 @@ abstract class DiscoveryConfig implements _i1.SerializableModel {
 
   List<String> supportedCountries;
 
-  _i2.DiscoveryScoring scoring;
+  _iphkx6cy.DiscoveryScoring scoring;
 
-  _i3.DiscoveryClientLimits limits;
+  _ii690dam.DiscoveryClientLimits limits;
 
   bool amenitiesAvailable;
 
@@ -106,7 +106,7 @@ abstract class DiscoveryConfig implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryConfig]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryConfig copyWith({
     int? contractVersion,
     bool? enabled,
@@ -116,8 +116,8 @@ abstract class DiscoveryConfig implements _i1.SerializableModel {
     DateTime? serverTime,
     DateTime? expiresAt,
     List<String>? supportedCountries,
-    _i2.DiscoveryScoring? scoring,
-    _i3.DiscoveryClientLimits? limits,
+    _iphkx6cy.DiscoveryScoring? scoring,
+    _ii690dam.DiscoveryClientLimits? limits,
     bool? amenitiesAvailable,
     bool? reviewTextSearchAvailable,
   });
@@ -141,8 +141,27 @@ abstract class DiscoveryConfig implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryConfig',
+      'contractVersion': contractVersion,
+      'enabled': enabled,
+      'detailsAvailable': detailsAvailable,
+      'policyRevision': policyRevision,
+      'taxonomyRevision': taxonomyRevision,
+      'serverTime': serverTime.toJson(),
+      'expiresAt': expiresAt.toJson(),
+      'supportedCountries': supportedCountries.toJson(),
+      'scoring': scoring.toJsonForProtocol(),
+      'limits': limits.toJsonForProtocol(),
+      'amenitiesAvailable': amenitiesAvailable,
+      'reviewTextSearchAvailable': reviewTextSearchAvailable,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -156,8 +175,8 @@ class _DiscoveryConfigImpl extends DiscoveryConfig {
     required DateTime serverTime,
     required DateTime expiresAt,
     required List<String> supportedCountries,
-    required _i2.DiscoveryScoring scoring,
-    required _i3.DiscoveryClientLimits limits,
+    required _iphkx6cy.DiscoveryScoring scoring,
+    required _ii690dam.DiscoveryClientLimits limits,
     required bool amenitiesAvailable,
     required bool reviewTextSearchAvailable,
   }) : super._(
@@ -177,7 +196,7 @@ class _DiscoveryConfigImpl extends DiscoveryConfig {
 
   /// Returns a shallow copy of this [DiscoveryConfig]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryConfig copyWith({
     int? contractVersion,
@@ -188,8 +207,8 @@ class _DiscoveryConfigImpl extends DiscoveryConfig {
     DateTime? serverTime,
     DateTime? expiresAt,
     List<String>? supportedCountries,
-    _i2.DiscoveryScoring? scoring,
-    _i3.DiscoveryClientLimits? limits,
+    _iphkx6cy.DiscoveryScoring? scoring,
+    _ii690dam.DiscoveryClientLimits? limits,
     bool? amenitiesAvailable,
     bool? reviewTextSearchAvailable,
   }) {

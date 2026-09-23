@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:hayer_server/src/generated/protocol.dart' as _i2;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class CalibrationValidation
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   CalibrationValidation._({
     required this.version,
     required this.fixturePassed,
@@ -37,16 +36,16 @@ abstract class CalibrationValidation
   ) {
     return CalibrationValidation(
       version: jsonSerialization['version'] as String,
-      fixturePassed: _i1.BoolJsonExtension.fromJson(
+      fixturePassed: _is.BoolJsonExtension.fromJson(
         jsonSerialization['fixturePassed'],
       ),
-      liveCanaryPassed: _i1.BoolJsonExtension.fromJson(
+      liveCanaryPassed: _is.BoolJsonExtension.fromJson(
         jsonSerialization['liveCanaryPassed'],
       ),
-      errors: _i2.Protocol().deserialize<List<String>>(
+      errors: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['errors'],
       ),
-      validatedAt: _i1.DateTimeJsonExtension.fromJson(
+      validatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['validatedAt'],
       ),
     );
@@ -64,7 +63,7 @@ abstract class CalibrationValidation
 
   /// Returns a shallow copy of this [CalibrationValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CalibrationValidation copyWith({
     String? version,
     bool? fixturePassed,
@@ -98,7 +97,7 @@ abstract class CalibrationValidation
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -119,7 +118,7 @@ class _CalibrationValidationImpl extends CalibrationValidation {
 
   /// Returns a shallow copy of this [CalibrationValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CalibrationValidation copyWith({
     String? version,

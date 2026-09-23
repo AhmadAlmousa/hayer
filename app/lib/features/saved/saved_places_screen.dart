@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../core/page_title.dart';
 import '../../core/place_photo.dart';
@@ -72,17 +71,17 @@ class _SavedPlacesScreenState extends ConsumerState<SavedPlacesScreen> {
                   ),
                 ],
                 const SizedBox(height: 12),
-                M3ESegmentedButton<SavedPlaceCollection>(
+                SegmentedButton<SavedPlaceCollection>(
                   showSelectedIcon: false,
                   segments: [
-                    M3ESegment(
+                    ButtonSegment(
                       value: SavedPlaceCollection.wantToTry,
-                      label: strings.wantToTry,
+                      label: Text(strings.wantToTry),
                       icon: const Icon(Icons.bookmark_outline_rounded),
                     ),
-                    M3ESegment(
+                    ButtonSegment(
                       value: SavedPlaceCollection.favorites,
-                      label: strings.favorites,
+                      label: Text(strings.favorites),
                       icon: const Icon(Icons.star_outline_rounded),
                     ),
                   ],
@@ -202,16 +201,16 @@ class _EditSavedPlaceDialogState extends State<_EditSavedPlaceDialog> {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 12),
-            M3ESegmentedButton<SavedPlaceCollection>(
+            SegmentedButton<SavedPlaceCollection>(
               showSelectedIcon: false,
               segments: [
-                M3ESegment(
+                ButtonSegment(
                   value: SavedPlaceCollection.wantToTry,
-                  label: strings.wantToTry,
+                  label: Text(strings.wantToTry),
                 ),
-                M3ESegment(
+                ButtonSegment(
                   value: SavedPlaceCollection.favorites,
-                  label: strings.favorites,
+                  label: Text(strings.favorites),
                 ),
               ],
               selected: {_collection},

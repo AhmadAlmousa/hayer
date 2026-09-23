@@ -12,7 +12,7 @@ void main() {
       transport: (sessionId, placeId, type, details, key) async {
         calls.add((type: type, key: key));
         if (calls.length == 1) {
-          throw ServerpodClientException('offline', -1);
+          throw ServerpodClientNetworkException('offline');
         }
         return 'report-id';
       },
@@ -43,7 +43,7 @@ void main() {
         catalogTransport: (catalogId, type, details, key) async {
           calls.add((catalogId, type, details, key));
           if (calls.length == 1) {
-            throw ServerpodClientException('offline', -1);
+            throw ServerpodClientNetworkException('offline');
           }
           return 'report-id';
         },

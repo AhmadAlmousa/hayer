@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i2;
-
-abstract class AdminAuditEntry implements _i1.SerializableModel {
+abstract class AdminAuditEntry
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminAuditEntry._({
     required this.auditId,
     required this.operatorName,
@@ -49,15 +49,15 @@ abstract class AdminAuditEntry implements _i1.SerializableModel {
       reason: jsonSerialization['reason'] as String,
       beforeData: jsonSerialization['beforeData'] == null
           ? null
-          : _i2.Protocol().deserialize<Map<String, String>>(
+          : _iynev3sz.Protocol().deserialize<Map<String, String>>(
               jsonSerialization['beforeData'],
             ),
       afterData: jsonSerialization['afterData'] == null
           ? null
-          : _i2.Protocol().deserialize<Map<String, String>>(
+          : _iynev3sz.Protocol().deserialize<Map<String, String>>(
               jsonSerialization['afterData'],
             ),
-      occurredAt: _i1.DateTimeJsonExtension.fromJson(
+      occurredAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['occurredAt'],
       ),
     );
@@ -83,7 +83,7 @@ abstract class AdminAuditEntry implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminAuditEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminAuditEntry copyWith({
     String? auditId,
     String? operatorName,
@@ -112,8 +112,24 @@ abstract class AdminAuditEntry implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminAuditEntry',
+      'auditId': auditId,
+      'operatorName': operatorName,
+      'action': action,
+      'targetType': targetType,
+      if (targetId != null) 'targetId': targetId,
+      'reason': reason,
+      if (beforeData != null) 'beforeData': beforeData?.toJson(),
+      if (afterData != null) 'afterData': afterData?.toJson(),
+      'occurredAt': occurredAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -144,7 +160,7 @@ class _AdminAuditEntryImpl extends AdminAuditEntry {
 
   /// Returns a shallow copy of this [AdminAuditEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminAuditEntry copyWith({
     String? auditId,

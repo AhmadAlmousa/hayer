@@ -10,14 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'place_insight.dart' as _i2;
-import 'analytics_breakdown.dart' as _i3;
-import 'package:hayer_server/src/generated/protocol.dart' as _i4;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'analytics_breakdown.dart' as _iky5xq8l;
+import 'place_insight.dart' as _i19nqj1l;
 
 abstract class AdminPlaceAnalytics
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminPlaceAnalytics._({
     required this.items,
     required this.topCuisines,
@@ -26,44 +25,46 @@ abstract class AdminPlaceAnalytics
   });
 
   factory AdminPlaceAnalytics({
-    required List<_i2.PlaceInsight> items,
-    required List<_i3.AnalyticsBreakdown> topCuisines,
-    required List<_i3.AnalyticsBreakdown> topTypes,
+    required List<_i19nqj1l.PlaceInsight> items,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCuisines,
+    required List<_iky5xq8l.AnalyticsBreakdown> topTypes,
     required DateTime generatedAt,
   }) = _AdminPlaceAnalyticsImpl;
 
   factory AdminPlaceAnalytics.fromJson(Map<String, dynamic> jsonSerialization) {
     return AdminPlaceAnalytics(
-      items: _i4.Protocol().deserialize<List<_i2.PlaceInsight>>(
+      items: _i66y2smk.Protocol().deserialize<List<_i19nqj1l.PlaceInsight>>(
         jsonSerialization['items'],
       ),
-      topCuisines: _i4.Protocol().deserialize<List<_i3.AnalyticsBreakdown>>(
-        jsonSerialization['topCuisines'],
-      ),
-      topTypes: _i4.Protocol().deserialize<List<_i3.AnalyticsBreakdown>>(
-        jsonSerialization['topTypes'],
-      ),
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      topCuisines: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['topCuisines'],
+          ),
+      topTypes: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['topTypes'],
+          ),
+      generatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
   }
 
-  List<_i2.PlaceInsight> items;
+  List<_i19nqj1l.PlaceInsight> items;
 
-  List<_i3.AnalyticsBreakdown> topCuisines;
+  List<_iky5xq8l.AnalyticsBreakdown> topCuisines;
 
-  List<_i3.AnalyticsBreakdown> topTypes;
+  List<_iky5xq8l.AnalyticsBreakdown> topTypes;
 
   DateTime generatedAt;
 
   /// Returns a shallow copy of this [AdminPlaceAnalytics]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminPlaceAnalytics copyWith({
-    List<_i2.PlaceInsight>? items,
-    List<_i3.AnalyticsBreakdown>? topCuisines,
-    List<_i3.AnalyticsBreakdown>? topTypes,
+    List<_i19nqj1l.PlaceInsight>? items,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCuisines,
+    List<_iky5xq8l.AnalyticsBreakdown>? topTypes,
     DateTime? generatedAt,
   });
   @override
@@ -92,15 +93,15 @@ abstract class AdminPlaceAnalytics
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminPlaceAnalyticsImpl extends AdminPlaceAnalytics {
   _AdminPlaceAnalyticsImpl({
-    required List<_i2.PlaceInsight> items,
-    required List<_i3.AnalyticsBreakdown> topCuisines,
-    required List<_i3.AnalyticsBreakdown> topTypes,
+    required List<_i19nqj1l.PlaceInsight> items,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCuisines,
+    required List<_iky5xq8l.AnalyticsBreakdown> topTypes,
     required DateTime generatedAt,
   }) : super._(
          items: items,
@@ -111,12 +112,12 @@ class _AdminPlaceAnalyticsImpl extends AdminPlaceAnalytics {
 
   /// Returns a shallow copy of this [AdminPlaceAnalytics]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminPlaceAnalytics copyWith({
-    List<_i2.PlaceInsight>? items,
-    List<_i3.AnalyticsBreakdown>? topCuisines,
-    List<_i3.AnalyticsBreakdown>? topTypes,
+    List<_i19nqj1l.PlaceInsight>? items,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCuisines,
+    List<_iky5xq8l.AnalyticsBreakdown>? topTypes,
     DateTime? generatedAt,
   }) {
     return AdminPlaceAnalytics(

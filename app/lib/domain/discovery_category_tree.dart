@@ -189,9 +189,11 @@ final class DiscoveryCategoryTree {
     required Set<String> selection,
     Set<String> expanded = const {},
     String search = '',
+    bool showEmpty = false,
   }) {
     final kept = _kept(selection);
-    bool visible(String id) => totalOf(id) > 0 || kept.contains(id);
+    bool visible(String id) =>
+        showEmpty || totalOf(id) > 0 || kept.contains(id);
 
     final needle = _searchable(search);
     final searching = needle.isNotEmpty;

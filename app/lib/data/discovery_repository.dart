@@ -10,6 +10,7 @@ class DiscoveryRepository {
   final Client client;
 
   static const _timeout = Duration(seconds: 15);
+  static const _upstreamSearchTimeout = Duration(seconds: 40);
 
   Future<DiscoverBrowsePage> browse({
     required DiscoverQuery query,
@@ -26,7 +27,7 @@ class DiscoveryRepository {
       pageSize: pageSize,
       includeMap: includeMap,
     ),
-  ).timeout(_timeout);
+  ).timeout(query.searchUpstream == true ? _upstreamSearchTimeout : _timeout);
 
   Future<DiscoverFacets> facets({
     required DiscoverQuery query,

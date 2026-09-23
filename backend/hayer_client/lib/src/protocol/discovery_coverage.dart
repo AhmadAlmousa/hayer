@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discovery_coverage_footprint.dart' as _ito6p50m;
+import 'discovery_harvest_status.dart' as _iaeap9p2;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discovery_coverage_footprint.dart' as _i2;
-import 'discovery_harvest_status.dart' as _i3;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i4;
-
-abstract class DiscoveryCoverage implements _i1.SerializableModel {
+abstract class DiscoveryCoverage
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryCoverage._({
     required this.eligibleCatalogCount,
     required this.footprints,
@@ -25,36 +25,37 @@ abstract class DiscoveryCoverage implements _i1.SerializableModel {
 
   factory DiscoveryCoverage({
     required int eligibleCatalogCount,
-    required List<_i2.DiscoveryCoverageFootprint> footprints,
-    required List<_i3.DiscoveryHarvestStatus> pendingJobs,
+    required List<_ito6p50m.DiscoveryCoverageFootprint> footprints,
+    required List<_iaeap9p2.DiscoveryHarvestStatus> pendingJobs,
   }) = _DiscoveryCoverageImpl;
 
   factory DiscoveryCoverage.fromJson(Map<String, dynamic> jsonSerialization) {
     return DiscoveryCoverage(
       eligibleCatalogCount: jsonSerialization['eligibleCatalogCount'] as int,
-      footprints: _i4.Protocol()
-          .deserialize<List<_i2.DiscoveryCoverageFootprint>>(
+      footprints: _iynev3sz.Protocol()
+          .deserialize<List<_ito6p50m.DiscoveryCoverageFootprint>>(
             jsonSerialization['footprints'],
           ),
-      pendingJobs: _i4.Protocol().deserialize<List<_i3.DiscoveryHarvestStatus>>(
-        jsonSerialization['pendingJobs'],
-      ),
+      pendingJobs: _iynev3sz.Protocol()
+          .deserialize<List<_iaeap9p2.DiscoveryHarvestStatus>>(
+            jsonSerialization['pendingJobs'],
+          ),
     );
   }
 
   int eligibleCatalogCount;
 
-  List<_i2.DiscoveryCoverageFootprint> footprints;
+  List<_ito6p50m.DiscoveryCoverageFootprint> footprints;
 
-  List<_i3.DiscoveryHarvestStatus> pendingJobs;
+  List<_iaeap9p2.DiscoveryHarvestStatus> pendingJobs;
 
   /// Returns a shallow copy of this [DiscoveryCoverage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryCoverage copyWith({
     int? eligibleCatalogCount,
-    List<_i2.DiscoveryCoverageFootprint>? footprints,
-    List<_i3.DiscoveryHarvestStatus>? pendingJobs,
+    List<_ito6p50m.DiscoveryCoverageFootprint>? footprints,
+    List<_iaeap9p2.DiscoveryHarvestStatus>? pendingJobs,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -67,16 +68,30 @@ abstract class DiscoveryCoverage implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryCoverage',
+      'eligibleCatalogCount': eligibleCatalogCount,
+      'footprints': footprints.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'pendingJobs': pendingJobs.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _DiscoveryCoverageImpl extends DiscoveryCoverage {
   _DiscoveryCoverageImpl({
     required int eligibleCatalogCount,
-    required List<_i2.DiscoveryCoverageFootprint> footprints,
-    required List<_i3.DiscoveryHarvestStatus> pendingJobs,
+    required List<_ito6p50m.DiscoveryCoverageFootprint> footprints,
+    required List<_iaeap9p2.DiscoveryHarvestStatus> pendingJobs,
   }) : super._(
          eligibleCatalogCount: eligibleCatalogCount,
          footprints: footprints,
@@ -85,12 +100,12 @@ class _DiscoveryCoverageImpl extends DiscoveryCoverage {
 
   /// Returns a shallow copy of this [DiscoveryCoverage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryCoverage copyWith({
     int? eligibleCatalogCount,
-    List<_i2.DiscoveryCoverageFootprint>? footprints,
-    List<_i3.DiscoveryHarvestStatus>? pendingJobs,
+    List<_ito6p50m.DiscoveryCoverageFootprint>? footprints,
+    List<_iaeap9p2.DiscoveryHarvestStatus>? pendingJobs,
   }) {
     return DiscoveryCoverage(
       eligibleCatalogCount: eligibleCatalogCount ?? this.eligibleCatalogCount,

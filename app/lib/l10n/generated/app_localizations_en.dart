@@ -812,6 +812,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get routeDistanceUnavailable => 'Distance unavailable';
 
   @override
+  String get routeCalculating => 'Calculating route…';
+
+  @override
   String get currentLocationUnavailableUsingHost =>
       'Your location is unavailable, so the host’s location will be used.';
 
@@ -1107,6 +1110,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoverySortRecent => 'Recently discovered';
 
   @override
+  String get discoverySortDistanceArea => '📍 Distance from area center';
+
+  @override
+  String get discoverySortDistanceCurrent => '🧭 Distance from my location';
+
+  @override
+  String get discoverySortHelp => 'Choose how places appear in your results.';
+
+  @override
+  String get discoverySortLocationUnavailable =>
+      'Current location is unavailable. Sorting from the area center.';
+
+  @override
   String get discoveryExplainBest =>
       'Rating weighted by how many people rated it';
 
@@ -1140,29 +1156,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoveryExplainRecent => 'Newest to our catalog';
 
   @override
+  String get discoveryExplainDistanceArea =>
+      'Nearest places to the center of this area first.';
+
+  @override
+  String get discoveryExplainDistanceCurrent =>
+      'Nearest places to your current location first.';
+
+  @override
   String discoveryTagHiddenGem(String count) {
     return '💎 Hidden gem · only $count reviews';
   }
 
   @override
   String get discoveryTagHiddenGemPlain => '💎 Hidden gem';
-
-  @override
-  String discoveryTagAdded(int days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String daysString = daysNumberFormat.format(days);
-
-    String _temp0 = intl.Intl.pluralLogic(
-      days,
-      locale: localeName,
-      other: '🆕 Added $daysString days ago',
-      one: '🆕 Added yesterday',
-      zero: '🆕 Added today',
-    );
-    return '$_temp0';
-  }
 
   @override
   String discoveryTagRatedBelow(String rating) {
@@ -1290,6 +1297,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get discoverySearchClear => 'Clear the search';
+
+  @override
+  String get discoverySearchPlaces => 'Search places';
 
   @override
   String get discoveryFilterReviews => 'Number of reviews';

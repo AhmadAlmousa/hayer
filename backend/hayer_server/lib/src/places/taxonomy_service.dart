@@ -15,8 +15,7 @@ abstract final class TaxonomyService {
     final active = await TaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.active),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       transaction: transaction,
       lockMode: lockMode,
     );
@@ -44,8 +43,7 @@ abstract final class TaxonomyService {
     final seeded = await TaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.active),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       transaction: transaction,
       lockMode: lockMode,
     );
@@ -85,8 +83,7 @@ abstract final class TaxonomyService {
     final existing = await TaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.draft),
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
     );
     if (existing != null) return view(existing);
     final active = await activeRow(session);
@@ -111,8 +108,7 @@ abstract final class TaxonomyService {
     final concurrent = await TaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.draft),
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
     );
     if (concurrent == null) {
       throw StateError('Could not create an editable taxonomy draft.');
@@ -295,8 +291,7 @@ abstract final class TaxonomyService {
     final rows = await TaxonomyVersionRow.db.find(
       session,
       where: (table) => table.status.notEquals(TaxonomyStatus.draft),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       limit: 30,
     );
     return rows.map(view).toList(growable: false);

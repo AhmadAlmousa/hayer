@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i2;
-
-abstract class CalibrationValidation implements _i1.SerializableModel {
+abstract class CalibrationValidation
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CalibrationValidation._({
     required this.version,
     required this.fixturePassed,
@@ -36,16 +36,16 @@ abstract class CalibrationValidation implements _i1.SerializableModel {
   ) {
     return CalibrationValidation(
       version: jsonSerialization['version'] as String,
-      fixturePassed: _i1.BoolJsonExtension.fromJson(
+      fixturePassed: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['fixturePassed'],
       ),
-      liveCanaryPassed: _i1.BoolJsonExtension.fromJson(
+      liveCanaryPassed: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['liveCanaryPassed'],
       ),
-      errors: _i2.Protocol().deserialize<List<String>>(
+      errors: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['errors'],
       ),
-      validatedAt: _i1.DateTimeJsonExtension.fromJson(
+      validatedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['validatedAt'],
       ),
     );
@@ -63,7 +63,7 @@ abstract class CalibrationValidation implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CalibrationValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CalibrationValidation copyWith({
     String? version,
     bool? fixturePassed,
@@ -84,8 +84,20 @@ abstract class CalibrationValidation implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CalibrationValidation',
+      'version': version,
+      'fixturePassed': fixturePassed,
+      'liveCanaryPassed': liveCanaryPassed,
+      'errors': errors.toJson(),
+      'validatedAt': validatedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -106,7 +118,7 @@ class _CalibrationValidationImpl extends CalibrationValidation {
 
   /// Returns a shallow copy of this [CalibrationValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CalibrationValidation copyWith({
     String? version,

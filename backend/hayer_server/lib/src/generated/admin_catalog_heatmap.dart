@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_catalog_heat_cell.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_catalog_heat_cell.dart' as _i1cajeij;
 
 abstract class AdminCatalogHeatmap
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminCatalogHeatmap._({
     required this.cells,
     required this.total,
@@ -25,7 +24,7 @@ abstract class AdminCatalogHeatmap
   });
 
   factory AdminCatalogHeatmap({
-    required List<_i2.AdminCatalogHeatCell> cells,
+    required List<_i1cajeij.AdminCatalogHeatCell> cells,
     required int total,
     required int maximumCount,
     required DateTime generatedAt,
@@ -33,18 +32,19 @@ abstract class AdminCatalogHeatmap
 
   factory AdminCatalogHeatmap.fromJson(Map<String, dynamic> jsonSerialization) {
     return AdminCatalogHeatmap(
-      cells: _i3.Protocol().deserialize<List<_i2.AdminCatalogHeatCell>>(
-        jsonSerialization['cells'],
-      ),
+      cells: _i66y2smk.Protocol()
+          .deserialize<List<_i1cajeij.AdminCatalogHeatCell>>(
+            jsonSerialization['cells'],
+          ),
       total: jsonSerialization['total'] as int,
       maximumCount: jsonSerialization['maximumCount'] as int,
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
   }
 
-  List<_i2.AdminCatalogHeatCell> cells;
+  List<_i1cajeij.AdminCatalogHeatCell> cells;
 
   int total;
 
@@ -54,9 +54,9 @@ abstract class AdminCatalogHeatmap
 
   /// Returns a shallow copy of this [AdminCatalogHeatmap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminCatalogHeatmap copyWith({
-    List<_i2.AdminCatalogHeatCell>? cells,
+    List<_i1cajeij.AdminCatalogHeatCell>? cells,
     int? total,
     int? maximumCount,
     DateTime? generatedAt,
@@ -85,13 +85,13 @@ abstract class AdminCatalogHeatmap
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminCatalogHeatmapImpl extends AdminCatalogHeatmap {
   _AdminCatalogHeatmapImpl({
-    required List<_i2.AdminCatalogHeatCell> cells,
+    required List<_i1cajeij.AdminCatalogHeatCell> cells,
     required int total,
     required int maximumCount,
     required DateTime generatedAt,
@@ -104,10 +104,10 @@ class _AdminCatalogHeatmapImpl extends AdminCatalogHeatmap {
 
   /// Returns a shallow copy of this [AdminCatalogHeatmap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminCatalogHeatmap copyWith({
-    List<_i2.AdminCatalogHeatCell>? cells,
+    List<_i1cajeij.AdminCatalogHeatCell>? cells,
     int? total,
     int? maximumCount,
     DateTime? generatedAt,

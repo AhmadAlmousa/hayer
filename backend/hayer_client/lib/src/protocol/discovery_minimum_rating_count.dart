@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoveryMinimumRatingCount implements _i1.SerializableModel {
+abstract class DiscoveryMinimumRatingCount
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryMinimumRatingCount._({
     required this.minimumRating,
     required this.count,
@@ -39,7 +39,7 @@ abstract class DiscoveryMinimumRatingCount implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryMinimumRatingCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryMinimumRatingCount copyWith({
     double? minimumRating,
     int? count,
@@ -54,8 +54,17 @@ abstract class DiscoveryMinimumRatingCount implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryMinimumRatingCount',
+      'minimumRating': minimumRating,
+      'count': count,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -70,7 +79,7 @@ class _DiscoveryMinimumRatingCountImpl extends DiscoveryMinimumRatingCount {
 
   /// Returns a shallow copy of this [DiscoveryMinimumRatingCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryMinimumRatingCount copyWith({
     double? minimumRating,

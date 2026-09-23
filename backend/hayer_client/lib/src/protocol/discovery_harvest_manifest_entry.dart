@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoveryHarvestManifestEntry implements _i1.SerializableModel {
+abstract class DiscoveryHarvestManifestEntry
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryHarvestManifestEntry._({
     required this.id,
     required this.label,
@@ -41,7 +41,7 @@ abstract class DiscoveryHarvestManifestEntry implements _i1.SerializableModel {
       queryEn: jsonSerialization['queryEn'] as String,
       fallbackQueryAr: jsonSerialization['fallbackQueryAr'] as String,
       sortOrder: jsonSerialization['sortOrder'] as int,
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      enabled: _isc.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
     );
   }
 
@@ -59,7 +59,7 @@ abstract class DiscoveryHarvestManifestEntry implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryHarvestManifestEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryHarvestManifestEntry copyWith({
     String? id,
     String? label,
@@ -82,8 +82,21 @@ abstract class DiscoveryHarvestManifestEntry implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryHarvestManifestEntry',
+      'id': id,
+      'label': label,
+      'queryEn': queryEn,
+      'fallbackQueryAr': fallbackQueryAr,
+      'sortOrder': sortOrder,
+      'enabled': enabled,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -106,7 +119,7 @@ class _DiscoveryHarvestManifestEntryImpl extends DiscoveryHarvestManifestEntry {
 
   /// Returns a shallow copy of this [DiscoveryHarvestManifestEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryHarvestManifestEntry copyWith({
     String? id,

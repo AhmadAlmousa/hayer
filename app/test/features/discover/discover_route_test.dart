@@ -12,7 +12,6 @@ import 'package:hayer_app/features/discover/discover_view.dart';
 import 'package:hayer_app/features/discover/discovery_config_controller.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 import 'package:hayer_app/l10n/localization_delegates.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'discovery_fakes.dart';
@@ -61,7 +60,7 @@ void main() {
 
       expect(router.routeInformationProvider.value.uri.path, '/');
       expect(find.byType(DiscoverScreen), findsNothing);
-      expect(find.text('WHAT?'), findsOneWidget);
+      expect(find.text('WHAT?'), findsNWidgets(2));
       expect(find.text(_kept), findsOneWidget);
       expect(find.text(_unavailable), findsOneWidget);
       expect(
@@ -232,10 +231,6 @@ Future<GoRouter> _pumpApp(
         theme: HayerTheme.light(),
         localizationsDelegates: hayerLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        builder: (context, child) => M3ETheme(
-          data: M3EThemeData.fromMaterial(Theme.of(context)),
-          child: child!,
-        ),
       ),
     ),
   );

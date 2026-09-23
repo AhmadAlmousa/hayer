@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class CoverageRecord implements _i1.SerializableModel {
+abstract class CoverageRecord
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CoverageRecord._({
     required this.coverageKey,
     required this.queryKey,
@@ -57,16 +57,16 @@ abstract class CoverageRecord implements _i1.SerializableModel {
       radiusMeters: jsonSerialization['radiusMeters'] as int,
       calibrationVersion: jsonSerialization['calibrationVersion'] as String,
       resultCount: jsonSerialization['resultCount'] as int,
-      refreshedAt: _i1.DateTimeJsonExtension.fromJson(
+      refreshedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['refreshedAt'],
       ),
-      expiresAt: _i1.DateTimeJsonExtension.fromJson(
+      expiresAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiresAt'],
       ),
       lastFailureCode: jsonSerialization['lastFailureCode'] as String?,
       invalidatedAt: jsonSerialization['invalidatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['invalidatedAt'],
             ),
     );
@@ -100,7 +100,7 @@ abstract class CoverageRecord implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CoverageRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CoverageRecord copyWith({
     String? coverageKey,
     String? queryKey,
@@ -137,8 +137,28 @@ abstract class CoverageRecord implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CoverageRecord',
+      'coverageKey': coverageKey,
+      'queryKey': queryKey,
+      'language': language,
+      'countryCode': countryCode,
+      'anchorLatitude': anchorLatitude,
+      'anchorLongitude': anchorLongitude,
+      'radiusMeters': radiusMeters,
+      'calibrationVersion': calibrationVersion,
+      'resultCount': resultCount,
+      'refreshedAt': refreshedAt.toJson(),
+      'expiresAt': expiresAt.toJson(),
+      if (lastFailureCode != null) 'lastFailureCode': lastFailureCode,
+      if (invalidatedAt != null) 'invalidatedAt': invalidatedAt?.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -177,7 +197,7 @@ class _CoverageRecordImpl extends CoverageRecord {
 
   /// Returns a shallow copy of this [CoverageRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CoverageRecord copyWith({
     String? coverageKey,

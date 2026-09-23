@@ -31,20 +31,35 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('WHAT NEXT?'), findsOneWidget);
+    expect(find.text('WHAT NEXT?'), findsNWidgets(2));
     expect(find.text('Quick Pick'), findsOneWidget);
     expect(find.text('Explore'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('intent-decide-together')),
+      150,
+    );
+    await tester.pumpAndSettle();
     expect(find.text('Decide Together'), findsOneWidget);
     expect(find.text('Refine (optional)'), findsOneWidget);
     expect(find.textContaining('deck size'), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('intent-decide-together')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('intent-next')));
+    await tester.pumpAndSettle();
     expect(find.text('Room rules'), findsOneWidget);
     await tester.tap(find.text('Room rules'));
     await tester.pumpAndSettle();
     expect(find.text('Majority'), findsOneWidget);
     expect(find.text('Stop at first match'), findsOneWidget);
+    expect(
+      find.text('A place wins when more than half the group likes it.'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Finish the deck before seeing the group results.'),
+      findsOneWidget,
+    );
     expect(
       tester
           .widget<FilledButton>(
@@ -87,7 +102,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('ماذا بعد؟'), findsOneWidget);
+    expect(find.text('ماذا بعد؟'), findsNWidgets(2));
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey('intent-quick-pick')),
       200,

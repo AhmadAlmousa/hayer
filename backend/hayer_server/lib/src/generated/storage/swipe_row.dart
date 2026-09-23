@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class SwipeRow
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   SwipeRow._({
     this.id,
     required this.sessionId,
@@ -28,7 +27,7 @@ abstract class SwipeRow
   });
 
   factory SwipeRow({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String sessionId,
     required String userId,
     required String placeId,
@@ -43,16 +42,16 @@ abstract class SwipeRow
     return SwipeRow(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       sessionId: jsonSerialization['sessionId'] as String,
       userId: jsonSerialization['userId'] as String,
       placeId: jsonSerialization['placeId'] as String,
-      liked: _i1.BoolJsonExtension.fromJson(jsonSerialization['liked']),
+      liked: _is.BoolJsonExtension.fromJson(jsonSerialization['liked']),
       swipeIndex: jsonSerialization['swipeIndex'] as int,
-      clientSwipedAt: _i1.DateTimeJsonExtension.fromJson(
+      clientSwipedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['clientSwipedAt'],
       ),
-      serverReceivedAt: _i1.DateTimeJsonExtension.fromJson(
+      serverReceivedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['serverReceivedAt'],
       ),
       idempotencyKey: jsonSerialization['idempotencyKey'] as String,
@@ -64,7 +63,7 @@ abstract class SwipeRow
   static const db = SwipeRowRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String sessionId;
 
@@ -83,13 +82,13 @@ abstract class SwipeRow
   String idempotencyKey;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [SwipeRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SwipeRow copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? sessionId,
     String? userId,
     String? placeId,
@@ -125,12 +124,11 @@ abstract class SwipeRow
   }
 
   static SwipeRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<SwipeRowTable>? where,
+    _is.WhereExpressionBuilder<SwipeRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SwipeRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<SwipeRowTable>? orderByList,
+    _is.OrderByBuilder<SwipeRowTable>? orderBy,
+    _is.OrderByListBuilder<SwipeRowTable>? orderByList,
     SwipeRowInclude? include,
   }) {
     return SwipeRowIncludeList._(
@@ -138,7 +136,6 @@ abstract class SwipeRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SwipeRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(SwipeRow.t),
       include: include,
     );
@@ -146,7 +143,7 @@ abstract class SwipeRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -154,7 +151,7 @@ class _Undefined {}
 
 class _SwipeRowImpl extends SwipeRow {
   _SwipeRowImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String sessionId,
     required String userId,
     required String placeId,
@@ -177,7 +174,7 @@ class _SwipeRowImpl extends SwipeRow {
 
   /// Returns a shallow copy of this [SwipeRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SwipeRow copyWith({
     Object? id = _Undefined,
@@ -191,7 +188,7 @@ class _SwipeRowImpl extends SwipeRow {
     String? idempotencyKey,
   }) {
     return SwipeRow(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       sessionId: sessionId ?? this.sessionId,
       userId: userId ?? this.userId,
       placeId: placeId ?? this.placeId,
@@ -204,85 +201,85 @@ class _SwipeRowImpl extends SwipeRow {
   }
 }
 
-class SwipeRowUpdateTable extends _i1.UpdateTable<SwipeRowTable> {
+class SwipeRowUpdateTable extends _is.UpdateTable<SwipeRowTable> {
   SwipeRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> sessionId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> sessionId(String value) => _is.ColumnValue(
     table.sessionId,
     value,
   );
 
-  _i1.ColumnValue<String, String> userId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userId(String value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<String, String> placeId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> placeId(String value) => _is.ColumnValue(
     table.placeId,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> liked(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> liked(bool value) => _is.ColumnValue(
     table.liked,
     value,
   );
 
-  _i1.ColumnValue<int, int> swipeIndex(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> swipeIndex(int value) => _is.ColumnValue(
     table.swipeIndex,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> clientSwipedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> clientSwipedAt(DateTime value) =>
+      _is.ColumnValue(
         table.clientSwipedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> serverReceivedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> serverReceivedAt(DateTime value) =>
+      _is.ColumnValue(
         table.serverReceivedAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> idempotencyKey(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> idempotencyKey(String value) =>
+      _is.ColumnValue(
         table.idempotencyKey,
         value,
       );
 }
 
-class SwipeRowTable extends _i1.Table<_i1.UuidValue?> {
+class SwipeRowTable extends _is.Table<_is.UuidValue?> {
   SwipeRowTable({super.tableRelation}) : super(tableName: 'hayer_swipe') {
     updateTable = SwipeRowUpdateTable(this);
-    sessionId = _i1.ColumnString(
+    sessionId = _is.ColumnString(
       'sessionId',
       this,
     );
-    userId = _i1.ColumnString(
+    userId = _is.ColumnString(
       'userId',
       this,
     );
-    placeId = _i1.ColumnString(
+    placeId = _is.ColumnString(
       'placeId',
       this,
     );
-    liked = _i1.ColumnBool(
+    liked = _is.ColumnBool(
       'liked',
       this,
     );
-    swipeIndex = _i1.ColumnInt(
+    swipeIndex = _is.ColumnInt(
       'swipeIndex',
       this,
     );
-    clientSwipedAt = _i1.ColumnDateTime(
+    clientSwipedAt = _is.ColumnDateTime(
       'clientSwipedAt',
       this,
     );
-    serverReceivedAt = _i1.ColumnDateTime(
+    serverReceivedAt = _is.ColumnDateTime(
       'serverReceivedAt',
       this,
     );
-    idempotencyKey = _i1.ColumnString(
+    idempotencyKey = _is.ColumnString(
       'idempotencyKey',
       this,
     );
@@ -290,24 +287,24 @@ class SwipeRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final SwipeRowUpdateTable updateTable;
 
-  late final _i1.ColumnString sessionId;
+  late final _is.ColumnString sessionId;
 
-  late final _i1.ColumnString userId;
+  late final _is.ColumnString userId;
 
-  late final _i1.ColumnString placeId;
+  late final _is.ColumnString placeId;
 
-  late final _i1.ColumnBool liked;
+  late final _is.ColumnBool liked;
 
-  late final _i1.ColumnInt swipeIndex;
+  late final _is.ColumnInt swipeIndex;
 
-  late final _i1.ColumnDateTime clientSwipedAt;
+  late final _is.ColumnDateTime clientSwipedAt;
 
-  late final _i1.ColumnDateTime serverReceivedAt;
+  late final _is.ColumnDateTime serverReceivedAt;
 
-  late final _i1.ColumnString idempotencyKey;
+  late final _is.ColumnString idempotencyKey;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     sessionId,
     userId,
@@ -320,23 +317,22 @@ class SwipeRowTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class SwipeRowInclude extends _i1.IncludeObject {
+class SwipeRowInclude extends _is.IncludeObject {
   SwipeRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => SwipeRow.t;
+  _is.Table<_is.UuidValue?> get table => SwipeRow.t;
 }
 
-class SwipeRowIncludeList extends _i1.IncludeList {
+class SwipeRowIncludeList extends _is.IncludeList {
   SwipeRowIncludeList._({
-    _i1.WhereExpressionBuilder<SwipeRowTable>? where,
+    _is.WhereExpressionBuilder<SwipeRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -344,10 +340,10 @@ class SwipeRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => SwipeRow.t;
+  _is.Table<_is.UuidValue?> get table => SwipeRow.t;
 }
 
 class SwipeRowRepository {
@@ -376,22 +372,20 @@ class SwipeRowRepository {
   /// );
   /// ```
   Future<List<SwipeRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SwipeRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SwipeRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SwipeRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<SwipeRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SwipeRowTable>? orderBy,
+    _is.OrderByListBuilder<SwipeRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SwipeRow>(
       where: where?.call(SwipeRow.t),
       orderBy: orderBy?.call(SwipeRow.t),
       orderByList: orderByList?.call(SwipeRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -418,21 +412,19 @@ class SwipeRowRepository {
   /// );
   /// ```
   Future<SwipeRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SwipeRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SwipeRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SwipeRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<SwipeRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SwipeRowTable>? orderBy,
+    _is.OrderByListBuilder<SwipeRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SwipeRow>(
       where: where?.call(SwipeRow.t),
       orderBy: orderBy?.call(SwipeRow.t),
       orderByList: orderByList?.call(SwipeRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -442,11 +434,11 @@ class SwipeRowRepository {
 
   /// Finds a single [SwipeRow] by its [id] or null if no such row exists.
   Future<SwipeRow?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SwipeRow>(
       id,
@@ -466,16 +458,22 @@ class SwipeRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SwipeRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SwipeRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<SwipeRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -483,12 +481,81 @@ class SwipeRowRepository {
   ///
   /// The returned [SwipeRow] will have its `id` field set.
   Future<SwipeRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SwipeRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<SwipeRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [SwipeRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [SwipeRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<SwipeRow>> upsert(
+    _is.DatabaseSession session,
+    List<SwipeRow> rows, {
+    required _is.ColumnSelections<SwipeRowTable> conflictColumns,
+    _is.ColumnSelections<SwipeRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<SwipeRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<SwipeRow>(
+      rows,
+      conflictColumns: conflictColumns(SwipeRow.t),
+      updateColumns: updateColumns?.call(SwipeRow.t),
+      updateWhere: updateWhere?.call(SwipeRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [SwipeRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [SwipeRow] will have its `id` field set.
+  Future<SwipeRow?> upsertRow(
+    _is.DatabaseSession session,
+    SwipeRow row, {
+    required _is.ColumnSelections<SwipeRowTable> conflictColumns,
+    _is.ColumnSelections<SwipeRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<SwipeRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<SwipeRow>(
+      row,
+      conflictColumns: conflictColumns(SwipeRow.t),
+      updateColumns: updateColumns?.call(SwipeRow.t),
+      updateWhere: updateWhere?.call(SwipeRow.t),
       transaction: transaction,
     );
   }
@@ -498,16 +565,22 @@ class SwipeRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SwipeRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SwipeRow> rows, {
-    _i1.ColumnSelections<SwipeRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SwipeRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<SwipeRow>(
       rows,
       columns: columns?.call(SwipeRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -515,10 +588,10 @@ class SwipeRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SwipeRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SwipeRow row, {
-    _i1.ColumnSelections<SwipeRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SwipeRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<SwipeRow>(
       row,
@@ -530,10 +603,10 @@ class SwipeRowRepository {
   /// Updates a single [SwipeRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SwipeRow?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<SwipeRowUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<SwipeRowUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<SwipeRow>(
       id,
@@ -544,16 +617,20 @@ class SwipeRowRepository {
 
   /// Updates all [SwipeRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SwipeRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SwipeRowUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<SwipeRowTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<SwipeRowUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<SwipeRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SwipeRowTable>? orderBy,
-    _i1.OrderByListBuilder<SwipeRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SwipeRowTable>? orderBy,
+    _is.OrderByListBuilder<SwipeRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<SwipeRow>(
       columnValues: columnValues(SwipeRow.t.updateTable),
@@ -562,30 +639,44 @@ class SwipeRowRepository {
       offset: offset,
       orderBy: orderBy?.call(SwipeRow.t),
       orderByList: orderByList?.call(SwipeRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [SwipeRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SwipeRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SwipeRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SwipeRowTable>? orderBy,
+    _is.OrderByListBuilder<SwipeRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<SwipeRow>(
       rows,
+      orderBy: orderBy?.call(SwipeRow.t),
+      orderByList: orderByList?.call(SwipeRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [SwipeRow].
   Future<SwipeRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SwipeRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SwipeRow>(
       row,
@@ -594,24 +685,37 @@ class SwipeRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SwipeRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SwipeRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SwipeRowTable> where,
+    _is.OrderByBuilder<SwipeRowTable>? orderBy,
+    _is.OrderByListBuilder<SwipeRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SwipeRow>(
       where: where(SwipeRow.t),
+      orderBy: orderBy?.call(SwipeRow.t),
+      orderByList: orderByList?.call(SwipeRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SwipeRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SwipeRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<SwipeRow>(
       where: where?.call(SwipeRow.t),
@@ -622,11 +726,11 @@ class SwipeRowRepository {
 
   /// Acquires row-level locks on [SwipeRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SwipeRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SwipeRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SwipeRow>(
       where: where(SwipeRow.t),

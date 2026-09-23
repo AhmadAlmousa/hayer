@@ -24,7 +24,7 @@ class RevocableJwtTokenManagerBuilder
       RevocableJwtTokenManager(config: config, authUsers: authUsers);
 }
 
-class RevocableJwtTokenManager extends JwtTokenManager {
+final class RevocableJwtTokenManager extends JwtTokenManager {
   RevocableJwtTokenManager({
     required super.config,
     super.authUsers,

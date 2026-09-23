@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_discovery_harvest_job.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_discovery_harvest_job.dart' as _igrd8jdy;
 
 abstract class AdminDiscoveryHarvestJobPage
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminDiscoveryHarvestJobPage._({
     required this.items,
     required this.total,
@@ -25,7 +24,7 @@ abstract class AdminDiscoveryHarvestJobPage
   });
 
   factory AdminDiscoveryHarvestJobPage({
-    required List<_i2.AdminDiscoveryHarvestJob> items,
+    required List<_igrd8jdy.AdminDiscoveryHarvestJob> items,
     required int total,
     required int page,
     required int pageSize,
@@ -35,16 +34,17 @@ abstract class AdminDiscoveryHarvestJobPage
     Map<String, dynamic> jsonSerialization,
   ) {
     return AdminDiscoveryHarvestJobPage(
-      items: _i3.Protocol().deserialize<List<_i2.AdminDiscoveryHarvestJob>>(
-        jsonSerialization['items'],
-      ),
+      items: _i66y2smk.Protocol()
+          .deserialize<List<_igrd8jdy.AdminDiscoveryHarvestJob>>(
+            jsonSerialization['items'],
+          ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
       pageSize: jsonSerialization['pageSize'] as int,
     );
   }
 
-  List<_i2.AdminDiscoveryHarvestJob> items;
+  List<_igrd8jdy.AdminDiscoveryHarvestJob> items;
 
   int total;
 
@@ -54,9 +54,9 @@ abstract class AdminDiscoveryHarvestJobPage
 
   /// Returns a shallow copy of this [AdminDiscoveryHarvestJobPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminDiscoveryHarvestJobPage copyWith({
-    List<_i2.AdminDiscoveryHarvestJob>? items,
+    List<_igrd8jdy.AdminDiscoveryHarvestJob>? items,
     int? total,
     int? page,
     int? pageSize,
@@ -85,13 +85,13 @@ abstract class AdminDiscoveryHarvestJobPage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminDiscoveryHarvestJobPageImpl extends AdminDiscoveryHarvestJobPage {
   _AdminDiscoveryHarvestJobPageImpl({
-    required List<_i2.AdminDiscoveryHarvestJob> items,
+    required List<_igrd8jdy.AdminDiscoveryHarvestJob> items,
     required int total,
     required int page,
     required int pageSize,
@@ -104,10 +104,10 @@ class _AdminDiscoveryHarvestJobPageImpl extends AdminDiscoveryHarvestJobPage {
 
   /// Returns a shallow copy of this [AdminDiscoveryHarvestJobPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminDiscoveryHarvestJobPage copyWith({
-    List<_i2.AdminDiscoveryHarvestJob>? items,
+    List<_igrd8jdy.AdminDiscoveryHarvestJob>? items,
     int? total,
     int? page,
     int? pageSize,

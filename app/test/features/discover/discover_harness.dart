@@ -7,7 +7,6 @@ import 'package:hayer_app/app/theme.dart';
 import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 import 'package:hayer_app/l10n/localization_delegates.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'discovery_fakes.dart';
@@ -59,10 +58,7 @@ Future<GoRouter> pumpDiscover(
           data: MediaQuery.of(
             context,
           ).copyWith(textScaler: TextScaler.linear(textScale)),
-          child: M3ETheme(
-            data: M3EThemeData.fromMaterial(Theme.of(context)),
-            child: child!,
-          ),
+          child: child!,
         ),
       ),
     ),

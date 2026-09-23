@@ -45,8 +45,7 @@ abstract final class DiscoveryAdminReads {
     final rows = await DiscoveryHarvestRow.db.find(
       session,
       where: where,
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
       offset: safePage * safeSize,
       limit: safeSize,
     );
@@ -224,8 +223,7 @@ GROUP BY stats.id
     final policy = await DiscoveryPolicyService.load(session);
     final rows = await DiscoveryTypeAutoMapRow.db.find(
       session,
-      orderBy: (table) => table.mappedAt,
-      orderDescending: true,
+      orderBy: (table) => table.mappedAt.desc(),
       limit: recent.clamp(1, 200),
     );
     final total = await DiscoveryTypeAutoMapRow.db.count(session);

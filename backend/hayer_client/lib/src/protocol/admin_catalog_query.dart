@@ -10,17 +10,17 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'admin_catalog_field.dart' as _iyzxy41v;
+import 'admin_catalog_freshness.dart' as _i26vn4oa;
+import 'admin_catalog_lifecycle.dart' as _ilk0q4cv;
+import 'admin_catalog_sort.dart' as _i5jj2ihb;
+import 'admin_catalog_status.dart' as _ihehxtqf;
+import 'discover_viewport.dart' as _i1okvcdc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discover_viewport.dart' as _i2;
-import 'admin_catalog_sort.dart' as _i3;
-import 'admin_catalog_status.dart' as _i4;
-import 'admin_catalog_freshness.dart' as _i5;
-import 'admin_catalog_lifecycle.dart' as _i6;
-import 'admin_catalog_field.dart' as _i7;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i8;
-
-abstract class AdminCatalogQuery implements _i1.SerializableModel {
+abstract class AdminCatalogQuery
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminCatalogQuery._({
     this.viewport,
     this.search,
@@ -40,19 +40,19 @@ abstract class AdminCatalogQuery implements _i1.SerializableModel {
   });
 
   factory AdminCatalogQuery({
-    _i2.DiscoverViewport? viewport,
+    _i1okvcdc.DiscoverViewport? viewport,
     String? search,
-    required _i3.AdminCatalogSort sort,
+    required _i5jj2ihb.AdminCatalogSort sort,
     required bool descending,
-    required _i4.AdminCatalogStatus status,
-    required _i5.AdminCatalogFreshness freshness,
-    _i6.AdminCatalogLifecycle? lifecycle,
+    required _ihehxtqf.AdminCatalogStatus status,
+    required _i26vn4oa.AdminCatalogFreshness freshness,
+    _ilk0q4cv.AdminCatalogLifecycle? lifecycle,
     String? primaryType,
     String? categoryId,
     double? minimumRating,
     int? minimumReviews,
     List<int>? priceLevels,
-    List<_i7.AdminCatalogField>? missing,
+    List<_iyzxy41v.AdminCatalogField>? missing,
     required bool withOpenReports,
     DateTime? firstSeenAfter,
   }) = _AdminCatalogQueryImpl;
@@ -61,25 +61,25 @@ abstract class AdminCatalogQuery implements _i1.SerializableModel {
     return AdminCatalogQuery(
       viewport: jsonSerialization['viewport'] == null
           ? null
-          : _i8.Protocol().deserialize<_i2.DiscoverViewport>(
+          : _iynev3sz.Protocol().deserialize<_i1okvcdc.DiscoverViewport>(
               jsonSerialization['viewport'],
             ),
       search: jsonSerialization['search'] as String?,
-      sort: _i3.AdminCatalogSort.fromJson(
+      sort: _i5jj2ihb.AdminCatalogSort.fromJson(
         (jsonSerialization['sort'] as String),
       ),
-      descending: _i1.BoolJsonExtension.fromJson(
+      descending: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['descending'],
       ),
-      status: _i4.AdminCatalogStatus.fromJson(
+      status: _ihehxtqf.AdminCatalogStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
-      freshness: _i5.AdminCatalogFreshness.fromJson(
+      freshness: _i26vn4oa.AdminCatalogFreshness.fromJson(
         (jsonSerialization['freshness'] as String),
       ),
       lifecycle: jsonSerialization['lifecycle'] == null
           ? null
-          : _i6.AdminCatalogLifecycle.fromJson(
+          : _ilk0q4cv.AdminCatalogLifecycle.fromJson(
               (jsonSerialization['lifecycle'] as String),
             ),
       primaryType: jsonSerialization['primaryType'] as String?,
@@ -88,38 +88,38 @@ abstract class AdminCatalogQuery implements _i1.SerializableModel {
       minimumReviews: jsonSerialization['minimumReviews'] as int?,
       priceLevels: jsonSerialization['priceLevels'] == null
           ? null
-          : _i8.Protocol().deserialize<List<int>>(
+          : _iynev3sz.Protocol().deserialize<List<int>>(
               jsonSerialization['priceLevels'],
             ),
       missing: jsonSerialization['missing'] == null
           ? null
-          : _i8.Protocol().deserialize<List<_i7.AdminCatalogField>>(
+          : _iynev3sz.Protocol().deserialize<List<_iyzxy41v.AdminCatalogField>>(
               jsonSerialization['missing'],
             ),
-      withOpenReports: _i1.BoolJsonExtension.fromJson(
+      withOpenReports: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['withOpenReports'],
       ),
       firstSeenAfter: jsonSerialization['firstSeenAfter'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['firstSeenAfter'],
             ),
     );
   }
 
-  _i2.DiscoverViewport? viewport;
+  _i1okvcdc.DiscoverViewport? viewport;
 
   String? search;
 
-  _i3.AdminCatalogSort sort;
+  _i5jj2ihb.AdminCatalogSort sort;
 
   bool descending;
 
-  _i4.AdminCatalogStatus status;
+  _ihehxtqf.AdminCatalogStatus status;
 
-  _i5.AdminCatalogFreshness freshness;
+  _i26vn4oa.AdminCatalogFreshness freshness;
 
-  _i6.AdminCatalogLifecycle? lifecycle;
+  _ilk0q4cv.AdminCatalogLifecycle? lifecycle;
 
   String? primaryType;
 
@@ -131,7 +131,7 @@ abstract class AdminCatalogQuery implements _i1.SerializableModel {
 
   List<int>? priceLevels;
 
-  List<_i7.AdminCatalogField>? missing;
+  List<_iyzxy41v.AdminCatalogField>? missing;
 
   bool withOpenReports;
 
@@ -139,21 +139,21 @@ abstract class AdminCatalogQuery implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminCatalogQuery]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminCatalogQuery copyWith({
-    _i2.DiscoverViewport? viewport,
+    _i1okvcdc.DiscoverViewport? viewport,
     String? search,
-    _i3.AdminCatalogSort? sort,
+    _i5jj2ihb.AdminCatalogSort? sort,
     bool? descending,
-    _i4.AdminCatalogStatus? status,
-    _i5.AdminCatalogFreshness? freshness,
-    _i6.AdminCatalogLifecycle? lifecycle,
+    _ihehxtqf.AdminCatalogStatus? status,
+    _i26vn4oa.AdminCatalogFreshness? freshness,
+    _ilk0q4cv.AdminCatalogLifecycle? lifecycle,
     String? primaryType,
     String? categoryId,
     double? minimumRating,
     int? minimumReviews,
     List<int>? priceLevels,
-    List<_i7.AdminCatalogField>? missing,
+    List<_iyzxy41v.AdminCatalogField>? missing,
     bool? withOpenReports,
     DateTime? firstSeenAfter,
   });
@@ -181,8 +181,31 @@ abstract class AdminCatalogQuery implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminCatalogQuery',
+      if (viewport != null) 'viewport': viewport?.toJsonForProtocol(),
+      if (search != null) 'search': search,
+      'sort': sort.toJson(),
+      'descending': descending,
+      'status': status.toJson(),
+      'freshness': freshness.toJson(),
+      if (lifecycle != null) 'lifecycle': lifecycle?.toJson(),
+      if (primaryType != null) 'primaryType': primaryType,
+      if (categoryId != null) 'categoryId': categoryId,
+      if (minimumRating != null) 'minimumRating': minimumRating,
+      if (minimumReviews != null) 'minimumReviews': minimumReviews,
+      if (priceLevels != null) 'priceLevels': priceLevels?.toJson(),
+      if (missing != null)
+        'missing': missing?.toJson(valueToJson: (v) => v.toJson()),
+      'withOpenReports': withOpenReports,
+      if (firstSeenAfter != null) 'firstSeenAfter': firstSeenAfter?.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -190,19 +213,19 @@ class _Undefined {}
 
 class _AdminCatalogQueryImpl extends AdminCatalogQuery {
   _AdminCatalogQueryImpl({
-    _i2.DiscoverViewport? viewport,
+    _i1okvcdc.DiscoverViewport? viewport,
     String? search,
-    required _i3.AdminCatalogSort sort,
+    required _i5jj2ihb.AdminCatalogSort sort,
     required bool descending,
-    required _i4.AdminCatalogStatus status,
-    required _i5.AdminCatalogFreshness freshness,
-    _i6.AdminCatalogLifecycle? lifecycle,
+    required _ihehxtqf.AdminCatalogStatus status,
+    required _i26vn4oa.AdminCatalogFreshness freshness,
+    _ilk0q4cv.AdminCatalogLifecycle? lifecycle,
     String? primaryType,
     String? categoryId,
     double? minimumRating,
     int? minimumReviews,
     List<int>? priceLevels,
-    List<_i7.AdminCatalogField>? missing,
+    List<_iyzxy41v.AdminCatalogField>? missing,
     required bool withOpenReports,
     DateTime? firstSeenAfter,
   }) : super._(
@@ -225,15 +248,15 @@ class _AdminCatalogQueryImpl extends AdminCatalogQuery {
 
   /// Returns a shallow copy of this [AdminCatalogQuery]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminCatalogQuery copyWith({
     Object? viewport = _Undefined,
     Object? search = _Undefined,
-    _i3.AdminCatalogSort? sort,
+    _i5jj2ihb.AdminCatalogSort? sort,
     bool? descending,
-    _i4.AdminCatalogStatus? status,
-    _i5.AdminCatalogFreshness? freshness,
+    _ihehxtqf.AdminCatalogStatus? status,
+    _i26vn4oa.AdminCatalogFreshness? freshness,
     Object? lifecycle = _Undefined,
     Object? primaryType = _Undefined,
     Object? categoryId = _Undefined,
@@ -245,7 +268,7 @@ class _AdminCatalogQueryImpl extends AdminCatalogQuery {
     Object? firstSeenAfter = _Undefined,
   }) {
     return AdminCatalogQuery(
-      viewport: viewport is _i2.DiscoverViewport?
+      viewport: viewport is _i1okvcdc.DiscoverViewport?
           ? viewport
           : this.viewport?.copyWith(),
       search: search is String? ? search : this.search,
@@ -253,7 +276,7 @@ class _AdminCatalogQueryImpl extends AdminCatalogQuery {
       descending: descending ?? this.descending,
       status: status ?? this.status,
       freshness: freshness ?? this.freshness,
-      lifecycle: lifecycle is _i6.AdminCatalogLifecycle?
+      lifecycle: lifecycle is _ilk0q4cv.AdminCatalogLifecycle?
           ? lifecycle
           : this.lifecycle,
       primaryType: primaryType is String? ? primaryType : this.primaryType,
@@ -267,7 +290,7 @@ class _AdminCatalogQueryImpl extends AdminCatalogQuery {
       priceLevels: priceLevels is List<int>?
           ? priceLevels
           : this.priceLevels?.map((e0) => e0).toList(),
-      missing: missing is List<_i7.AdminCatalogField>?
+      missing: missing is List<_iyzxy41v.AdminCatalogField>?
           ? missing
           : this.missing?.map((e0) => e0).toList(),
       withOpenReports: withOpenReports ?? this.withOpenReports,

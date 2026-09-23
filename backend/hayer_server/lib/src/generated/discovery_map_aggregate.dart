@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'discover_viewport.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discover_viewport.dart' as _i1okvcdc;
 
 abstract class DiscoveryMapAggregate
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryMapAggregate._({
     required this.cellId,
     required this.latitude,
@@ -29,7 +28,7 @@ abstract class DiscoveryMapAggregate
     required String cellId,
     required double latitude,
     required double longitude,
-    required _i2.DiscoverViewport bounds,
+    required _i1okvcdc.DiscoverViewport bounds,
     required int count,
   }) = _DiscoveryMapAggregateImpl;
 
@@ -40,7 +39,7 @@ abstract class DiscoveryMapAggregate
       cellId: jsonSerialization['cellId'] as String,
       latitude: (jsonSerialization['latitude'] as num).toDouble(),
       longitude: (jsonSerialization['longitude'] as num).toDouble(),
-      bounds: _i3.Protocol().deserialize<_i2.DiscoverViewport>(
+      bounds: _i66y2smk.Protocol().deserialize<_i1okvcdc.DiscoverViewport>(
         jsonSerialization['bounds'],
       ),
       count: jsonSerialization['count'] as int,
@@ -53,18 +52,18 @@ abstract class DiscoveryMapAggregate
 
   double longitude;
 
-  _i2.DiscoverViewport bounds;
+  _i1okvcdc.DiscoverViewport bounds;
 
   int count;
 
   /// Returns a shallow copy of this [DiscoveryMapAggregate]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryMapAggregate copyWith({
     String? cellId,
     double? latitude,
     double? longitude,
-    _i2.DiscoverViewport? bounds,
+    _i1okvcdc.DiscoverViewport? bounds,
     int? count,
   });
   @override
@@ -93,7 +92,7 @@ abstract class DiscoveryMapAggregate
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -102,7 +101,7 @@ class _DiscoveryMapAggregateImpl extends DiscoveryMapAggregate {
     required String cellId,
     required double latitude,
     required double longitude,
-    required _i2.DiscoverViewport bounds,
+    required _i1okvcdc.DiscoverViewport bounds,
     required int count,
   }) : super._(
          cellId: cellId,
@@ -114,13 +113,13 @@ class _DiscoveryMapAggregateImpl extends DiscoveryMapAggregate {
 
   /// Returns a shallow copy of this [DiscoveryMapAggregate]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryMapAggregate copyWith({
     String? cellId,
     double? latitude,
     double? longitude,
-    _i2.DiscoverViewport? bounds,
+    _i1okvcdc.DiscoverViewport? bounds,
     int? count,
   }) {
     return DiscoveryMapAggregate(

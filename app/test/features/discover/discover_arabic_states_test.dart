@@ -2,7 +2,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_app/core/widgets/place_details_sheet.dart';
-import 'package:hayer_app/domain/discovery_url_query.dart';
 import 'package:hayer_app/features/discover/discovery_results_sheet.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 import 'package:hayer_client/hayer_client.dart';
@@ -18,13 +17,11 @@ import 'discovery_results_fakes.dart';
 
 const _riyadhLink = '/discover?v=1&bbox=24.6,46.6,24.8,46.8';
 const _failureNotice = ValueKey('discovery-failure');
-const _coverageToggle = ValueKey('discovery-coverage-toggle');
-const _deepen = ValueKey('discovery-deepen');
 const _reportTile = ValueKey('report-poi-issue');
 const _submitReport = ValueKey('submit-poi-issue');
 
 ValueKey<String> _row(int id) => ValueKey('discovery-row-$id');
-ValueKey<String> _details(int id) => ValueKey('discovery-details-$id');
+ValueKey<String> _cardDetails(int id) => ValueKey('discovery-card-details-$id');
 ValueKey<String> _report(int id) => ValueKey('discovery-report-$id');
 
 typedef _Failure = ({
@@ -67,7 +64,7 @@ void main() {
       )
       .first;
 
-  /// Opens [link] in Arabic at 200% text on a small phone, sheet raised.
+  /// Opens [link] in Arabic at 200% text on a small phone.
   Future<GoRouter> pumpArabic(
     WidgetTester tester, [
     String link = _riyadhLink,
@@ -84,11 +81,8 @@ void main() {
     return router;
   }
 
-  /// Scrolls the results half back to the top, so a search from there can
-  /// only ever go one way.
+  /// Scrolls the results sheet back to the top.
   Future<void> rewindSheet(WidgetTester tester) async {
-    // The results list is half the screen rather than a sheet, so a check
-    // that scrolled down to a row leaves the coverage strip above the fold.
     // scrollUntilVisible only moves one way, so each search starts at the top.
     for (var drag = 0; drag < 6; drag++) {
       await tester.drag(sheetList(), const Offset(0, 400));
@@ -144,9 +138,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(_row(id)));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(_details(id)));
+    await tester.ensureVisible(find.byKey(_cardDetails(id)));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(_details(id)));
+    await tester.tap(find.byKey(_cardDetails(id)));
     await tester.pumpAndSettle();
   }
 
@@ -225,10 +219,8 @@ void main() {
         find.byKey(const ValueKey('discovery-empty-exploring')),
         message: ar.discoveryEmptyExploring,
       );
-      await expectReachable(tester, find.text(ar.discoveryCoverageExploring));
-      await expectReachable(tester, find.byKey(_coverageToggle));
-      await tester.tap(find.byKey(_coverageToggle));
-      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('discovery-coverage')), findsNothing);
+      expect(find.byKey(const ValueKey('discovery-deepen')), findsNothing);
       expect(tester.takeException(), isNull);
 
       // Finish the exploration, so no status check outlives the test.
@@ -338,70 +330,6 @@ void main() {
     });
   });
 
-  group('coverage', () {
-    testWidgets('an explored area waiting out its cooldown opens its '
-        'details', (tester) async {
-      final now = DateTime.now().toUtc();
-      fixture.repository.onBrowse = (request) async => testBrowsePage(
-        coverage: testCoverage(
-          footprints: [
-            testFootprint(
-              lastSuccessAt: now.subtract(const Duration(minutes: 5)),
-              retryAfter: now.add(const Duration(minutes: 55)),
-            ),
-          ],
-        ),
-        includeMap: request.includeMap,
-      );
-      await pumpArabic(tester);
-
-      await expectReachable(tester, find.text(ar.discoveryCoverageExplored));
-      await expectReachable(tester, find.byKey(_coverageToggle));
-      await tester.tap(find.byKey(_coverageToggle));
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-    });
-
-    testWidgets('a Deepen that fails says so beside its retry', (
-      tester,
-    ) async {
-      final centre = DiscoveryViewport.tryCreate(
-        south: 24.68,
-        west: 46.68,
-        north: 24.72,
-        east: 46.72,
-      )!;
-      fixture.repository
-        ..onBrowse = ((request) async => testBrowsePage(
-          coverage: testCoverage(
-            footprints: [
-              testFootprint(bounds: centre, lastSuccessAt: testEvaluatedAt),
-            ],
-          ),
-          includeMap: request.includeMap,
-        ))
-        ..onDeepen = ((_) async =>
-            throw ApiException(code: 'server_error', message: ''));
-      await pumpArabic(tester);
-
-      await expectReachable(tester, find.byKey(_coverageToggle));
-      await tester.tap(find.byKey(_coverageToggle));
-      await tester.pumpAndSettle();
-      await expectReachable(tester, find.byKey(_deepen));
-      await tester.tap(find.byKey(_deepen));
-      await tester.pumpAndSettle();
-
-      await expectReachable(tester, find.text(ar.discoveryDeepenFailed));
-      await expectReachable(
-        tester,
-        find.descendant(
-          of: find.byKey(_deepen),
-          matching: find.text(ar.tryAgain),
-        ),
-      );
-    });
-  });
-
   group('reports', () {
     testWidgets('the report sheet from a place\'s details fits', (
       tester,
@@ -424,13 +352,16 @@ void main() {
 
     testWidgets('a Worst rated row reports directly', (tester) async {
       await pumpArabic(tester, '$_riyadhLink&sort=worst_rated');
+      await tester.drag(
+        find.byKey(const ValueKey('discovery-sheet-grip')),
+        const Offset(0, -400),
+      );
+      await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.byKey(_row(2)),
         100,
         scrollable: sheetList(),
       );
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(_row(2)));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.byKey(_report(2)));
       await tester.pumpAndSettle();

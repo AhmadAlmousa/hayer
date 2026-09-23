@@ -10,14 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_catalog_lifecycle.dart' as _i2;
-import 'admin_catalog_field.dart' as _i3;
-import 'package:hayer_server/src/generated/protocol.dart' as _i4;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_catalog_field.dart' as _iyzxy41v;
+import 'admin_catalog_lifecycle.dart' as _ilk0q4cv;
 
 abstract class AdminCatalogPlace
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminCatalogPlace._({
     required this.catalogId,
     required this.provider,
@@ -54,8 +53,8 @@ abstract class AdminCatalogPlace
     double? rating,
     int? reviewCount,
     int? priceLevel,
-    required _i2.AdminCatalogLifecycle lifecycle,
-    required List<_i3.AdminCatalogField> missing,
+    required _ilk0q4cv.AdminCatalogLifecycle lifecycle,
+    required List<_iyzxy41v.AdminCatalogField> missing,
     required DateTime firstSeenAt,
     required DateTime lastSeenAt,
     required DateTime sourceCheckedAt,
@@ -71,7 +70,7 @@ abstract class AdminCatalogPlace
       placeId: jsonSerialization['placeId'] as String,
       name: jsonSerialization['name'] as String,
       primaryType: jsonSerialization['primaryType'] as String?,
-      categoryIds: _i4.Protocol().deserialize<List<String>>(
+      categoryIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['categoryIds'],
       ),
       countryCode: jsonSerialization['countryCode'] as String,
@@ -80,25 +79,26 @@ abstract class AdminCatalogPlace
       rating: (jsonSerialization['rating'] as num?)?.toDouble(),
       reviewCount: jsonSerialization['reviewCount'] as int?,
       priceLevel: jsonSerialization['priceLevel'] as int?,
-      lifecycle: _i2.AdminCatalogLifecycle.fromJson(
+      lifecycle: _ilk0q4cv.AdminCatalogLifecycle.fromJson(
         (jsonSerialization['lifecycle'] as String),
       ),
-      missing: _i4.Protocol().deserialize<List<_i3.AdminCatalogField>>(
-        jsonSerialization['missing'],
-      ),
-      firstSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      missing: _i66y2smk.Protocol()
+          .deserialize<List<_iyzxy41v.AdminCatalogField>>(
+            jsonSerialization['missing'],
+          ),
+      firstSeenAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['firstSeenAt'],
       ),
-      lastSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      lastSeenAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastSeenAt'],
       ),
-      sourceCheckedAt: _i1.DateTimeJsonExtension.fromJson(
+      sourceCheckedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['sourceCheckedAt'],
       ),
-      isStale: _i1.BoolJsonExtension.fromJson(jsonSerialization['isStale']),
+      isStale: _is.BoolJsonExtension.fromJson(jsonSerialization['isStale']),
       quarantinedAt: jsonSerialization['quarantinedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['quarantinedAt'],
             ),
       openReportCount: jsonSerialization['openReportCount'] as int,
@@ -129,9 +129,9 @@ abstract class AdminCatalogPlace
 
   int? priceLevel;
 
-  _i2.AdminCatalogLifecycle lifecycle;
+  _ilk0q4cv.AdminCatalogLifecycle lifecycle;
 
-  List<_i3.AdminCatalogField> missing;
+  List<_iyzxy41v.AdminCatalogField> missing;
 
   DateTime firstSeenAt;
 
@@ -147,7 +147,7 @@ abstract class AdminCatalogPlace
 
   /// Returns a shallow copy of this [AdminCatalogPlace]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminCatalogPlace copyWith({
     int? catalogId,
     String? provider,
@@ -161,8 +161,8 @@ abstract class AdminCatalogPlace
     double? rating,
     int? reviewCount,
     int? priceLevel,
-    _i2.AdminCatalogLifecycle? lifecycle,
-    List<_i3.AdminCatalogField>? missing,
+    _ilk0q4cv.AdminCatalogLifecycle? lifecycle,
+    List<_iyzxy41v.AdminCatalogField>? missing,
     DateTime? firstSeenAt,
     DateTime? lastSeenAt,
     DateTime? sourceCheckedAt,
@@ -226,7 +226,7 @@ abstract class AdminCatalogPlace
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -246,8 +246,8 @@ class _AdminCatalogPlaceImpl extends AdminCatalogPlace {
     double? rating,
     int? reviewCount,
     int? priceLevel,
-    required _i2.AdminCatalogLifecycle lifecycle,
-    required List<_i3.AdminCatalogField> missing,
+    required _ilk0q4cv.AdminCatalogLifecycle lifecycle,
+    required List<_iyzxy41v.AdminCatalogField> missing,
     required DateTime firstSeenAt,
     required DateTime lastSeenAt,
     required DateTime sourceCheckedAt,
@@ -279,7 +279,7 @@ class _AdminCatalogPlaceImpl extends AdminCatalogPlace {
 
   /// Returns a shallow copy of this [AdminCatalogPlace]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminCatalogPlace copyWith({
     int? catalogId,
@@ -294,8 +294,8 @@ class _AdminCatalogPlaceImpl extends AdminCatalogPlace {
     Object? rating = _Undefined,
     Object? reviewCount = _Undefined,
     Object? priceLevel = _Undefined,
-    _i2.AdminCatalogLifecycle? lifecycle,
-    List<_i3.AdminCatalogField>? missing,
+    _ilk0q4cv.AdminCatalogLifecycle? lifecycle,
+    List<_iyzxy41v.AdminCatalogField>? missing,
     DateTime? firstSeenAt,
     DateTime? lastSeenAt,
     DateTime? sourceCheckedAt,

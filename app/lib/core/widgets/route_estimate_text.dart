@@ -69,10 +69,11 @@ class _RouteEstimateTextState extends ConsumerState<RouteEstimateText> {
     return FutureBuilder<RouteEstimate>(
       future: future,
       builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return _text(AppLocalizations.of(context)!.routeCalculating);
+        }
         final estimate = snapshot.data;
-        if (snapshot.connectionState != ConnectionState.done ||
-            snapshot.hasError ||
-            estimate == null) {
+        if (snapshot.hasError || estimate == null) {
           return _text(_fallback(context));
         }
         final minutes = (estimate.durationSeconds / 60).ceil().clamp(1, 9999);

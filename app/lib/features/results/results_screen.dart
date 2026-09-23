@@ -6,7 +6,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../app/theme.dart';
@@ -19,7 +18,6 @@ import '../../core/providers.dart';
 import '../../core/session_code.dart';
 import '../../core/widgets/content_shell.dart';
 import '../../core/widgets/session_recovery.dart';
-import '../../core/widgets/adaptive_actions.dart';
 import '../../core/widgets/install_app_card.dart';
 import '../../core/widgets/route_estimate_text.dart';
 import '../../core/widgets/place_details_sheet.dart';
@@ -362,7 +360,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     final bundle = _bundle;
     final values = _visible;
     return Scaffold(
-      appBar: M3EAppBar.top(
+      appBar: AppBar(
         automaticallyImplyLeading: true,
         title: Text(
           bundle?.session.mode == SessionMode.multiplayer
@@ -605,42 +603,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           : SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: AdaptiveActions(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: () => context.go('/'),
-                      icon: const Icon(Icons.search_rounded),
-                      label: Text(
-                        strings.newSearch,
-                      ),
-                    ),
-                    if (bundle?.session.intent != null)
-                      OutlinedButton.icon(
-                        onPressed: _openExplore,
-                        icon: const Icon(Icons.travel_explore_rounded),
-                        label: Text(intentCopy.explore),
-                      ),
-                    if (bundle?.session.mode == SessionMode.solo &&
-                        bundle?.session.intent != null &&
-                        bundle?.session.intentBatchCount == 1)
-                      FilledButton.tonalIcon(
-                        onPressed: _extending ? null : _extend,
-                        icon: _extending
-                            ? const SizedBox.square(
-                                dimension: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.add_rounded),
-                        label: Text(intentCopy.tenMore),
-                      )
-                    else if (bundle?.session.intent != null)
-                      OutlinedButton.icon(
-                        onPressed: _openDecideTogether,
-                        icon: const Icon(Icons.groups_rounded),
-                        label: Text(intentCopy.decideTogether),
-                      ),
                     FilledButton.icon(
                       onPressed: values.isEmpty
                           ? null
@@ -651,6 +617,40 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                             ? strings.shareResults
                             : strings.sharePicks,
                       ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => context.go('/'),
+                          icon: const Icon(Icons.search_rounded),
+                          label: Text(strings.newSearch),
+                        ),
+                        if (bundle?.session.intent != null)
+                          OutlinedButton.icon(
+                            onPressed: _openExplore,
+                            icon: const Icon(Icons.travel_explore_rounded),
+                            label: Text(intentCopy.explore),
+                          ),
+                        if (bundle?.session.mode == SessionMode.solo &&
+                            bundle?.session.intent != null &&
+                            bundle?.session.intentBatchCount == 1)
+                          OutlinedButton.icon(
+                            onPressed: _extending ? null : _extend,
+                            icon: _extending
+                                ? const SizedBox.square(
+                                    dimension: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.add_rounded),
+                            label: Text(intentCopy.tenMore),
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -705,13 +705,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     if (intent == null) return;
     _adoptResultContext(intent);
     context.go(ref.read(placeIntentProvider).toDiscoveryQuery().location);
-  }
-
-  void _openDecideTogether() {
-    final intent = _bundle?.session.intent;
-    if (intent == null) return;
-    _adoptResultContext(intent);
-    context.go('/next');
   }
 
   void _adoptResultContext(PlaceIntentQuery intent) {
@@ -920,7 +913,8 @@ class _ResultCard extends ConsumerWidget {
               sessionId: sessionId,
               place: place,
             ),
-            saveButton: (place) => SavePlaceButton(place: place),
+            saveButton: (place) =>
+                SavePlaceButton(place: place, outlined: true),
           );
         },
         child: Padding(

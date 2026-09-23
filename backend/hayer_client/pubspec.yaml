@@ -7,5 +7,8 @@ environment:
 resolution: workspace
 
 dependencies:
-  serverpod_auth_idp_client: 3.4.13
-  serverpod_client: 3.4.13
+  serverpod_auth_idp_client: 4.0.0
+  serverpod_client: 4.0.0
+
+executables:
+  hayer_public_gateway_canary: public_gateway_canary

@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class CacheDashboardSummary
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   CacheDashboardSummary._({
     required this.catalogCount,
     required this.freshCount,
@@ -55,7 +54,7 @@ abstract class CacheDashboardSummary
       sourceSuccessRate: (jsonSerialization['sourceSuccessRate'] as num)
           .toDouble(),
       calibrationVersion: jsonSerialization['calibrationVersion'] as String,
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
@@ -83,7 +82,7 @@ abstract class CacheDashboardSummary
 
   /// Returns a shallow copy of this [CacheDashboardSummary]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CacheDashboardSummary copyWith({
     int? catalogCount,
     int? freshCount,
@@ -132,7 +131,7 @@ abstract class CacheDashboardSummary
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -163,7 +162,7 @@ class _CacheDashboardSummaryImpl extends CacheDashboardSummary {
 
   /// Returns a shallow copy of this [CacheDashboardSummary]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CacheDashboardSummary copyWith({
     int? catalogCount,

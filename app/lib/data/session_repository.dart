@@ -582,10 +582,9 @@ SessionBundle mergeSessionProgress(
 );
 
 bool _isTransientClientFailure(Object error) =>
-    error is ServerpodClientException &&
-    (error.statusCode < 0 ||
-        error.statusCode == 408 ||
-        error.statusCode >= 500);
+    error is ServerpodClientNetworkException ||
+    (error is ServerpodClientHttpException &&
+        (error.statusCode == 408 || error.statusCode >= 500));
 
 String? _terminalSwipeErrorCode(Object error) {
   if (error is ApiException) {
@@ -594,7 +593,7 @@ String? _terminalSwipeErrorCode(Object error) {
       _ => error.code,
     };
   }
-  if (error is ServerpodClientException &&
+  if (error is ServerpodClientHttpException &&
       error.statusCode >= 400 &&
       error.statusCode < 500 &&
       error.statusCode != 408 &&

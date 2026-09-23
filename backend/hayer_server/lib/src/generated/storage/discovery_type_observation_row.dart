@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DiscoveryTypeObservationRow
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DiscoveryTypeObservationRow._({
     this.id,
     required this.typeKey,
@@ -41,10 +40,10 @@ abstract class DiscoveryTypeObservationRow
       typeKey: jsonSerialization['typeKey'] as String,
       primaryType: jsonSerialization['primaryType'] as String,
       observationCount: jsonSerialization['observationCount'] as int,
-      firstObservedAt: _i1.DateTimeJsonExtension.fromJson(
+      firstObservedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['firstObservedAt'],
       ),
-      lastObservedAt: _i1.DateTimeJsonExtension.fromJson(
+      lastObservedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastObservedAt'],
       ),
     );
@@ -68,11 +67,11 @@ abstract class DiscoveryTypeObservationRow
   DateTime lastObservedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DiscoveryTypeObservationRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryTypeObservationRow copyWith({
     int? id,
     String? typeKey,
@@ -104,12 +103,11 @@ abstract class DiscoveryTypeObservationRow
   }
 
   static DiscoveryTypeObservationRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
+    _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
+    _is.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
     DiscoveryTypeObservationRowInclude? include,
   }) {
     return DiscoveryTypeObservationRowIncludeList._(
@@ -117,7 +115,6 @@ abstract class DiscoveryTypeObservationRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DiscoveryTypeObservationRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(DiscoveryTypeObservationRow.t),
       include: include,
     );
@@ -125,7 +122,7 @@ abstract class DiscoveryTypeObservationRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -150,7 +147,7 @@ class _DiscoveryTypeObservationRowImpl extends DiscoveryTypeObservationRow {
 
   /// Returns a shallow copy of this [DiscoveryTypeObservationRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryTypeObservationRow copyWith({
     Object? id = _Undefined,
@@ -172,58 +169,58 @@ class _DiscoveryTypeObservationRowImpl extends DiscoveryTypeObservationRow {
 }
 
 class DiscoveryTypeObservationRowUpdateTable
-    extends _i1.UpdateTable<DiscoveryTypeObservationRowTable> {
+    extends _is.UpdateTable<DiscoveryTypeObservationRowTable> {
   DiscoveryTypeObservationRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> typeKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> typeKey(String value) => _is.ColumnValue(
     table.typeKey,
     value,
   );
 
-  _i1.ColumnValue<String, String> primaryType(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> primaryType(String value) => _is.ColumnValue(
     table.primaryType,
     value,
   );
 
-  _i1.ColumnValue<int, int> observationCount(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> observationCount(int value) => _is.ColumnValue(
     table.observationCount,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> firstObservedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> firstObservedAt(DateTime value) =>
+      _is.ColumnValue(
         table.firstObservedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> lastObservedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> lastObservedAt(DateTime value) =>
+      _is.ColumnValue(
         table.lastObservedAt,
         value,
       );
 }
 
-class DiscoveryTypeObservationRowTable extends _i1.Table<int?> {
+class DiscoveryTypeObservationRowTable extends _is.Table<int?> {
   DiscoveryTypeObservationRowTable({super.tableRelation})
     : super(tableName: 'hayer_discovery_type_observation') {
     updateTable = DiscoveryTypeObservationRowUpdateTable(this);
-    typeKey = _i1.ColumnString(
+    typeKey = _is.ColumnString(
       'typeKey',
       this,
     );
-    primaryType = _i1.ColumnString(
+    primaryType = _is.ColumnString(
       'primaryType',
       this,
     );
-    observationCount = _i1.ColumnInt(
+    observationCount = _is.ColumnInt(
       'observationCount',
       this,
     );
-    firstObservedAt = _i1.ColumnDateTime(
+    firstObservedAt = _is.ColumnDateTime(
       'firstObservedAt',
       this,
     );
-    lastObservedAt = _i1.ColumnDateTime(
+    lastObservedAt = _is.ColumnDateTime(
       'lastObservedAt',
       this,
     );
@@ -231,18 +228,18 @@ class DiscoveryTypeObservationRowTable extends _i1.Table<int?> {
 
   late final DiscoveryTypeObservationRowUpdateTable updateTable;
 
-  late final _i1.ColumnString typeKey;
+  late final _is.ColumnString typeKey;
 
-  late final _i1.ColumnString primaryType;
+  late final _is.ColumnString primaryType;
 
-  late final _i1.ColumnInt observationCount;
+  late final _is.ColumnInt observationCount;
 
-  late final _i1.ColumnDateTime firstObservedAt;
+  late final _is.ColumnDateTime firstObservedAt;
 
-  late final _i1.ColumnDateTime lastObservedAt;
+  late final _is.ColumnDateTime lastObservedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     typeKey,
     primaryType,
@@ -252,23 +249,22 @@ class DiscoveryTypeObservationRowTable extends _i1.Table<int?> {
   ];
 }
 
-class DiscoveryTypeObservationRowInclude extends _i1.IncludeObject {
+class DiscoveryTypeObservationRowInclude extends _is.IncludeObject {
   DiscoveryTypeObservationRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DiscoveryTypeObservationRow.t;
+  _is.Table<int?> get table => DiscoveryTypeObservationRow.t;
 }
 
-class DiscoveryTypeObservationRowIncludeList extends _i1.IncludeList {
+class DiscoveryTypeObservationRowIncludeList extends _is.IncludeList {
   DiscoveryTypeObservationRowIncludeList._({
-    _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
+    _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -276,10 +272,10 @@ class DiscoveryTypeObservationRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DiscoveryTypeObservationRow.t;
+  _is.Table<int?> get table => DiscoveryTypeObservationRow.t;
 }
 
 class DiscoveryTypeObservationRowRepository {
@@ -308,22 +304,20 @@ class DiscoveryTypeObservationRowRepository {
   /// );
   /// ```
   Future<List<DiscoveryTypeObservationRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DiscoveryTypeObservationRow>(
       where: where?.call(DiscoveryTypeObservationRow.t),
       orderBy: orderBy?.call(DiscoveryTypeObservationRow.t),
       orderByList: orderByList?.call(DiscoveryTypeObservationRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -350,21 +344,19 @@ class DiscoveryTypeObservationRowRepository {
   /// );
   /// ```
   Future<DiscoveryTypeObservationRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DiscoveryTypeObservationRow>(
       where: where?.call(DiscoveryTypeObservationRow.t),
       orderBy: orderBy?.call(DiscoveryTypeObservationRow.t),
       orderByList: orderByList?.call(DiscoveryTypeObservationRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -374,11 +366,11 @@ class DiscoveryTypeObservationRowRepository {
 
   /// Finds a single [DiscoveryTypeObservationRow] by its [id] or null if no such row exists.
   Future<DiscoveryTypeObservationRow?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DiscoveryTypeObservationRow>(
       id,
@@ -398,16 +390,22 @@ class DiscoveryTypeObservationRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeObservationRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryTypeObservationRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DiscoveryTypeObservationRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -415,12 +413,83 @@ class DiscoveryTypeObservationRowRepository {
   ///
   /// The returned [DiscoveryTypeObservationRow] will have its `id` field set.
   Future<DiscoveryTypeObservationRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryTypeObservationRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DiscoveryTypeObservationRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [DiscoveryTypeObservationRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [DiscoveryTypeObservationRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<DiscoveryTypeObservationRow>> upsert(
+    _is.DatabaseSession session,
+    List<DiscoveryTypeObservationRow> rows, {
+    required _is.ColumnSelections<DiscoveryTypeObservationRowTable>
+    conflictColumns,
+    _is.ColumnSelections<DiscoveryTypeObservationRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<DiscoveryTypeObservationRow>(
+      rows,
+      conflictColumns: conflictColumns(DiscoveryTypeObservationRow.t),
+      updateColumns: updateColumns?.call(DiscoveryTypeObservationRow.t),
+      updateWhere: updateWhere?.call(DiscoveryTypeObservationRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [DiscoveryTypeObservationRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [DiscoveryTypeObservationRow] will have its `id` field set.
+  Future<DiscoveryTypeObservationRow?> upsertRow(
+    _is.DatabaseSession session,
+    DiscoveryTypeObservationRow row, {
+    required _is.ColumnSelections<DiscoveryTypeObservationRowTable>
+    conflictColumns,
+    _is.ColumnSelections<DiscoveryTypeObservationRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<DiscoveryTypeObservationRow>(
+      row,
+      conflictColumns: conflictColumns(DiscoveryTypeObservationRow.t),
+      updateColumns: updateColumns?.call(DiscoveryTypeObservationRow.t),
+      updateWhere: updateWhere?.call(DiscoveryTypeObservationRow.t),
       transaction: transaction,
     );
   }
@@ -430,16 +499,22 @@ class DiscoveryTypeObservationRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeObservationRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryTypeObservationRow> rows, {
-    _i1.ColumnSelections<DiscoveryTypeObservationRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DiscoveryTypeObservationRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DiscoveryTypeObservationRow>(
       rows,
       columns: columns?.call(DiscoveryTypeObservationRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -447,10 +522,10 @@ class DiscoveryTypeObservationRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DiscoveryTypeObservationRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryTypeObservationRow row, {
-    _i1.ColumnSelections<DiscoveryTypeObservationRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DiscoveryTypeObservationRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DiscoveryTypeObservationRow>(
       row,
@@ -462,11 +537,11 @@ class DiscoveryTypeObservationRowRepository {
   /// Updates a single [DiscoveryTypeObservationRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DiscoveryTypeObservationRow?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DiscoveryTypeObservationRowUpdateTable>
+    required _is.ColumnValueListBuilder<DiscoveryTypeObservationRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DiscoveryTypeObservationRow>(
       id,
@@ -477,17 +552,21 @@ class DiscoveryTypeObservationRowRepository {
 
   /// Updates all [DiscoveryTypeObservationRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeObservationRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DiscoveryTypeObservationRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DiscoveryTypeObservationRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable> where,
+    required _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
-    _i1.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DiscoveryTypeObservationRow>(
       columnValues: columnValues(DiscoveryTypeObservationRow.t.updateTable),
@@ -496,30 +575,44 @@ class DiscoveryTypeObservationRowRepository {
       offset: offset,
       orderBy: orderBy?.call(DiscoveryTypeObservationRow.t),
       orderByList: orderByList?.call(DiscoveryTypeObservationRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [DiscoveryTypeObservationRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeObservationRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryTypeObservationRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DiscoveryTypeObservationRow>(
       rows,
+      orderBy: orderBy?.call(DiscoveryTypeObservationRow.t),
+      orderByList: orderByList?.call(DiscoveryTypeObservationRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [DiscoveryTypeObservationRow].
   Future<DiscoveryTypeObservationRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryTypeObservationRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DiscoveryTypeObservationRow>(
       row,
@@ -528,24 +621,37 @@ class DiscoveryTypeObservationRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeObservationRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable> where,
+    _is.OrderByBuilder<DiscoveryTypeObservationRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeObservationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DiscoveryTypeObservationRow>(
       where: where(DiscoveryTypeObservationRow.t),
+      orderBy: orderBy?.call(DiscoveryTypeObservationRow.t),
+      orderByList: orderByList?.call(DiscoveryTypeObservationRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DiscoveryTypeObservationRow>(
       where: where?.call(DiscoveryTypeObservationRow.t),
@@ -556,11 +662,11 @@ class DiscoveryTypeObservationRowRepository {
 
   /// Acquires row-level locks on [DiscoveryTypeObservationRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DiscoveryTypeObservationRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DiscoveryTypeObservationRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DiscoveryTypeObservationRow>(
       where: where(DiscoveryTypeObservationRow.t),

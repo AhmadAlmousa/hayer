@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'discovery_growth_metric_breakdown.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_growth_metric_breakdown.dart' as _i8hpnrba;
 
 abstract class DiscoveryGrowthMetrics
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryGrowthMetrics._({
     required this.from,
     required this.to,
@@ -49,7 +48,7 @@ abstract class DiscoveryGrowthMetrics
     required int cacheMisses,
     required int detailRefreshes,
     required int upstreamRequests,
-    required List<_i2.DiscoveryGrowthMetricBreakdown> breakdowns,
+    required List<_i8hpnrba.DiscoveryGrowthMetricBreakdown> breakdowns,
     required DateTime generatedAt,
   }) = _DiscoveryGrowthMetricsImpl;
 
@@ -57,8 +56,8 @@ abstract class DiscoveryGrowthMetrics
     Map<String, dynamic> jsonSerialization,
   ) {
     return DiscoveryGrowthMetrics(
-      from: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['from']),
-      to: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['to']),
+      from: _is.DateTimeJsonExtension.fromJson(jsonSerialization['from']),
+      to: _is.DateTimeJsonExtension.fromJson(jsonSerialization['to']),
       catalogPlacesAtStart: jsonSerialization['catalogPlacesAtStart'] as int,
       catalogPlacesAtEnd: jsonSerialization['catalogPlacesAtEnd'] as int,
       newCatalogPlaces: jsonSerialization['newCatalogPlaces'] as int,
@@ -70,11 +69,11 @@ abstract class DiscoveryGrowthMetrics
       cacheMisses: jsonSerialization['cacheMisses'] as int,
       detailRefreshes: jsonSerialization['detailRefreshes'] as int,
       upstreamRequests: jsonSerialization['upstreamRequests'] as int,
-      breakdowns: _i3.Protocol()
-          .deserialize<List<_i2.DiscoveryGrowthMetricBreakdown>>(
+      breakdowns: _i66y2smk.Protocol()
+          .deserialize<List<_i8hpnrba.DiscoveryGrowthMetricBreakdown>>(
             jsonSerialization['breakdowns'],
           ),
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
@@ -106,13 +105,13 @@ abstract class DiscoveryGrowthMetrics
 
   int upstreamRequests;
 
-  List<_i2.DiscoveryGrowthMetricBreakdown> breakdowns;
+  List<_i8hpnrba.DiscoveryGrowthMetricBreakdown> breakdowns;
 
   DateTime generatedAt;
 
   /// Returns a shallow copy of this [DiscoveryGrowthMetrics]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryGrowthMetrics copyWith({
     DateTime? from,
     DateTime? to,
@@ -127,7 +126,7 @@ abstract class DiscoveryGrowthMetrics
     int? cacheMisses,
     int? detailRefreshes,
     int? upstreamRequests,
-    List<_i2.DiscoveryGrowthMetricBreakdown>? breakdowns,
+    List<_i8hpnrba.DiscoveryGrowthMetricBreakdown>? breakdowns,
     DateTime? generatedAt,
   });
   @override
@@ -178,7 +177,7 @@ abstract class DiscoveryGrowthMetrics
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -197,7 +196,7 @@ class _DiscoveryGrowthMetricsImpl extends DiscoveryGrowthMetrics {
     required int cacheMisses,
     required int detailRefreshes,
     required int upstreamRequests,
-    required List<_i2.DiscoveryGrowthMetricBreakdown> breakdowns,
+    required List<_i8hpnrba.DiscoveryGrowthMetricBreakdown> breakdowns,
     required DateTime generatedAt,
   }) : super._(
          from: from,
@@ -219,7 +218,7 @@ class _DiscoveryGrowthMetricsImpl extends DiscoveryGrowthMetrics {
 
   /// Returns a shallow copy of this [DiscoveryGrowthMetrics]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryGrowthMetrics copyWith({
     DateTime? from,
@@ -235,7 +234,7 @@ class _DiscoveryGrowthMetricsImpl extends DiscoveryGrowthMetrics {
     int? cacheMisses,
     int? detailRefreshes,
     int? upstreamRequests,
-    List<_i2.DiscoveryGrowthMetricBreakdown>? breakdowns,
+    List<_i8hpnrba.DiscoveryGrowthMetricBreakdown>? breakdowns,
     DateTime? generatedAt,
   }) {
     return DiscoveryGrowthMetrics(

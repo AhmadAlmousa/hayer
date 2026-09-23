@@ -759,8 +759,7 @@ class AdminEndpoint extends Endpoint {
     final activeCalibration = await CalibrationRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(CalibrationStatus.active),
-      orderBy: (table) => table.activatedAt,
-      orderDescending: true,
+      orderBy: (table) => table.activatedAt.desc(),
     );
     return CacheDashboardSummary(
       catalogCount: catalogCount,
@@ -805,8 +804,7 @@ class AdminEndpoint extends Endpoint {
     final rows = await PoiCatalogRow.db.find(
       session,
       where: where,
-      orderBy: (table) => table.lastSeenAt,
-      orderDescending: true,
+      orderBy: (table) => table.lastSeenAt.desc(),
       offset: safePage * safeSize,
       limit: safeSize,
     );
@@ -874,8 +872,7 @@ class AdminEndpoint extends Endpoint {
     final rows = await PoiCoverageRow.db.find(
       session,
       where: where,
-      orderBy: (table) => table.refreshedAt,
-      orderDescending: true,
+      orderBy: (table) => table.refreshedAt.desc(),
       offset: safePage * safeSize,
       limit: safeSize,
     );
@@ -915,8 +912,7 @@ class AdminEndpoint extends Endpoint {
     final rows = await RefreshJobRow.db.find(
       session,
       where: where,
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
       offset: safePage * safeSize,
       limit: safeSize,
     );
@@ -974,8 +970,7 @@ class AdminEndpoint extends Endpoint {
     final rows = await PoiIssueReportRow.db.find(
       session,
       where: where,
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
       offset: safePage * safeSize,
       limit: safeSize,
     );
@@ -1122,8 +1117,7 @@ class AdminEndpoint extends Endpoint {
     final rows = await AdminAuditRow.db.find(
       session,
       where: where,
-      orderBy: (table) => table.occurredAt,
-      orderDescending: true,
+      orderBy: (table) => table.occurredAt.desc(),
       offset: safePage * safeSize,
       limit: safeSize,
     );

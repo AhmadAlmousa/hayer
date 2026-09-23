@@ -163,8 +163,7 @@ class VelaCalibrationSync {
     final active = await CalibrationRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(CalibrationStatus.active),
-      orderBy: (table) => table.activatedAt,
-      orderDescending: true,
+      orderBy: (table) => table.activatedAt.desc(),
     );
     final activatedAt = DateTime.now().toUtc();
     await session.db.transaction((transaction) async {

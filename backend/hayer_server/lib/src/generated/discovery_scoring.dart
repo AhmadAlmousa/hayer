@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'discovery_best_formula.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_best_formula.dart' as _iv19bw26;
 
 abstract class DiscoveryScoring
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryScoring._({
     required this.bestFormula,
     required this.gemMinimumRating,
@@ -30,7 +29,7 @@ abstract class DiscoveryScoring
   });
 
   factory DiscoveryScoring({
-    required _i2.DiscoveryBestFormula bestFormula,
+    required _iv19bw26.DiscoveryBestFormula bestFormula,
     required double gemMinimumRating,
     required int gemMinimumReviews,
     required int gemMaximumReviewsExclusive,
@@ -44,7 +43,7 @@ abstract class DiscoveryScoring
 
   factory DiscoveryScoring.fromJson(Map<String, dynamic> jsonSerialization) {
     return DiscoveryScoring(
-      bestFormula: _i2.DiscoveryBestFormula.fromJson(
+      bestFormula: _iv19bw26.DiscoveryBestFormula.fromJson(
         (jsonSerialization['bestFormula'] as String),
       ),
       gemMinimumRating: (jsonSerialization['gemMinimumRating'] as num)
@@ -64,7 +63,7 @@ abstract class DiscoveryScoring
     );
   }
 
-  _i2.DiscoveryBestFormula bestFormula;
+  _iv19bw26.DiscoveryBestFormula bestFormula;
 
   double gemMinimumRating;
 
@@ -86,9 +85,9 @@ abstract class DiscoveryScoring
 
   /// Returns a shallow copy of this [DiscoveryScoring]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryScoring copyWith({
-    _i2.DiscoveryBestFormula? bestFormula,
+    _iv19bw26.DiscoveryBestFormula? bestFormula,
     double? gemMinimumRating,
     int? gemMinimumReviews,
     int? gemMaximumReviewsExclusive,
@@ -135,13 +134,13 @@ abstract class DiscoveryScoring
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _DiscoveryScoringImpl extends DiscoveryScoring {
   _DiscoveryScoringImpl({
-    required _i2.DiscoveryBestFormula bestFormula,
+    required _iv19bw26.DiscoveryBestFormula bestFormula,
     required double gemMinimumRating,
     required int gemMinimumReviews,
     required int gemMaximumReviewsExclusive,
@@ -166,10 +165,10 @@ class _DiscoveryScoringImpl extends DiscoveryScoring {
 
   /// Returns a shallow copy of this [DiscoveryScoring]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryScoring copyWith({
-    _i2.DiscoveryBestFormula? bestFormula,
+    _iv19bw26.DiscoveryBestFormula? bestFormula,
     double? gemMinimumRating,
     int? gemMinimumReviews,
     int? gemMaximumReviewsExclusive,

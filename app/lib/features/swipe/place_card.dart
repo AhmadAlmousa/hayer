@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/theme.dart';
@@ -41,6 +41,9 @@ class PlaceCard extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
     final strings = AppLocalizations.of(context)!;
     final photoCache = ref.read(placePhotoCacheProvider);
+    final photos = place.photoUrls
+        .take(ref.watch(placePhotoLimitProvider))
+        .toList(growable: false);
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxHeight < 420 ||
@@ -53,23 +56,13 @@ class PlaceCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (place.photoUrls.isNotEmpty)
+                  if (photos.isNotEmpty)
                     SizedBox(
                       height: 120,
-                      child: CachedNetworkImage(
-                        imageUrl: place.photoUrls.first,
+                      child: _SwipePhoto(
+                        urls: photos,
                         cacheManager: photoCache,
-                        fit: BoxFit.cover,
-                        memCacheWidth: placePhotoDecodeWidth(
-                          context,
-                          // The card's own padding is the only inset between
-                          // this strip and the card edge.
-                          boxWidth: constraints.maxWidth - 32,
-                          boxHeight: 120,
-                        ),
-                        fadeInDuration: Duration.zero,
-                        placeholder: (_, _) => _fallback(colors),
-                        errorWidget: (_, _, _) => _fallback(colors),
+                        fallback: _fallback(colors),
                       ),
                     ),
                   Text(
@@ -104,26 +97,7 @@ class PlaceCard extends ConsumerWidget {
                     ),
                   if (_highlight(place) case final highlight?) Text(highlight),
                   const SizedBox(height: 12),
-                  FilledButton.tonalIcon(
-                    onPressed: () => _showDetails(context),
-                    icon: const Icon(Icons.info_outline_rounded),
-                    label: Text(strings.placeDetails),
-                  ),
-                  SavePlaceButton(place: place),
-                  OutlinedButton.icon(
-                    onPressed: () => launchPlaceNavigation(context, place),
-                    icon: const Icon(Icons.directions_outlined),
-                    label: Text(strings.directions),
-                  ),
-                  if (place.websiteUrl != null)
-                    TextButton.icon(
-                      onPressed: () => launchUrl(
-                        Uri.parse(place.websiteUrl!),
-                        mode: LaunchMode.externalApplication,
-                      ),
-                      icon: const Icon(Icons.language_rounded),
-                      label: Text(strings.openWebsite),
-                    ),
+                  _actions(context, strings, onDark: false),
                   Text(
                     strings.sourceAttribution,
                     style: Theme.of(context).textTheme.bodySmall,
@@ -141,34 +115,23 @@ class PlaceCard extends ConsumerWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                if (place.photoUrls.isNotEmpty)
-                  CachedNetworkImage(
-                    imageUrl: place.photoUrls.first,
+                if (photos.isNotEmpty)
+                  _SwipePhoto(
+                    urls: photos,
                     cacheManager: photoCache,
-                    fit: BoxFit.cover,
-                    // A full-bleed card is usually taller than a 1600 px photo
-                    // can cover, so this bound mostly resolves to the source's
-                    // own width. It still holds if a card ever gets smaller
-                    // than the screen, or a photo ever arrives larger.
-                    memCacheWidth: placePhotoDecodeWidth(
-                      context,
-                      boxWidth: constraints.maxWidth,
-                      boxHeight: constraints.maxHeight,
-                    ),
-                    fadeInDuration: const Duration(milliseconds: 220),
-                    placeholder: (_, _) =>
-                        Container(color: colors.surfaceContainerHighest),
-                    errorWidget: (_, _, _) => _fallback(colors),
+                    fallback: _fallback(colors),
                   )
                 else
                   _fallback(colors),
-                const DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: [.35, 1],
-                      colors: [Colors.transparent, Color(0xE6000000)],
+                const IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [.35, 1],
+                        colors: [Colors.transparent, Color(0xE6000000)],
+                      ),
                     ),
                   ),
                 ),
@@ -202,20 +165,6 @@ class PlaceCard extends ConsumerWidget {
                   ),
                 ),
                 Positioned(
-                  top: 12,
-                  right: 12,
-                  child: M3EIconButton(
-                    tooltip: strings.openInGoogleMaps,
-                    variant: M3EIconButtonVariant.filled,
-                    decoration: const M3EIconButtonDecoration(
-                      backgroundColor: WidgetStatePropertyAll(Colors.black54),
-                      foregroundColor: WidgetStatePropertyAll(Colors.white),
-                    ),
-                    onPressed: () => launchPlaceNavigation(context, place),
-                    icon: const Icon(Icons.map_outlined),
-                  ),
-                ),
-                Positioned(
                   left: 20,
                   right: 20,
                   bottom: 22,
@@ -237,27 +186,6 @@ class PlaceCard extends ConsumerWidget {
                                   ),
                             ),
                           ),
-                          if (place.websiteUrl != null) ...[
-                            const SizedBox(width: 6),
-                            M3EIconButton(
-                              tooltip: strings.openWebsite,
-                              variant: M3EIconButtonVariant.filled,
-                              size: M3EIconButtonSize.xs,
-                              decoration: const M3EIconButtonDecoration(
-                                backgroundColor: WidgetStatePropertyAll(
-                                  Colors.black54,
-                                ),
-                                foregroundColor: WidgetStatePropertyAll(
-                                  Colors.white,
-                                ),
-                              ),
-                              onPressed: () => launchUrl(
-                                Uri.parse(place.websiteUrl!),
-                                mode: LaunchMode.externalApplication,
-                              ),
-                              icon: const Icon(Icons.language_rounded),
-                            ),
-                          ],
                         ],
                       ),
                       const SizedBox(height: 5),
@@ -302,15 +230,7 @@ class PlaceCard extends ConsumerWidget {
                         ),
                       ],
                       const SizedBox(height: 8),
-                      FilledButton.tonalIcon(
-                        onPressed: () => _showDetails(context),
-                        icon: const Icon(Icons.info_outline_rounded),
-                        label: Text(strings.placeDetails),
-                      ),
-                      SavePlaceButton(
-                        place: place,
-                        onDark: true,
-                      ),
+                      _actions(context, strings, onDark: true),
                       Text(
                         strings.sourceAttribution,
                         style: const TextStyle(
@@ -329,6 +249,56 @@ class PlaceCard extends ConsumerWidget {
     );
   }
 
+  Widget _actions(
+    BuildContext context,
+    AppLocalizations strings, {
+    required bool onDark,
+  }) {
+    final style = onDark
+        ? OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: const BorderSide(color: Colors.white70),
+          )
+        : null;
+    return SizedBox(
+      height: 48,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            OutlinedButton.icon(
+              onPressed: () => _showDetails(context),
+              style: style,
+              icon: const Icon(Icons.info_outline_rounded, size: 18),
+              label: Text(strings.placeDetails),
+            ),
+            const SizedBox(width: 6),
+            SavePlaceButton(place: place, outlined: true, onDark: onDark),
+            const SizedBox(width: 6),
+            OutlinedButton.icon(
+              onPressed: () => launchPlaceNavigation(context, place),
+              style: style,
+              icon: const Icon(Icons.directions_outlined, size: 18),
+              label: Text(strings.directions),
+            ),
+            if (place.websiteUrl != null) ...[
+              const SizedBox(width: 6),
+              OutlinedButton.icon(
+                onPressed: () => launchUrl(
+                  Uri.parse(place.websiteUrl!),
+                  mode: LaunchMode.externalApplication,
+                ),
+                style: style,
+                icon: const Icon(Icons.language_rounded, size: 18),
+                label: Text(strings.openWebsite),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _showDetails(BuildContext context) async {
     onDetailsOpened?.call();
     await showPlaceDetails(
@@ -343,7 +313,7 @@ class PlaceCard extends ConsumerWidget {
         sessionId: sessionId,
         place: place,
       ),
-      saveButton: (place) => SavePlaceButton(place: place),
+      saveButton: (place) => SavePlaceButton(place: place, outlined: true),
     );
     onDetailsClosed?.call();
   }
@@ -384,5 +354,84 @@ class _Badge extends StatelessWidget {
       borderRadius: BorderRadius.circular(99),
     ),
     child: child,
+  );
+}
+
+/// Explicit photo controls keep the card's horizontal swipe gesture available
+/// for the like/pass decision while still exposing every supplied photo.
+class _SwipePhoto extends StatefulWidget {
+  const _SwipePhoto({
+    required this.urls,
+    required this.cacheManager,
+    required this.fallback,
+  });
+
+  final List<String> urls;
+  final BaseCacheManager cacheManager;
+  final Widget fallback;
+
+  @override
+  State<_SwipePhoto> createState() => _SwipePhotoState();
+}
+
+class _SwipePhotoState extends State<_SwipePhoto> {
+  int _index = 0;
+
+  @override
+  void didUpdateWidget(_SwipePhoto oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.urls != widget.urls && _index >= widget.urls.length) {
+      _index = 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => Stack(
+      fit: StackFit.expand,
+      children: [
+        CachedNetworkImage(
+          imageUrl: widget.urls[_index],
+          cacheManager: widget.cacheManager,
+          fit: BoxFit.cover,
+          memCacheWidth: placePhotoDecodeWidth(
+            context,
+            boxWidth: constraints.maxWidth,
+            boxHeight: constraints.maxHeight,
+          ),
+          fadeInDuration: const Duration(milliseconds: 180),
+          placeholder: (_, _) => widget.fallback,
+          errorWidget: (_, _, _) => widget.fallback,
+        ),
+        if (widget.urls.length > 1) ...[
+          Positioned(
+            top: 12,
+            right: 12,
+            child: _Badge(
+              text: '${_index + 1} / ${widget.urls.length}',
+              color: Colors.black54,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton.filledTonal(
+              tooltip: 'Previous photo',
+              onPressed: _index == 0 ? null : () => setState(() => _index -= 1),
+              icon: const Icon(Icons.chevron_left_rounded),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton.filledTonal(
+              tooltip: 'Next photo',
+              onPressed: _index == widget.urls.length - 1
+                  ? null
+                  : () => setState(() => _index += 1),
+              icon: const Icon(Icons.chevron_right_rounded),
+            ),
+          ),
+        ],
+      ],
+    ),
   );
 }

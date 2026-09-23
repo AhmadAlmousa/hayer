@@ -240,6 +240,10 @@ PoiCatalogRow place(
     countryCode: countryCode,
     latitude: snapshot.latitude,
     longitude: snapshot.longitude,
+    location: GeographyPoint(
+      longitude: snapshot.longitude,
+      latitude: snapshot.latitude,
+    ),
     categoryIds: const [],
     snapshot: snapshot,
     calibrationVersion: 'fixture',

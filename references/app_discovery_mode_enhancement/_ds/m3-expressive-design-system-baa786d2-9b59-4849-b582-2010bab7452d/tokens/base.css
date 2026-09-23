@@ -1,0 +1,7 @@
+/* Baseline resets + link colours. Consumers link styles.css only. */
+:root{color-scheme:light}
+body{margin:0;background:var(--schemes-surface);color:var(--schemes-on-surface);font:var(--m3-body-large);letter-spacing:0.5px;-webkit-font-smoothing:antialiased;text-wrap:pretty}
+a{color:var(--schemes-primary);text-decoration-color:color-mix(in srgb,var(--schemes-primary) 40%,transparent);text-underline-offset:2px}
+a:hover{color:var(--schemes-on-primary-container);text-decoration-color:currentColor}
+*,*::before,*::after{box-sizing:border-box}
+.m3-scrim{position:absolute;inset:0;background:var(--schemes-scrim);opacity:0.32}

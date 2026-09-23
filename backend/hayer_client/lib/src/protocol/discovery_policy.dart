@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discovery_scoring.dart' as _iphkx6cy;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discovery_scoring.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class DiscoveryPolicy implements _i1.SerializableModel {
+abstract class DiscoveryPolicy
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryPolicy._({
     required this.enabled,
     required this.scoring,
@@ -34,7 +34,7 @@ abstract class DiscoveryPolicy implements _i1.SerializableModel {
 
   factory DiscoveryPolicy({
     required bool enabled,
-    required _i2.DiscoveryScoring scoring,
+    required _iphkx6cy.DiscoveryScoring scoring,
     required int harvestMaximumRequests,
     required int harvestDesiredCandidatesPerQuery,
     required int harvestMaximumSeconds,
@@ -50,8 +50,8 @@ abstract class DiscoveryPolicy implements _i1.SerializableModel {
 
   factory DiscoveryPolicy.fromJson(Map<String, dynamic> jsonSerialization) {
     return DiscoveryPolicy(
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
-      scoring: _i3.Protocol().deserialize<_i2.DiscoveryScoring>(
+      enabled: _isc.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      scoring: _iynev3sz.Protocol().deserialize<_iphkx6cy.DiscoveryScoring>(
         jsonSerialization['scoring'],
       ),
       harvestMaximumRequests:
@@ -70,7 +70,7 @@ abstract class DiscoveryPolicy implements _i1.SerializableModel {
           jsonSerialization['queryTimeoutMilliseconds'] as int,
       maximumPageSize: jsonSerialization['maximumPageSize'] as int,
       maximumMapPoints: jsonSerialization['maximumMapPoints'] as int,
-      typeAutoMapEnabled: _i1.BoolJsonExtension.fromJson(
+      typeAutoMapEnabled: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['typeAutoMapEnabled'],
       ),
     );
@@ -78,7 +78,7 @@ abstract class DiscoveryPolicy implements _i1.SerializableModel {
 
   bool enabled;
 
-  _i2.DiscoveryScoring scoring;
+  _iphkx6cy.DiscoveryScoring scoring;
 
   int harvestMaximumRequests;
 
@@ -104,10 +104,10 @@ abstract class DiscoveryPolicy implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryPolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryPolicy copyWith({
     bool? enabled,
-    _i2.DiscoveryScoring? scoring,
+    _iphkx6cy.DiscoveryScoring? scoring,
     int? harvestMaximumRequests,
     int? harvestDesiredCandidatesPerQuery,
     int? harvestMaximumSeconds,
@@ -141,15 +141,35 @@ abstract class DiscoveryPolicy implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryPolicy',
+      'enabled': enabled,
+      'scoring': scoring.toJsonForProtocol(),
+      'harvestMaximumRequests': harvestMaximumRequests,
+      'harvestDesiredCandidatesPerQuery': harvestDesiredCandidatesPerQuery,
+      'harvestMaximumSeconds': harvestMaximumSeconds,
+      'harvestCooldownMinutes': harvestCooldownMinutes,
+      'userHarvestsPerHour': userHarvestsPerHour,
+      'browseRequestsPerMinute': browseRequestsPerMinute,
+      'facetRequestsPerMinute': facetRequestsPerMinute,
+      'queryTimeoutMilliseconds': queryTimeoutMilliseconds,
+      'maximumPageSize': maximumPageSize,
+      'maximumMapPoints': maximumMapPoints,
+      'typeAutoMapEnabled': typeAutoMapEnabled,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _DiscoveryPolicyImpl extends DiscoveryPolicy {
   _DiscoveryPolicyImpl({
     required bool enabled,
-    required _i2.DiscoveryScoring scoring,
+    required _iphkx6cy.DiscoveryScoring scoring,
     required int harvestMaximumRequests,
     required int harvestDesiredCandidatesPerQuery,
     required int harvestMaximumSeconds,
@@ -179,11 +199,11 @@ class _DiscoveryPolicyImpl extends DiscoveryPolicy {
 
   /// Returns a shallow copy of this [DiscoveryPolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryPolicy copyWith({
     bool? enabled,
-    _i2.DiscoveryScoring? scoring,
+    _iphkx6cy.DiscoveryScoring? scoring,
     int? harvestMaximumRequests,
     int? harvestDesiredCandidatesPerQuery,
     int? harvestMaximumSeconds,

@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discover_place.dart' as _iyut1oys;
+import 'discover_query_context.dart' as _ixfyrpmf;
+import 'discovery_rating_bucket.dart' as _iinjfol4;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discover_place.dart' as _i2;
-import 'discovery_rating_bucket.dart' as _i3;
-import 'discover_query_context.dart' as _i4;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i5;
-
-abstract class DiscoverPlaceContext implements _i1.SerializableModel {
+abstract class DiscoverPlaceContext
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoverPlaceContext._({
     required this.eligible,
     this.place,
@@ -32,13 +32,13 @@ abstract class DiscoverPlaceContext implements _i1.SerializableModel {
 
   factory DiscoverPlaceContext({
     required bool eligible,
-    _i2.DiscoverPlace? place,
+    _iyut1oys.DiscoverPlace? place,
     int? ordinal,
     required int total,
     double? ratingPercentile,
     String? populationCategoryId,
-    required List<_i3.DiscoveryRatingBucket> ratingDistribution,
-    required _i4.DiscoverQueryContext context,
+    required List<_iinjfol4.DiscoveryRatingBucket> ratingDistribution,
+    required _ixfyrpmf.DiscoverQueryContext context,
     required DateTime fetchedAt,
   }) = _DiscoverPlaceContextImpl;
 
@@ -46,10 +46,10 @@ abstract class DiscoverPlaceContext implements _i1.SerializableModel {
     Map<String, dynamic> jsonSerialization,
   ) {
     return DiscoverPlaceContext(
-      eligible: _i1.BoolJsonExtension.fromJson(jsonSerialization['eligible']),
+      eligible: _isc.BoolJsonExtension.fromJson(jsonSerialization['eligible']),
       place: jsonSerialization['place'] == null
           ? null
-          : _i5.Protocol().deserialize<_i2.DiscoverPlace>(
+          : _iynev3sz.Protocol().deserialize<_iyut1oys.DiscoverPlace>(
               jsonSerialization['place'],
             ),
       ordinal: jsonSerialization['ordinal'] as int?,
@@ -58,14 +58,14 @@ abstract class DiscoverPlaceContext implements _i1.SerializableModel {
           ?.toDouble(),
       populationCategoryId:
           jsonSerialization['populationCategoryId'] as String?,
-      ratingDistribution: _i5.Protocol()
-          .deserialize<List<_i3.DiscoveryRatingBucket>>(
+      ratingDistribution: _iynev3sz.Protocol()
+          .deserialize<List<_iinjfol4.DiscoveryRatingBucket>>(
             jsonSerialization['ratingDistribution'],
           ),
-      context: _i5.Protocol().deserialize<_i4.DiscoverQueryContext>(
+      context: _iynev3sz.Protocol().deserialize<_ixfyrpmf.DiscoverQueryContext>(
         jsonSerialization['context'],
       ),
-      fetchedAt: _i1.DateTimeJsonExtension.fromJson(
+      fetchedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['fetchedAt'],
       ),
     );
@@ -73,7 +73,7 @@ abstract class DiscoverPlaceContext implements _i1.SerializableModel {
 
   bool eligible;
 
-  _i2.DiscoverPlace? place;
+  _iyut1oys.DiscoverPlace? place;
 
   int? ordinal;
 
@@ -83,24 +83,24 @@ abstract class DiscoverPlaceContext implements _i1.SerializableModel {
 
   String? populationCategoryId;
 
-  List<_i3.DiscoveryRatingBucket> ratingDistribution;
+  List<_iinjfol4.DiscoveryRatingBucket> ratingDistribution;
 
-  _i4.DiscoverQueryContext context;
+  _ixfyrpmf.DiscoverQueryContext context;
 
   DateTime fetchedAt;
 
   /// Returns a shallow copy of this [DiscoverPlaceContext]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoverPlaceContext copyWith({
     bool? eligible,
-    _i2.DiscoverPlace? place,
+    _iyut1oys.DiscoverPlace? place,
     int? ordinal,
     int? total,
     double? ratingPercentile,
     String? populationCategoryId,
-    List<_i3.DiscoveryRatingBucket>? ratingDistribution,
-    _i4.DiscoverQueryContext? context,
+    List<_iinjfol4.DiscoveryRatingBucket>? ratingDistribution,
+    _ixfyrpmf.DiscoverQueryContext? context,
     DateTime? fetchedAt,
   });
   @override
@@ -123,8 +123,27 @@ abstract class DiscoverPlaceContext implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoverPlaceContext',
+      'eligible': eligible,
+      if (place != null) 'place': place?.toJsonForProtocol(),
+      if (ordinal != null) 'ordinal': ordinal,
+      'total': total,
+      if (ratingPercentile != null) 'ratingPercentile': ratingPercentile,
+      if (populationCategoryId != null)
+        'populationCategoryId': populationCategoryId,
+      'ratingDistribution': ratingDistribution.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'context': context.toJsonForProtocol(),
+      'fetchedAt': fetchedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -133,13 +152,13 @@ class _Undefined {}
 class _DiscoverPlaceContextImpl extends DiscoverPlaceContext {
   _DiscoverPlaceContextImpl({
     required bool eligible,
-    _i2.DiscoverPlace? place,
+    _iyut1oys.DiscoverPlace? place,
     int? ordinal,
     required int total,
     double? ratingPercentile,
     String? populationCategoryId,
-    required List<_i3.DiscoveryRatingBucket> ratingDistribution,
-    required _i4.DiscoverQueryContext context,
+    required List<_iinjfol4.DiscoveryRatingBucket> ratingDistribution,
+    required _ixfyrpmf.DiscoverQueryContext context,
     required DateTime fetchedAt,
   }) : super._(
          eligible: eligible,
@@ -155,7 +174,7 @@ class _DiscoverPlaceContextImpl extends DiscoverPlaceContext {
 
   /// Returns a shallow copy of this [DiscoverPlaceContext]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoverPlaceContext copyWith({
     bool? eligible,
@@ -164,13 +183,13 @@ class _DiscoverPlaceContextImpl extends DiscoverPlaceContext {
     int? total,
     Object? ratingPercentile = _Undefined,
     Object? populationCategoryId = _Undefined,
-    List<_i3.DiscoveryRatingBucket>? ratingDistribution,
-    _i4.DiscoverQueryContext? context,
+    List<_iinjfol4.DiscoveryRatingBucket>? ratingDistribution,
+    _ixfyrpmf.DiscoverQueryContext? context,
     DateTime? fetchedAt,
   }) {
     return DiscoverPlaceContext(
       eligible: eligible ?? this.eligible,
-      place: place is _i2.DiscoverPlace? ? place : this.place?.copyWith(),
+      place: place is _iyut1oys.DiscoverPlace? ? place : this.place?.copyWith(),
       ordinal: ordinal is int? ? ordinal : this.ordinal,
       total: total ?? this.total,
       ratingPercentile: ratingPercentile is double?

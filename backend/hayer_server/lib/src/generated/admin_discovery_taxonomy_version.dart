@@ -10,14 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'taxonomy_status.dart' as _i2;
-import 'discovery_taxonomy_node.dart' as _i3;
-import 'package:hayer_server/src/generated/protocol.dart' as _i4;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_taxonomy_node.dart' as _i3sj4yil;
+import 'taxonomy_status.dart' as _ix2svfdk;
 
 abstract class AdminDiscoveryTaxonomyVersion
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminDiscoveryTaxonomyVersion._({
     required this.version,
     required this.revision,
@@ -34,8 +33,8 @@ abstract class AdminDiscoveryTaxonomyVersion
   factory AdminDiscoveryTaxonomyVersion({
     required String version,
     required int revision,
-    required _i2.TaxonomyStatus status,
-    required List<_i3.DiscoveryTaxonomyNode> roots,
+    required _ix2svfdk.TaxonomyStatus status,
+    required List<_i3sj4yil.DiscoveryTaxonomyNode> roots,
     required bool validationPassed,
     required List<String> validationErrors,
     required String createdBy,
@@ -50,30 +49,31 @@ abstract class AdminDiscoveryTaxonomyVersion
     return AdminDiscoveryTaxonomyVersion(
       version: jsonSerialization['version'] as String,
       revision: jsonSerialization['revision'] as int,
-      status: _i2.TaxonomyStatus.fromJson(
+      status: _ix2svfdk.TaxonomyStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
-      roots: _i4.Protocol().deserialize<List<_i3.DiscoveryTaxonomyNode>>(
-        jsonSerialization['roots'],
-      ),
-      validationPassed: _i1.BoolJsonExtension.fromJson(
+      roots: _i66y2smk.Protocol()
+          .deserialize<List<_i3sj4yil.DiscoveryTaxonomyNode>>(
+            jsonSerialization['roots'],
+          ),
+      validationPassed: _is.BoolJsonExtension.fromJson(
         jsonSerialization['validationPassed'],
       ),
-      validationErrors: _i4.Protocol().deserialize<List<String>>(
+      validationErrors: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['validationErrors'],
       ),
       createdBy: jsonSerialization['createdBy'] as String,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
       validatedAt: jsonSerialization['validatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['validatedAt'],
             ),
       publishedAt: jsonSerialization['publishedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['publishedAt'],
             ),
     );
@@ -83,9 +83,9 @@ abstract class AdminDiscoveryTaxonomyVersion
 
   int revision;
 
-  _i2.TaxonomyStatus status;
+  _ix2svfdk.TaxonomyStatus status;
 
-  List<_i3.DiscoveryTaxonomyNode> roots;
+  List<_i3sj4yil.DiscoveryTaxonomyNode> roots;
 
   bool validationPassed;
 
@@ -101,12 +101,12 @@ abstract class AdminDiscoveryTaxonomyVersion
 
   /// Returns a shallow copy of this [AdminDiscoveryTaxonomyVersion]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminDiscoveryTaxonomyVersion copyWith({
     String? version,
     int? revision,
-    _i2.TaxonomyStatus? status,
-    List<_i3.DiscoveryTaxonomyNode>? roots,
+    _ix2svfdk.TaxonomyStatus? status,
+    List<_i3sj4yil.DiscoveryTaxonomyNode>? roots,
     bool? validationPassed,
     List<String>? validationErrors,
     String? createdBy,
@@ -150,7 +150,7 @@ abstract class AdminDiscoveryTaxonomyVersion
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -160,8 +160,8 @@ class _AdminDiscoveryTaxonomyVersionImpl extends AdminDiscoveryTaxonomyVersion {
   _AdminDiscoveryTaxonomyVersionImpl({
     required String version,
     required int revision,
-    required _i2.TaxonomyStatus status,
-    required List<_i3.DiscoveryTaxonomyNode> roots,
+    required _ix2svfdk.TaxonomyStatus status,
+    required List<_i3sj4yil.DiscoveryTaxonomyNode> roots,
     required bool validationPassed,
     required List<String> validationErrors,
     required String createdBy,
@@ -183,13 +183,13 @@ class _AdminDiscoveryTaxonomyVersionImpl extends AdminDiscoveryTaxonomyVersion {
 
   /// Returns a shallow copy of this [AdminDiscoveryTaxonomyVersion]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminDiscoveryTaxonomyVersion copyWith({
     String? version,
     int? revision,
-    _i2.TaxonomyStatus? status,
-    List<_i3.DiscoveryTaxonomyNode>? roots,
+    _ix2svfdk.TaxonomyStatus? status,
+    List<_i3sj4yil.DiscoveryTaxonomyNode>? roots,
     bool? validationPassed,
     List<String>? validationErrors,
     String? createdBy,

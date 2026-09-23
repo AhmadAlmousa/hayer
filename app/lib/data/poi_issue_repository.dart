@@ -100,7 +100,6 @@ class PoiIssueRepository {
 }
 
 bool _isTransientClientFailure(Object error) =>
-    error is ServerpodClientException &&
-    (error.statusCode < 0 ||
-        error.statusCode == 408 ||
-        error.statusCode >= 500);
+    error is ServerpodClientNetworkException ||
+    (error is ServerpodClientHttpException &&
+        (error.statusCode == 408 || error.statusCode >= 500));

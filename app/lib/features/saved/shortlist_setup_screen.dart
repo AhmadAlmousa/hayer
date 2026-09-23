@@ -4,7 +4,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../core/page_title.dart';
 import '../../core/providers.dart';
@@ -119,17 +118,17 @@ class _ShortlistSetupScreenState extends ConsumerState<ShortlistSetupScreen> {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 10),
-              M3ESegmentedButton<SessionMode>(
+              SegmentedButton<SessionMode>(
                 showSelectedIcon: false,
                 segments: [
-                  M3ESegment(
+                  ButtonSegment(
                     value: SessionMode.solo,
-                    label: strings.solo,
+                    label: Text(strings.solo),
                     icon: const Icon(Icons.person_rounded),
                   ),
-                  M3ESegment(
+                  ButtonSegment(
                     value: SessionMode.multiplayer,
-                    label: strings.multiplayer,
+                    label: Text(strings.multiplayer),
                     icon: const Icon(Icons.groups_rounded),
                   ),
                 ],

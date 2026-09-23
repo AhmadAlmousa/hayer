@@ -31,8 +31,7 @@ const _shareChannel = MethodChannel('dev.fluttercommunity.plus/share');
 ValueKey<String> _row(int id) => ValueKey('discovery-row-$id');
 ValueKey<String> _details(int id) => ValueKey('discovery-details-$id');
 
-/// The details button on the card over the map, which is the only one a
-/// place beyond the loaded rows has.
+/// The details button in the selected place's sheet.
 ValueKey<String> _cardDetails(int id) => ValueKey('discovery-card-details-$id');
 ValueKey<String> _report(int id) => ValueKey('discovery-report-$id');
 
@@ -100,7 +99,7 @@ void main() {
   });
 
   Future<void> openRowDetails(WidgetTester tester, int id) async {
-    // Rows are built only as they near the half-raised sheet's viewport.
+    // Rows are built only as they near the results sheet's viewport.
     await tester.scrollUntilVisible(
       find.byKey(_row(id)),
       100,
@@ -115,10 +114,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(_row(id)));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(_details(id)));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(_details(id)));
-    await tester.pumpAndSettle();
+    expect(find.byType(PlaceDetailsSheet), findsOneWidget);
+    expect(find.byKey(const ValueKey('discovery-place-sheet')), findsNothing);
   }
 
   Future<void> scrollSheetTo(WidgetTester tester, Finder finder) async {
@@ -126,7 +123,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Scrolls the results half, as opposed to an open details sheet.
+  /// Scrolls the results sheet, as opposed to an open details sheet.
   Future<void> scrollResultsTo(WidgetTester tester, Finder finder) async {
     await tester.scrollUntilVisible(
       finder,
@@ -408,7 +405,7 @@ void main() {
         tester.element(find.byType(PlaceDetailsSheet)),
       ).read(discoverySelectionProvider.notifier).clear();
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('discovery-place-card')), findsNothing);
+      expect(find.byKey(const ValueKey('discovery-place-sheet')), findsNothing);
 
       await scrollSheetTo(tester, find.byKey(_reportTile));
       await tester.tap(find.byKey(_reportTile));
@@ -428,7 +425,7 @@ void main() {
             fail('a Discover report has no session'),
         catalogTransport: (catalogId, type, details, key) async {
           reports.add((catalogId: catalogId, type: type, key: key));
-          if (failures-- > 0) throw ServerpodClientException('offline', -1);
+          if (failures-- > 0) throw ServerpodClientNetworkException('offline');
           return 'report-id';
         },
       );

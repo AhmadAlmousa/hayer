@@ -10,15 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_discovery_auto_mapped_type.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_discovery_auto_mapped_type.dart' as _izsiyar5;
 
 /// What the Discover type auto-mapper has done, for the unmapped-types page
 /// and the tree editor.
 abstract class AdminDiscoveryAutoMapReport
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminDiscoveryAutoMapReport._({
     required this.enabled,
     required this.mappedTypeCount,
@@ -30,22 +29,22 @@ abstract class AdminDiscoveryAutoMapReport
     required bool enabled,
     required int mappedTypeCount,
     DateTime? lastMappedAt,
-    required List<_i2.AdminDiscoveryAutoMappedType> recent,
+    required List<_izsiyar5.AdminDiscoveryAutoMappedType> recent,
   }) = _AdminDiscoveryAutoMapReportImpl;
 
   factory AdminDiscoveryAutoMapReport.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return AdminDiscoveryAutoMapReport(
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      enabled: _is.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
       mappedTypeCount: jsonSerialization['mappedTypeCount'] as int,
       lastMappedAt: jsonSerialization['lastMappedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastMappedAt'],
             ),
-      recent: _i3.Protocol()
-          .deserialize<List<_i2.AdminDiscoveryAutoMappedType>>(
+      recent: _i66y2smk.Protocol()
+          .deserialize<List<_izsiyar5.AdminDiscoveryAutoMappedType>>(
             jsonSerialization['recent'],
           ),
     );
@@ -61,16 +60,16 @@ abstract class AdminDiscoveryAutoMapReport
   DateTime? lastMappedAt;
 
   /// The most recent assignments, newest first.
-  List<_i2.AdminDiscoveryAutoMappedType> recent;
+  List<_izsiyar5.AdminDiscoveryAutoMappedType> recent;
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMapReport]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminDiscoveryAutoMapReport copyWith({
     bool? enabled,
     int? mappedTypeCount,
     DateTime? lastMappedAt,
-    List<_i2.AdminDiscoveryAutoMappedType>? recent,
+    List<_izsiyar5.AdminDiscoveryAutoMappedType>? recent,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -96,7 +95,7 @@ abstract class AdminDiscoveryAutoMapReport
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -107,7 +106,7 @@ class _AdminDiscoveryAutoMapReportImpl extends AdminDiscoveryAutoMapReport {
     required bool enabled,
     required int mappedTypeCount,
     DateTime? lastMappedAt,
-    required List<_i2.AdminDiscoveryAutoMappedType> recent,
+    required List<_izsiyar5.AdminDiscoveryAutoMappedType> recent,
   }) : super._(
          enabled: enabled,
          mappedTypeCount: mappedTypeCount,
@@ -117,13 +116,13 @@ class _AdminDiscoveryAutoMapReportImpl extends AdminDiscoveryAutoMapReport {
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMapReport]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminDiscoveryAutoMapReport copyWith({
     bool? enabled,
     int? mappedTypeCount,
     Object? lastMappedAt = _Undefined,
-    List<_i2.AdminDiscoveryAutoMappedType>? recent,
+    List<_izsiyar5.AdminDiscoveryAutoMappedType>? recent,
   }) {
     return AdminDiscoveryAutoMapReport(
       enabled: enabled ?? this.enabled,

@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:hayer_server/src/generated/protocol.dart' as _i2;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DestinationChoiceState
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DestinationChoiceState._({
     required this.eligiblePlaceIds,
     required this.counts,
@@ -48,25 +47,25 @@ abstract class DestinationChoiceState
     Map<String, dynamic> jsonSerialization,
   ) {
     return DestinationChoiceState(
-      eligiblePlaceIds: _i2.Protocol().deserialize<List<String>>(
+      eligiblePlaceIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['eligiblePlaceIds'],
       ),
-      counts: _i2.Protocol().deserialize<Map<String, int>>(
+      counts: _i66y2smk.Protocol().deserialize<Map<String, int>>(
         jsonSerialization['counts'],
       ),
       myPlaceId: jsonSerialization['myPlaceId'] as String?,
       myRevision: jsonSerialization['myRevision'] as int,
       winnerPlaceId: jsonSerialization['winnerPlaceId'] as String?,
-      tiedPlaceIds: _i2.Protocol().deserialize<List<String>>(
+      tiedPlaceIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['tiedPlaceIds'],
       ),
       chosenCount: jsonSerialization['chosenCount'] as int,
       participantCount: jsonSerialization['participantCount'] as int,
-      canChoose: _i1.BoolJsonExtension.fromJson(jsonSerialization['canChoose']),
-      isComplete: _i1.BoolJsonExtension.fromJson(
+      canChoose: _is.BoolJsonExtension.fromJson(jsonSerialization['canChoose']),
+      isComplete: _is.BoolJsonExtension.fromJson(
         jsonSerialization['isComplete'],
       ),
-      hostBrokeTie: _i1.BoolJsonExtension.fromJson(
+      hostBrokeTie: _is.BoolJsonExtension.fromJson(
         jsonSerialization['hostBrokeTie'],
       ),
     );
@@ -96,7 +95,7 @@ abstract class DestinationChoiceState
 
   /// Returns a shallow copy of this [DestinationChoiceState]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DestinationChoiceState copyWith({
     List<String>? eligiblePlaceIds,
     Map<String, int>? counts,
@@ -148,7 +147,7 @@ abstract class DestinationChoiceState
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -183,7 +182,7 @@ class _DestinationChoiceStateImpl extends DestinationChoiceState {
 
   /// Returns a shallow copy of this [DestinationChoiceState]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DestinationChoiceState copyWith({
     List<String>? eligiblePlaceIds,

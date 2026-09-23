@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'photo_policy.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'photo_policy.dart' as _i8lsha3l;
 
 abstract class BootstrapInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   BootstrapInfo._({
     required this.minimumBuild,
     required this.latestBuild,
@@ -38,30 +37,30 @@ abstract class BootstrapInfo
     required String taxonomyVersion,
     required int configVersion,
     required DateTime serverTime,
-    _i2.PhotoPolicy? photos,
+    _i8lsha3l.PhotoPolicy? photos,
   }) = _BootstrapInfoImpl;
 
   factory BootstrapInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return BootstrapInfo(
       minimumBuild: jsonSerialization['minimumBuild'] as int,
       latestBuild: jsonSerialization['latestBuild'] as int,
-      updateRequired: _i1.BoolJsonExtension.fromJson(
+      updateRequired: _is.BoolJsonExtension.fromJson(
         jsonSerialization['updateRequired'],
       ),
-      supportedCountries: _i3.Protocol().deserialize<List<String>>(
+      supportedCountries: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['supportedCountries'],
       ),
-      certifiedCountries: _i3.Protocol().deserialize<List<String>>(
+      certifiedCountries: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['certifiedCountries'],
       ),
       taxonomyVersion: jsonSerialization['taxonomyVersion'] as String,
       configVersion: jsonSerialization['configVersion'] as int,
-      serverTime: _i1.DateTimeJsonExtension.fromJson(
+      serverTime: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['serverTime'],
       ),
       photos: jsonSerialization['photos'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.PhotoPolicy>(
+          : _i66y2smk.Protocol().deserialize<_i8lsha3l.PhotoPolicy>(
               jsonSerialization['photos'],
             ),
     );
@@ -83,11 +82,11 @@ abstract class BootstrapInfo
 
   DateTime serverTime;
 
-  _i2.PhotoPolicy? photos;
+  _i8lsha3l.PhotoPolicy? photos;
 
   /// Returns a shallow copy of this [BootstrapInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   BootstrapInfo copyWith({
     int? minimumBuild,
     int? latestBuild,
@@ -97,7 +96,7 @@ abstract class BootstrapInfo
     String? taxonomyVersion,
     int? configVersion,
     DateTime? serverTime,
-    _i2.PhotoPolicy? photos,
+    _i8lsha3l.PhotoPolicy? photos,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -133,7 +132,7 @@ abstract class BootstrapInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -149,7 +148,7 @@ class _BootstrapInfoImpl extends BootstrapInfo {
     required String taxonomyVersion,
     required int configVersion,
     required DateTime serverTime,
-    _i2.PhotoPolicy? photos,
+    _i8lsha3l.PhotoPolicy? photos,
   }) : super._(
          minimumBuild: minimumBuild,
          latestBuild: latestBuild,
@@ -164,7 +163,7 @@ class _BootstrapInfoImpl extends BootstrapInfo {
 
   /// Returns a shallow copy of this [BootstrapInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   BootstrapInfo copyWith({
     int? minimumBuild,
@@ -190,7 +189,9 @@ class _BootstrapInfoImpl extends BootstrapInfo {
       taxonomyVersion: taxonomyVersion ?? this.taxonomyVersion,
       configVersion: configVersion ?? this.configVersion,
       serverTime: serverTime ?? this.serverTime,
-      photos: photos is _i2.PhotoPolicy? ? photos : this.photos?.copyWith(),
+      photos: photos is _i8lsha3l.PhotoPolicy?
+          ? photos
+          : this.photos?.copyWith(),
     );
   }
 }

@@ -14,6 +14,8 @@ String discoverySortLabel(AppLocalizations strings, DiscoverySort sort) =>
       DiscoverySort.hiddenGems => strings.discoverySortHiddenGems,
       DiscoverySort.worstRated => strings.discoverySortWorstRated,
       DiscoverySort.recentlyDiscovered => strings.discoverySortRecent,
+      DiscoverySort.distanceArea => strings.discoverySortDistanceArea,
+      DiscoverySort.distanceCurrent => strings.discoverySortDistanceCurrent,
     };
 
 /// The sentence under the result count saying how [sort] ranks places.
@@ -51,5 +53,7 @@ String? discoverySortExplainer(
       _ => strings.discoveryExplainWorstRated,
     },
     DiscoverySort.recentlyDiscovered => strings.discoveryExplainRecent,
+    DiscoverySort.distanceArea => strings.discoveryExplainDistanceArea,
+    DiscoverySort.distanceCurrent => strings.discoveryExplainDistanceCurrent,
   };
 }

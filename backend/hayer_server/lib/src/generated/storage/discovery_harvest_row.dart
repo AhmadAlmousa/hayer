@@ -10,16 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../discovery_harvest_requester.dart' as _i2;
-import '../discovery_harvest_trigger.dart' as _i3;
-import '../discovery_harvest_state.dart' as _i4;
-import '../discovery_harvest_query_outcome.dart' as _i5;
-import 'package:hayer_server/src/generated/protocol.dart' as _i6;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../discovery_harvest_query_outcome.dart' as _iajcbtjd;
+import '../discovery_harvest_requester.dart' as _i85zgm36;
+import '../discovery_harvest_state.dart' as _iervij0b;
+import '../discovery_harvest_trigger.dart' as _ib06b67f;
 
 abstract class DiscoveryHarvestRow
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DiscoveryHarvestRow._({
     this.id,
     required this.jobId,
@@ -56,9 +55,9 @@ abstract class DiscoveryHarvestRow
     int? id,
     required String jobId,
     required String harvestKey,
-    required _i2.DiscoveryHarvestRequester requester,
+    required _i85zgm36.DiscoveryHarvestRequester requester,
     required String requestedBy,
-    required _i3.DiscoveryHarvestTrigger trigger,
+    required _ib06b67f.DiscoveryHarvestTrigger trigger,
     required String countryCode,
     required String cellId,
     required int radiusMeters,
@@ -71,8 +70,8 @@ abstract class DiscoveryHarvestRow
     required String manifestVersion,
     required int manifestRevision,
     required String calibrationVersion,
-    required _i4.DiscoveryHarvestState state,
-    required List<_i5.DiscoveryHarvestQueryOutcome> queryOutcomes,
+    required _iervij0b.DiscoveryHarvestState state,
+    required List<_iajcbtjd.DiscoveryHarvestQueryOutcome> queryOutcomes,
     required int attemptedQueries,
     required int completedQueries,
     required int totalQueries,
@@ -89,11 +88,11 @@ abstract class DiscoveryHarvestRow
       id: jsonSerialization['id'] as int?,
       jobId: jsonSerialization['jobId'] as String,
       harvestKey: jsonSerialization['harvestKey'] as String,
-      requester: _i2.DiscoveryHarvestRequester.fromJson(
+      requester: _i85zgm36.DiscoveryHarvestRequester.fromJson(
         (jsonSerialization['requester'] as String),
       ),
       requestedBy: jsonSerialization['requestedBy'] as String,
-      trigger: _i3.DiscoveryHarvestTrigger.fromJson(
+      trigger: _ib06b67f.DiscoveryHarvestTrigger.fromJson(
         (jsonSerialization['trigger'] as String),
       ),
       countryCode: jsonSerialization['countryCode'] as String,
@@ -108,11 +107,11 @@ abstract class DiscoveryHarvestRow
       manifestVersion: jsonSerialization['manifestVersion'] as String,
       manifestRevision: jsonSerialization['manifestRevision'] as int,
       calibrationVersion: jsonSerialization['calibrationVersion'] as String,
-      state: _i4.DiscoveryHarvestState.fromJson(
+      state: _iervij0b.DiscoveryHarvestState.fromJson(
         (jsonSerialization['state'] as String),
       ),
-      queryOutcomes: _i6.Protocol()
-          .deserialize<List<_i5.DiscoveryHarvestQueryOutcome>>(
+      queryOutcomes: _i66y2smk.Protocol()
+          .deserialize<List<_iajcbtjd.DiscoveryHarvestQueryOutcome>>(
             jsonSerialization['queryOutcomes'],
           ),
       attemptedQueries: jsonSerialization['attemptedQueries'] as int,
@@ -120,15 +119,15 @@ abstract class DiscoveryHarvestRow
       totalQueries: jsonSerialization['totalQueries'] as int,
       observedPlaces: jsonSerialization['observedPlaces'] as int,
       upstreamRequests: jsonSerialization['upstreamRequests'] as int,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
       startedAt: jsonSerialization['startedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['startedAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['startedAt']),
       completedAt: jsonSerialization['completedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['completedAt'],
             ),
       failureCode: jsonSerialization['failureCode'] as String?,
@@ -146,11 +145,11 @@ abstract class DiscoveryHarvestRow
 
   String harvestKey;
 
-  _i2.DiscoveryHarvestRequester requester;
+  _i85zgm36.DiscoveryHarvestRequester requester;
 
   String requestedBy;
 
-  _i3.DiscoveryHarvestTrigger trigger;
+  _ib06b67f.DiscoveryHarvestTrigger trigger;
 
   String countryCode;
 
@@ -176,9 +175,9 @@ abstract class DiscoveryHarvestRow
 
   String calibrationVersion;
 
-  _i4.DiscoveryHarvestState state;
+  _iervij0b.DiscoveryHarvestState state;
 
-  List<_i5.DiscoveryHarvestQueryOutcome> queryOutcomes;
+  List<_iajcbtjd.DiscoveryHarvestQueryOutcome> queryOutcomes;
 
   int attemptedQueries;
 
@@ -199,18 +198,18 @@ abstract class DiscoveryHarvestRow
   String? failureCode;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DiscoveryHarvestRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryHarvestRow copyWith({
     int? id,
     String? jobId,
     String? harvestKey,
-    _i2.DiscoveryHarvestRequester? requester,
+    _i85zgm36.DiscoveryHarvestRequester? requester,
     String? requestedBy,
-    _i3.DiscoveryHarvestTrigger? trigger,
+    _ib06b67f.DiscoveryHarvestTrigger? trigger,
     String? countryCode,
     String? cellId,
     int? radiusMeters,
@@ -223,8 +222,8 @@ abstract class DiscoveryHarvestRow
     String? manifestVersion,
     int? manifestRevision,
     String? calibrationVersion,
-    _i4.DiscoveryHarvestState? state,
-    List<_i5.DiscoveryHarvestQueryOutcome>? queryOutcomes,
+    _iervij0b.DiscoveryHarvestState? state,
+    List<_iajcbtjd.DiscoveryHarvestQueryOutcome>? queryOutcomes,
     int? attemptedQueries,
     int? completedQueries,
     int? totalQueries,
@@ -281,12 +280,11 @@ abstract class DiscoveryHarvestRow
   }
 
   static DiscoveryHarvestRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
+    _is.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
+    _is.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
     DiscoveryHarvestRowInclude? include,
   }) {
     return DiscoveryHarvestRowIncludeList._(
@@ -294,7 +292,6 @@ abstract class DiscoveryHarvestRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DiscoveryHarvestRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(DiscoveryHarvestRow.t),
       include: include,
     );
@@ -302,7 +299,7 @@ abstract class DiscoveryHarvestRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -313,9 +310,9 @@ class _DiscoveryHarvestRowImpl extends DiscoveryHarvestRow {
     int? id,
     required String jobId,
     required String harvestKey,
-    required _i2.DiscoveryHarvestRequester requester,
+    required _i85zgm36.DiscoveryHarvestRequester requester,
     required String requestedBy,
-    required _i3.DiscoveryHarvestTrigger trigger,
+    required _ib06b67f.DiscoveryHarvestTrigger trigger,
     required String countryCode,
     required String cellId,
     required int radiusMeters,
@@ -328,8 +325,8 @@ class _DiscoveryHarvestRowImpl extends DiscoveryHarvestRow {
     required String manifestVersion,
     required int manifestRevision,
     required String calibrationVersion,
-    required _i4.DiscoveryHarvestState state,
-    required List<_i5.DiscoveryHarvestQueryOutcome> queryOutcomes,
+    required _iervij0b.DiscoveryHarvestState state,
+    required List<_iajcbtjd.DiscoveryHarvestQueryOutcome> queryOutcomes,
     required int attemptedQueries,
     required int completedQueries,
     required int totalQueries,
@@ -373,15 +370,15 @@ class _DiscoveryHarvestRowImpl extends DiscoveryHarvestRow {
 
   /// Returns a shallow copy of this [DiscoveryHarvestRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryHarvestRow copyWith({
     Object? id = _Undefined,
     String? jobId,
     String? harvestKey,
-    _i2.DiscoveryHarvestRequester? requester,
+    _i85zgm36.DiscoveryHarvestRequester? requester,
     String? requestedBy,
-    _i3.DiscoveryHarvestTrigger? trigger,
+    _ib06b67f.DiscoveryHarvestTrigger? trigger,
     String? countryCode,
     String? cellId,
     int? radiusMeters,
@@ -394,8 +391,8 @@ class _DiscoveryHarvestRowImpl extends DiscoveryHarvestRow {
     String? manifestVersion,
     int? manifestRevision,
     String? calibrationVersion,
-    _i4.DiscoveryHarvestState? state,
-    List<_i5.DiscoveryHarvestQueryOutcome>? queryOutcomes,
+    _iervij0b.DiscoveryHarvestState? state,
+    List<_iajcbtjd.DiscoveryHarvestQueryOutcome>? queryOutcomes,
     int? attemptedQueries,
     int? completedQueries,
     int? totalQueries,
@@ -443,283 +440,291 @@ class _DiscoveryHarvestRowImpl extends DiscoveryHarvestRow {
 }
 
 class DiscoveryHarvestRowUpdateTable
-    extends _i1.UpdateTable<DiscoveryHarvestRowTable> {
+    extends _is.UpdateTable<DiscoveryHarvestRowTable> {
   DiscoveryHarvestRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> jobId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> jobId(String value) => _is.ColumnValue(
     table.jobId,
     value,
   );
 
-  _i1.ColumnValue<String, String> harvestKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> harvestKey(String value) => _is.ColumnValue(
     table.harvestKey,
     value,
   );
 
-  _i1.ColumnValue<_i2.DiscoveryHarvestRequester, _i2.DiscoveryHarvestRequester>
-  requester(_i2.DiscoveryHarvestRequester value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    _i85zgm36.DiscoveryHarvestRequester,
+    _i85zgm36.DiscoveryHarvestRequester
+  >
+  requester(_i85zgm36.DiscoveryHarvestRequester value) => _is.ColumnValue(
     table.requester,
     value,
   );
 
-  _i1.ColumnValue<String, String> requestedBy(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> requestedBy(String value) => _is.ColumnValue(
     table.requestedBy,
     value,
   );
 
-  _i1.ColumnValue<_i3.DiscoveryHarvestTrigger, _i3.DiscoveryHarvestTrigger>
-  trigger(_i3.DiscoveryHarvestTrigger value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    _ib06b67f.DiscoveryHarvestTrigger,
+    _ib06b67f.DiscoveryHarvestTrigger
+  >
+  trigger(_ib06b67f.DiscoveryHarvestTrigger value) => _is.ColumnValue(
     table.trigger,
     value,
   );
 
-  _i1.ColumnValue<String, String> countryCode(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> countryCode(String value) => _is.ColumnValue(
     table.countryCode,
     value,
   );
 
-  _i1.ColumnValue<String, String> cellId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> cellId(String value) => _is.ColumnValue(
     table.cellId,
     value,
   );
 
-  _i1.ColumnValue<int, int> radiusMeters(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> radiusMeters(int value) => _is.ColumnValue(
     table.radiusMeters,
     value,
   );
 
-  _i1.ColumnValue<double, double> centerLatitude(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> centerLatitude(double value) =>
+      _is.ColumnValue(
         table.centerLatitude,
         value,
       );
 
-  _i1.ColumnValue<double, double> centerLongitude(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> centerLongitude(double value) =>
+      _is.ColumnValue(
         table.centerLongitude,
         value,
       );
 
-  _i1.ColumnValue<double, double> south(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> south(double value) => _is.ColumnValue(
     table.south,
     value,
   );
 
-  _i1.ColumnValue<double, double> west(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> west(double value) => _is.ColumnValue(
     table.west,
     value,
   );
 
-  _i1.ColumnValue<double, double> north(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> north(double value) => _is.ColumnValue(
     table.north,
     value,
   );
 
-  _i1.ColumnValue<double, double> east(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> east(double value) => _is.ColumnValue(
     table.east,
     value,
   );
 
-  _i1.ColumnValue<String, String> manifestVersion(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> manifestVersion(String value) =>
+      _is.ColumnValue(
         table.manifestVersion,
         value,
       );
 
-  _i1.ColumnValue<int, int> manifestRevision(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> manifestRevision(int value) => _is.ColumnValue(
     table.manifestRevision,
     value,
   );
 
-  _i1.ColumnValue<String, String> calibrationVersion(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> calibrationVersion(String value) =>
+      _is.ColumnValue(
         table.calibrationVersion,
         value,
       );
 
-  _i1.ColumnValue<_i4.DiscoveryHarvestState, _i4.DiscoveryHarvestState> state(
-    _i4.DiscoveryHarvestState value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<
+    _iervij0b.DiscoveryHarvestState,
+    _iervij0b.DiscoveryHarvestState
+  >
+  state(_iervij0b.DiscoveryHarvestState value) => _is.ColumnValue(
     table.state,
     value,
   );
 
-  _i1.ColumnValue<
-    List<_i5.DiscoveryHarvestQueryOutcome>,
-    List<_i5.DiscoveryHarvestQueryOutcome>
+  _is.ColumnValue<
+    List<_iajcbtjd.DiscoveryHarvestQueryOutcome>,
+    List<_iajcbtjd.DiscoveryHarvestQueryOutcome>
   >
-  queryOutcomes(List<_i5.DiscoveryHarvestQueryOutcome> value) =>
-      _i1.ColumnValue(
+  queryOutcomes(List<_iajcbtjd.DiscoveryHarvestQueryOutcome> value) =>
+      _is.ColumnValue(
         table.queryOutcomes,
         value,
       );
 
-  _i1.ColumnValue<int, int> attemptedQueries(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> attemptedQueries(int value) => _is.ColumnValue(
     table.attemptedQueries,
     value,
   );
 
-  _i1.ColumnValue<int, int> completedQueries(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> completedQueries(int value) => _is.ColumnValue(
     table.completedQueries,
     value,
   );
 
-  _i1.ColumnValue<int, int> totalQueries(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> totalQueries(int value) => _is.ColumnValue(
     table.totalQueries,
     value,
   );
 
-  _i1.ColumnValue<int, int> observedPlaces(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> observedPlaces(int value) => _is.ColumnValue(
     table.observedPlaces,
     value,
   );
 
-  _i1.ColumnValue<int, int> upstreamRequests(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> upstreamRequests(int value) => _is.ColumnValue(
     table.upstreamRequests,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> startedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> startedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.startedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> completedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> completedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.completedAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> failureCode(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> failureCode(String? value) => _is.ColumnValue(
     table.failureCode,
     value,
   );
 }
 
-class DiscoveryHarvestRowTable extends _i1.Table<int?> {
+class DiscoveryHarvestRowTable extends _is.Table<int?> {
   DiscoveryHarvestRowTable({super.tableRelation})
     : super(tableName: 'hayer_discovery_harvest') {
     updateTable = DiscoveryHarvestRowUpdateTable(this);
-    jobId = _i1.ColumnString(
+    jobId = _is.ColumnString(
       'jobId',
       this,
     );
-    harvestKey = _i1.ColumnString(
+    harvestKey = _is.ColumnString(
       'harvestKey',
       this,
     );
-    requester = _i1.ColumnEnum(
+    requester = _is.ColumnEnum(
       'requester',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    requestedBy = _i1.ColumnString(
+    requestedBy = _is.ColumnString(
       'requestedBy',
       this,
     );
-    trigger = _i1.ColumnEnum(
+    trigger = _is.ColumnEnum(
       'trigger',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    countryCode = _i1.ColumnString(
+    countryCode = _is.ColumnString(
       'countryCode',
       this,
     );
-    cellId = _i1.ColumnString(
+    cellId = _is.ColumnString(
       'cellId',
       this,
     );
-    radiusMeters = _i1.ColumnInt(
+    radiusMeters = _is.ColumnInt(
       'radiusMeters',
       this,
     );
-    centerLatitude = _i1.ColumnDouble(
+    centerLatitude = _is.ColumnDouble(
       'centerLatitude',
       this,
     );
-    centerLongitude = _i1.ColumnDouble(
+    centerLongitude = _is.ColumnDouble(
       'centerLongitude',
       this,
     );
-    south = _i1.ColumnDouble(
+    south = _is.ColumnDouble(
       'south',
       this,
     );
-    west = _i1.ColumnDouble(
+    west = _is.ColumnDouble(
       'west',
       this,
     );
-    north = _i1.ColumnDouble(
+    north = _is.ColumnDouble(
       'north',
       this,
     );
-    east = _i1.ColumnDouble(
+    east = _is.ColumnDouble(
       'east',
       this,
     );
-    manifestVersion = _i1.ColumnString(
+    manifestVersion = _is.ColumnString(
       'manifestVersion',
       this,
     );
-    manifestRevision = _i1.ColumnInt(
+    manifestRevision = _is.ColumnInt(
       'manifestRevision',
       this,
     );
-    calibrationVersion = _i1.ColumnString(
+    calibrationVersion = _is.ColumnString(
       'calibrationVersion',
       this,
     );
-    state = _i1.ColumnEnum(
+    state = _is.ColumnEnum(
       'state',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
     queryOutcomes =
-        _i1.ColumnSerializable<List<_i5.DiscoveryHarvestQueryOutcome>>(
+        _is.ColumnSerializable<List<_iajcbtjd.DiscoveryHarvestQueryOutcome>>(
           'queryOutcomes',
           this,
         );
-    attemptedQueries = _i1.ColumnInt(
+    attemptedQueries = _is.ColumnInt(
       'attemptedQueries',
       this,
     );
-    completedQueries = _i1.ColumnInt(
+    completedQueries = _is.ColumnInt(
       'completedQueries',
       this,
     );
-    totalQueries = _i1.ColumnInt(
+    totalQueries = _is.ColumnInt(
       'totalQueries',
       this,
     );
-    observedPlaces = _i1.ColumnInt(
+    observedPlaces = _is.ColumnInt(
       'observedPlaces',
       this,
     );
-    upstreamRequests = _i1.ColumnInt(
+    upstreamRequests = _is.ColumnInt(
       'upstreamRequests',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    startedAt = _i1.ColumnDateTime(
+    startedAt = _is.ColumnDateTime(
       'startedAt',
       this,
     );
-    completedAt = _i1.ColumnDateTime(
+    completedAt = _is.ColumnDateTime(
       'completedAt',
       this,
     );
-    failureCode = _i1.ColumnString(
+    failureCode = _is.ColumnString(
       'failureCode',
       this,
     );
@@ -727,65 +732,67 @@ class DiscoveryHarvestRowTable extends _i1.Table<int?> {
 
   late final DiscoveryHarvestRowUpdateTable updateTable;
 
-  late final _i1.ColumnString jobId;
+  late final _is.ColumnString jobId;
 
-  late final _i1.ColumnString harvestKey;
+  late final _is.ColumnString harvestKey;
 
-  late final _i1.ColumnEnum<_i2.DiscoveryHarvestRequester> requester;
+  late final _is.ColumnEnum<_i85zgm36.DiscoveryHarvestRequester> requester;
 
-  late final _i1.ColumnString requestedBy;
+  late final _is.ColumnString requestedBy;
 
-  late final _i1.ColumnEnum<_i3.DiscoveryHarvestTrigger> trigger;
+  late final _is.ColumnEnum<_ib06b67f.DiscoveryHarvestTrigger> trigger;
 
-  late final _i1.ColumnString countryCode;
+  late final _is.ColumnString countryCode;
 
-  late final _i1.ColumnString cellId;
+  late final _is.ColumnString cellId;
 
-  late final _i1.ColumnInt radiusMeters;
+  late final _is.ColumnInt radiusMeters;
 
-  late final _i1.ColumnDouble centerLatitude;
+  late final _is.ColumnDouble centerLatitude;
 
-  late final _i1.ColumnDouble centerLongitude;
+  late final _is.ColumnDouble centerLongitude;
 
-  late final _i1.ColumnDouble south;
+  late final _is.ColumnDouble south;
 
-  late final _i1.ColumnDouble west;
+  late final _is.ColumnDouble west;
 
-  late final _i1.ColumnDouble north;
+  late final _is.ColumnDouble north;
 
-  late final _i1.ColumnDouble east;
+  late final _is.ColumnDouble east;
 
-  late final _i1.ColumnString manifestVersion;
+  late final _is.ColumnString manifestVersion;
 
-  late final _i1.ColumnInt manifestRevision;
+  late final _is.ColumnInt manifestRevision;
 
-  late final _i1.ColumnString calibrationVersion;
+  late final _is.ColumnString calibrationVersion;
 
-  late final _i1.ColumnEnum<_i4.DiscoveryHarvestState> state;
+  late final _is.ColumnEnum<_iervij0b.DiscoveryHarvestState> state;
 
-  late final _i1.ColumnSerializable<List<_i5.DiscoveryHarvestQueryOutcome>>
+  late final _is.ColumnSerializable<
+    List<_iajcbtjd.DiscoveryHarvestQueryOutcome>
+  >
   queryOutcomes;
 
-  late final _i1.ColumnInt attemptedQueries;
+  late final _is.ColumnInt attemptedQueries;
 
-  late final _i1.ColumnInt completedQueries;
+  late final _is.ColumnInt completedQueries;
 
-  late final _i1.ColumnInt totalQueries;
+  late final _is.ColumnInt totalQueries;
 
-  late final _i1.ColumnInt observedPlaces;
+  late final _is.ColumnInt observedPlaces;
 
-  late final _i1.ColumnInt upstreamRequests;
+  late final _is.ColumnInt upstreamRequests;
 
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  late final _i1.ColumnDateTime startedAt;
+  late final _is.ColumnDateTime startedAt;
 
-  late final _i1.ColumnDateTime completedAt;
+  late final _is.ColumnDateTime completedAt;
 
-  late final _i1.ColumnString failureCode;
+  late final _is.ColumnString failureCode;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     jobId,
     harvestKey,
@@ -818,23 +825,22 @@ class DiscoveryHarvestRowTable extends _i1.Table<int?> {
   ];
 }
 
-class DiscoveryHarvestRowInclude extends _i1.IncludeObject {
+class DiscoveryHarvestRowInclude extends _is.IncludeObject {
   DiscoveryHarvestRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DiscoveryHarvestRow.t;
+  _is.Table<int?> get table => DiscoveryHarvestRow.t;
 }
 
-class DiscoveryHarvestRowIncludeList extends _i1.IncludeList {
+class DiscoveryHarvestRowIncludeList extends _is.IncludeList {
   DiscoveryHarvestRowIncludeList._({
-    _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
+    _is.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -842,10 +848,10 @@ class DiscoveryHarvestRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DiscoveryHarvestRow.t;
+  _is.Table<int?> get table => DiscoveryHarvestRow.t;
 }
 
 class DiscoveryHarvestRowRepository {
@@ -874,22 +880,20 @@ class DiscoveryHarvestRowRepository {
   /// );
   /// ```
   Future<List<DiscoveryHarvestRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DiscoveryHarvestRow>(
       where: where?.call(DiscoveryHarvestRow.t),
       orderBy: orderBy?.call(DiscoveryHarvestRow.t),
       orderByList: orderByList?.call(DiscoveryHarvestRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -916,21 +920,19 @@ class DiscoveryHarvestRowRepository {
   /// );
   /// ```
   Future<DiscoveryHarvestRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DiscoveryHarvestRow>(
       where: where?.call(DiscoveryHarvestRow.t),
       orderBy: orderBy?.call(DiscoveryHarvestRow.t),
       orderByList: orderByList?.call(DiscoveryHarvestRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -940,11 +942,11 @@ class DiscoveryHarvestRowRepository {
 
   /// Finds a single [DiscoveryHarvestRow] by its [id] or null if no such row exists.
   Future<DiscoveryHarvestRow?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DiscoveryHarvestRow>(
       id,
@@ -964,16 +966,22 @@ class DiscoveryHarvestRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryHarvestRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryHarvestRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DiscoveryHarvestRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -981,12 +989,81 @@ class DiscoveryHarvestRowRepository {
   ///
   /// The returned [DiscoveryHarvestRow] will have its `id` field set.
   Future<DiscoveryHarvestRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryHarvestRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DiscoveryHarvestRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [DiscoveryHarvestRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [DiscoveryHarvestRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<DiscoveryHarvestRow>> upsert(
+    _is.DatabaseSession session,
+    List<DiscoveryHarvestRow> rows, {
+    required _is.ColumnSelections<DiscoveryHarvestRowTable> conflictColumns,
+    _is.ColumnSelections<DiscoveryHarvestRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<DiscoveryHarvestRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<DiscoveryHarvestRow>(
+      rows,
+      conflictColumns: conflictColumns(DiscoveryHarvestRow.t),
+      updateColumns: updateColumns?.call(DiscoveryHarvestRow.t),
+      updateWhere: updateWhere?.call(DiscoveryHarvestRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [DiscoveryHarvestRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [DiscoveryHarvestRow] will have its `id` field set.
+  Future<DiscoveryHarvestRow?> upsertRow(
+    _is.DatabaseSession session,
+    DiscoveryHarvestRow row, {
+    required _is.ColumnSelections<DiscoveryHarvestRowTable> conflictColumns,
+    _is.ColumnSelections<DiscoveryHarvestRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<DiscoveryHarvestRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<DiscoveryHarvestRow>(
+      row,
+      conflictColumns: conflictColumns(DiscoveryHarvestRow.t),
+      updateColumns: updateColumns?.call(DiscoveryHarvestRow.t),
+      updateWhere: updateWhere?.call(DiscoveryHarvestRow.t),
       transaction: transaction,
     );
   }
@@ -996,16 +1073,22 @@ class DiscoveryHarvestRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryHarvestRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryHarvestRow> rows, {
-    _i1.ColumnSelections<DiscoveryHarvestRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DiscoveryHarvestRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DiscoveryHarvestRow>(
       rows,
       columns: columns?.call(DiscoveryHarvestRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1013,10 +1096,10 @@ class DiscoveryHarvestRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DiscoveryHarvestRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryHarvestRow row, {
-    _i1.ColumnSelections<DiscoveryHarvestRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DiscoveryHarvestRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DiscoveryHarvestRow>(
       row,
@@ -1028,11 +1111,11 @@ class DiscoveryHarvestRowRepository {
   /// Updates a single [DiscoveryHarvestRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DiscoveryHarvestRow?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DiscoveryHarvestRowUpdateTable>
+    required _is.ColumnValueListBuilder<DiscoveryHarvestRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DiscoveryHarvestRow>(
       id,
@@ -1043,17 +1126,21 @@ class DiscoveryHarvestRowRepository {
 
   /// Updates all [DiscoveryHarvestRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryHarvestRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DiscoveryHarvestRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DiscoveryHarvestRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable> where,
+    required _is.WhereExpressionBuilder<DiscoveryHarvestRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
-    _i1.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DiscoveryHarvestRow>(
       columnValues: columnValues(DiscoveryHarvestRow.t.updateTable),
@@ -1062,30 +1149,44 @@ class DiscoveryHarvestRowRepository {
       offset: offset,
       orderBy: orderBy?.call(DiscoveryHarvestRow.t),
       orderByList: orderByList?.call(DiscoveryHarvestRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [DiscoveryHarvestRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryHarvestRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryHarvestRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DiscoveryHarvestRow>(
       rows,
+      orderBy: orderBy?.call(DiscoveryHarvestRow.t),
+      orderByList: orderByList?.call(DiscoveryHarvestRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [DiscoveryHarvestRow].
   Future<DiscoveryHarvestRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryHarvestRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DiscoveryHarvestRow>(
       row,
@@ -1094,24 +1195,37 @@ class DiscoveryHarvestRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryHarvestRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DiscoveryHarvestRowTable> where,
+    _is.OrderByBuilder<DiscoveryHarvestRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryHarvestRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DiscoveryHarvestRow>(
       where: where(DiscoveryHarvestRow.t),
+      orderBy: orderBy?.call(DiscoveryHarvestRow.t),
+      orderByList: orderByList?.call(DiscoveryHarvestRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryHarvestRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DiscoveryHarvestRow>(
       where: where?.call(DiscoveryHarvestRow.t),
@@ -1122,11 +1236,11 @@ class DiscoveryHarvestRowRepository {
 
   /// Acquires row-level locks on [DiscoveryHarvestRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DiscoveryHarvestRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DiscoveryHarvestRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DiscoveryHarvestRow>(
       where: where(DiscoveryHarvestRow.t),

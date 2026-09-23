@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:hayer_server/src/generated/protocol.dart' as _i2;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DiscoveryHarvestManifestValidation
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryHarvestManifestValidation._({
     required this.passed,
     required this.errors,
@@ -34,12 +33,12 @@ abstract class DiscoveryHarvestManifestValidation
     Map<String, dynamic> jsonSerialization,
   ) {
     return DiscoveryHarvestManifestValidation(
-      passed: _i1.BoolJsonExtension.fromJson(jsonSerialization['passed']),
-      errors: _i2.Protocol().deserialize<List<String>>(
+      passed: _is.BoolJsonExtension.fromJson(jsonSerialization['passed']),
+      errors: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['errors'],
       ),
       revision: jsonSerialization['revision'] as int,
-      validatedAt: _i1.DateTimeJsonExtension.fromJson(
+      validatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['validatedAt'],
       ),
     );
@@ -55,7 +54,7 @@ abstract class DiscoveryHarvestManifestValidation
 
   /// Returns a shallow copy of this [DiscoveryHarvestManifestValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryHarvestManifestValidation copyWith({
     bool? passed,
     List<String>? errors,
@@ -86,7 +85,7 @@ abstract class DiscoveryHarvestManifestValidation
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -106,7 +105,7 @@ class _DiscoveryHarvestManifestValidationImpl
 
   /// Returns a shallow copy of this [DiscoveryHarvestManifestValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryHarvestManifestValidation copyWith({
     bool? passed,

@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// One provider type the Discover auto-mapper attached to a node, so the admin
 /// can show which aliases a person chose and which the mapper guessed.
 abstract class AdminDiscoveryAutoMappedType
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminDiscoveryAutoMappedType._({
     required this.primaryType,
     required this.typeKey,
@@ -44,7 +43,7 @@ abstract class AdminDiscoveryAutoMappedType
       nodeId: jsonSerialization['nodeId'] as String,
       nodeLabel: jsonSerialization['nodeLabel'] as String,
       rule: jsonSerialization['rule'] as String,
-      mappedAt: _i1.DateTimeJsonExtension.fromJson(
+      mappedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['mappedAt'],
       ),
     );
@@ -64,7 +63,7 @@ abstract class AdminDiscoveryAutoMappedType
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMappedType]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminDiscoveryAutoMappedType copyWith({
     String? primaryType,
     String? typeKey,
@@ -101,7 +100,7 @@ abstract class AdminDiscoveryAutoMappedType
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -124,7 +123,7 @@ class _AdminDiscoveryAutoMappedTypeImpl extends AdminDiscoveryAutoMappedType {
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMappedType]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminDiscoveryAutoMappedType copyWith({
     String? primaryType,

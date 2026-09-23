@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'discovery_harvest_query_kind.dart' as _i2;
-import 'discovery_harvest_query_state.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_harvest_query_kind.dart' as _ih0y3xx9;
+import 'discovery_harvest_query_state.dart' as _it5gcvsk;
 
 abstract class DiscoveryHarvestQueryOutcome
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryHarvestQueryOutcome._({
     required this.entryId,
     required this.kind,
@@ -31,10 +30,10 @@ abstract class DiscoveryHarvestQueryOutcome
 
   factory DiscoveryHarvestQueryOutcome({
     required String entryId,
-    required _i2.DiscoveryHarvestQueryKind kind,
+    required _ih0y3xx9.DiscoveryHarvestQueryKind kind,
     required String query,
     required String languageCode,
-    required _i3.DiscoveryHarvestQueryState state,
+    required _it5gcvsk.DiscoveryHarvestQueryState state,
     required int pagesAttempted,
     required int observedPlaces,
     required int upstreamRequests,
@@ -46,12 +45,12 @@ abstract class DiscoveryHarvestQueryOutcome
   ) {
     return DiscoveryHarvestQueryOutcome(
       entryId: jsonSerialization['entryId'] as String,
-      kind: _i2.DiscoveryHarvestQueryKind.fromJson(
+      kind: _ih0y3xx9.DiscoveryHarvestQueryKind.fromJson(
         (jsonSerialization['kind'] as String),
       ),
       query: jsonSerialization['query'] as String,
       languageCode: jsonSerialization['languageCode'] as String,
-      state: _i3.DiscoveryHarvestQueryState.fromJson(
+      state: _it5gcvsk.DiscoveryHarvestQueryState.fromJson(
         (jsonSerialization['state'] as String),
       ),
       pagesAttempted: jsonSerialization['pagesAttempted'] as int,
@@ -63,13 +62,13 @@ abstract class DiscoveryHarvestQueryOutcome
 
   String entryId;
 
-  _i2.DiscoveryHarvestQueryKind kind;
+  _ih0y3xx9.DiscoveryHarvestQueryKind kind;
 
   String query;
 
   String languageCode;
 
-  _i3.DiscoveryHarvestQueryState state;
+  _it5gcvsk.DiscoveryHarvestQueryState state;
 
   int pagesAttempted;
 
@@ -81,13 +80,13 @@ abstract class DiscoveryHarvestQueryOutcome
 
   /// Returns a shallow copy of this [DiscoveryHarvestQueryOutcome]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryHarvestQueryOutcome copyWith({
     String? entryId,
-    _i2.DiscoveryHarvestQueryKind? kind,
+    _ih0y3xx9.DiscoveryHarvestQueryKind? kind,
     String? query,
     String? languageCode,
-    _i3.DiscoveryHarvestQueryState? state,
+    _it5gcvsk.DiscoveryHarvestQueryState? state,
     int? pagesAttempted,
     int? observedPlaces,
     int? upstreamRequests,
@@ -127,7 +126,7 @@ abstract class DiscoveryHarvestQueryOutcome
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -136,10 +135,10 @@ class _Undefined {}
 class _DiscoveryHarvestQueryOutcomeImpl extends DiscoveryHarvestQueryOutcome {
   _DiscoveryHarvestQueryOutcomeImpl({
     required String entryId,
-    required _i2.DiscoveryHarvestQueryKind kind,
+    required _ih0y3xx9.DiscoveryHarvestQueryKind kind,
     required String query,
     required String languageCode,
-    required _i3.DiscoveryHarvestQueryState state,
+    required _it5gcvsk.DiscoveryHarvestQueryState state,
     required int pagesAttempted,
     required int observedPlaces,
     required int upstreamRequests,
@@ -158,14 +157,14 @@ class _DiscoveryHarvestQueryOutcomeImpl extends DiscoveryHarvestQueryOutcome {
 
   /// Returns a shallow copy of this [DiscoveryHarvestQueryOutcome]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryHarvestQueryOutcome copyWith({
     String? entryId,
-    _i2.DiscoveryHarvestQueryKind? kind,
+    _ih0y3xx9.DiscoveryHarvestQueryKind? kind,
     String? query,
     String? languageCode,
-    _i3.DiscoveryHarvestQueryState? state,
+    _it5gcvsk.DiscoveryHarvestQueryState? state,
     int? pagesAttempted,
     int? observedPlaces,
     int? upstreamRequests,

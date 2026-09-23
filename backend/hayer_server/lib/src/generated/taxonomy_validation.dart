@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'taxonomy_canary_sample.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'taxonomy_canary_sample.dart' as _itt2qz3g;
 
 abstract class TaxonomyValidation
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   TaxonomyValidation._({
     required this.passed,
     required this.errors,
@@ -27,20 +26,21 @@ abstract class TaxonomyValidation
   factory TaxonomyValidation({
     required bool passed,
     required List<String> errors,
-    required List<_i2.TaxonomyCanarySample> samples,
+    required List<_itt2qz3g.TaxonomyCanarySample> samples,
     required DateTime validatedAt,
   }) = _TaxonomyValidationImpl;
 
   factory TaxonomyValidation.fromJson(Map<String, dynamic> jsonSerialization) {
     return TaxonomyValidation(
-      passed: _i1.BoolJsonExtension.fromJson(jsonSerialization['passed']),
-      errors: _i3.Protocol().deserialize<List<String>>(
+      passed: _is.BoolJsonExtension.fromJson(jsonSerialization['passed']),
+      errors: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['errors'],
       ),
-      samples: _i3.Protocol().deserialize<List<_i2.TaxonomyCanarySample>>(
-        jsonSerialization['samples'],
-      ),
-      validatedAt: _i1.DateTimeJsonExtension.fromJson(
+      samples: _i66y2smk.Protocol()
+          .deserialize<List<_itt2qz3g.TaxonomyCanarySample>>(
+            jsonSerialization['samples'],
+          ),
+      validatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['validatedAt'],
       ),
     );
@@ -50,17 +50,17 @@ abstract class TaxonomyValidation
 
   List<String> errors;
 
-  List<_i2.TaxonomyCanarySample> samples;
+  List<_itt2qz3g.TaxonomyCanarySample> samples;
 
   DateTime validatedAt;
 
   /// Returns a shallow copy of this [TaxonomyValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TaxonomyValidation copyWith({
     bool? passed,
     List<String>? errors,
-    List<_i2.TaxonomyCanarySample>? samples,
+    List<_itt2qz3g.TaxonomyCanarySample>? samples,
     DateTime? validatedAt,
   });
   @override
@@ -87,7 +87,7 @@ abstract class TaxonomyValidation
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +95,7 @@ class _TaxonomyValidationImpl extends TaxonomyValidation {
   _TaxonomyValidationImpl({
     required bool passed,
     required List<String> errors,
-    required List<_i2.TaxonomyCanarySample> samples,
+    required List<_itt2qz3g.TaxonomyCanarySample> samples,
     required DateTime validatedAt,
   }) : super._(
          passed: passed,
@@ -106,12 +106,12 @@ class _TaxonomyValidationImpl extends TaxonomyValidation {
 
   /// Returns a shallow copy of this [TaxonomyValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TaxonomyValidation copyWith({
     bool? passed,
     List<String>? errors,
-    List<_i2.TaxonomyCanarySample>? samples,
+    List<_itt2qz3g.TaxonomyCanarySample>? samples,
     DateTime? validatedAt,
   }) {
     return TaxonomyValidation(

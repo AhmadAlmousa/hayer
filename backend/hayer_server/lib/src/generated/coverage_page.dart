@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'coverage_record.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'coverage_record.dart' as _i7dm26zo;
 
 abstract class CoveragePage
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   CoveragePage._({
     required this.items,
     required this.total,
@@ -25,7 +24,7 @@ abstract class CoveragePage
   });
 
   factory CoveragePage({
-    required List<_i2.CoverageRecord> items,
+    required List<_i7dm26zo.CoverageRecord> items,
     required int total,
     required int page,
     required int pageSize,
@@ -33,7 +32,7 @@ abstract class CoveragePage
 
   factory CoveragePage.fromJson(Map<String, dynamic> jsonSerialization) {
     return CoveragePage(
-      items: _i3.Protocol().deserialize<List<_i2.CoverageRecord>>(
+      items: _i66y2smk.Protocol().deserialize<List<_i7dm26zo.CoverageRecord>>(
         jsonSerialization['items'],
       ),
       total: jsonSerialization['total'] as int,
@@ -42,7 +41,7 @@ abstract class CoveragePage
     );
   }
 
-  List<_i2.CoverageRecord> items;
+  List<_i7dm26zo.CoverageRecord> items;
 
   int total;
 
@@ -52,9 +51,9 @@ abstract class CoveragePage
 
   /// Returns a shallow copy of this [CoveragePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CoveragePage copyWith({
-    List<_i2.CoverageRecord>? items,
+    List<_i7dm26zo.CoverageRecord>? items,
     int? total,
     int? page,
     int? pageSize,
@@ -83,13 +82,13 @@ abstract class CoveragePage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _CoveragePageImpl extends CoveragePage {
   _CoveragePageImpl({
-    required List<_i2.CoverageRecord> items,
+    required List<_i7dm26zo.CoverageRecord> items,
     required int total,
     required int page,
     required int pageSize,
@@ -102,10 +101,10 @@ class _CoveragePageImpl extends CoveragePage {
 
   /// Returns a shallow copy of this [CoveragePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CoveragePage copyWith({
-    List<_i2.CoverageRecord>? items,
+    List<_i7dm26zo.CoverageRecord>? items,
     int? total,
     int? page,
     int? pageSize,

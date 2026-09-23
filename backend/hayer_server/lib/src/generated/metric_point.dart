@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class MetricPoint
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   MetricPoint._({
     required this.bucketStartedAt,
     required this.metricName,
@@ -31,7 +30,7 @@ abstract class MetricPoint
 
   factory MetricPoint.fromJson(Map<String, dynamic> jsonSerialization) {
     return MetricPoint(
-      bucketStartedAt: _i1.DateTimeJsonExtension.fromJson(
+      bucketStartedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['bucketStartedAt'],
       ),
       metricName: jsonSerialization['metricName'] as String,
@@ -50,7 +49,7 @@ abstract class MetricPoint
 
   /// Returns a shallow copy of this [MetricPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MetricPoint copyWith({
     DateTime? bucketStartedAt,
     String? metricName,
@@ -81,7 +80,7 @@ abstract class MetricPoint
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -100,7 +99,7 @@ class _MetricPointImpl extends MetricPoint {
 
   /// Returns a shallow copy of this [MetricPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MetricPoint copyWith({
     DateTime? bucketStartedAt,

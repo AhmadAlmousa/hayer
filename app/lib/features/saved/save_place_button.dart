@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import 'saved_places_controller.dart';
@@ -13,6 +12,7 @@ class SavePlaceButton extends ConsumerWidget {
     this.iconOnly = false,
     this.onDark = false,
     this.prominent = false,
+    this.outlined = false,
   });
 
   final PlaceSnapshot place;
@@ -22,6 +22,7 @@ class SavePlaceButton extends ConsumerWidget {
   /// Whether saving is one of the surface's main actions, drawn as a filled
   /// button.
   final bool prominent;
+  final bool outlined;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,16 +58,13 @@ class SavePlaceButton extends ConsumerWidget {
     }
 
     if (iconOnly) {
-      return M3EIconButton(
+      return IconButton(
         tooltip: tooltip,
         onPressed: saving ? null : toggle,
-        variant: onDark
-            ? M3EIconButtonVariant.filled
-            : M3EIconButtonVariant.standard,
-        decoration: onDark
-            ? const M3EIconButtonDecoration(
-                backgroundColor: WidgetStatePropertyAll(Colors.black54),
-                foregroundColor: WidgetStatePropertyAll(Colors.white),
+        style: onDark
+            ? IconButton.styleFrom(
+                backgroundColor: Colors.black54,
+                foregroundColor: Colors.white,
               )
             : null,
         icon: saving
@@ -86,6 +84,24 @@ class SavePlaceButton extends ConsumerWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : icon,
+        label: Text(tooltip),
+      );
+    }
+    if (outlined) {
+      return OutlinedButton.icon(
+        onPressed: saving ? null : toggle,
+        style: onDark
+            ? OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                side: const BorderSide(color: Colors.white70),
+              )
+            : null,
+        icon: saving
+            ? const SizedBox.square(
+                dimension: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Text(saved ? '❤️' : '🤍'),
         label: Text(tooltip),
       );
     }

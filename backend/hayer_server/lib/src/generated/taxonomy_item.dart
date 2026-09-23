@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'taxonomy_kind.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'taxonomy_kind.dart' as _ikgwnnlq;
 
 abstract class TaxonomyItem
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   TaxonomyItem._({
     required this.id,
     required this.kind,
@@ -30,7 +29,7 @@ abstract class TaxonomyItem
 
   factory TaxonomyItem({
     required String id,
-    required _i2.TaxonomyKind kind,
+    required _ikgwnnlq.TaxonomyKind kind,
     required List<String> parentCategoryIds,
     required String labelEn,
     required String labelAr,
@@ -42,21 +41,23 @@ abstract class TaxonomyItem
   factory TaxonomyItem.fromJson(Map<String, dynamic> jsonSerialization) {
     return TaxonomyItem(
       id: jsonSerialization['id'] as String,
-      kind: _i2.TaxonomyKind.fromJson((jsonSerialization['kind'] as String)),
-      parentCategoryIds: _i3.Protocol().deserialize<List<String>>(
+      kind: _ikgwnnlq.TaxonomyKind.fromJson(
+        (jsonSerialization['kind'] as String),
+      ),
+      parentCategoryIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['parentCategoryIds'],
       ),
       labelEn: jsonSerialization['labelEn'] as String,
       labelAr: jsonSerialization['labelAr'] as String,
       emoji: jsonSerialization['emoji'] as String,
       sortOrder: jsonSerialization['sortOrder'] as int,
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      enabled: _is.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
     );
   }
 
   String id;
 
-  _i2.TaxonomyKind kind;
+  _ikgwnnlq.TaxonomyKind kind;
 
   List<String> parentCategoryIds;
 
@@ -72,10 +73,10 @@ abstract class TaxonomyItem
 
   /// Returns a shallow copy of this [TaxonomyItem]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TaxonomyItem copyWith({
     String? id,
-    _i2.TaxonomyKind? kind,
+    _ikgwnnlq.TaxonomyKind? kind,
     List<String>? parentCategoryIds,
     String? labelEn,
     String? labelAr,
@@ -115,14 +116,14 @@ abstract class TaxonomyItem
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _TaxonomyItemImpl extends TaxonomyItem {
   _TaxonomyItemImpl({
     required String id,
-    required _i2.TaxonomyKind kind,
+    required _ikgwnnlq.TaxonomyKind kind,
     required List<String> parentCategoryIds,
     required String labelEn,
     required String labelAr,
@@ -142,11 +143,11 @@ class _TaxonomyItemImpl extends TaxonomyItem {
 
   /// Returns a shallow copy of this [TaxonomyItem]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TaxonomyItem copyWith({
     String? id,
-    _i2.TaxonomyKind? kind,
+    _ikgwnnlq.TaxonomyKind? kind,
     List<String>? parentCategoryIds,
     String? labelEn,
     String? labelAr,

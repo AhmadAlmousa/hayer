@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discovery_type_mapping_issue.dart' as _i0ly2vwv;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discovery_type_mapping_issue.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class AdminDiscoveryUnmappedType implements _i1.SerializableModel {
+abstract class AdminDiscoveryUnmappedType
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminDiscoveryUnmappedType._({
     required this.primaryType,
     required this.issue,
@@ -28,7 +28,7 @@ abstract class AdminDiscoveryUnmappedType implements _i1.SerializableModel {
 
   factory AdminDiscoveryUnmappedType({
     required String primaryType,
-    required _i2.DiscoveryTypeMappingIssue issue,
+    required _i0ly2vwv.DiscoveryTypeMappingIssue issue,
     required int catalogPlaceCount,
     required int observationCount,
     required DateTime firstObservedAt,
@@ -41,18 +41,18 @@ abstract class AdminDiscoveryUnmappedType implements _i1.SerializableModel {
   ) {
     return AdminDiscoveryUnmappedType(
       primaryType: jsonSerialization['primaryType'] as String,
-      issue: _i2.DiscoveryTypeMappingIssue.fromJson(
+      issue: _i0ly2vwv.DiscoveryTypeMappingIssue.fromJson(
         (jsonSerialization['issue'] as String),
       ),
       catalogPlaceCount: jsonSerialization['catalogPlaceCount'] as int,
       observationCount: jsonSerialization['observationCount'] as int,
-      firstObservedAt: _i1.DateTimeJsonExtension.fromJson(
+      firstObservedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['firstObservedAt'],
       ),
-      lastObservedAt: _i1.DateTimeJsonExtension.fromJson(
+      lastObservedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastObservedAt'],
       ),
-      exampleCatalogIds: _i3.Protocol().deserialize<List<int>>(
+      exampleCatalogIds: _iynev3sz.Protocol().deserialize<List<int>>(
         jsonSerialization['exampleCatalogIds'],
       ),
     );
@@ -60,7 +60,7 @@ abstract class AdminDiscoveryUnmappedType implements _i1.SerializableModel {
 
   String primaryType;
 
-  _i2.DiscoveryTypeMappingIssue issue;
+  _i0ly2vwv.DiscoveryTypeMappingIssue issue;
 
   int catalogPlaceCount;
 
@@ -74,10 +74,10 @@ abstract class AdminDiscoveryUnmappedType implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminDiscoveryUnmappedType]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminDiscoveryUnmappedType copyWith({
     String? primaryType,
-    _i2.DiscoveryTypeMappingIssue? issue,
+    _i0ly2vwv.DiscoveryTypeMappingIssue? issue,
     int? catalogPlaceCount,
     int? observationCount,
     DateTime? firstObservedAt,
@@ -99,15 +99,29 @@ abstract class AdminDiscoveryUnmappedType implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminDiscoveryUnmappedType',
+      'primaryType': primaryType,
+      'issue': issue.toJson(),
+      'catalogPlaceCount': catalogPlaceCount,
+      'observationCount': observationCount,
+      'firstObservedAt': firstObservedAt.toJson(),
+      'lastObservedAt': lastObservedAt.toJson(),
+      'exampleCatalogIds': exampleCatalogIds.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _AdminDiscoveryUnmappedTypeImpl extends AdminDiscoveryUnmappedType {
   _AdminDiscoveryUnmappedTypeImpl({
     required String primaryType,
-    required _i2.DiscoveryTypeMappingIssue issue,
+    required _i0ly2vwv.DiscoveryTypeMappingIssue issue,
     required int catalogPlaceCount,
     required int observationCount,
     required DateTime firstObservedAt,
@@ -125,11 +139,11 @@ class _AdminDiscoveryUnmappedTypeImpl extends AdminDiscoveryUnmappedType {
 
   /// Returns a shallow copy of this [AdminDiscoveryUnmappedType]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminDiscoveryUnmappedType copyWith({
     String? primaryType,
-    _i2.DiscoveryTypeMappingIssue? issue,
+    _i0ly2vwv.DiscoveryTypeMappingIssue? issue,
     int? catalogPlaceCount,
     int? observationCount,
     DateTime? firstObservedAt,

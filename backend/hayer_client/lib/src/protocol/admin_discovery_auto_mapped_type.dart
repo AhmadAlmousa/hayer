@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// One provider type the Discover auto-mapper attached to a node, so the admin
 /// can show which aliases a person chose and which the mapper guessed.
-abstract class AdminDiscoveryAutoMappedType implements _i1.SerializableModel {
+abstract class AdminDiscoveryAutoMappedType
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminDiscoveryAutoMappedType._({
     required this.primaryType,
     required this.typeKey,
@@ -43,7 +43,7 @@ abstract class AdminDiscoveryAutoMappedType implements _i1.SerializableModel {
       nodeId: jsonSerialization['nodeId'] as String,
       nodeLabel: jsonSerialization['nodeLabel'] as String,
       rule: jsonSerialization['rule'] as String,
-      mappedAt: _i1.DateTimeJsonExtension.fromJson(
+      mappedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['mappedAt'],
       ),
     );
@@ -63,7 +63,7 @@ abstract class AdminDiscoveryAutoMappedType implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMappedType]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminDiscoveryAutoMappedType copyWith({
     String? primaryType,
     String? typeKey,
@@ -86,8 +86,21 @@ abstract class AdminDiscoveryAutoMappedType implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminDiscoveryAutoMappedType',
+      'primaryType': primaryType,
+      'typeKey': typeKey,
+      'nodeId': nodeId,
+      'nodeLabel': nodeLabel,
+      'rule': rule,
+      'mappedAt': mappedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,7 +123,7 @@ class _AdminDiscoveryAutoMappedTypeImpl extends AdminDiscoveryAutoMappedType {
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMappedType]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminDiscoveryAutoMappedType copyWith({
     String? primaryType,

@@ -10,15 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'taxonomy_status.dart' as _i2;
-import 'admin_taxonomy_item.dart' as _i3;
-import 'admin_map_location.dart' as _i4;
-import 'package:hayer_server/src/generated/protocol.dart' as _i5;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_map_location.dart' as _irkf0vy6;
+import 'admin_taxonomy_item.dart' as _ic97i39b;
+import 'taxonomy_status.dart' as _ix2svfdk;
 
 abstract class AdminTaxonomyVersion
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminTaxonomyVersion._({
     required this.version,
     required this.revision,
@@ -37,11 +36,11 @@ abstract class AdminTaxonomyVersion
   factory AdminTaxonomyVersion({
     required String version,
     required int revision,
-    required _i2.TaxonomyStatus status,
-    required List<_i3.AdminTaxonomyItem> items,
+    required _ix2svfdk.TaxonomyStatus status,
+    required List<_ic97i39b.AdminTaxonomyItem> items,
     required bool validationPassed,
     required List<String> validationErrors,
-    _i4.AdminMapLocation? validationLocation,
+    _irkf0vy6.AdminMapLocation? validationLocation,
     int? validationRadiusMeters,
     required String createdBy,
     required DateTime createdAt,
@@ -55,37 +54,38 @@ abstract class AdminTaxonomyVersion
     return AdminTaxonomyVersion(
       version: jsonSerialization['version'] as String,
       revision: jsonSerialization['revision'] as int,
-      status: _i2.TaxonomyStatus.fromJson(
+      status: _ix2svfdk.TaxonomyStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
-      items: _i5.Protocol().deserialize<List<_i3.AdminTaxonomyItem>>(
-        jsonSerialization['items'],
-      ),
-      validationPassed: _i1.BoolJsonExtension.fromJson(
+      items: _i66y2smk.Protocol()
+          .deserialize<List<_ic97i39b.AdminTaxonomyItem>>(
+            jsonSerialization['items'],
+          ),
+      validationPassed: _is.BoolJsonExtension.fromJson(
         jsonSerialization['validationPassed'],
       ),
-      validationErrors: _i5.Protocol().deserialize<List<String>>(
+      validationErrors: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['validationErrors'],
       ),
       validationLocation: jsonSerialization['validationLocation'] == null
           ? null
-          : _i5.Protocol().deserialize<_i4.AdminMapLocation>(
+          : _i66y2smk.Protocol().deserialize<_irkf0vy6.AdminMapLocation>(
               jsonSerialization['validationLocation'],
             ),
       validationRadiusMeters:
           jsonSerialization['validationRadiusMeters'] as int?,
       createdBy: jsonSerialization['createdBy'] as String,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
       validatedAt: jsonSerialization['validatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['validatedAt'],
             ),
       publishedAt: jsonSerialization['publishedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['publishedAt'],
             ),
     );
@@ -95,15 +95,15 @@ abstract class AdminTaxonomyVersion
 
   int revision;
 
-  _i2.TaxonomyStatus status;
+  _ix2svfdk.TaxonomyStatus status;
 
-  List<_i3.AdminTaxonomyItem> items;
+  List<_ic97i39b.AdminTaxonomyItem> items;
 
   bool validationPassed;
 
   List<String> validationErrors;
 
-  _i4.AdminMapLocation? validationLocation;
+  _irkf0vy6.AdminMapLocation? validationLocation;
 
   int? validationRadiusMeters;
 
@@ -117,15 +117,15 @@ abstract class AdminTaxonomyVersion
 
   /// Returns a shallow copy of this [AdminTaxonomyVersion]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminTaxonomyVersion copyWith({
     String? version,
     int? revision,
-    _i2.TaxonomyStatus? status,
-    List<_i3.AdminTaxonomyItem>? items,
+    _ix2svfdk.TaxonomyStatus? status,
+    List<_ic97i39b.AdminTaxonomyItem>? items,
     bool? validationPassed,
     List<String>? validationErrors,
-    _i4.AdminMapLocation? validationLocation,
+    _irkf0vy6.AdminMapLocation? validationLocation,
     int? validationRadiusMeters,
     String? createdBy,
     DateTime? createdAt,
@@ -176,7 +176,7 @@ abstract class AdminTaxonomyVersion
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -186,11 +186,11 @@ class _AdminTaxonomyVersionImpl extends AdminTaxonomyVersion {
   _AdminTaxonomyVersionImpl({
     required String version,
     required int revision,
-    required _i2.TaxonomyStatus status,
-    required List<_i3.AdminTaxonomyItem> items,
+    required _ix2svfdk.TaxonomyStatus status,
+    required List<_ic97i39b.AdminTaxonomyItem> items,
     required bool validationPassed,
     required List<String> validationErrors,
-    _i4.AdminMapLocation? validationLocation,
+    _irkf0vy6.AdminMapLocation? validationLocation,
     int? validationRadiusMeters,
     required String createdBy,
     required DateTime createdAt,
@@ -213,13 +213,13 @@ class _AdminTaxonomyVersionImpl extends AdminTaxonomyVersion {
 
   /// Returns a shallow copy of this [AdminTaxonomyVersion]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminTaxonomyVersion copyWith({
     String? version,
     int? revision,
-    _i2.TaxonomyStatus? status,
-    List<_i3.AdminTaxonomyItem>? items,
+    _ix2svfdk.TaxonomyStatus? status,
+    List<_ic97i39b.AdminTaxonomyItem>? items,
     bool? validationPassed,
     List<String>? validationErrors,
     Object? validationLocation = _Undefined,
@@ -237,7 +237,7 @@ class _AdminTaxonomyVersionImpl extends AdminTaxonomyVersion {
       validationPassed: validationPassed ?? this.validationPassed,
       validationErrors:
           validationErrors ?? this.validationErrors.map((e0) => e0).toList(),
-      validationLocation: validationLocation is _i4.AdminMapLocation?
+      validationLocation: validationLocation is _irkf0vy6.AdminMapLocation?
           ? validationLocation
           : this.validationLocation?.copyWith(),
       validationRadiusMeters: validationRadiusMeters is int?

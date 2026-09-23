@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoveryClientLimits implements _i1.SerializableModel {
+abstract class DiscoveryClientLimits
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryClientLimits._({
     required this.defaultPageSize,
     required this.maximumPageSize,
@@ -59,7 +59,7 @@ abstract class DiscoveryClientLimits implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryClientLimits]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryClientLimits copyWith({
     int? defaultPageSize,
     int? maximumPageSize,
@@ -82,8 +82,21 @@ abstract class DiscoveryClientLimits implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryClientLimits',
+      'defaultPageSize': defaultPageSize,
+      'maximumPageSize': maximumPageSize,
+      'maximumCategoryIds': maximumCategoryIds,
+      'maximumTextCodePoints': maximumTextCodePoints,
+      'maximumMapPoints': maximumMapPoints,
+      'otherCategoryId': otherCategoryId,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -106,7 +119,7 @@ class _DiscoveryClientLimitsImpl extends DiscoveryClientLimits {
 
   /// Returns a shallow copy of this [DiscoveryClientLimits]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryClientLimits copyWith({
     int? defaultPageSize,

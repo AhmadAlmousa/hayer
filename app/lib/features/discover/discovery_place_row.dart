@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/display_formatters.dart';
 import '../../core/gcc_currency_symbol.dart';
+import '../../core/place_photo_cache.dart';
 import '../../domain/discovery_area.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../setup/setup_data.dart';
@@ -17,7 +20,6 @@ const discoveryManyReviews = 20000;
 
 enum DiscoveryTagKind {
   hiddenGem,
-  recentlyAdded,
   ratedBelow,
   manyReviews,
   openNow,
@@ -28,23 +30,11 @@ enum DiscoveryTagKind {
 typedef DiscoveryTag = ({DiscoveryTagKind kind, int? value});
 
 /// The one thing a result row says about a place, by priority: a hidden gem,
-/// then a recent addition, a low rating, a very high review count, and
-/// finally its hours at the query's evaluation time.
-///
-/// "Added" means added to Hayer's catalog, measured on the server's clock.
-/// It says nothing about when the place itself opened.
-DiscoveryTag discoveryTagFor(
-  DiscoverPlace item, {
-  required DateTime evaluatedAt,
-  required DiscoveryScoring? scoring,
-}) {
+/// a low rating, a very high review count, then its hours at query time.
+DiscoveryTag discoveryTagFor(DiscoverPlace item) {
   final place = item.place;
   if (item.hiddenGem) {
     return (kind: DiscoveryTagKind.hiddenGem, value: place.reviewCount);
-  }
-  final age = evaluatedAt.difference(item.firstSeenAt).inDays;
-  if (scoring != null && age >= 0 && age <= scoring.recentlyAddedDays) {
-    return (kind: DiscoveryTagKind.recentlyAdded, value: age);
   }
   if (place.rating case final rating? when rating < discoveryLowRating) {
     return (kind: DiscoveryTagKind.ratedBelow, value: null);
@@ -65,12 +55,9 @@ class DiscoveryPlaceRow extends StatelessWidget {
     super.key,
     required this.item,
     required this.countryCode,
-    required this.evaluatedAt,
-    required this.scoring,
     this.origin,
     this.selected = false,
     this.onTap,
-    this.onDetails,
     this.onReport,
   });
 
@@ -79,19 +66,12 @@ class DiscoveryPlaceRow extends StatelessWidget {
   /// The searched area's country, which sets the price symbol.
   final String? countryCode;
 
-  /// The server time the query generation evaluates hours and ages at.
-  final DateTime evaluatedAt;
-  final DiscoveryScoring? scoring;
-
   /// The permitted device location distances are measured from, if any.
   final DiscoveryPoint? origin;
 
   /// Whether this place is the one selected on the map.
   final bool selected;
   final VoidCallback? onTap;
-
-  /// Opens the place's details, from a button under the row when set.
-  final VoidCallback? onDetails;
 
   /// Reports a problem with the place's data, from a button beside it when
   /// set.
@@ -108,25 +88,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _content(context),
-            if (onDetails case final onDetails?)
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(76, 0, 8, 10),
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: FilledButton.tonalIcon(
-                    key: ValueKey('discovery-details-${item.catalogId}'),
-                    onPressed: onDetails,
-                    icon: const Icon(Icons.info_outline_rounded),
-                    label: Text(AppLocalizations.of(context)!.placeDetails),
-                  ),
-                ),
-              ),
-          ],
-        ),
+        child: _content(context),
       ),
     ),
   );
@@ -167,12 +129,7 @@ class DiscoveryPlaceRow extends StatelessWidget {
             size: 12,
           )
         : null;
-    final (tagText, tagColor) = discoveryTagLabel(
-      context,
-      item,
-      evaluatedAt: evaluatedAt,
-      scoring: scoring,
-    );
+    final (tagText, tagColor) = discoveryTagLabel(context, item);
     final rankedName = '${formatCount(context, item.ordinal)}. ${place.name}';
     final titleStyle = theme.textTheme.titleSmall?.copyWith(
       fontSize: 15,
@@ -318,14 +275,12 @@ class DiscoveryPlaceRow extends StatelessWidget {
 /// say it from here.
 (String, Color) discoveryTagLabel(
   BuildContext context,
-  DiscoverPlace item, {
-  required DateTime evaluatedAt,
-  required DiscoveryScoring? scoring,
-}) {
+  DiscoverPlace item,
+) {
   final strings = AppLocalizations.of(context)!;
   final locale = Localizations.localeOf(context).toLanguageTag();
   final colors = Theme.of(context).colorScheme;
-  final tag = discoveryTagFor(item, evaluatedAt: evaluatedAt, scoring: scoring);
+  final tag = discoveryTagFor(item);
   // Scheme colours rather than the design's green and coral, which are too
   // faint for text this small on a light surface.
   return switch (tag) {
@@ -335,10 +290,6 @@ class DiscoveryPlaceRow extends StatelessWidget {
     ),
     (kind: DiscoveryTagKind.hiddenGem, value: _) => (
       strings.discoveryTagHiddenGemPlain,
-      colors.primary,
-    ),
-    (kind: DiscoveryTagKind.recentlyAdded, :final value) => (
-      strings.discoveryTagAdded(value ?? 0),
       colors.primary,
     ),
     (kind: DiscoveryTagKind.ratedBelow, value: _) => (
@@ -376,14 +327,14 @@ final _categoryOf = {
   },
 };
 
-/// A place's category emoji, as the square that stands in for a photo.
-class DiscoveryPlaceThumbnail extends StatelessWidget {
+/// A place photo, with its category emoji when an image is unavailable.
+class DiscoveryPlaceThumbnail extends ConsumerWidget {
   const DiscoveryPlaceThumbnail({super.key, required this.place});
 
   final PlaceSnapshot place;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     SetupCategory? category;
     var emoji = '📍';
@@ -394,23 +345,37 @@ class DiscoveryPlaceThumbnail extends StatelessWidget {
         break;
       }
     }
+    final fallback = Container(
+      width: 56,
+      height: 56,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: switch (category?.id) {
+          'restaurant' => colors.primaryContainer,
+          'cafe' => colors.secondaryContainer,
+          _ => colors.surfaceContainerHighest,
+        },
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        emoji,
+        style: const TextStyle(fontSize: 26),
+        textScaler: TextScaler.noScaling,
+      ),
+    );
+    if (place.photoUrls.isEmpty) return ExcludeSemantics(child: fallback);
     return ExcludeSemantics(
-      child: Container(
-        width: 56,
-        height: 56,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: switch (category?.id) {
-            'restaurant' => colors.primaryContainer,
-            'cafe' => colors.secondaryContainer,
-            _ => colors.surfaceContainerHighest,
-          },
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          emoji,
-          style: const TextStyle(fontSize: 26),
-          textScaler: TextScaler.noScaling,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: CachedNetworkImage(
+          imageUrl: place.photoUrls.first,
+          cacheManager: ref.read(placePhotoCacheProvider),
+          width: 56,
+          height: 56,
+          memCacheWidth: (56 * MediaQuery.devicePixelRatioOf(context)).round(),
+          fit: BoxFit.cover,
+          placeholder: (_, _) => fallback,
+          errorWidget: (_, _, _) => fallback,
         ),
       ),
     );

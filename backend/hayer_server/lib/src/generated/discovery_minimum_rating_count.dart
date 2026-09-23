@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DiscoveryMinimumRatingCount
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryMinimumRatingCount._({
     required this.minimumRating,
     required this.count,
@@ -40,7 +39,7 @@ abstract class DiscoveryMinimumRatingCount
 
   /// Returns a shallow copy of this [DiscoveryMinimumRatingCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryMinimumRatingCount copyWith({
     double? minimumRating,
     int? count,
@@ -65,7 +64,7 @@ abstract class DiscoveryMinimumRatingCount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -80,7 +79,7 @@ class _DiscoveryMinimumRatingCountImpl extends DiscoveryMinimumRatingCount {
 
   /// Returns a shallow copy of this [DiscoveryMinimumRatingCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryMinimumRatingCount copyWith({
     double? minimumRating,

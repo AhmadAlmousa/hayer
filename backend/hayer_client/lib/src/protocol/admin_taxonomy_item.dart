@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'taxonomy_kind.dart' as _ikgwnnlq;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'taxonomy_kind.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class AdminTaxonomyItem implements _i1.SerializableModel {
+abstract class AdminTaxonomyItem
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminTaxonomyItem._({
     required this.id,
     required this.kind,
@@ -31,7 +31,7 @@ abstract class AdminTaxonomyItem implements _i1.SerializableModel {
 
   factory AdminTaxonomyItem({
     required String id,
-    required _i2.TaxonomyKind kind,
+    required _ikgwnnlq.TaxonomyKind kind,
     required List<String> parentCategoryIds,
     required String labelEn,
     required String labelAr,
@@ -45,8 +45,10 @@ abstract class AdminTaxonomyItem implements _i1.SerializableModel {
   factory AdminTaxonomyItem.fromJson(Map<String, dynamic> jsonSerialization) {
     return AdminTaxonomyItem(
       id: jsonSerialization['id'] as String,
-      kind: _i2.TaxonomyKind.fromJson((jsonSerialization['kind'] as String)),
-      parentCategoryIds: _i3.Protocol().deserialize<List<String>>(
+      kind: _ikgwnnlq.TaxonomyKind.fromJson(
+        (jsonSerialization['kind'] as String),
+      ),
+      parentCategoryIds: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['parentCategoryIds'],
       ),
       labelEn: jsonSerialization['labelEn'] as String,
@@ -55,13 +57,13 @@ abstract class AdminTaxonomyItem implements _i1.SerializableModel {
       searchQueryEn: jsonSerialization['searchQueryEn'] as String,
       searchQueryAr: jsonSerialization['searchQueryAr'] as String?,
       sortOrder: jsonSerialization['sortOrder'] as int,
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      enabled: _isc.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
     );
   }
 
   String id;
 
-  _i2.TaxonomyKind kind;
+  _ikgwnnlq.TaxonomyKind kind;
 
   List<String> parentCategoryIds;
 
@@ -81,10 +83,10 @@ abstract class AdminTaxonomyItem implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminTaxonomyItem]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminTaxonomyItem copyWith({
     String? id,
-    _i2.TaxonomyKind? kind,
+    _ikgwnnlq.TaxonomyKind? kind,
     List<String>? parentCategoryIds,
     String? labelEn,
     String? labelAr,
@@ -112,8 +114,25 @@ abstract class AdminTaxonomyItem implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminTaxonomyItem',
+      'id': id,
+      'kind': kind.toJson(),
+      'parentCategoryIds': parentCategoryIds.toJson(),
+      'labelEn': labelEn,
+      'labelAr': labelAr,
+      'emoji': emoji,
+      'searchQueryEn': searchQueryEn,
+      if (searchQueryAr != null) 'searchQueryAr': searchQueryAr,
+      'sortOrder': sortOrder,
+      'enabled': enabled,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -122,7 +141,7 @@ class _Undefined {}
 class _AdminTaxonomyItemImpl extends AdminTaxonomyItem {
   _AdminTaxonomyItemImpl({
     required String id,
-    required _i2.TaxonomyKind kind,
+    required _ikgwnnlq.TaxonomyKind kind,
     required List<String> parentCategoryIds,
     required String labelEn,
     required String labelAr,
@@ -146,11 +165,11 @@ class _AdminTaxonomyItemImpl extends AdminTaxonomyItem {
 
   /// Returns a shallow copy of this [AdminTaxonomyItem]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminTaxonomyItem copyWith({
     String? id,
-    _i2.TaxonomyKind? kind,
+    _ikgwnnlq.TaxonomyKind? kind,
     List<String>? parentCategoryIds,
     String? labelEn,
     String? labelAr,

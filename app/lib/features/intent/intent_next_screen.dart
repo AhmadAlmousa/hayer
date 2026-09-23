@@ -11,7 +11,10 @@ import '../discover/discovery_filter_sheet.dart';
 import '../discover/discovery_taxonomy_provider.dart';
 import '../setup/setup_error.dart';
 import 'intent_copy.dart';
+import 'intent_process_timeline.dart';
 import 'place_intent_controller.dart';
+
+enum _IntentMode { quickPick, explore, together }
 
 class IntentNextScreen extends ConsumerStatefulWidget {
   const IntentNextScreen({super.key});
@@ -23,6 +26,22 @@ class IntentNextScreen extends ConsumerStatefulWidget {
 class _IntentNextScreenState extends ConsumerState<IntentNextScreen> {
   bool _loading = false;
   String? _error;
+  _IntentMode? _mode;
+
+  void _back() => context.go('/where');
+
+  void _next() {
+    switch (_mode) {
+      case _IntentMode.quickPick:
+        _startQuickPick();
+      case _IntentMode.explore:
+        _explore();
+      case _IntentMode.together:
+        _decideTogether();
+      case null:
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,92 +63,120 @@ class _IntentNextScreenState extends ConsumerState<IntentNextScreen> {
                   Localizations.localeOf(context).languageCode,
                 ),
           ];
-    return Scaffold(
-      appBar: AppBar(title: Text(copy.whatNext)),
-      body: SafeArea(
-        child: ContentShell(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-            children: [
-              Text(
-                copy.whatNextPrompt,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _back();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(copy.whatNext),
+          leading: BackButton(onPressed: _back),
+        ),
+        bottomNavigationBar: IntentStepActions(
+          onBack: _back,
+          onNext: _mode == null || _loading ? null : _next,
+        ),
+        body: SafeArea(
+          child: ContentShell(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+              children: [
+                IntentProcessTimeline(
+                  step: 2,
+                  onStep: (step) => context.go(step == 0 ? '/' : '/where'),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        names.join(' · '),
-                        style: const TextStyle(fontWeight: FontWeight.w800),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        intent.address ??
-                            '${intent.latitude?.toStringAsFixed(4)}, ${intent.longitude?.toStringAsFixed(4)}',
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${(intent.radiusMeters / 1000).toStringAsFixed(1)} km',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              _ActionCard(
-                key: const ValueKey('intent-quick-pick'),
-                icon: Icons.bolt_rounded,
-                title: copy.quickPick,
-                description: copy.quickPickDescription,
-                onTap: _loading ? null : () => _startQuickPick(),
-              ),
-              _ActionCard(
-                key: const ValueKey('intent-explore'),
-                icon: Icons.travel_explore_rounded,
-                title: copy.explore,
-                description: copy.exploreDescription,
-                onTap: _loading ? null : _explore,
-              ),
-              _ActionCard(
-                key: const ValueKey('intent-decide-together'),
-                icon: Icons.groups_rounded,
-                title: copy.decideTogether,
-                description: copy.decideTogetherDescription,
-                onTap: _loading ? null : _decideTogether,
-              ),
-              const SizedBox(height: 8),
-              Card(
-                child: ListTile(
-                  key: const ValueKey('intent-refine'),
-                  leading: const Icon(Icons.tune_rounded),
-                  title: Text(copy.refine),
-                  subtitle: Text(
-                    intent.refineCount == 0
-                        ? copy.defaults
-                        : '${intent.refineCount} ${copy.ar ? 'خيارات' : 'preferences'}',
-                  ),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: _refine,
-                ),
-              ),
-              if (_loading) ...[
-                const SizedBox(height: 16),
-                const LinearProgressIndicator(),
-              ],
-              if (_error case final error?) ...[
-                const SizedBox(height: 12),
                 Text(
-                  error,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  copy.whatNextPrompt,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
+                const SizedBox(height: 10),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          names.join(' · '),
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          intent.address ??
+                              '${intent.latitude?.toStringAsFixed(4)}, ${intent.longitude?.toStringAsFixed(4)}',
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${(intent.radiusMeters / 1000).toStringAsFixed(1)} km',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _ActionCard(
+                  key: const ValueKey('intent-quick-pick'),
+                  icon: Icons.bolt_rounded,
+                  title: copy.quickPick,
+                  description: copy.quickPickDescription,
+                  selected: _mode == _IntentMode.quickPick,
+                  onTap: _loading
+                      ? null
+                      : () => setState(() => _mode = _IntentMode.quickPick),
+                ),
+                _ActionCard(
+                  key: const ValueKey('intent-explore'),
+                  icon: Icons.travel_explore_rounded,
+                  title: copy.explore,
+                  description: copy.exploreDescription,
+                  selected: _mode == _IntentMode.explore,
+                  onTap: _loading
+                      ? null
+                      : () => setState(() => _mode = _IntentMode.explore),
+                ),
+                _ActionCard(
+                  key: const ValueKey('intent-decide-together'),
+                  icon: Icons.groups_rounded,
+                  title: copy.decideTogether,
+                  description: copy.decideTogetherDescription,
+                  selected: _mode == _IntentMode.together,
+                  onTap: _loading
+                      ? null
+                      : () => setState(() => _mode = _IntentMode.together),
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  child: ListTile(
+                    key: const ValueKey('intent-refine'),
+                    leading: const Icon(Icons.tune_rounded),
+                    title: Text(copy.refine),
+                    subtitle: Text(
+                      intent.refineCount == 0
+                          ? copy.defaults
+                          : '${intent.refineCount} ${copy.ar ? 'خيارات' : 'preferences'}',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: _refine,
+                  ),
+                ),
+                if (_loading) ...[
+                  const SizedBox(height: 16),
+                  const LinearProgressIndicator(),
+                ],
+                if (_error case final error?) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    error,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -167,24 +214,7 @@ class _IntentNextScreenState extends ConsumerState<IntentNextScreen> {
 
   void _explore() {
     final intent = ref.read(placeIntentProvider);
-    if (intent.radiusMeters > 5000) {
-      final copy = IntentCopy(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            copy.ar
-                ? 'قرّب الخريطة إلى نطاق 10 كم أو أقل للاستكشاف.'
-                : 'Zoom to an area 10 km wide or smaller before exploring.',
-          ),
-          action: SnackBarAction(
-            label: copy.chooseArea,
-            onPressed: () => context.go('/where'),
-          ),
-        ),
-      );
-      return;
-    }
-    context.go(intent.toDiscoveryQuery().location);
+    context.go(intent.toDiscoveryQuery(radiusMeters: 500).location);
   }
 
   Future<void> _startQuickPick() => _create(
@@ -258,22 +288,28 @@ class _ActionCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
+    required this.selected,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String description;
+  final bool selected;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Card(
+    color: selected ? Theme.of(context).colorScheme.secondaryContainer : null,
     child: ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       leading: Icon(icon, size: 32),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
       subtitle: Text(description),
-      trailing: const Icon(Icons.arrow_forward_rounded),
+      selected: selected,
+      trailing: selected
+          ? const Icon(Icons.check_circle_rounded)
+          : const Icon(Icons.circle_outlined),
       onTap: onTap,
     ),
   );
@@ -307,80 +343,107 @@ class _RoomRulesSheetState extends State<_RoomRulesSheet> {
   @override
   Widget build(BuildContext context) {
     final copy = IntentCopy(context);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        24,
-        4,
-        24,
-        20 + MediaQuery.viewInsetsOf(context).bottom,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .9,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            copy.decideTogether,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            4,
+            24,
+            20 + MediaQuery.viewInsetsOf(context).bottom,
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _name,
-            autofocus: true,
-            maxLength: 30,
-            onChanged: (_) => setState(() {}),
-            decoration: InputDecoration(
-              labelText: copy.displayName,
-              prefixIcon: const Icon(Icons.person_outline),
-            ),
-          ),
-          ExpansionTile(
-            tilePadding: EdgeInsets.zero,
-            title: Text(copy.roomRules),
-            subtitle: Text(copy.defaults),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SegmentedButton<api.ConsensusRule>(
-                segments: [
-                  ButtonSegment(
-                    value: api.ConsensusRule.majority,
-                    label: Text(copy.ar ? 'الأغلبية' : 'Majority'),
+              Text(
+                copy.decideTogether,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _name,
+                autofocus: true,
+                maxLength: 30,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  labelText: copy.displayName,
+                  prefixIcon: const Icon(Icons.person_outline),
+                ),
+              ),
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(copy.roomRules),
+                subtitle: Text(copy.defaults),
+                children: [
+                  RadioGroup<api.ConsensusRule>(
+                    groupValue: _consensus,
+                    onChanged: (value) {
+                      if (value != null) setState(() => _consensus = value);
+                    },
+                    child: Column(
+                      children: [
+                        RadioListTile<api.ConsensusRule>(
+                          value: api.ConsensusRule.majority,
+                          title: Text(copy.ar ? 'الأغلبية' : 'Majority'),
+                          subtitle: Text(copy.majorityTip),
+                        ),
+                        RadioListTile<api.ConsensusRule>(
+                          value: api.ConsensusRule.unanimous,
+                          title: Text(copy.ar ? 'الإجماع' : 'Unanimous'),
+                          subtitle: Text(copy.unanimousTip),
+                        ),
+                      ],
+                    ),
                   ),
-                  ButtonSegment(
-                    value: api.ConsensusRule.unanimous,
-                    label: Text(copy.ar ? 'الإجماع' : 'Unanimous'),
+                  RadioGroup<api.MatchingTiming>(
+                    groupValue: _timing,
+                    onChanged: (value) {
+                      if (value != null) setState(() => _timing = value);
+                    },
+                    child: Column(
+                      children: [
+                        RadioListTile<api.MatchingTiming>(
+                          value: api.MatchingTiming.instant,
+                          title: Text(
+                            copy.ar
+                                ? 'التوقف عند أول تطابق'
+                                : 'Stop at first match',
+                          ),
+                          subtitle: Text(copy.instantTip),
+                        ),
+                        RadioListTile<api.MatchingTiming>(
+                          value: api.MatchingTiming.afterDeck,
+                          title: Text(
+                            copy.ar ? 'بعد كل البطاقات' : 'After the deck',
+                          ),
+                          subtitle: Text(copy.afterDeckTip),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
-                selected: {_consensus},
-                onSelectionChanged: (values) =>
-                    setState(() => _consensus = values.single),
               ),
-              SwitchListTile(
-                value: _timing == api.MatchingTiming.instant,
-                title: Text(
-                  copy.ar ? 'التوقف عند أول تطابق' : 'Stop at first match',
-                ),
-                onChanged: (value) => setState(
-                  () => _timing = value
-                      ? api.MatchingTiming.instant
-                      : api.MatchingTiming.afterDeck,
-                ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                key: const ValueKey('intent-create-room'),
+                onPressed: _name.text.trim().length >= 2
+                    ? () => Navigator.pop(
+                        context,
+                        _RoomOptions(_name.text.trim(), _consensus, _timing),
+                      )
+                    : null,
+                icon: const Icon(Icons.groups_rounded),
+                label: Text(copy.createRoom),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          FilledButton.icon(
-            key: const ValueKey('intent-create-room'),
-            onPressed: _name.text.trim().length >= 2
-                ? () => Navigator.pop(
-                    context,
-                    _RoomOptions(_name.text.trim(), _consensus, _timing),
-                  )
-                : null,
-            icon: const Icon(Icons.groups_rounded),
-            label: Text(copy.createRoom),
-          ),
-        ],
+        ),
       ),
     );
   }

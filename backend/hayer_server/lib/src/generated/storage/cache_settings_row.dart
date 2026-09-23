@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../route_origin_mode.dart' as _i2;
-import '../discovery_best_formula.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../discovery_best_formula.dart' as _iuev55uc;
+import '../route_origin_mode.dart' as _i6itrdm6;
 
 abstract class CacheSettingsRow
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   CacheSettingsRow._({
     this.id,
     required this.settingsKey,
@@ -30,12 +29,12 @@ abstract class CacheSettingsRow
     required this.globalBurst,
     bool? routeEstimatesEnabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultRouteOrigin,
+    _i6itrdm6.RouteOriginMode? defaultRouteOrigin,
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
     bool? discoveryEnabled,
-    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    _iuev55uc.DiscoveryBestFormula? discoveryBestFormula,
     double? discoveryGemMinimumRating,
     int? discoveryGemMinimumReviews,
     int? discoveryGemMaximumReviewsExclusive,
@@ -68,13 +67,14 @@ abstract class CacheSettingsRow
   }) : routeEstimatesEnabled = routeEstimatesEnabled ?? true,
        allowParticipantLocation = allowParticipantLocation ?? true,
        defaultRouteOrigin =
-           defaultRouteOrigin ?? _i2.RouteOriginMode.sessionAnchor,
+           defaultRouteOrigin ?? _i6itrdm6.RouteOriginMode.sessionAnchor,
        routeEstimateCacheMinutes = routeEstimateCacheMinutes ?? 10,
        routeRequestsPerMinute = routeRequestsPerMinute ?? 30,
        routeBurst = routeBurst ?? 6,
        discoveryEnabled = discoveryEnabled ?? false,
        discoveryBestFormula =
-           discoveryBestFormula ?? _i3.DiscoveryBestFormula.popularityWeighted,
+           discoveryBestFormula ??
+           _iuev55uc.DiscoveryBestFormula.popularityWeighted,
        discoveryGemMinimumRating = discoveryGemMinimumRating ?? 4.5,
        discoveryGemMinimumReviews = discoveryGemMinimumReviews ?? 1,
        discoveryGemMaximumReviewsExclusive =
@@ -109,7 +109,7 @@ abstract class CacheSettingsRow
        photoCacheDays = photoCacheDays ?? 14;
 
   factory CacheSettingsRow({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String settingsKey,
     required int version,
     required int freshHours,
@@ -121,12 +121,12 @@ abstract class CacheSettingsRow
     required int globalBurst,
     bool? routeEstimatesEnabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultRouteOrigin,
+    _i6itrdm6.RouteOriginMode? defaultRouteOrigin,
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
     bool? discoveryEnabled,
-    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    _iuev55uc.DiscoveryBestFormula? discoveryBestFormula,
     double? discoveryGemMinimumRating,
     int? discoveryGemMinimumReviews,
     int? discoveryGemMaximumReviewsExclusive,
@@ -162,7 +162,7 @@ abstract class CacheSettingsRow
     return CacheSettingsRow(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       settingsKey: jsonSerialization['settingsKey'] as String,
       version: jsonSerialization['version'] as int,
       freshHours: jsonSerialization['freshHours'] as int,
@@ -176,18 +176,18 @@ abstract class CacheSettingsRow
       globalBurst: jsonSerialization['globalBurst'] as int,
       routeEstimatesEnabled: jsonSerialization['routeEstimatesEnabled'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['routeEstimatesEnabled'],
             ),
       allowParticipantLocation:
           jsonSerialization['allowParticipantLocation'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['allowParticipantLocation'],
             ),
       defaultRouteOrigin: jsonSerialization['defaultRouteOrigin'] == null
           ? null
-          : _i2.RouteOriginMode.fromJson(
+          : _i6itrdm6.RouteOriginMode.fromJson(
               (jsonSerialization['defaultRouteOrigin'] as String),
             ),
       routeEstimateCacheMinutes:
@@ -197,12 +197,12 @@ abstract class CacheSettingsRow
       routeBurst: jsonSerialization['routeBurst'] as int?,
       discoveryEnabled: jsonSerialization['discoveryEnabled'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['discoveryEnabled'],
             ),
       discoveryBestFormula: jsonSerialization['discoveryBestFormula'] == null
           ? null
-          : _i3.DiscoveryBestFormula.fromJson(
+          : _iuev55uc.DiscoveryBestFormula.fromJson(
               (jsonSerialization['discoveryBestFormula'] as String),
             ),
       discoveryGemMinimumRating:
@@ -248,7 +248,7 @@ abstract class CacheSettingsRow
       discoveryTypeAutoMapEnabled:
           jsonSerialization['discoveryTypeAutoMapEnabled'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['discoveryTypeAutoMapEnabled'],
             ),
       detailRefreshMaximumRequests:
@@ -262,7 +262,7 @@ abstract class CacheSettingsRow
       photoCacheCount: jsonSerialization['photoCacheCount'] as int?,
       photoCacheDays: jsonSerialization['photoCacheDays'] as int?,
       updatedBy: jsonSerialization['updatedBy'] as String,
-      updatedAt: _i1.DateTimeJsonExtension.fromJson(
+      updatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
       ),
     );
@@ -273,7 +273,7 @@ abstract class CacheSettingsRow
   static const db = CacheSettingsRowRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String settingsKey;
 
@@ -297,7 +297,7 @@ abstract class CacheSettingsRow
 
   bool allowParticipantLocation;
 
-  _i2.RouteOriginMode defaultRouteOrigin;
+  _i6itrdm6.RouteOriginMode defaultRouteOrigin;
 
   int routeEstimateCacheMinutes;
 
@@ -307,7 +307,7 @@ abstract class CacheSettingsRow
 
   bool discoveryEnabled;
 
-  _i3.DiscoveryBestFormula discoveryBestFormula;
+  _iuev55uc.DiscoveryBestFormula discoveryBestFormula;
 
   double discoveryGemMinimumRating;
 
@@ -368,13 +368,13 @@ abstract class CacheSettingsRow
   DateTime updatedAt;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [CacheSettingsRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CacheSettingsRow copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? settingsKey,
     int? version,
     int? freshHours,
@@ -386,12 +386,12 @@ abstract class CacheSettingsRow
     int? globalBurst,
     bool? routeEstimatesEnabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultRouteOrigin,
+    _i6itrdm6.RouteOriginMode? defaultRouteOrigin,
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
     bool? discoveryEnabled,
-    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    _iuev55uc.DiscoveryBestFormula? discoveryBestFormula,
     double? discoveryGemMinimumRating,
     int? discoveryGemMinimumReviews,
     int? discoveryGemMaximumReviewsExclusive,
@@ -488,12 +488,11 @@ abstract class CacheSettingsRow
   }
 
   static CacheSettingsRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<CacheSettingsRowTable>? where,
+    _is.WhereExpressionBuilder<CacheSettingsRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CacheSettingsRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
+    _is.OrderByBuilder<CacheSettingsRowTable>? orderBy,
+    _is.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
     CacheSettingsRowInclude? include,
   }) {
     return CacheSettingsRowIncludeList._(
@@ -501,7 +500,6 @@ abstract class CacheSettingsRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CacheSettingsRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(CacheSettingsRow.t),
       include: include,
     );
@@ -509,7 +507,7 @@ abstract class CacheSettingsRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -517,7 +515,7 @@ class _Undefined {}
 
 class _CacheSettingsRowImpl extends CacheSettingsRow {
   _CacheSettingsRowImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String settingsKey,
     required int version,
     required int freshHours,
@@ -529,12 +527,12 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     required int globalBurst,
     bool? routeEstimatesEnabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultRouteOrigin,
+    _i6itrdm6.RouteOriginMode? defaultRouteOrigin,
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
     bool? discoveryEnabled,
-    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    _iuev55uc.DiscoveryBestFormula? discoveryBestFormula,
     double? discoveryGemMinimumRating,
     int? discoveryGemMinimumReviews,
     int? discoveryGemMaximumReviewsExclusive,
@@ -618,7 +616,7 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
 
   /// Returns a shallow copy of this [CacheSettingsRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CacheSettingsRow copyWith({
     Object? id = _Undefined,
@@ -633,12 +631,12 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     int? globalBurst,
     bool? routeEstimatesEnabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultRouteOrigin,
+    _i6itrdm6.RouteOriginMode? defaultRouteOrigin,
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
     bool? discoveryEnabled,
-    _i3.DiscoveryBestFormula? discoveryBestFormula,
+    _iuev55uc.DiscoveryBestFormula? discoveryBestFormula,
     double? discoveryGemMinimumRating,
     int? discoveryGemMinimumReviews,
     int? discoveryGemMaximumReviewsExclusive,
@@ -670,7 +668,7 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
     DateTime? updatedAt,
   }) {
     return CacheSettingsRow(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       settingsKey: settingsKey ?? this.settingsKey,
       version: version ?? this.version,
       freshHours: freshHours ?? this.freshHours,
@@ -760,496 +758,498 @@ class _CacheSettingsRowImpl extends CacheSettingsRow {
 }
 
 class CacheSettingsRowUpdateTable
-    extends _i1.UpdateTable<CacheSettingsRowTable> {
+    extends _is.UpdateTable<CacheSettingsRowTable> {
   CacheSettingsRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> settingsKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> settingsKey(String value) => _is.ColumnValue(
     table.settingsKey,
     value,
   );
 
-  _i1.ColumnValue<int, int> version(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> version(int value) => _is.ColumnValue(
     table.version,
     value,
   );
 
-  _i1.ColumnValue<int, int> freshHours(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> freshHours(int value) => _is.ColumnValue(
     table.freshHours,
     value,
   );
 
-  _i1.ColumnValue<int, int> staleFallbackDays(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> staleFallbackDays(int value) => _is.ColumnValue(
     table.staleFallbackDays,
     value,
   );
 
-  _i1.ColumnValue<int, int> retentionDays(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> retentionDays(int value) => _is.ColumnValue(
     table.retentionDays,
     value,
   );
 
-  _i1.ColumnValue<int, int> extractorAttempts(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> extractorAttempts(int value) => _is.ColumnValue(
     table.extractorAttempts,
     value,
   );
 
-  _i1.ColumnValue<int, int> perCreationConcurrency(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> perCreationConcurrency(int value) =>
+      _is.ColumnValue(
         table.perCreationConcurrency,
         value,
       );
 
-  _i1.ColumnValue<int, int> globalRequestsPerMinute(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> globalRequestsPerMinute(int value) =>
+      _is.ColumnValue(
         table.globalRequestsPerMinute,
         value,
       );
 
-  _i1.ColumnValue<int, int> globalBurst(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> globalBurst(int value) => _is.ColumnValue(
     table.globalBurst,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> routeEstimatesEnabled(bool value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> routeEstimatesEnabled(bool value) =>
+      _is.ColumnValue(
         table.routeEstimatesEnabled,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> allowParticipantLocation(bool value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> allowParticipantLocation(bool value) =>
+      _is.ColumnValue(
         table.allowParticipantLocation,
         value,
       );
 
-  _i1.ColumnValue<_i2.RouteOriginMode, _i2.RouteOriginMode> defaultRouteOrigin(
-    _i2.RouteOriginMode value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_i6itrdm6.RouteOriginMode, _i6itrdm6.RouteOriginMode>
+  defaultRouteOrigin(_i6itrdm6.RouteOriginMode value) => _is.ColumnValue(
     table.defaultRouteOrigin,
     value,
   );
 
-  _i1.ColumnValue<int, int> routeEstimateCacheMinutes(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> routeEstimateCacheMinutes(int value) =>
+      _is.ColumnValue(
         table.routeEstimateCacheMinutes,
         value,
       );
 
-  _i1.ColumnValue<int, int> routeRequestsPerMinute(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> routeRequestsPerMinute(int value) =>
+      _is.ColumnValue(
         table.routeRequestsPerMinute,
         value,
       );
 
-  _i1.ColumnValue<int, int> routeBurst(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> routeBurst(int value) => _is.ColumnValue(
     table.routeBurst,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> discoveryEnabled(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> discoveryEnabled(bool value) => _is.ColumnValue(
     table.discoveryEnabled,
     value,
   );
 
-  _i1.ColumnValue<_i3.DiscoveryBestFormula, _i3.DiscoveryBestFormula>
-  discoveryBestFormula(_i3.DiscoveryBestFormula value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    _iuev55uc.DiscoveryBestFormula,
+    _iuev55uc.DiscoveryBestFormula
+  >
+  discoveryBestFormula(_iuev55uc.DiscoveryBestFormula value) => _is.ColumnValue(
     table.discoveryBestFormula,
     value,
   );
 
-  _i1.ColumnValue<double, double> discoveryGemMinimumRating(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> discoveryGemMinimumRating(double value) =>
+      _is.ColumnValue(
         table.discoveryGemMinimumRating,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryGemMinimumReviews(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryGemMinimumReviews(int value) =>
+      _is.ColumnValue(
         table.discoveryGemMinimumReviews,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryGemMaximumReviewsExclusive(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryGemMaximumReviewsExclusive(int value) =>
+      _is.ColumnValue(
         table.discoveryGemMaximumReviewsExclusive,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryBayesianPriorReviews(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryBayesianPriorReviews(int value) =>
+      _is.ColumnValue(
         table.discoveryBayesianPriorReviews,
         value,
       );
 
-  _i1.ColumnValue<double, double> discoveryBayesianMeanRating(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> discoveryBayesianMeanRating(double value) =>
+      _is.ColumnValue(
         table.discoveryBayesianMeanRating,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryBestMinimumReviews(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryBestMinimumReviews(int value) =>
+      _is.ColumnValue(
         table.discoveryBestMinimumReviews,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryTopRatedMinimumReviews(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryTopRatedMinimumReviews(int value) =>
+      _is.ColumnValue(
         table.discoveryTopRatedMinimumReviews,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryWorstRatedMinimumReviews(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryWorstRatedMinimumReviews(int value) =>
+      _is.ColumnValue(
         table.discoveryWorstRatedMinimumReviews,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryRecentlyAddedDays(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryRecentlyAddedDays(int value) =>
+      _is.ColumnValue(
         table.discoveryRecentlyAddedDays,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryHarvestMaximumRequests(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryHarvestMaximumRequests(int value) =>
+      _is.ColumnValue(
         table.discoveryHarvestMaximumRequests,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryHarvestDesiredCandidatesPerQuery(
+  _is.ColumnValue<int, int> discoveryHarvestDesiredCandidatesPerQuery(
     int value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.discoveryHarvestDesiredCandidatesPerQuery,
     value,
   );
 
-  _i1.ColumnValue<int, int> discoveryHarvestMaximumSeconds(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryHarvestMaximumSeconds(int value) =>
+      _is.ColumnValue(
         table.discoveryHarvestMaximumSeconds,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryHarvestCooldownMinutes(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryHarvestCooldownMinutes(int value) =>
+      _is.ColumnValue(
         table.discoveryHarvestCooldownMinutes,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryUserHarvestsPerHour(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryUserHarvestsPerHour(int value) =>
+      _is.ColumnValue(
         table.discoveryUserHarvestsPerHour,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryBrowseRequestsPerMinute(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryBrowseRequestsPerMinute(int value) =>
+      _is.ColumnValue(
         table.discoveryBrowseRequestsPerMinute,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryFacetRequestsPerMinute(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryFacetRequestsPerMinute(int value) =>
+      _is.ColumnValue(
         table.discoveryFacetRequestsPerMinute,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryQueryTimeoutMilliseconds(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryQueryTimeoutMilliseconds(int value) =>
+      _is.ColumnValue(
         table.discoveryQueryTimeoutMilliseconds,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryMaximumPageSize(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryMaximumPageSize(int value) =>
+      _is.ColumnValue(
         table.discoveryMaximumPageSize,
         value,
       );
 
-  _i1.ColumnValue<int, int> discoveryMaximumMapPoints(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> discoveryMaximumMapPoints(int value) =>
+      _is.ColumnValue(
         table.discoveryMaximumMapPoints,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> discoveryTypeAutoMapEnabled(bool value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> discoveryTypeAutoMapEnabled(bool value) =>
+      _is.ColumnValue(
         table.discoveryTypeAutoMapEnabled,
         value,
       );
 
-  _i1.ColumnValue<int, int> detailRefreshMaximumRequests(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> detailRefreshMaximumRequests(int value) =>
+      _is.ColumnValue(
         table.detailRefreshMaximumRequests,
         value,
       );
 
-  _i1.ColumnValue<int, int> detailRefreshMaximumSeconds(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> detailRefreshMaximumSeconds(int value) =>
+      _is.ColumnValue(
         table.detailRefreshMaximumSeconds,
         value,
       );
 
-  _i1.ColumnValue<int, int> detailRefreshCooldownMinutes(int value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> detailRefreshCooldownMinutes(int value) =>
+      _is.ColumnValue(
         table.detailRefreshCooldownMinutes,
         value,
       );
 
-  _i1.ColumnValue<int, int> photoFetchCount(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> photoFetchCount(int value) => _is.ColumnValue(
     table.photoFetchCount,
     value,
   );
 
-  _i1.ColumnValue<int, int> photoWidth(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> photoWidth(int value) => _is.ColumnValue(
     table.photoWidth,
     value,
   );
 
-  _i1.ColumnValue<int, int> photoCacheCount(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> photoCacheCount(int value) => _is.ColumnValue(
     table.photoCacheCount,
     value,
   );
 
-  _i1.ColumnValue<int, int> photoCacheDays(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> photoCacheDays(int value) => _is.ColumnValue(
     table.photoCacheDays,
     value,
   );
 
-  _i1.ColumnValue<String, String> updatedBy(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> updatedBy(String value) => _is.ColumnValue(
     table.updatedBy,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> updatedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> updatedAt(DateTime value) =>
+      _is.ColumnValue(
         table.updatedAt,
         value,
       );
 }
 
-class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
+class CacheSettingsRowTable extends _is.Table<_is.UuidValue?> {
   CacheSettingsRowTable({super.tableRelation})
     : super(tableName: 'hayer_cache_settings') {
     updateTable = CacheSettingsRowUpdateTable(this);
-    settingsKey = _i1.ColumnString(
+    settingsKey = _is.ColumnString(
       'settingsKey',
       this,
     );
-    version = _i1.ColumnInt(
+    version = _is.ColumnInt(
       'version',
       this,
     );
-    freshHours = _i1.ColumnInt(
+    freshHours = _is.ColumnInt(
       'freshHours',
       this,
     );
-    staleFallbackDays = _i1.ColumnInt(
+    staleFallbackDays = _is.ColumnInt(
       'staleFallbackDays',
       this,
     );
-    retentionDays = _i1.ColumnInt(
+    retentionDays = _is.ColumnInt(
       'retentionDays',
       this,
     );
-    extractorAttempts = _i1.ColumnInt(
+    extractorAttempts = _is.ColumnInt(
       'extractorAttempts',
       this,
     );
-    perCreationConcurrency = _i1.ColumnInt(
+    perCreationConcurrency = _is.ColumnInt(
       'perCreationConcurrency',
       this,
     );
-    globalRequestsPerMinute = _i1.ColumnInt(
+    globalRequestsPerMinute = _is.ColumnInt(
       'globalRequestsPerMinute',
       this,
     );
-    globalBurst = _i1.ColumnInt(
+    globalBurst = _is.ColumnInt(
       'globalBurst',
       this,
     );
-    routeEstimatesEnabled = _i1.ColumnBool(
+    routeEstimatesEnabled = _is.ColumnBool(
       'routeEstimatesEnabled',
       this,
       hasDefault: true,
     );
-    allowParticipantLocation = _i1.ColumnBool(
+    allowParticipantLocation = _is.ColumnBool(
       'allowParticipantLocation',
       this,
       hasDefault: true,
     );
-    defaultRouteOrigin = _i1.ColumnEnum(
+    defaultRouteOrigin = _is.ColumnEnum(
       'defaultRouteOrigin',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    routeEstimateCacheMinutes = _i1.ColumnInt(
+    routeEstimateCacheMinutes = _is.ColumnInt(
       'routeEstimateCacheMinutes',
       this,
       hasDefault: true,
     );
-    routeRequestsPerMinute = _i1.ColumnInt(
+    routeRequestsPerMinute = _is.ColumnInt(
       'routeRequestsPerMinute',
       this,
       hasDefault: true,
     );
-    routeBurst = _i1.ColumnInt(
+    routeBurst = _is.ColumnInt(
       'routeBurst',
       this,
       hasDefault: true,
     );
-    discoveryEnabled = _i1.ColumnBool(
+    discoveryEnabled = _is.ColumnBool(
       'discoveryEnabled',
       this,
       hasDefault: true,
     );
-    discoveryBestFormula = _i1.ColumnEnum(
+    discoveryBestFormula = _is.ColumnEnum(
       'discoveryBestFormula',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    discoveryGemMinimumRating = _i1.ColumnDouble(
+    discoveryGemMinimumRating = _is.ColumnDouble(
       'discoveryGemMinimumRating',
       this,
       hasDefault: true,
     );
-    discoveryGemMinimumReviews = _i1.ColumnInt(
+    discoveryGemMinimumReviews = _is.ColumnInt(
       'discoveryGemMinimumReviews',
       this,
       hasDefault: true,
     );
-    discoveryGemMaximumReviewsExclusive = _i1.ColumnInt(
+    discoveryGemMaximumReviewsExclusive = _is.ColumnInt(
       'discoveryGemMaximumReviewsExclusive',
       this,
       hasDefault: true,
     );
-    discoveryBayesianPriorReviews = _i1.ColumnInt(
+    discoveryBayesianPriorReviews = _is.ColumnInt(
       'discoveryBayesianPriorReviews',
       this,
       hasDefault: true,
     );
-    discoveryBayesianMeanRating = _i1.ColumnDouble(
+    discoveryBayesianMeanRating = _is.ColumnDouble(
       'discoveryBayesianMeanRating',
       this,
       hasDefault: true,
     );
-    discoveryBestMinimumReviews = _i1.ColumnInt(
+    discoveryBestMinimumReviews = _is.ColumnInt(
       'discoveryBestMinimumReviews',
       this,
       hasDefault: true,
     );
-    discoveryTopRatedMinimumReviews = _i1.ColumnInt(
+    discoveryTopRatedMinimumReviews = _is.ColumnInt(
       'discoveryTopRatedMinimumReviews',
       this,
       hasDefault: true,
     );
-    discoveryWorstRatedMinimumReviews = _i1.ColumnInt(
+    discoveryWorstRatedMinimumReviews = _is.ColumnInt(
       'discoveryWorstRatedMinimumReviews',
       this,
       hasDefault: true,
     );
-    discoveryRecentlyAddedDays = _i1.ColumnInt(
+    discoveryRecentlyAddedDays = _is.ColumnInt(
       'discoveryRecentlyAddedDays',
       this,
       hasDefault: true,
     );
-    discoveryHarvestMaximumRequests = _i1.ColumnInt(
+    discoveryHarvestMaximumRequests = _is.ColumnInt(
       'discoveryHarvestMaximumRequests',
       this,
       hasDefault: true,
     );
-    discoveryHarvestDesiredCandidatesPerQuery = _i1.ColumnInt(
+    discoveryHarvestDesiredCandidatesPerQuery = _is.ColumnInt(
       'discoveryHarvestDesiredCandidatesPerQuery',
       this,
       hasDefault: true,
     );
-    discoveryHarvestMaximumSeconds = _i1.ColumnInt(
+    discoveryHarvestMaximumSeconds = _is.ColumnInt(
       'discoveryHarvestMaximumSeconds',
       this,
       hasDefault: true,
     );
-    discoveryHarvestCooldownMinutes = _i1.ColumnInt(
+    discoveryHarvestCooldownMinutes = _is.ColumnInt(
       'discoveryHarvestCooldownMinutes',
       this,
       hasDefault: true,
     );
-    discoveryUserHarvestsPerHour = _i1.ColumnInt(
+    discoveryUserHarvestsPerHour = _is.ColumnInt(
       'discoveryUserHarvestsPerHour',
       this,
       hasDefault: true,
     );
-    discoveryBrowseRequestsPerMinute = _i1.ColumnInt(
+    discoveryBrowseRequestsPerMinute = _is.ColumnInt(
       'discoveryBrowseRequestsPerMinute',
       this,
       hasDefault: true,
     );
-    discoveryFacetRequestsPerMinute = _i1.ColumnInt(
+    discoveryFacetRequestsPerMinute = _is.ColumnInt(
       'discoveryFacetRequestsPerMinute',
       this,
       hasDefault: true,
     );
-    discoveryQueryTimeoutMilliseconds = _i1.ColumnInt(
+    discoveryQueryTimeoutMilliseconds = _is.ColumnInt(
       'discoveryQueryTimeoutMilliseconds',
       this,
       hasDefault: true,
     );
-    discoveryMaximumPageSize = _i1.ColumnInt(
+    discoveryMaximumPageSize = _is.ColumnInt(
       'discoveryMaximumPageSize',
       this,
       hasDefault: true,
     );
-    discoveryMaximumMapPoints = _i1.ColumnInt(
+    discoveryMaximumMapPoints = _is.ColumnInt(
       'discoveryMaximumMapPoints',
       this,
       hasDefault: true,
     );
-    discoveryTypeAutoMapEnabled = _i1.ColumnBool(
+    discoveryTypeAutoMapEnabled = _is.ColumnBool(
       'discoveryTypeAutoMapEnabled',
       this,
       hasDefault: true,
     );
-    detailRefreshMaximumRequests = _i1.ColumnInt(
+    detailRefreshMaximumRequests = _is.ColumnInt(
       'detailRefreshMaximumRequests',
       this,
       hasDefault: true,
     );
-    detailRefreshMaximumSeconds = _i1.ColumnInt(
+    detailRefreshMaximumSeconds = _is.ColumnInt(
       'detailRefreshMaximumSeconds',
       this,
       hasDefault: true,
     );
-    detailRefreshCooldownMinutes = _i1.ColumnInt(
+    detailRefreshCooldownMinutes = _is.ColumnInt(
       'detailRefreshCooldownMinutes',
       this,
       hasDefault: true,
     );
-    photoFetchCount = _i1.ColumnInt(
+    photoFetchCount = _is.ColumnInt(
       'photoFetchCount',
       this,
       hasDefault: true,
     );
-    photoWidth = _i1.ColumnInt(
+    photoWidth = _is.ColumnInt(
       'photoWidth',
       this,
       hasDefault: true,
     );
-    photoCacheCount = _i1.ColumnInt(
+    photoCacheCount = _is.ColumnInt(
       'photoCacheCount',
       this,
       hasDefault: true,
     );
-    photoCacheDays = _i1.ColumnInt(
+    photoCacheDays = _is.ColumnInt(
       'photoCacheDays',
       this,
       hasDefault: true,
     );
-    updatedBy = _i1.ColumnString(
+    updatedBy = _is.ColumnString(
       'updatedBy',
       this,
     );
-    updatedAt = _i1.ColumnDateTime(
+    updatedAt = _is.ColumnDateTime(
       'updatedAt',
       this,
     );
@@ -1257,100 +1257,101 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final CacheSettingsRowUpdateTable updateTable;
 
-  late final _i1.ColumnString settingsKey;
+  late final _is.ColumnString settingsKey;
 
-  late final _i1.ColumnInt version;
+  late final _is.ColumnInt version;
 
-  late final _i1.ColumnInt freshHours;
+  late final _is.ColumnInt freshHours;
 
-  late final _i1.ColumnInt staleFallbackDays;
+  late final _is.ColumnInt staleFallbackDays;
 
-  late final _i1.ColumnInt retentionDays;
+  late final _is.ColumnInt retentionDays;
 
-  late final _i1.ColumnInt extractorAttempts;
+  late final _is.ColumnInt extractorAttempts;
 
-  late final _i1.ColumnInt perCreationConcurrency;
+  late final _is.ColumnInt perCreationConcurrency;
 
-  late final _i1.ColumnInt globalRequestsPerMinute;
+  late final _is.ColumnInt globalRequestsPerMinute;
 
-  late final _i1.ColumnInt globalBurst;
+  late final _is.ColumnInt globalBurst;
 
-  late final _i1.ColumnBool routeEstimatesEnabled;
+  late final _is.ColumnBool routeEstimatesEnabled;
 
-  late final _i1.ColumnBool allowParticipantLocation;
+  late final _is.ColumnBool allowParticipantLocation;
 
-  late final _i1.ColumnEnum<_i2.RouteOriginMode> defaultRouteOrigin;
+  late final _is.ColumnEnum<_i6itrdm6.RouteOriginMode> defaultRouteOrigin;
 
-  late final _i1.ColumnInt routeEstimateCacheMinutes;
+  late final _is.ColumnInt routeEstimateCacheMinutes;
 
-  late final _i1.ColumnInt routeRequestsPerMinute;
+  late final _is.ColumnInt routeRequestsPerMinute;
 
-  late final _i1.ColumnInt routeBurst;
+  late final _is.ColumnInt routeBurst;
 
-  late final _i1.ColumnBool discoveryEnabled;
+  late final _is.ColumnBool discoveryEnabled;
 
-  late final _i1.ColumnEnum<_i3.DiscoveryBestFormula> discoveryBestFormula;
+  late final _is.ColumnEnum<_iuev55uc.DiscoveryBestFormula>
+  discoveryBestFormula;
 
-  late final _i1.ColumnDouble discoveryGemMinimumRating;
+  late final _is.ColumnDouble discoveryGemMinimumRating;
 
-  late final _i1.ColumnInt discoveryGemMinimumReviews;
+  late final _is.ColumnInt discoveryGemMinimumReviews;
 
-  late final _i1.ColumnInt discoveryGemMaximumReviewsExclusive;
+  late final _is.ColumnInt discoveryGemMaximumReviewsExclusive;
 
-  late final _i1.ColumnInt discoveryBayesianPriorReviews;
+  late final _is.ColumnInt discoveryBayesianPriorReviews;
 
-  late final _i1.ColumnDouble discoveryBayesianMeanRating;
+  late final _is.ColumnDouble discoveryBayesianMeanRating;
 
-  late final _i1.ColumnInt discoveryBestMinimumReviews;
+  late final _is.ColumnInt discoveryBestMinimumReviews;
 
-  late final _i1.ColumnInt discoveryTopRatedMinimumReviews;
+  late final _is.ColumnInt discoveryTopRatedMinimumReviews;
 
-  late final _i1.ColumnInt discoveryWorstRatedMinimumReviews;
+  late final _is.ColumnInt discoveryWorstRatedMinimumReviews;
 
-  late final _i1.ColumnInt discoveryRecentlyAddedDays;
+  late final _is.ColumnInt discoveryRecentlyAddedDays;
 
-  late final _i1.ColumnInt discoveryHarvestMaximumRequests;
+  late final _is.ColumnInt discoveryHarvestMaximumRequests;
 
-  late final _i1.ColumnInt discoveryHarvestDesiredCandidatesPerQuery;
+  late final _is.ColumnInt discoveryHarvestDesiredCandidatesPerQuery;
 
-  late final _i1.ColumnInt discoveryHarvestMaximumSeconds;
+  late final _is.ColumnInt discoveryHarvestMaximumSeconds;
 
-  late final _i1.ColumnInt discoveryHarvestCooldownMinutes;
+  late final _is.ColumnInt discoveryHarvestCooldownMinutes;
 
-  late final _i1.ColumnInt discoveryUserHarvestsPerHour;
+  late final _is.ColumnInt discoveryUserHarvestsPerHour;
 
-  late final _i1.ColumnInt discoveryBrowseRequestsPerMinute;
+  late final _is.ColumnInt discoveryBrowseRequestsPerMinute;
 
-  late final _i1.ColumnInt discoveryFacetRequestsPerMinute;
+  late final _is.ColumnInt discoveryFacetRequestsPerMinute;
 
-  late final _i1.ColumnInt discoveryQueryTimeoutMilliseconds;
+  late final _is.ColumnInt discoveryQueryTimeoutMilliseconds;
 
-  late final _i1.ColumnInt discoveryMaximumPageSize;
+  late final _is.ColumnInt discoveryMaximumPageSize;
 
-  late final _i1.ColumnInt discoveryMaximumMapPoints;
+  late final _is.ColumnInt discoveryMaximumMapPoints;
 
-  late final _i1.ColumnBool discoveryTypeAutoMapEnabled;
+  late final _is.ColumnBool discoveryTypeAutoMapEnabled;
 
-  late final _i1.ColumnInt detailRefreshMaximumRequests;
+  late final _is.ColumnInt detailRefreshMaximumRequests;
 
-  late final _i1.ColumnInt detailRefreshMaximumSeconds;
+  late final _is.ColumnInt detailRefreshMaximumSeconds;
 
-  late final _i1.ColumnInt detailRefreshCooldownMinutes;
+  late final _is.ColumnInt detailRefreshCooldownMinutes;
 
-  late final _i1.ColumnInt photoFetchCount;
+  late final _is.ColumnInt photoFetchCount;
 
-  late final _i1.ColumnInt photoWidth;
+  late final _is.ColumnInt photoWidth;
 
-  late final _i1.ColumnInt photoCacheCount;
+  late final _is.ColumnInt photoCacheCount;
 
-  late final _i1.ColumnInt photoCacheDays;
+  late final _is.ColumnInt photoCacheDays;
 
-  late final _i1.ColumnString updatedBy;
+  late final _is.ColumnString updatedBy;
 
-  late final _i1.ColumnDateTime updatedAt;
+  late final _is.ColumnDateTime updatedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     settingsKey,
     version,
@@ -1401,23 +1402,22 @@ class CacheSettingsRowTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class CacheSettingsRowInclude extends _i1.IncludeObject {
+class CacheSettingsRowInclude extends _is.IncludeObject {
   CacheSettingsRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => CacheSettingsRow.t;
+  _is.Table<_is.UuidValue?> get table => CacheSettingsRow.t;
 }
 
-class CacheSettingsRowIncludeList extends _i1.IncludeList {
+class CacheSettingsRowIncludeList extends _is.IncludeList {
   CacheSettingsRowIncludeList._({
-    _i1.WhereExpressionBuilder<CacheSettingsRowTable>? where,
+    _is.WhereExpressionBuilder<CacheSettingsRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -1425,10 +1425,10 @@ class CacheSettingsRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => CacheSettingsRow.t;
+  _is.Table<_is.UuidValue?> get table => CacheSettingsRow.t;
 }
 
 class CacheSettingsRowRepository {
@@ -1457,22 +1457,20 @@ class CacheSettingsRowRepository {
   /// );
   /// ```
   Future<List<CacheSettingsRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CacheSettingsRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CacheSettingsRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CacheSettingsRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CacheSettingsRowTable>? orderBy,
+    _is.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CacheSettingsRow>(
       where: where?.call(CacheSettingsRow.t),
       orderBy: orderBy?.call(CacheSettingsRow.t),
       orderByList: orderByList?.call(CacheSettingsRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -1499,21 +1497,19 @@ class CacheSettingsRowRepository {
   /// );
   /// ```
   Future<CacheSettingsRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CacheSettingsRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CacheSettingsRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CacheSettingsRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CacheSettingsRowTable>? orderBy,
+    _is.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CacheSettingsRow>(
       where: where?.call(CacheSettingsRow.t),
       orderBy: orderBy?.call(CacheSettingsRow.t),
       orderByList: orderByList?.call(CacheSettingsRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -1523,11 +1519,11 @@ class CacheSettingsRowRepository {
 
   /// Finds a single [CacheSettingsRow] by its [id] or null if no such row exists.
   Future<CacheSettingsRow?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CacheSettingsRow>(
       id,
@@ -1547,16 +1543,22 @@ class CacheSettingsRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CacheSettingsRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CacheSettingsRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<CacheSettingsRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -1564,12 +1566,81 @@ class CacheSettingsRowRepository {
   ///
   /// The returned [CacheSettingsRow] will have its `id` field set.
   Future<CacheSettingsRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CacheSettingsRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<CacheSettingsRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [CacheSettingsRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CacheSettingsRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<CacheSettingsRow>> upsert(
+    _is.DatabaseSession session,
+    List<CacheSettingsRow> rows, {
+    required _is.ColumnSelections<CacheSettingsRowTable> conflictColumns,
+    _is.ColumnSelections<CacheSettingsRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<CacheSettingsRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<CacheSettingsRow>(
+      rows,
+      conflictColumns: conflictColumns(CacheSettingsRow.t),
+      updateColumns: updateColumns?.call(CacheSettingsRow.t),
+      updateWhere: updateWhere?.call(CacheSettingsRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [CacheSettingsRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CacheSettingsRow] will have its `id` field set.
+  Future<CacheSettingsRow?> upsertRow(
+    _is.DatabaseSession session,
+    CacheSettingsRow row, {
+    required _is.ColumnSelections<CacheSettingsRowTable> conflictColumns,
+    _is.ColumnSelections<CacheSettingsRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<CacheSettingsRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CacheSettingsRow>(
+      row,
+      conflictColumns: conflictColumns(CacheSettingsRow.t),
+      updateColumns: updateColumns?.call(CacheSettingsRow.t),
+      updateWhere: updateWhere?.call(CacheSettingsRow.t),
       transaction: transaction,
     );
   }
@@ -1579,16 +1650,22 @@ class CacheSettingsRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CacheSettingsRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CacheSettingsRow> rows, {
-    _i1.ColumnSelections<CacheSettingsRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CacheSettingsRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<CacheSettingsRow>(
       rows,
       columns: columns?.call(CacheSettingsRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1596,10 +1673,10 @@ class CacheSettingsRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CacheSettingsRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CacheSettingsRow row, {
-    _i1.ColumnSelections<CacheSettingsRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CacheSettingsRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<CacheSettingsRow>(
       row,
@@ -1611,11 +1688,11 @@ class CacheSettingsRowRepository {
   /// Updates a single [CacheSettingsRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CacheSettingsRow?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<CacheSettingsRowUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<CacheSettingsRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<CacheSettingsRow>(
       id,
@@ -1626,17 +1703,21 @@ class CacheSettingsRowRepository {
 
   /// Updates all [CacheSettingsRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CacheSettingsRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CacheSettingsRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<CacheSettingsRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<CacheSettingsRowTable> where,
+    required _is.WhereExpressionBuilder<CacheSettingsRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CacheSettingsRowTable>? orderBy,
-    _i1.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CacheSettingsRowTable>? orderBy,
+    _is.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<CacheSettingsRow>(
       columnValues: columnValues(CacheSettingsRow.t.updateTable),
@@ -1645,30 +1726,44 @@ class CacheSettingsRowRepository {
       offset: offset,
       orderBy: orderBy?.call(CacheSettingsRow.t),
       orderByList: orderByList?.call(CacheSettingsRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [CacheSettingsRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CacheSettingsRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CacheSettingsRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CacheSettingsRowTable>? orderBy,
+    _is.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<CacheSettingsRow>(
       rows,
+      orderBy: orderBy?.call(CacheSettingsRow.t),
+      orderByList: orderByList?.call(CacheSettingsRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [CacheSettingsRow].
   Future<CacheSettingsRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CacheSettingsRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<CacheSettingsRow>(
       row,
@@ -1677,24 +1772,37 @@ class CacheSettingsRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CacheSettingsRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CacheSettingsRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CacheSettingsRowTable> where,
+    _is.OrderByBuilder<CacheSettingsRowTable>? orderBy,
+    _is.OrderByListBuilder<CacheSettingsRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CacheSettingsRow>(
       where: where(CacheSettingsRow.t),
+      orderBy: orderBy?.call(CacheSettingsRow.t),
+      orderByList: orderByList?.call(CacheSettingsRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CacheSettingsRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CacheSettingsRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<CacheSettingsRow>(
       where: where?.call(CacheSettingsRow.t),
@@ -1705,11 +1813,11 @@ class CacheSettingsRowRepository {
 
   /// Acquires row-level locks on [CacheSettingsRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CacheSettingsRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CacheSettingsRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CacheSettingsRow>(
       where: where(CacheSettingsRow.t),

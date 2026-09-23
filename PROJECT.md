@@ -190,7 +190,7 @@ scoped commit. Claude's open F01 join-limiter item sits in
   is one editable participant ballot, plurality wins, and the host's ballot
   breaks a leading tie only. No host override, confirmation dialog, or runoff.
 - Use Flutter and Dart across the client, admin dashboard, and backend.
-- Use Serverpod 3.4.13 in monolith mode with PostgreSQL/PostGIS and no Redis.
+- Use Serverpod 4.0.0 in monolith mode with PostgreSQL/PostGIS and no Redis.
 - Self-host on Unraid through Docker Compose. Cloudflare Tunnel publishes
   `https://hayer.almou.sa` through LAN-bound gateway port `8432`; no WAN port
   forward may expose the origin.
@@ -387,7 +387,7 @@ session-creation deadline. Cache policy validation enforces
   as a submodule/reference boundary.
 - [x] Scaffold the Flutter consumer, Flutter admin, Serverpod server/client,
   root Dart workspace, and deployment directories.
-- [x] Pin Flutter 3.47.2, Dart 3.13.2, Serverpod 3.4.13, generated code,
+- [x] Pin Flutter 3.47.2, Dart 3.13.2, Serverpod 4.0.0, generated code,
   fatal-info analysis, ignores, secret templates, and CI.
 - [x] Prove RPC and WSS gateway-prefix routing through the deployed Compose
   stack. The public API is healthy and `/api/websocket` returns a successful

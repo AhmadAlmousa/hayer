@@ -17,6 +17,23 @@ const discoveryDefaultZoom = 12.0;
 /// The neighbourhood scale Discover opens at around a device location.
 const discoveryLocationZoom = 14.0;
 
+/// A search box centered on [center] with the requested half-span in metres.
+DiscoveryViewport? discoveryViewportAround(
+  DiscoveryPoint center, {
+  double radiusMeters = 500,
+}) {
+  final latitudeSpan = radiusMeters / 110574;
+  final longitudeSpan =
+      radiusMeters /
+      (111320 * math.cos(center.latitude * math.pi / 180).abs().clamp(.2, 1));
+  return DiscoveryViewport.tryCreate(
+    south: center.latitude - latitudeSpan,
+    west: center.longitude - longitudeSpan,
+    north: center.latitude + latitudeSpan,
+    east: center.longitude + longitudeSpan,
+  );
+}
+
 typedef DiscoveryPoint = ({double latitude, double longitude});
 typedef DiscoveryCamera = ({double latitude, double longitude, double zoom});
 

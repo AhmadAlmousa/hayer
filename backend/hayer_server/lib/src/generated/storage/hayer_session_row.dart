@@ -10,17 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../session_mode.dart' as _i2;
-import '../consensus_rule.dart' as _i3;
-import '../matching_timing.dart' as _i4;
-import '../session_status.dart' as _i5;
-import '../place_intent_query.dart' as _i6;
-import 'package:hayer_server/src/generated/protocol.dart' as _i7;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../consensus_rule.dart' as _itza565q;
+import '../matching_timing.dart' as _il2ujp2y;
+import '../place_intent_query.dart' as _iag0ql9d;
+import '../session_mode.dart' as _il8ct4tj;
+import '../session_status.dart' as _imums090;
 
 abstract class HayerSessionRow
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   HayerSessionRow._({
     this.id,
     required this.sessionId,
@@ -54,11 +53,11 @@ abstract class HayerSessionRow
   }) : intentBatchCount = intentBatchCount ?? 1;
 
   factory HayerSessionRow({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String sessionId,
     required String code,
     required String hostUserId,
-    required _i2.SessionMode mode,
+    required _il8ct4tj.SessionMode mode,
     required String categoryId,
     required List<String> subcategoryIds,
     int? priceLevel,
@@ -72,14 +71,14 @@ abstract class HayerSessionRow
     required int radiusMeters,
     required int deckSizeRequested,
     required int deckSizeActual,
-    required _i3.ConsensusRule consensusRule,
-    required _i4.MatchingTiming matchingTiming,
-    required _i5.SessionStatus status,
+    required _itza565q.ConsensusRule consensusRule,
+    required _il2ujp2y.MatchingTiming matchingTiming,
+    required _imums090.SessionStatus status,
     String? matchedPlaceId,
     DateTime? decisionAt,
     required int revision,
     String? freshnessWarning,
-    _i6.PlaceIntentQuery? intent,
+    _iag0ql9d.PlaceIntentQuery? intent,
     int? intentBatchCount,
     required DateTime createdAt,
     required DateTime expiresAt,
@@ -89,13 +88,15 @@ abstract class HayerSessionRow
     return HayerSessionRow(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       sessionId: jsonSerialization['sessionId'] as String,
       code: jsonSerialization['code'] as String,
       hostUserId: jsonSerialization['hostUserId'] as String,
-      mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
+      mode: _il8ct4tj.SessionMode.fromJson(
+        (jsonSerialization['mode'] as String),
+      ),
       categoryId: jsonSerialization['categoryId'] as String,
-      subcategoryIds: _i7.Protocol().deserialize<List<String>>(
+      subcategoryIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['subcategoryIds'],
       ),
       priceLevel: jsonSerialization['priceLevel'] as int?,
@@ -106,36 +107,36 @@ abstract class HayerSessionRow
       cityName: jsonSerialization['cityName'] as String?,
       visitAt: jsonSerialization['visitAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
       countryCode: jsonSerialization['countryCode'] as String,
       radiusMeters: jsonSerialization['radiusMeters'] as int,
       deckSizeRequested: jsonSerialization['deckSizeRequested'] as int,
       deckSizeActual: jsonSerialization['deckSizeActual'] as int,
-      consensusRule: _i3.ConsensusRule.fromJson(
+      consensusRule: _itza565q.ConsensusRule.fromJson(
         (jsonSerialization['consensusRule'] as String),
       ),
-      matchingTiming: _i4.MatchingTiming.fromJson(
+      matchingTiming: _il2ujp2y.MatchingTiming.fromJson(
         (jsonSerialization['matchingTiming'] as String),
       ),
-      status: _i5.SessionStatus.fromJson(
+      status: _imums090.SessionStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
       matchedPlaceId: jsonSerialization['matchedPlaceId'] as String?,
       decisionAt: jsonSerialization['decisionAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['decisionAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['decisionAt']),
       revision: jsonSerialization['revision'] as int,
       freshnessWarning: jsonSerialization['freshnessWarning'] as String?,
       intent: jsonSerialization['intent'] == null
           ? null
-          : _i7.Protocol().deserialize<_i6.PlaceIntentQuery>(
+          : _i66y2smk.Protocol().deserialize<_iag0ql9d.PlaceIntentQuery>(
               jsonSerialization['intent'],
             ),
       intentBatchCount: jsonSerialization['intentBatchCount'] as int?,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
-      expiresAt: _i1.DateTimeJsonExtension.fromJson(
+      expiresAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiresAt'],
       ),
     );
@@ -146,7 +147,7 @@ abstract class HayerSessionRow
   static const db = HayerSessionRowRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String sessionId;
 
@@ -154,7 +155,7 @@ abstract class HayerSessionRow
 
   String hostUserId;
 
-  _i2.SessionMode mode;
+  _il8ct4tj.SessionMode mode;
 
   String categoryId;
 
@@ -182,11 +183,11 @@ abstract class HayerSessionRow
 
   int deckSizeActual;
 
-  _i3.ConsensusRule consensusRule;
+  _itza565q.ConsensusRule consensusRule;
 
-  _i4.MatchingTiming matchingTiming;
+  _il2ujp2y.MatchingTiming matchingTiming;
 
-  _i5.SessionStatus status;
+  _imums090.SessionStatus status;
 
   String? matchedPlaceId;
 
@@ -196,7 +197,7 @@ abstract class HayerSessionRow
 
   String? freshnessWarning;
 
-  _i6.PlaceIntentQuery? intent;
+  _iag0ql9d.PlaceIntentQuery? intent;
 
   int? intentBatchCount;
 
@@ -205,17 +206,17 @@ abstract class HayerSessionRow
   DateTime expiresAt;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [HayerSessionRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   HayerSessionRow copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? sessionId,
     String? code,
     String? hostUserId,
-    _i2.SessionMode? mode,
+    _il8ct4tj.SessionMode? mode,
     String? categoryId,
     List<String>? subcategoryIds,
     int? priceLevel,
@@ -229,14 +230,14 @@ abstract class HayerSessionRow
     int? radiusMeters,
     int? deckSizeRequested,
     int? deckSizeActual,
-    _i3.ConsensusRule? consensusRule,
-    _i4.MatchingTiming? matchingTiming,
-    _i5.SessionStatus? status,
+    _itza565q.ConsensusRule? consensusRule,
+    _il2ujp2y.MatchingTiming? matchingTiming,
+    _imums090.SessionStatus? status,
     String? matchedPlaceId,
     DateTime? decisionAt,
     int? revision,
     String? freshnessWarning,
-    _i6.PlaceIntentQuery? intent,
+    _iag0ql9d.PlaceIntentQuery? intent,
     int? intentBatchCount,
     DateTime? createdAt,
     DateTime? expiresAt,
@@ -287,12 +288,11 @@ abstract class HayerSessionRow
   }
 
   static HayerSessionRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<HayerSessionRowTable>? where,
+    _is.WhereExpressionBuilder<HayerSessionRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<HayerSessionRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<HayerSessionRowTable>? orderByList,
+    _is.OrderByBuilder<HayerSessionRowTable>? orderBy,
+    _is.OrderByListBuilder<HayerSessionRowTable>? orderByList,
     HayerSessionRowInclude? include,
   }) {
     return HayerSessionRowIncludeList._(
@@ -300,7 +300,6 @@ abstract class HayerSessionRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(HayerSessionRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(HayerSessionRow.t),
       include: include,
     );
@@ -308,7 +307,7 @@ abstract class HayerSessionRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -316,11 +315,11 @@ class _Undefined {}
 
 class _HayerSessionRowImpl extends HayerSessionRow {
   _HayerSessionRowImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String sessionId,
     required String code,
     required String hostUserId,
-    required _i2.SessionMode mode,
+    required _il8ct4tj.SessionMode mode,
     required String categoryId,
     required List<String> subcategoryIds,
     int? priceLevel,
@@ -334,14 +333,14 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     required int radiusMeters,
     required int deckSizeRequested,
     required int deckSizeActual,
-    required _i3.ConsensusRule consensusRule,
-    required _i4.MatchingTiming matchingTiming,
-    required _i5.SessionStatus status,
+    required _itza565q.ConsensusRule consensusRule,
+    required _il2ujp2y.MatchingTiming matchingTiming,
+    required _imums090.SessionStatus status,
     String? matchedPlaceId,
     DateTime? decisionAt,
     required int revision,
     String? freshnessWarning,
-    _i6.PlaceIntentQuery? intent,
+    _iag0ql9d.PlaceIntentQuery? intent,
     int? intentBatchCount,
     required DateTime createdAt,
     required DateTime expiresAt,
@@ -379,14 +378,14 @@ class _HayerSessionRowImpl extends HayerSessionRow {
 
   /// Returns a shallow copy of this [HayerSessionRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   HayerSessionRow copyWith({
     Object? id = _Undefined,
     String? sessionId,
     String? code,
     String? hostUserId,
-    _i2.SessionMode? mode,
+    _il8ct4tj.SessionMode? mode,
     String? categoryId,
     List<String>? subcategoryIds,
     Object? priceLevel = _Undefined,
@@ -400,9 +399,9 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     int? radiusMeters,
     int? deckSizeRequested,
     int? deckSizeActual,
-    _i3.ConsensusRule? consensusRule,
-    _i4.MatchingTiming? matchingTiming,
-    _i5.SessionStatus? status,
+    _itza565q.ConsensusRule? consensusRule,
+    _il2ujp2y.MatchingTiming? matchingTiming,
+    _imums090.SessionStatus? status,
     Object? matchedPlaceId = _Undefined,
     Object? decisionAt = _Undefined,
     int? revision,
@@ -413,7 +412,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
     DateTime? expiresAt,
   }) {
     return HayerSessionRow(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       sessionId: sessionId ?? this.sessionId,
       code: code ?? this.code,
       hostUserId: hostUserId ?? this.hostUserId,
@@ -445,7 +444,7 @@ class _HayerSessionRowImpl extends HayerSessionRow {
       freshnessWarning: freshnessWarning is String?
           ? freshnessWarning
           : this.freshnessWarning,
-      intent: intent is _i6.PlaceIntentQuery?
+      intent: intent is _iag0ql9d.PlaceIntentQuery?
           ? intent
           : this.intent?.copyWith(),
       intentBatchCount: intentBatchCount is int?
@@ -457,289 +456,286 @@ class _HayerSessionRowImpl extends HayerSessionRow {
   }
 }
 
-class HayerSessionRowUpdateTable extends _i1.UpdateTable<HayerSessionRowTable> {
+class HayerSessionRowUpdateTable extends _is.UpdateTable<HayerSessionRowTable> {
   HayerSessionRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> sessionId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> sessionId(String value) => _is.ColumnValue(
     table.sessionId,
     value,
   );
 
-  _i1.ColumnValue<String, String> code(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> code(String value) => _is.ColumnValue(
     table.code,
     value,
   );
 
-  _i1.ColumnValue<String, String> hostUserId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> hostUserId(String value) => _is.ColumnValue(
     table.hostUserId,
     value,
   );
 
-  _i1.ColumnValue<_i2.SessionMode, _i2.SessionMode> mode(
-    _i2.SessionMode value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_il8ct4tj.SessionMode, _il8ct4tj.SessionMode> mode(
+    _il8ct4tj.SessionMode value,
+  ) => _is.ColumnValue(
     table.mode,
     value,
   );
 
-  _i1.ColumnValue<String, String> categoryId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> categoryId(String value) => _is.ColumnValue(
     table.categoryId,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> subcategoryIds(
+  _is.ColumnValue<List<String>, List<String>> subcategoryIds(
     List<String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.subcategoryIds,
     value,
   );
 
-  _i1.ColumnValue<int, int> priceLevel(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> priceLevel(int? value) => _is.ColumnValue(
     table.priceLevel,
     value,
   );
 
-  _i1.ColumnValue<double, double> anchorLatitude(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> anchorLatitude(double value) =>
+      _is.ColumnValue(
         table.anchorLatitude,
         value,
       );
 
-  _i1.ColumnValue<double, double> anchorLongitude(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> anchorLongitude(double value) =>
+      _is.ColumnValue(
         table.anchorLongitude,
         value,
       );
 
-  _i1.ColumnValue<String, String> anchorAddress(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> anchorAddress(String? value) =>
+      _is.ColumnValue(
         table.anchorAddress,
         value,
       );
 
-  _i1.ColumnValue<String, String> cityKey(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> cityKey(String? value) => _is.ColumnValue(
     table.cityKey,
     value,
   );
 
-  _i1.ColumnValue<String, String> cityName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> cityName(String? value) => _is.ColumnValue(
     table.cityName,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> visitAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> visitAt(DateTime? value) =>
+      _is.ColumnValue(
         table.visitAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> countryCode(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> countryCode(String value) => _is.ColumnValue(
     table.countryCode,
     value,
   );
 
-  _i1.ColumnValue<int, int> radiusMeters(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> radiusMeters(int value) => _is.ColumnValue(
     table.radiusMeters,
     value,
   );
 
-  _i1.ColumnValue<int, int> deckSizeRequested(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> deckSizeRequested(int value) => _is.ColumnValue(
     table.deckSizeRequested,
     value,
   );
 
-  _i1.ColumnValue<int, int> deckSizeActual(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> deckSizeActual(int value) => _is.ColumnValue(
     table.deckSizeActual,
     value,
   );
 
-  _i1.ColumnValue<_i3.ConsensusRule, _i3.ConsensusRule> consensusRule(
-    _i3.ConsensusRule value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_itza565q.ConsensusRule, _itza565q.ConsensusRule>
+  consensusRule(_itza565q.ConsensusRule value) => _is.ColumnValue(
     table.consensusRule,
     value,
   );
 
-  _i1.ColumnValue<_i4.MatchingTiming, _i4.MatchingTiming> matchingTiming(
-    _i4.MatchingTiming value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_il2ujp2y.MatchingTiming, _il2ujp2y.MatchingTiming>
+  matchingTiming(_il2ujp2y.MatchingTiming value) => _is.ColumnValue(
     table.matchingTiming,
     value,
   );
 
-  _i1.ColumnValue<_i5.SessionStatus, _i5.SessionStatus> status(
-    _i5.SessionStatus value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_imums090.SessionStatus, _imums090.SessionStatus> status(
+    _imums090.SessionStatus value,
+  ) => _is.ColumnValue(
     table.status,
     value,
   );
 
-  _i1.ColumnValue<String, String> matchedPlaceId(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> matchedPlaceId(String? value) =>
+      _is.ColumnValue(
         table.matchedPlaceId,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> decisionAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> decisionAt(DateTime? value) =>
+      _is.ColumnValue(
         table.decisionAt,
         value,
       );
 
-  _i1.ColumnValue<int, int> revision(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> revision(int value) => _is.ColumnValue(
     table.revision,
     value,
   );
 
-  _i1.ColumnValue<String, String> freshnessWarning(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> freshnessWarning(String? value) =>
+      _is.ColumnValue(
         table.freshnessWarning,
         value,
       );
 
-  _i1.ColumnValue<_i6.PlaceIntentQuery, _i6.PlaceIntentQuery> intent(
-    _i6.PlaceIntentQuery? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_iag0ql9d.PlaceIntentQuery, _iag0ql9d.PlaceIntentQuery>
+  intent(_iag0ql9d.PlaceIntentQuery? value) => _is.ColumnValue(
     table.intent,
     value,
   );
 
-  _i1.ColumnValue<int, int> intentBatchCount(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> intentBatchCount(int? value) => _is.ColumnValue(
     table.intentBatchCount,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> expiresAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> expiresAt(DateTime value) =>
+      _is.ColumnValue(
         table.expiresAt,
         value,
       );
 }
 
-class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
+class HayerSessionRowTable extends _is.Table<_is.UuidValue?> {
   HayerSessionRowTable({super.tableRelation})
     : super(tableName: 'hayer_session') {
     updateTable = HayerSessionRowUpdateTable(this);
-    sessionId = _i1.ColumnString(
+    sessionId = _is.ColumnString(
       'sessionId',
       this,
     );
-    code = _i1.ColumnString(
+    code = _is.ColumnString(
       'code',
       this,
     );
-    hostUserId = _i1.ColumnString(
+    hostUserId = _is.ColumnString(
       'hostUserId',
       this,
     );
-    mode = _i1.ColumnEnum(
+    mode = _is.ColumnEnum(
       'mode',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    categoryId = _i1.ColumnString(
+    categoryId = _is.ColumnString(
       'categoryId',
       this,
     );
-    subcategoryIds = _i1.ColumnSerializable<List<String>>(
+    subcategoryIds = _is.ColumnSerializable<List<String>>(
       'subcategoryIds',
       this,
     );
-    priceLevel = _i1.ColumnInt(
+    priceLevel = _is.ColumnInt(
       'priceLevel',
       this,
     );
-    anchorLatitude = _i1.ColumnDouble(
+    anchorLatitude = _is.ColumnDouble(
       'anchorLatitude',
       this,
     );
-    anchorLongitude = _i1.ColumnDouble(
+    anchorLongitude = _is.ColumnDouble(
       'anchorLongitude',
       this,
     );
-    anchorAddress = _i1.ColumnString(
+    anchorAddress = _is.ColumnString(
       'anchorAddress',
       this,
     );
-    cityKey = _i1.ColumnString(
+    cityKey = _is.ColumnString(
       'cityKey',
       this,
     );
-    cityName = _i1.ColumnString(
+    cityName = _is.ColumnString(
       'cityName',
       this,
     );
-    visitAt = _i1.ColumnDateTime(
+    visitAt = _is.ColumnDateTime(
       'visitAt',
       this,
     );
-    countryCode = _i1.ColumnString(
+    countryCode = _is.ColumnString(
       'countryCode',
       this,
     );
-    radiusMeters = _i1.ColumnInt(
+    radiusMeters = _is.ColumnInt(
       'radiusMeters',
       this,
     );
-    deckSizeRequested = _i1.ColumnInt(
+    deckSizeRequested = _is.ColumnInt(
       'deckSizeRequested',
       this,
     );
-    deckSizeActual = _i1.ColumnInt(
+    deckSizeActual = _is.ColumnInt(
       'deckSizeActual',
       this,
     );
-    consensusRule = _i1.ColumnEnum(
+    consensusRule = _is.ColumnEnum(
       'consensusRule',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    matchingTiming = _i1.ColumnEnum(
+    matchingTiming = _is.ColumnEnum(
       'matchingTiming',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    status = _i1.ColumnEnum(
+    status = _is.ColumnEnum(
       'status',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    matchedPlaceId = _i1.ColumnString(
+    matchedPlaceId = _is.ColumnString(
       'matchedPlaceId',
       this,
     );
-    decisionAt = _i1.ColumnDateTime(
+    decisionAt = _is.ColumnDateTime(
       'decisionAt',
       this,
     );
-    revision = _i1.ColumnInt(
+    revision = _is.ColumnInt(
       'revision',
       this,
     );
-    freshnessWarning = _i1.ColumnString(
+    freshnessWarning = _is.ColumnString(
       'freshnessWarning',
       this,
     );
-    intent = _i1.ColumnSerializable<_i6.PlaceIntentQuery>(
+    intent = _is.ColumnSerializable<_iag0ql9d.PlaceIntentQuery>(
       'intent',
       this,
     );
-    intentBatchCount = _i1.ColumnInt(
+    intentBatchCount = _is.ColumnInt(
       'intentBatchCount',
       this,
       hasDefault: true,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    expiresAt = _i1.ColumnDateTime(
+    expiresAt = _is.ColumnDateTime(
       'expiresAt',
       this,
     );
@@ -747,64 +743,64 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final HayerSessionRowUpdateTable updateTable;
 
-  late final _i1.ColumnString sessionId;
+  late final _is.ColumnString sessionId;
 
-  late final _i1.ColumnString code;
+  late final _is.ColumnString code;
 
-  late final _i1.ColumnString hostUserId;
+  late final _is.ColumnString hostUserId;
 
-  late final _i1.ColumnEnum<_i2.SessionMode> mode;
+  late final _is.ColumnEnum<_il8ct4tj.SessionMode> mode;
 
-  late final _i1.ColumnString categoryId;
+  late final _is.ColumnString categoryId;
 
-  late final _i1.ColumnSerializable<List<String>> subcategoryIds;
+  late final _is.ColumnSerializable<List<String>> subcategoryIds;
 
-  late final _i1.ColumnInt priceLevel;
+  late final _is.ColumnInt priceLevel;
 
-  late final _i1.ColumnDouble anchorLatitude;
+  late final _is.ColumnDouble anchorLatitude;
 
-  late final _i1.ColumnDouble anchorLongitude;
+  late final _is.ColumnDouble anchorLongitude;
 
-  late final _i1.ColumnString anchorAddress;
+  late final _is.ColumnString anchorAddress;
 
-  late final _i1.ColumnString cityKey;
+  late final _is.ColumnString cityKey;
 
-  late final _i1.ColumnString cityName;
+  late final _is.ColumnString cityName;
 
-  late final _i1.ColumnDateTime visitAt;
+  late final _is.ColumnDateTime visitAt;
 
-  late final _i1.ColumnString countryCode;
+  late final _is.ColumnString countryCode;
 
-  late final _i1.ColumnInt radiusMeters;
+  late final _is.ColumnInt radiusMeters;
 
-  late final _i1.ColumnInt deckSizeRequested;
+  late final _is.ColumnInt deckSizeRequested;
 
-  late final _i1.ColumnInt deckSizeActual;
+  late final _is.ColumnInt deckSizeActual;
 
-  late final _i1.ColumnEnum<_i3.ConsensusRule> consensusRule;
+  late final _is.ColumnEnum<_itza565q.ConsensusRule> consensusRule;
 
-  late final _i1.ColumnEnum<_i4.MatchingTiming> matchingTiming;
+  late final _is.ColumnEnum<_il2ujp2y.MatchingTiming> matchingTiming;
 
-  late final _i1.ColumnEnum<_i5.SessionStatus> status;
+  late final _is.ColumnEnum<_imums090.SessionStatus> status;
 
-  late final _i1.ColumnString matchedPlaceId;
+  late final _is.ColumnString matchedPlaceId;
 
-  late final _i1.ColumnDateTime decisionAt;
+  late final _is.ColumnDateTime decisionAt;
 
-  late final _i1.ColumnInt revision;
+  late final _is.ColumnInt revision;
 
-  late final _i1.ColumnString freshnessWarning;
+  late final _is.ColumnString freshnessWarning;
 
-  late final _i1.ColumnSerializable<_i6.PlaceIntentQuery> intent;
+  late final _is.ColumnSerializable<_iag0ql9d.PlaceIntentQuery> intent;
 
-  late final _i1.ColumnInt intentBatchCount;
+  late final _is.ColumnInt intentBatchCount;
 
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  late final _i1.ColumnDateTime expiresAt;
+  late final _is.ColumnDateTime expiresAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     sessionId,
     code,
@@ -837,23 +833,22 @@ class HayerSessionRowTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class HayerSessionRowInclude extends _i1.IncludeObject {
+class HayerSessionRowInclude extends _is.IncludeObject {
   HayerSessionRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => HayerSessionRow.t;
+  _is.Table<_is.UuidValue?> get table => HayerSessionRow.t;
 }
 
-class HayerSessionRowIncludeList extends _i1.IncludeList {
+class HayerSessionRowIncludeList extends _is.IncludeList {
   HayerSessionRowIncludeList._({
-    _i1.WhereExpressionBuilder<HayerSessionRowTable>? where,
+    _is.WhereExpressionBuilder<HayerSessionRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -861,10 +856,10 @@ class HayerSessionRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => HayerSessionRow.t;
+  _is.Table<_is.UuidValue?> get table => HayerSessionRow.t;
 }
 
 class HayerSessionRowRepository {
@@ -893,22 +888,20 @@ class HayerSessionRowRepository {
   /// );
   /// ```
   Future<List<HayerSessionRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<HayerSessionRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<HayerSessionRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<HayerSessionRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<HayerSessionRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<HayerSessionRowTable>? orderBy,
+    _is.OrderByListBuilder<HayerSessionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<HayerSessionRow>(
       where: where?.call(HayerSessionRow.t),
       orderBy: orderBy?.call(HayerSessionRow.t),
       orderByList: orderByList?.call(HayerSessionRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -935,21 +928,19 @@ class HayerSessionRowRepository {
   /// );
   /// ```
   Future<HayerSessionRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<HayerSessionRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<HayerSessionRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<HayerSessionRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<HayerSessionRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<HayerSessionRowTable>? orderBy,
+    _is.OrderByListBuilder<HayerSessionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<HayerSessionRow>(
       where: where?.call(HayerSessionRow.t),
       orderBy: orderBy?.call(HayerSessionRow.t),
       orderByList: orderByList?.call(HayerSessionRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -959,11 +950,11 @@ class HayerSessionRowRepository {
 
   /// Finds a single [HayerSessionRow] by its [id] or null if no such row exists.
   Future<HayerSessionRow?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<HayerSessionRow>(
       id,
@@ -983,16 +974,22 @@ class HayerSessionRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<HayerSessionRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<HayerSessionRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<HayerSessionRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -1000,12 +997,81 @@ class HayerSessionRowRepository {
   ///
   /// The returned [HayerSessionRow] will have its `id` field set.
   Future<HayerSessionRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     HayerSessionRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<HayerSessionRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [HayerSessionRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [HayerSessionRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<HayerSessionRow>> upsert(
+    _is.DatabaseSession session,
+    List<HayerSessionRow> rows, {
+    required _is.ColumnSelections<HayerSessionRowTable> conflictColumns,
+    _is.ColumnSelections<HayerSessionRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<HayerSessionRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<HayerSessionRow>(
+      rows,
+      conflictColumns: conflictColumns(HayerSessionRow.t),
+      updateColumns: updateColumns?.call(HayerSessionRow.t),
+      updateWhere: updateWhere?.call(HayerSessionRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [HayerSessionRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [HayerSessionRow] will have its `id` field set.
+  Future<HayerSessionRow?> upsertRow(
+    _is.DatabaseSession session,
+    HayerSessionRow row, {
+    required _is.ColumnSelections<HayerSessionRowTable> conflictColumns,
+    _is.ColumnSelections<HayerSessionRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<HayerSessionRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<HayerSessionRow>(
+      row,
+      conflictColumns: conflictColumns(HayerSessionRow.t),
+      updateColumns: updateColumns?.call(HayerSessionRow.t),
+      updateWhere: updateWhere?.call(HayerSessionRow.t),
       transaction: transaction,
     );
   }
@@ -1015,16 +1081,22 @@ class HayerSessionRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<HayerSessionRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<HayerSessionRow> rows, {
-    _i1.ColumnSelections<HayerSessionRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<HayerSessionRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<HayerSessionRow>(
       rows,
       columns: columns?.call(HayerSessionRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1032,10 +1104,10 @@ class HayerSessionRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<HayerSessionRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     HayerSessionRow row, {
-    _i1.ColumnSelections<HayerSessionRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<HayerSessionRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<HayerSessionRow>(
       row,
@@ -1047,11 +1119,11 @@ class HayerSessionRowRepository {
   /// Updates a single [HayerSessionRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<HayerSessionRow?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<HayerSessionRowUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<HayerSessionRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<HayerSessionRow>(
       id,
@@ -1062,17 +1134,21 @@ class HayerSessionRowRepository {
 
   /// Updates all [HayerSessionRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<HayerSessionRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<HayerSessionRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<HayerSessionRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<HayerSessionRowTable> where,
+    required _is.WhereExpressionBuilder<HayerSessionRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<HayerSessionRowTable>? orderBy,
-    _i1.OrderByListBuilder<HayerSessionRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<HayerSessionRowTable>? orderBy,
+    _is.OrderByListBuilder<HayerSessionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<HayerSessionRow>(
       columnValues: columnValues(HayerSessionRow.t.updateTable),
@@ -1081,30 +1157,44 @@ class HayerSessionRowRepository {
       offset: offset,
       orderBy: orderBy?.call(HayerSessionRow.t),
       orderByList: orderByList?.call(HayerSessionRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [HayerSessionRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<HayerSessionRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<HayerSessionRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<HayerSessionRowTable>? orderBy,
+    _is.OrderByListBuilder<HayerSessionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<HayerSessionRow>(
       rows,
+      orderBy: orderBy?.call(HayerSessionRow.t),
+      orderByList: orderByList?.call(HayerSessionRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [HayerSessionRow].
   Future<HayerSessionRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     HayerSessionRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<HayerSessionRow>(
       row,
@@ -1113,24 +1203,37 @@ class HayerSessionRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<HayerSessionRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<HayerSessionRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<HayerSessionRowTable> where,
+    _is.OrderByBuilder<HayerSessionRowTable>? orderBy,
+    _is.OrderByListBuilder<HayerSessionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<HayerSessionRow>(
       where: where(HayerSessionRow.t),
+      orderBy: orderBy?.call(HayerSessionRow.t),
+      orderByList: orderByList?.call(HayerSessionRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<HayerSessionRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<HayerSessionRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<HayerSessionRow>(
       where: where?.call(HayerSessionRow.t),
@@ -1141,11 +1244,11 @@ class HayerSessionRowRepository {
 
   /// Acquires row-level locks on [HayerSessionRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<HayerSessionRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<HayerSessionRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<HayerSessionRow>(
       where: where(HayerSessionRow.t),

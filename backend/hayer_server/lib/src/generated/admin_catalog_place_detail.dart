@@ -10,17 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_catalog_place.dart' as _i2;
-import 'place_snapshot.dart' as _i3;
-import 'admin_catalog_category_evidence.dart' as _i4;
-import 'admin_catalog_detail_refresh.dart' as _i5;
-import 'admin_catalog_report.dart' as _i6;
-import 'package:hayer_server/src/generated/protocol.dart' as _i7;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_catalog_category_evidence.dart' as _ic5j2wzg;
+import 'admin_catalog_detail_refresh.dart' as _iwelc6th;
+import 'admin_catalog_place.dart' as _i76u62qe;
+import 'admin_catalog_report.dart' as _ie0km1ed;
+import 'place_snapshot.dart' as _ikbous9x;
 
 abstract class AdminCatalogPlaceDetail
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminCatalogPlaceDetail._({
     required this.place,
     required this.snapshot,
@@ -38,14 +37,14 @@ abstract class AdminCatalogPlaceDetail
   });
 
   factory AdminCatalogPlaceDetail({
-    required _i2.AdminCatalogPlace place,
-    required _i3.PlaceSnapshot snapshot,
+    required _i76u62qe.AdminCatalogPlace place,
+    required _ikbous9x.PlaceSnapshot snapshot,
     required String calibrationVersion,
     String? quarantineReason,
-    required List<_i4.AdminCatalogCategoryEvidence> categoryEvidence,
-    _i5.AdminCatalogDetailRefresh? detailRefresh,
+    required List<_ic5j2wzg.AdminCatalogCategoryEvidence> categoryEvidence,
+    _iwelc6th.AdminCatalogDetailRefresh? detailRefresh,
     required int reportCount,
-    required List<_i6.AdminCatalogReport> recentReports,
+    required List<_ie0km1ed.AdminCatalogReport> recentReports,
     required int deckAppearances,
     required int likes,
     required int dislikes,
@@ -57,52 +56,54 @@ abstract class AdminCatalogPlaceDetail
     Map<String, dynamic> jsonSerialization,
   ) {
     return AdminCatalogPlaceDetail(
-      place: _i7.Protocol().deserialize<_i2.AdminCatalogPlace>(
+      place: _i66y2smk.Protocol().deserialize<_i76u62qe.AdminCatalogPlace>(
         jsonSerialization['place'],
       ),
-      snapshot: _i7.Protocol().deserialize<_i3.PlaceSnapshot>(
+      snapshot: _i66y2smk.Protocol().deserialize<_ikbous9x.PlaceSnapshot>(
         jsonSerialization['snapshot'],
       ),
       calibrationVersion: jsonSerialization['calibrationVersion'] as String,
       quarantineReason: jsonSerialization['quarantineReason'] as String?,
-      categoryEvidence: _i7.Protocol()
-          .deserialize<List<_i4.AdminCatalogCategoryEvidence>>(
+      categoryEvidence: _i66y2smk.Protocol()
+          .deserialize<List<_ic5j2wzg.AdminCatalogCategoryEvidence>>(
             jsonSerialization['categoryEvidence'],
           ),
       detailRefresh: jsonSerialization['detailRefresh'] == null
           ? null
-          : _i7.Protocol().deserialize<_i5.AdminCatalogDetailRefresh>(
-              jsonSerialization['detailRefresh'],
-            ),
+          : _i66y2smk.Protocol()
+                .deserialize<_iwelc6th.AdminCatalogDetailRefresh>(
+                  jsonSerialization['detailRefresh'],
+                ),
       reportCount: jsonSerialization['reportCount'] as int,
-      recentReports: _i7.Protocol().deserialize<List<_i6.AdminCatalogReport>>(
-        jsonSerialization['recentReports'],
-      ),
+      recentReports: _i66y2smk.Protocol()
+          .deserialize<List<_ie0km1ed.AdminCatalogReport>>(
+            jsonSerialization['recentReports'],
+          ),
       deckAppearances: jsonSerialization['deckAppearances'] as int,
       likes: jsonSerialization['likes'] as int,
       dislikes: jsonSerialization['dislikes'] as int,
       cardImpressions: jsonSerialization['cardImpressions'] as int,
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
   }
 
-  _i2.AdminCatalogPlace place;
+  _i76u62qe.AdminCatalogPlace place;
 
-  _i3.PlaceSnapshot snapshot;
+  _ikbous9x.PlaceSnapshot snapshot;
 
   String calibrationVersion;
 
   String? quarantineReason;
 
-  List<_i4.AdminCatalogCategoryEvidence> categoryEvidence;
+  List<_ic5j2wzg.AdminCatalogCategoryEvidence> categoryEvidence;
 
-  _i5.AdminCatalogDetailRefresh? detailRefresh;
+  _iwelc6th.AdminCatalogDetailRefresh? detailRefresh;
 
   int reportCount;
 
-  List<_i6.AdminCatalogReport> recentReports;
+  List<_ie0km1ed.AdminCatalogReport> recentReports;
 
   int deckAppearances;
 
@@ -116,16 +117,16 @@ abstract class AdminCatalogPlaceDetail
 
   /// Returns a shallow copy of this [AdminCatalogPlaceDetail]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminCatalogPlaceDetail copyWith({
-    _i2.AdminCatalogPlace? place,
-    _i3.PlaceSnapshot? snapshot,
+    _i76u62qe.AdminCatalogPlace? place,
+    _ikbous9x.PlaceSnapshot? snapshot,
     String? calibrationVersion,
     String? quarantineReason,
-    List<_i4.AdminCatalogCategoryEvidence>? categoryEvidence,
-    _i5.AdminCatalogDetailRefresh? detailRefresh,
+    List<_ic5j2wzg.AdminCatalogCategoryEvidence>? categoryEvidence,
+    _iwelc6th.AdminCatalogDetailRefresh? detailRefresh,
     int? reportCount,
-    List<_i6.AdminCatalogReport>? recentReports,
+    List<_ie0km1ed.AdminCatalogReport>? recentReports,
     int? deckAppearances,
     int? likes,
     int? dislikes,
@@ -181,7 +182,7 @@ abstract class AdminCatalogPlaceDetail
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -189,14 +190,14 @@ class _Undefined {}
 
 class _AdminCatalogPlaceDetailImpl extends AdminCatalogPlaceDetail {
   _AdminCatalogPlaceDetailImpl({
-    required _i2.AdminCatalogPlace place,
-    required _i3.PlaceSnapshot snapshot,
+    required _i76u62qe.AdminCatalogPlace place,
+    required _ikbous9x.PlaceSnapshot snapshot,
     required String calibrationVersion,
     String? quarantineReason,
-    required List<_i4.AdminCatalogCategoryEvidence> categoryEvidence,
-    _i5.AdminCatalogDetailRefresh? detailRefresh,
+    required List<_ic5j2wzg.AdminCatalogCategoryEvidence> categoryEvidence,
+    _iwelc6th.AdminCatalogDetailRefresh? detailRefresh,
     required int reportCount,
-    required List<_i6.AdminCatalogReport> recentReports,
+    required List<_ie0km1ed.AdminCatalogReport> recentReports,
     required int deckAppearances,
     required int likes,
     required int dislikes,
@@ -220,17 +221,17 @@ class _AdminCatalogPlaceDetailImpl extends AdminCatalogPlaceDetail {
 
   /// Returns a shallow copy of this [AdminCatalogPlaceDetail]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminCatalogPlaceDetail copyWith({
-    _i2.AdminCatalogPlace? place,
-    _i3.PlaceSnapshot? snapshot,
+    _i76u62qe.AdminCatalogPlace? place,
+    _ikbous9x.PlaceSnapshot? snapshot,
     String? calibrationVersion,
     Object? quarantineReason = _Undefined,
-    List<_i4.AdminCatalogCategoryEvidence>? categoryEvidence,
+    List<_ic5j2wzg.AdminCatalogCategoryEvidence>? categoryEvidence,
     Object? detailRefresh = _Undefined,
     int? reportCount,
-    List<_i6.AdminCatalogReport>? recentReports,
+    List<_ie0km1ed.AdminCatalogReport>? recentReports,
     int? deckAppearances,
     int? likes,
     int? dislikes,
@@ -247,7 +248,7 @@ class _AdminCatalogPlaceDetailImpl extends AdminCatalogPlaceDetail {
       categoryEvidence:
           categoryEvidence ??
           this.categoryEvidence.map((e0) => e0.copyWith()).toList(),
-      detailRefresh: detailRefresh is _i5.AdminCatalogDetailRefresh?
+      detailRefresh: detailRefresh is _iwelc6th.AdminCatalogDetailRefresh?
           ? detailRefresh
           : this.detailRefresh?.copyWith(),
       reportCount: reportCount ?? this.reportCount,

@@ -801,6 +801,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get routeDistanceUnavailable => 'المسافة غير متاحة';
 
   @override
+  String get routeCalculating => 'جارٍ حساب الطريق…';
+
+  @override
   String get currentLocationUnavailableUsingHost =>
       'تعذر تحديد موقعك، لذلك سنستخدم موقع المضيف.';
 
@@ -1101,6 +1104,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoverySortRecent => 'المضافة حديثاً';
 
   @override
+  String get discoverySortDistanceArea => '📍 الأقرب إلى مركز المنطقة';
+
+  @override
+  String get discoverySortDistanceCurrent => '🧭 الأقرب إلى موقعي الحالي';
+
+  @override
+  String get discoverySortHelp => 'اختر طريقة عرض الأماكن في النتائج.';
+
+  @override
+  String get discoverySortLocationUnavailable =>
+      'موقعك الحالي غير متاح. سيتم الترتيب حسب مركز المنطقة.';
+
+  @override
   String get discoveryExplainBest => 'التقييم موزوناً بعدد من قيّموا المكان';
 
   @override
@@ -1133,32 +1149,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoveryExplainRecent => 'أحدث ما أضيف إلى دليلنا';
 
   @override
+  String get discoveryExplainDistanceArea =>
+      'تظهر الأماكن الأقرب إلى مركز هذه المنطقة أولاً.';
+
+  @override
+  String get discoveryExplainDistanceCurrent =>
+      'تظهر الأماكن الأقرب إلى موقعك الحالي أولاً.';
+
+  @override
   String discoveryTagHiddenGem(String count) {
     return '💎 جوهرة مخفية · $count مراجعة فقط';
   }
 
   @override
   String get discoveryTagHiddenGemPlain => '💎 جوهرة مخفية';
-
-  @override
-  String discoveryTagAdded(int days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String daysString = daysNumberFormat.format(days);
-
-    String _temp0 = intl.Intl.pluralLogic(
-      days,
-      locale: localeName,
-      other: '🆕 أضيف قبل $daysString يوم',
-      many: '🆕 أضيف قبل $daysString يوماً',
-      few: '🆕 أضيف قبل $daysString أيام',
-      two: '🆕 أضيف قبل يومين',
-      one: '🆕 أضيف أمس',
-      zero: '🆕 أضيف اليوم',
-    );
-    return '$_temp0';
-  }
 
   @override
   String discoveryTagRatedBelow(String rating) {
@@ -1287,6 +1291,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get discoverySearchClear => 'مسح البحث';
+
+  @override
+  String get discoverySearchPlaces => 'البحث عن أماكن';
 
   @override
   String get discoveryFilterReviews => 'عدد المراجعات';

@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_poi_issue.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_poi_issue.dart' as _i38jre17;
 
 abstract class AdminPoiIssuePage
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminPoiIssuePage._({
     required this.items,
     required this.total,
@@ -29,7 +28,7 @@ abstract class AdminPoiIssuePage
   });
 
   factory AdminPoiIssuePage({
-    required List<_i2.AdminPoiIssue> items,
+    required List<_i38jre17.AdminPoiIssue> items,
     required int total,
     required int page,
     required int pageSize,
@@ -41,7 +40,7 @@ abstract class AdminPoiIssuePage
 
   factory AdminPoiIssuePage.fromJson(Map<String, dynamic> jsonSerialization) {
     return AdminPoiIssuePage(
-      items: _i3.Protocol().deserialize<List<_i2.AdminPoiIssue>>(
+      items: _i66y2smk.Protocol().deserialize<List<_i38jre17.AdminPoiIssue>>(
         jsonSerialization['items'],
       ),
       total: jsonSerialization['total'] as int,
@@ -54,7 +53,7 @@ abstract class AdminPoiIssuePage
     );
   }
 
-  List<_i2.AdminPoiIssue> items;
+  List<_i38jre17.AdminPoiIssue> items;
 
   int total;
 
@@ -72,9 +71,9 @@ abstract class AdminPoiIssuePage
 
   /// Returns a shallow copy of this [AdminPoiIssuePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminPoiIssuePage copyWith({
-    List<_i2.AdminPoiIssue>? items,
+    List<_i38jre17.AdminPoiIssue>? items,
     int? total,
     int? page,
     int? pageSize,
@@ -115,13 +114,13 @@ abstract class AdminPoiIssuePage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminPoiIssuePageImpl extends AdminPoiIssuePage {
   _AdminPoiIssuePageImpl({
-    required List<_i2.AdminPoiIssue> items,
+    required List<_i38jre17.AdminPoiIssue> items,
     required int total,
     required int page,
     required int pageSize,
@@ -142,10 +141,10 @@ class _AdminPoiIssuePageImpl extends AdminPoiIssuePage {
 
   /// Returns a shallow copy of this [AdminPoiIssuePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminPoiIssuePage copyWith({
-    List<_i2.AdminPoiIssue>? items,
+    List<_i38jre17.AdminPoiIssue>? items,
     int? total,
     int? page,
     int? pageSize,

@@ -10,17 +10,17 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discover_query_context.dart' as _ixfyrpmf;
+import 'discovery_minimum_rating_count.dart' as _iafesi5t;
+import 'discovery_price_count.dart' as _ijqf6en4;
+import 'discovery_rating_bucket.dart' as _iinjfol4;
+import 'discovery_review_band_count.dart' as _ijvcgm3f;
+import 'discovery_type_count.dart' as _iaqq99sz;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discover_query_context.dart' as _i2;
-import 'discovery_type_count.dart' as _i3;
-import 'discovery_review_band_count.dart' as _i4;
-import 'discovery_price_count.dart' as _i5;
-import 'discovery_rating_bucket.dart' as _i6;
-import 'discovery_minimum_rating_count.dart' as _i7;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i8;
-
-abstract class DiscoverFacets implements _i1.SerializableModel {
+abstract class DiscoverFacets
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoverFacets._({
     required this.total,
     required this.context,
@@ -35,41 +35,43 @@ abstract class DiscoverFacets implements _i1.SerializableModel {
 
   factory DiscoverFacets({
     required int total,
-    required _i2.DiscoverQueryContext context,
+    required _ixfyrpmf.DiscoverQueryContext context,
     required DateTime fetchedAt,
-    required List<_i3.DiscoveryTypeCount> typeCounts,
-    required List<_i4.DiscoveryReviewBandCount> reviewBandCounts,
-    required List<_i5.DiscoveryPriceCount> priceCounts,
-    required List<_i6.DiscoveryRatingBucket> ratingDistribution,
-    required List<_i7.DiscoveryMinimumRatingCount> minimumRatingCounts,
+    required List<_iaqq99sz.DiscoveryTypeCount> typeCounts,
+    required List<_ijvcgm3f.DiscoveryReviewBandCount> reviewBandCounts,
+    required List<_ijqf6en4.DiscoveryPriceCount> priceCounts,
+    required List<_iinjfol4.DiscoveryRatingBucket> ratingDistribution,
+    required List<_iafesi5t.DiscoveryMinimumRatingCount> minimumRatingCounts,
     required int unknownRatingCount,
   }) = _DiscoverFacetsImpl;
 
   factory DiscoverFacets.fromJson(Map<String, dynamic> jsonSerialization) {
     return DiscoverFacets(
       total: jsonSerialization['total'] as int,
-      context: _i8.Protocol().deserialize<_i2.DiscoverQueryContext>(
+      context: _iynev3sz.Protocol().deserialize<_ixfyrpmf.DiscoverQueryContext>(
         jsonSerialization['context'],
       ),
-      fetchedAt: _i1.DateTimeJsonExtension.fromJson(
+      fetchedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['fetchedAt'],
       ),
-      typeCounts: _i8.Protocol().deserialize<List<_i3.DiscoveryTypeCount>>(
-        jsonSerialization['typeCounts'],
-      ),
-      reviewBandCounts: _i8.Protocol()
-          .deserialize<List<_i4.DiscoveryReviewBandCount>>(
+      typeCounts: _iynev3sz.Protocol()
+          .deserialize<List<_iaqq99sz.DiscoveryTypeCount>>(
+            jsonSerialization['typeCounts'],
+          ),
+      reviewBandCounts: _iynev3sz.Protocol()
+          .deserialize<List<_ijvcgm3f.DiscoveryReviewBandCount>>(
             jsonSerialization['reviewBandCounts'],
           ),
-      priceCounts: _i8.Protocol().deserialize<List<_i5.DiscoveryPriceCount>>(
-        jsonSerialization['priceCounts'],
-      ),
-      ratingDistribution: _i8.Protocol()
-          .deserialize<List<_i6.DiscoveryRatingBucket>>(
+      priceCounts: _iynev3sz.Protocol()
+          .deserialize<List<_ijqf6en4.DiscoveryPriceCount>>(
+            jsonSerialization['priceCounts'],
+          ),
+      ratingDistribution: _iynev3sz.Protocol()
+          .deserialize<List<_iinjfol4.DiscoveryRatingBucket>>(
             jsonSerialization['ratingDistribution'],
           ),
-      minimumRatingCounts: _i8.Protocol()
-          .deserialize<List<_i7.DiscoveryMinimumRatingCount>>(
+      minimumRatingCounts: _iynev3sz.Protocol()
+          .deserialize<List<_iafesi5t.DiscoveryMinimumRatingCount>>(
             jsonSerialization['minimumRatingCounts'],
           ),
       unknownRatingCount: jsonSerialization['unknownRatingCount'] as int,
@@ -78,34 +80,34 @@ abstract class DiscoverFacets implements _i1.SerializableModel {
 
   int total;
 
-  _i2.DiscoverQueryContext context;
+  _ixfyrpmf.DiscoverQueryContext context;
 
   DateTime fetchedAt;
 
-  List<_i3.DiscoveryTypeCount> typeCounts;
+  List<_iaqq99sz.DiscoveryTypeCount> typeCounts;
 
-  List<_i4.DiscoveryReviewBandCount> reviewBandCounts;
+  List<_ijvcgm3f.DiscoveryReviewBandCount> reviewBandCounts;
 
-  List<_i5.DiscoveryPriceCount> priceCounts;
+  List<_ijqf6en4.DiscoveryPriceCount> priceCounts;
 
-  List<_i6.DiscoveryRatingBucket> ratingDistribution;
+  List<_iinjfol4.DiscoveryRatingBucket> ratingDistribution;
 
-  List<_i7.DiscoveryMinimumRatingCount> minimumRatingCounts;
+  List<_iafesi5t.DiscoveryMinimumRatingCount> minimumRatingCounts;
 
   int unknownRatingCount;
 
   /// Returns a shallow copy of this [DiscoverFacets]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoverFacets copyWith({
     int? total,
-    _i2.DiscoverQueryContext? context,
+    _ixfyrpmf.DiscoverQueryContext? context,
     DateTime? fetchedAt,
-    List<_i3.DiscoveryTypeCount>? typeCounts,
-    List<_i4.DiscoveryReviewBandCount>? reviewBandCounts,
-    List<_i5.DiscoveryPriceCount>? priceCounts,
-    List<_i6.DiscoveryRatingBucket>? ratingDistribution,
-    List<_i7.DiscoveryMinimumRatingCount>? minimumRatingCounts,
+    List<_iaqq99sz.DiscoveryTypeCount>? typeCounts,
+    List<_ijvcgm3f.DiscoveryReviewBandCount>? reviewBandCounts,
+    List<_ijqf6en4.DiscoveryPriceCount>? priceCounts,
+    List<_iinjfol4.DiscoveryRatingBucket>? ratingDistribution,
+    List<_iafesi5t.DiscoveryMinimumRatingCount>? minimumRatingCounts,
     int? unknownRatingCount,
   });
   @override
@@ -131,21 +133,47 @@ abstract class DiscoverFacets implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoverFacets',
+      'total': total,
+      'context': context.toJsonForProtocol(),
+      'fetchedAt': fetchedAt.toJson(),
+      'typeCounts': typeCounts.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'reviewBandCounts': reviewBandCounts.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'priceCounts': priceCounts.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'ratingDistribution': ratingDistribution.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'minimumRatingCounts': minimumRatingCounts.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'unknownRatingCount': unknownRatingCount,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _DiscoverFacetsImpl extends DiscoverFacets {
   _DiscoverFacetsImpl({
     required int total,
-    required _i2.DiscoverQueryContext context,
+    required _ixfyrpmf.DiscoverQueryContext context,
     required DateTime fetchedAt,
-    required List<_i3.DiscoveryTypeCount> typeCounts,
-    required List<_i4.DiscoveryReviewBandCount> reviewBandCounts,
-    required List<_i5.DiscoveryPriceCount> priceCounts,
-    required List<_i6.DiscoveryRatingBucket> ratingDistribution,
-    required List<_i7.DiscoveryMinimumRatingCount> minimumRatingCounts,
+    required List<_iaqq99sz.DiscoveryTypeCount> typeCounts,
+    required List<_ijvcgm3f.DiscoveryReviewBandCount> reviewBandCounts,
+    required List<_ijqf6en4.DiscoveryPriceCount> priceCounts,
+    required List<_iinjfol4.DiscoveryRatingBucket> ratingDistribution,
+    required List<_iafesi5t.DiscoveryMinimumRatingCount> minimumRatingCounts,
     required int unknownRatingCount,
   }) : super._(
          total: total,
@@ -161,17 +189,17 @@ class _DiscoverFacetsImpl extends DiscoverFacets {
 
   /// Returns a shallow copy of this [DiscoverFacets]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoverFacets copyWith({
     int? total,
-    _i2.DiscoverQueryContext? context,
+    _ixfyrpmf.DiscoverQueryContext? context,
     DateTime? fetchedAt,
-    List<_i3.DiscoveryTypeCount>? typeCounts,
-    List<_i4.DiscoveryReviewBandCount>? reviewBandCounts,
-    List<_i5.DiscoveryPriceCount>? priceCounts,
-    List<_i6.DiscoveryRatingBucket>? ratingDistribution,
-    List<_i7.DiscoveryMinimumRatingCount>? minimumRatingCounts,
+    List<_iaqq99sz.DiscoveryTypeCount>? typeCounts,
+    List<_ijvcgm3f.DiscoveryReviewBandCount>? reviewBandCounts,
+    List<_ijqf6en4.DiscoveryPriceCount>? priceCounts,
+    List<_iinjfol4.DiscoveryRatingBucket>? ratingDistribution,
+    List<_iafesi5t.DiscoveryMinimumRatingCount>? minimumRatingCounts,
     int? unknownRatingCount,
   }) {
     return DiscoverFacets(

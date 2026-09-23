@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class CacheDashboardSummary implements _i1.SerializableModel {
+abstract class CacheDashboardSummary
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CacheDashboardSummary._({
     required this.catalogCount,
     required this.freshCount,
@@ -54,7 +54,7 @@ abstract class CacheDashboardSummary implements _i1.SerializableModel {
       sourceSuccessRate: (jsonSerialization['sourceSuccessRate'] as num)
           .toDouble(),
       calibrationVersion: jsonSerialization['calibrationVersion'] as String,
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
@@ -82,7 +82,7 @@ abstract class CacheDashboardSummary implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CacheDashboardSummary]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CacheDashboardSummary copyWith({
     int? catalogCount,
     int? freshCount,
@@ -113,8 +113,25 @@ abstract class CacheDashboardSummary implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CacheDashboardSummary',
+      'catalogCount': catalogCount,
+      'freshCount': freshCount,
+      'staleCount': staleCount,
+      'quarantinedCount': quarantinedCount,
+      'coverageCount': coverageCount,
+      'pendingJobs': pendingJobs,
+      'cacheHitRate': cacheHitRate,
+      'sourceSuccessRate': sourceSuccessRate,
+      'calibrationVersion': calibrationVersion,
+      'generatedAt': generatedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -145,7 +162,7 @@ class _CacheDashboardSummaryImpl extends CacheDashboardSummary {
 
   /// Returns a shallow copy of this [CacheDashboardSummary]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CacheDashboardSummary copyWith({
     int? catalogCount,

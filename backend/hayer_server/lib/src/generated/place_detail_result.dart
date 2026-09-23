@@ -10,16 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'poi_identity.dart' as _i2;
-import 'place_snapshot.dart' as _i3;
-import 'place_detail_refresh_state.dart' as _i4;
-import 'place_detail_field.dart' as _i5;
-import 'package:hayer_server/src/generated/protocol.dart' as _i6;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'place_detail_field.dart' as _iv461aah;
+import 'place_detail_refresh_state.dart' as _ik3zwp4j;
+import 'place_snapshot.dart' as _ikbous9x;
+import 'poi_identity.dart' as _i9yu21jq;
 
 abstract class PlaceDetailResult
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   PlaceDetailResult._({
     required this.identity,
     required this.place,
@@ -33,11 +32,11 @@ abstract class PlaceDetailResult
   });
 
   factory PlaceDetailResult({
-    required _i2.PoiIdentity identity,
-    required _i3.PlaceSnapshot place,
+    required _i9yu21jq.PoiIdentity identity,
+    required _ikbous9x.PlaceSnapshot place,
     required bool stale,
-    required _i4.PlaceDetailRefreshState refreshState,
-    required List<_i5.PlaceDetailField> missingFields,
+    required _ik3zwp4j.PlaceDetailRefreshState refreshState,
+    required List<_iv461aah.PlaceDetailField> missingFields,
     DateTime? lastAttemptAt,
     DateTime? lastSuccessAt,
     DateTime? retryAfter,
@@ -46,47 +45,48 @@ abstract class PlaceDetailResult
 
   factory PlaceDetailResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return PlaceDetailResult(
-      identity: _i6.Protocol().deserialize<_i2.PoiIdentity>(
+      identity: _i66y2smk.Protocol().deserialize<_i9yu21jq.PoiIdentity>(
         jsonSerialization['identity'],
       ),
-      place: _i6.Protocol().deserialize<_i3.PlaceSnapshot>(
+      place: _i66y2smk.Protocol().deserialize<_ikbous9x.PlaceSnapshot>(
         jsonSerialization['place'],
       ),
-      stale: _i1.BoolJsonExtension.fromJson(jsonSerialization['stale']),
-      refreshState: _i4.PlaceDetailRefreshState.fromJson(
+      stale: _is.BoolJsonExtension.fromJson(jsonSerialization['stale']),
+      refreshState: _ik3zwp4j.PlaceDetailRefreshState.fromJson(
         (jsonSerialization['refreshState'] as String),
       ),
-      missingFields: _i6.Protocol().deserialize<List<_i5.PlaceDetailField>>(
-        jsonSerialization['missingFields'],
-      ),
+      missingFields: _i66y2smk.Protocol()
+          .deserialize<List<_iv461aah.PlaceDetailField>>(
+            jsonSerialization['missingFields'],
+          ),
       lastAttemptAt: jsonSerialization['lastAttemptAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastAttemptAt'],
             ),
       lastSuccessAt: jsonSerialization['lastSuccessAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastSuccessAt'],
             ),
       retryAfter: jsonSerialization['retryAfter'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
-      fetchedAt: _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
+      fetchedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['fetchedAt'],
       ),
     );
   }
 
-  _i2.PoiIdentity identity;
+  _i9yu21jq.PoiIdentity identity;
 
-  _i3.PlaceSnapshot place;
+  _ikbous9x.PlaceSnapshot place;
 
   bool stale;
 
-  _i4.PlaceDetailRefreshState refreshState;
+  _ik3zwp4j.PlaceDetailRefreshState refreshState;
 
-  List<_i5.PlaceDetailField> missingFields;
+  List<_iv461aah.PlaceDetailField> missingFields;
 
   DateTime? lastAttemptAt;
 
@@ -98,13 +98,13 @@ abstract class PlaceDetailResult
 
   /// Returns a shallow copy of this [PlaceDetailResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PlaceDetailResult copyWith({
-    _i2.PoiIdentity? identity,
-    _i3.PlaceSnapshot? place,
+    _i9yu21jq.PoiIdentity? identity,
+    _ikbous9x.PlaceSnapshot? place,
     bool? stale,
-    _i4.PlaceDetailRefreshState? refreshState,
-    List<_i5.PlaceDetailField>? missingFields,
+    _ik3zwp4j.PlaceDetailRefreshState? refreshState,
+    List<_iv461aah.PlaceDetailField>? missingFields,
     DateTime? lastAttemptAt,
     DateTime? lastSuccessAt,
     DateTime? retryAfter,
@@ -144,7 +144,7 @@ abstract class PlaceDetailResult
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -152,11 +152,11 @@ class _Undefined {}
 
 class _PlaceDetailResultImpl extends PlaceDetailResult {
   _PlaceDetailResultImpl({
-    required _i2.PoiIdentity identity,
-    required _i3.PlaceSnapshot place,
+    required _i9yu21jq.PoiIdentity identity,
+    required _ikbous9x.PlaceSnapshot place,
     required bool stale,
-    required _i4.PlaceDetailRefreshState refreshState,
-    required List<_i5.PlaceDetailField> missingFields,
+    required _ik3zwp4j.PlaceDetailRefreshState refreshState,
+    required List<_iv461aah.PlaceDetailField> missingFields,
     DateTime? lastAttemptAt,
     DateTime? lastSuccessAt,
     DateTime? retryAfter,
@@ -175,14 +175,14 @@ class _PlaceDetailResultImpl extends PlaceDetailResult {
 
   /// Returns a shallow copy of this [PlaceDetailResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PlaceDetailResult copyWith({
-    _i2.PoiIdentity? identity,
-    _i3.PlaceSnapshot? place,
+    _i9yu21jq.PoiIdentity? identity,
+    _ikbous9x.PlaceSnapshot? place,
     bool? stale,
-    _i4.PlaceDetailRefreshState? refreshState,
-    List<_i5.PlaceDetailField>? missingFields,
+    _ik3zwp4j.PlaceDetailRefreshState? refreshState,
+    List<_iv461aah.PlaceDetailField>? missingFields,
     Object? lastAttemptAt = _Undefined,
     Object? lastSuccessAt = _Undefined,
     Object? retryAfter = _Undefined,

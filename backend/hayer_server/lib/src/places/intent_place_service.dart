@@ -143,6 +143,15 @@ abstract final class IntentPlaceService {
               .compareTo(a.sourceCheckedAt)
               .nonZeroOr(a.placeId.compareTo(b.placeId)),
         );
+      case DiscoverSort.distanceArea:
+      case DiscoverSort.distanceCurrent:
+        // Quick Pick has one selected area, so both distance choices use its
+        // anchor. Explore supplies a separate device origin when requested.
+        filtered.sort(
+          (a, b) => a.distanceMeters
+              .compareTo(b.distanceMeters)
+              .nonZeroOr(a.placeId.compareTo(b.placeId)),
+        );
     }
     return filtered;
   }

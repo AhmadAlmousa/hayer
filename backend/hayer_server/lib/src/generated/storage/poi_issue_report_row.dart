@@ -10,23 +10,22 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../poi_issue_source.dart' as _i2;
-import '../place_snapshot.dart' as _i3;
-import '../poi_issue_type.dart' as _i4;
-import '../poi_issue_status.dart' as _i5;
-import 'package:hayer_server/src/generated/protocol.dart' as _i6;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../place_snapshot.dart' as _iv1jjw8m;
+import '../poi_issue_source.dart' as _ir6pywa3;
+import '../poi_issue_status.dart' as _i3wqurc8;
+import '../poi_issue_type.dart' as _idhjekpp;
 
 abstract class PoiIssueReportRow
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   PoiIssueReportRow._({
     this.id,
     required this.reportId,
     required this.reporterHash,
     this.activeDedupeKey,
     this.sessionId,
-    _i2.PoiIssueSource? source,
+    _ir6pywa3.PoiIssueSource? source,
     required this.placeId,
     required this.placeName,
     required this.reportedSnapshot,
@@ -39,21 +38,21 @@ abstract class PoiIssueReportRow
     required this.createdAt,
     required this.updatedAt,
     this.resolvedAt,
-  }) : source = source ?? _i2.PoiIssueSource.session;
+  }) : source = source ?? _ir6pywa3.PoiIssueSource.session;
 
   factory PoiIssueReportRow({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String reportId,
     required String reporterHash,
     String? activeDedupeKey,
     String? sessionId,
-    _i2.PoiIssueSource? source,
+    _ir6pywa3.PoiIssueSource? source,
     required String placeId,
     required String placeName,
-    required _i3.PlaceSnapshot reportedSnapshot,
-    required _i4.PoiIssueType issueType,
+    required _iv1jjw8m.PlaceSnapshot reportedSnapshot,
+    required _idhjekpp.PoiIssueType issueType,
     String? details,
-    required _i5.PoiIssueStatus status,
+    required _i3wqurc8.PoiIssueStatus status,
     String? ownerName,
     String? resolution,
     String? sourceEvidence,
@@ -66,40 +65,41 @@ abstract class PoiIssueReportRow
     return PoiIssueReportRow(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       reportId: jsonSerialization['reportId'] as String,
       reporterHash: jsonSerialization['reporterHash'] as String,
       activeDedupeKey: jsonSerialization['activeDedupeKey'] as String?,
       sessionId: jsonSerialization['sessionId'] as String?,
       source: jsonSerialization['source'] == null
           ? null
-          : _i2.PoiIssueSource.fromJson(
+          : _ir6pywa3.PoiIssueSource.fromJson(
               (jsonSerialization['source'] as String),
             ),
       placeId: jsonSerialization['placeId'] as String,
       placeName: jsonSerialization['placeName'] as String,
-      reportedSnapshot: _i6.Protocol().deserialize<_i3.PlaceSnapshot>(
-        jsonSerialization['reportedSnapshot'],
-      ),
-      issueType: _i4.PoiIssueType.fromJson(
+      reportedSnapshot: _i66y2smk.Protocol()
+          .deserialize<_iv1jjw8m.PlaceSnapshot>(
+            jsonSerialization['reportedSnapshot'],
+          ),
+      issueType: _idhjekpp.PoiIssueType.fromJson(
         (jsonSerialization['issueType'] as String),
       ),
       details: jsonSerialization['details'] as String?,
-      status: _i5.PoiIssueStatus.fromJson(
+      status: _i3wqurc8.PoiIssueStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
       ownerName: jsonSerialization['ownerName'] as String?,
       resolution: jsonSerialization['resolution'] as String?,
       sourceEvidence: jsonSerialization['sourceEvidence'] as String?,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
-      updatedAt: _i1.DateTimeJsonExtension.fromJson(
+      updatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
       ),
       resolvedAt: jsonSerialization['resolvedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['resolvedAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['resolvedAt']),
     );
   }
 
@@ -108,7 +108,7 @@ abstract class PoiIssueReportRow
   static const db = PoiIssueReportRowRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String reportId;
 
@@ -118,19 +118,19 @@ abstract class PoiIssueReportRow
 
   String? sessionId;
 
-  _i2.PoiIssueSource source;
+  _ir6pywa3.PoiIssueSource source;
 
   String placeId;
 
   String placeName;
 
-  _i3.PlaceSnapshot reportedSnapshot;
+  _iv1jjw8m.PlaceSnapshot reportedSnapshot;
 
-  _i4.PoiIssueType issueType;
+  _idhjekpp.PoiIssueType issueType;
 
   String? details;
 
-  _i5.PoiIssueStatus status;
+  _i3wqurc8.PoiIssueStatus status;
 
   String? ownerName;
 
@@ -145,24 +145,24 @@ abstract class PoiIssueReportRow
   DateTime? resolvedAt;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [PoiIssueReportRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PoiIssueReportRow copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? reportId,
     String? reporterHash,
     String? activeDedupeKey,
     String? sessionId,
-    _i2.PoiIssueSource? source,
+    _ir6pywa3.PoiIssueSource? source,
     String? placeId,
     String? placeName,
-    _i3.PlaceSnapshot? reportedSnapshot,
-    _i4.PoiIssueType? issueType,
+    _iv1jjw8m.PlaceSnapshot? reportedSnapshot,
+    _idhjekpp.PoiIssueType? issueType,
     String? details,
-    _i5.PoiIssueStatus? status,
+    _i3wqurc8.PoiIssueStatus? status,
     String? ownerName,
     String? resolution,
     String? sourceEvidence,
@@ -205,12 +205,11 @@ abstract class PoiIssueReportRow
   }
 
   static PoiIssueReportRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
+    _is.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
+    _is.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
     PoiIssueReportRowInclude? include,
   }) {
     return PoiIssueReportRowIncludeList._(
@@ -218,7 +217,6 @@ abstract class PoiIssueReportRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PoiIssueReportRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(PoiIssueReportRow.t),
       include: include,
     );
@@ -226,7 +224,7 @@ abstract class PoiIssueReportRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -234,18 +232,18 @@ class _Undefined {}
 
 class _PoiIssueReportRowImpl extends PoiIssueReportRow {
   _PoiIssueReportRowImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String reportId,
     required String reporterHash,
     String? activeDedupeKey,
     String? sessionId,
-    _i2.PoiIssueSource? source,
+    _ir6pywa3.PoiIssueSource? source,
     required String placeId,
     required String placeName,
-    required _i3.PlaceSnapshot reportedSnapshot,
-    required _i4.PoiIssueType issueType,
+    required _iv1jjw8m.PlaceSnapshot reportedSnapshot,
+    required _idhjekpp.PoiIssueType issueType,
     String? details,
-    required _i5.PoiIssueStatus status,
+    required _i3wqurc8.PoiIssueStatus status,
     String? ownerName,
     String? resolution,
     String? sourceEvidence,
@@ -275,7 +273,7 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
 
   /// Returns a shallow copy of this [PoiIssueReportRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PoiIssueReportRow copyWith({
     Object? id = _Undefined,
@@ -283,13 +281,13 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
     String? reporterHash,
     Object? activeDedupeKey = _Undefined,
     Object? sessionId = _Undefined,
-    _i2.PoiIssueSource? source,
+    _ir6pywa3.PoiIssueSource? source,
     String? placeId,
     String? placeName,
-    _i3.PlaceSnapshot? reportedSnapshot,
-    _i4.PoiIssueType? issueType,
+    _iv1jjw8m.PlaceSnapshot? reportedSnapshot,
+    _idhjekpp.PoiIssueType? issueType,
     Object? details = _Undefined,
-    _i5.PoiIssueStatus? status,
+    _i3wqurc8.PoiIssueStatus? status,
     Object? ownerName = _Undefined,
     Object? resolution = _Undefined,
     Object? sourceEvidence = _Undefined,
@@ -298,7 +296,7 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
     Object? resolvedAt = _Undefined,
   }) {
     return PoiIssueReportRow(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       reportId: reportId ?? this.reportId,
       reporterHash: reporterHash ?? this.reporterHash,
       activeDedupeKey: activeDedupeKey is String?
@@ -325,181 +323,180 @@ class _PoiIssueReportRowImpl extends PoiIssueReportRow {
 }
 
 class PoiIssueReportRowUpdateTable
-    extends _i1.UpdateTable<PoiIssueReportRowTable> {
+    extends _is.UpdateTable<PoiIssueReportRowTable> {
   PoiIssueReportRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> reportId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> reportId(String value) => _is.ColumnValue(
     table.reportId,
     value,
   );
 
-  _i1.ColumnValue<String, String> reporterHash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> reporterHash(String value) => _is.ColumnValue(
     table.reporterHash,
     value,
   );
 
-  _i1.ColumnValue<String, String> activeDedupeKey(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> activeDedupeKey(String? value) =>
+      _is.ColumnValue(
         table.activeDedupeKey,
         value,
       );
 
-  _i1.ColumnValue<String, String> sessionId(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> sessionId(String? value) => _is.ColumnValue(
     table.sessionId,
     value,
   );
 
-  _i1.ColumnValue<_i2.PoiIssueSource, _i2.PoiIssueSource> source(
-    _i2.PoiIssueSource value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ir6pywa3.PoiIssueSource, _ir6pywa3.PoiIssueSource> source(
+    _ir6pywa3.PoiIssueSource value,
+  ) => _is.ColumnValue(
     table.source,
     value,
   );
 
-  _i1.ColumnValue<String, String> placeId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> placeId(String value) => _is.ColumnValue(
     table.placeId,
     value,
   );
 
-  _i1.ColumnValue<String, String> placeName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> placeName(String value) => _is.ColumnValue(
     table.placeName,
     value,
   );
 
-  _i1.ColumnValue<_i3.PlaceSnapshot, _i3.PlaceSnapshot> reportedSnapshot(
-    _i3.PlaceSnapshot value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_iv1jjw8m.PlaceSnapshot, _iv1jjw8m.PlaceSnapshot>
+  reportedSnapshot(_iv1jjw8m.PlaceSnapshot value) => _is.ColumnValue(
     table.reportedSnapshot,
     value,
   );
 
-  _i1.ColumnValue<_i4.PoiIssueType, _i4.PoiIssueType> issueType(
-    _i4.PoiIssueType value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_idhjekpp.PoiIssueType, _idhjekpp.PoiIssueType> issueType(
+    _idhjekpp.PoiIssueType value,
+  ) => _is.ColumnValue(
     table.issueType,
     value,
   );
 
-  _i1.ColumnValue<String, String> details(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> details(String? value) => _is.ColumnValue(
     table.details,
     value,
   );
 
-  _i1.ColumnValue<_i5.PoiIssueStatus, _i5.PoiIssueStatus> status(
-    _i5.PoiIssueStatus value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_i3wqurc8.PoiIssueStatus, _i3wqurc8.PoiIssueStatus> status(
+    _i3wqurc8.PoiIssueStatus value,
+  ) => _is.ColumnValue(
     table.status,
     value,
   );
 
-  _i1.ColumnValue<String, String> ownerName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> ownerName(String? value) => _is.ColumnValue(
     table.ownerName,
     value,
   );
 
-  _i1.ColumnValue<String, String> resolution(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> resolution(String? value) => _is.ColumnValue(
     table.resolution,
     value,
   );
 
-  _i1.ColumnValue<String, String> sourceEvidence(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> sourceEvidence(String? value) =>
+      _is.ColumnValue(
         table.sourceEvidence,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> updatedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> updatedAt(DateTime value) =>
+      _is.ColumnValue(
         table.updatedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> resolvedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> resolvedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.resolvedAt,
         value,
       );
 }
 
-class PoiIssueReportRowTable extends _i1.Table<_i1.UuidValue?> {
+class PoiIssueReportRowTable extends _is.Table<_is.UuidValue?> {
   PoiIssueReportRowTable({super.tableRelation})
     : super(tableName: 'hayer_poi_issue_report') {
     updateTable = PoiIssueReportRowUpdateTable(this);
-    reportId = _i1.ColumnString(
+    reportId = _is.ColumnString(
       'reportId',
       this,
     );
-    reporterHash = _i1.ColumnString(
+    reporterHash = _is.ColumnString(
       'reporterHash',
       this,
     );
-    activeDedupeKey = _i1.ColumnString(
+    activeDedupeKey = _is.ColumnString(
       'activeDedupeKey',
       this,
     );
-    sessionId = _i1.ColumnString(
+    sessionId = _is.ColumnString(
       'sessionId',
       this,
     );
-    source = _i1.ColumnEnum(
+    source = _is.ColumnEnum(
       'source',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    placeId = _i1.ColumnString(
+    placeId = _is.ColumnString(
       'placeId',
       this,
     );
-    placeName = _i1.ColumnString(
+    placeName = _is.ColumnString(
       'placeName',
       this,
     );
-    reportedSnapshot = _i1.ColumnSerializable<_i3.PlaceSnapshot>(
+    reportedSnapshot = _is.ColumnSerializable<_iv1jjw8m.PlaceSnapshot>(
       'reportedSnapshot',
       this,
     );
-    issueType = _i1.ColumnEnum(
+    issueType = _is.ColumnEnum(
       'issueType',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    details = _i1.ColumnString(
+    details = _is.ColumnString(
       'details',
       this,
     );
-    status = _i1.ColumnEnum(
+    status = _is.ColumnEnum(
       'status',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    ownerName = _i1.ColumnString(
+    ownerName = _is.ColumnString(
       'ownerName',
       this,
     );
-    resolution = _i1.ColumnString(
+    resolution = _is.ColumnString(
       'resolution',
       this,
     );
-    sourceEvidence = _i1.ColumnString(
+    sourceEvidence = _is.ColumnString(
       'sourceEvidence',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    updatedAt = _i1.ColumnDateTime(
+    updatedAt = _is.ColumnDateTime(
       'updatedAt',
       this,
     );
-    resolvedAt = _i1.ColumnDateTime(
+    resolvedAt = _is.ColumnDateTime(
       'resolvedAt',
       this,
     );
@@ -507,42 +504,42 @@ class PoiIssueReportRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final PoiIssueReportRowUpdateTable updateTable;
 
-  late final _i1.ColumnString reportId;
+  late final _is.ColumnString reportId;
 
-  late final _i1.ColumnString reporterHash;
+  late final _is.ColumnString reporterHash;
 
-  late final _i1.ColumnString activeDedupeKey;
+  late final _is.ColumnString activeDedupeKey;
 
-  late final _i1.ColumnString sessionId;
+  late final _is.ColumnString sessionId;
 
-  late final _i1.ColumnEnum<_i2.PoiIssueSource> source;
+  late final _is.ColumnEnum<_ir6pywa3.PoiIssueSource> source;
 
-  late final _i1.ColumnString placeId;
+  late final _is.ColumnString placeId;
 
-  late final _i1.ColumnString placeName;
+  late final _is.ColumnString placeName;
 
-  late final _i1.ColumnSerializable<_i3.PlaceSnapshot> reportedSnapshot;
+  late final _is.ColumnSerializable<_iv1jjw8m.PlaceSnapshot> reportedSnapshot;
 
-  late final _i1.ColumnEnum<_i4.PoiIssueType> issueType;
+  late final _is.ColumnEnum<_idhjekpp.PoiIssueType> issueType;
 
-  late final _i1.ColumnString details;
+  late final _is.ColumnString details;
 
-  late final _i1.ColumnEnum<_i5.PoiIssueStatus> status;
+  late final _is.ColumnEnum<_i3wqurc8.PoiIssueStatus> status;
 
-  late final _i1.ColumnString ownerName;
+  late final _is.ColumnString ownerName;
 
-  late final _i1.ColumnString resolution;
+  late final _is.ColumnString resolution;
 
-  late final _i1.ColumnString sourceEvidence;
+  late final _is.ColumnString sourceEvidence;
 
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  late final _i1.ColumnDateTime updatedAt;
+  late final _is.ColumnDateTime updatedAt;
 
-  late final _i1.ColumnDateTime resolvedAt;
+  late final _is.ColumnDateTime resolvedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     reportId,
     reporterHash,
@@ -564,23 +561,22 @@ class PoiIssueReportRowTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class PoiIssueReportRowInclude extends _i1.IncludeObject {
+class PoiIssueReportRowInclude extends _is.IncludeObject {
   PoiIssueReportRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PoiIssueReportRow.t;
+  _is.Table<_is.UuidValue?> get table => PoiIssueReportRow.t;
 }
 
-class PoiIssueReportRowIncludeList extends _i1.IncludeList {
+class PoiIssueReportRowIncludeList extends _is.IncludeList {
   PoiIssueReportRowIncludeList._({
-    _i1.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
+    _is.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -588,10 +584,10 @@ class PoiIssueReportRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PoiIssueReportRow.t;
+  _is.Table<_is.UuidValue?> get table => PoiIssueReportRow.t;
 }
 
 class PoiIssueReportRowRepository {
@@ -620,22 +616,20 @@ class PoiIssueReportRowRepository {
   /// );
   /// ```
   Future<List<PoiIssueReportRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PoiIssueReportRow>(
       where: where?.call(PoiIssueReportRow.t),
       orderBy: orderBy?.call(PoiIssueReportRow.t),
       orderByList: orderByList?.call(PoiIssueReportRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -662,21 +656,19 @@ class PoiIssueReportRowRepository {
   /// );
   /// ```
   Future<PoiIssueReportRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PoiIssueReportRow>(
       where: where?.call(PoiIssueReportRow.t),
       orderBy: orderBy?.call(PoiIssueReportRow.t),
       orderByList: orderByList?.call(PoiIssueReportRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -686,11 +678,11 @@ class PoiIssueReportRowRepository {
 
   /// Finds a single [PoiIssueReportRow] by its [id] or null if no such row exists.
   Future<PoiIssueReportRow?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PoiIssueReportRow>(
       id,
@@ -710,16 +702,22 @@ class PoiIssueReportRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiIssueReportRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PoiIssueReportRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<PoiIssueReportRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -727,12 +725,81 @@ class PoiIssueReportRowRepository {
   ///
   /// The returned [PoiIssueReportRow] will have its `id` field set.
   Future<PoiIssueReportRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PoiIssueReportRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<PoiIssueReportRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [PoiIssueReportRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [PoiIssueReportRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<PoiIssueReportRow>> upsert(
+    _is.DatabaseSession session,
+    List<PoiIssueReportRow> rows, {
+    required _is.ColumnSelections<PoiIssueReportRowTable> conflictColumns,
+    _is.ColumnSelections<PoiIssueReportRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<PoiIssueReportRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<PoiIssueReportRow>(
+      rows,
+      conflictColumns: conflictColumns(PoiIssueReportRow.t),
+      updateColumns: updateColumns?.call(PoiIssueReportRow.t),
+      updateWhere: updateWhere?.call(PoiIssueReportRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [PoiIssueReportRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [PoiIssueReportRow] will have its `id` field set.
+  Future<PoiIssueReportRow?> upsertRow(
+    _is.DatabaseSession session,
+    PoiIssueReportRow row, {
+    required _is.ColumnSelections<PoiIssueReportRowTable> conflictColumns,
+    _is.ColumnSelections<PoiIssueReportRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<PoiIssueReportRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<PoiIssueReportRow>(
+      row,
+      conflictColumns: conflictColumns(PoiIssueReportRow.t),
+      updateColumns: updateColumns?.call(PoiIssueReportRow.t),
+      updateWhere: updateWhere?.call(PoiIssueReportRow.t),
       transaction: transaction,
     );
   }
@@ -742,16 +809,22 @@ class PoiIssueReportRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiIssueReportRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PoiIssueReportRow> rows, {
-    _i1.ColumnSelections<PoiIssueReportRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PoiIssueReportRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<PoiIssueReportRow>(
       rows,
       columns: columns?.call(PoiIssueReportRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -759,10 +832,10 @@ class PoiIssueReportRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<PoiIssueReportRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PoiIssueReportRow row, {
-    _i1.ColumnSelections<PoiIssueReportRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PoiIssueReportRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<PoiIssueReportRow>(
       row,
@@ -774,11 +847,11 @@ class PoiIssueReportRowRepository {
   /// Updates a single [PoiIssueReportRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<PoiIssueReportRow?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<PoiIssueReportRowUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<PoiIssueReportRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<PoiIssueReportRow>(
       id,
@@ -789,17 +862,21 @@ class PoiIssueReportRowRepository {
 
   /// Updates all [PoiIssueReportRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiIssueReportRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<PoiIssueReportRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<PoiIssueReportRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<PoiIssueReportRowTable> where,
+    required _is.WhereExpressionBuilder<PoiIssueReportRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
-    _i1.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<PoiIssueReportRow>(
       columnValues: columnValues(PoiIssueReportRow.t.updateTable),
@@ -808,30 +885,44 @@ class PoiIssueReportRowRepository {
       offset: offset,
       orderBy: orderBy?.call(PoiIssueReportRow.t),
       orderByList: orderByList?.call(PoiIssueReportRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [PoiIssueReportRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiIssueReportRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PoiIssueReportRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<PoiIssueReportRow>(
       rows,
+      orderBy: orderBy?.call(PoiIssueReportRow.t),
+      orderByList: orderByList?.call(PoiIssueReportRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [PoiIssueReportRow].
   Future<PoiIssueReportRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PoiIssueReportRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<PoiIssueReportRow>(
       row,
@@ -840,24 +931,37 @@ class PoiIssueReportRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiIssueReportRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PoiIssueReportRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PoiIssueReportRowTable> where,
+    _is.OrderByBuilder<PoiIssueReportRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiIssueReportRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<PoiIssueReportRow>(
       where: where(PoiIssueReportRow.t),
+      orderBy: orderBy?.call(PoiIssueReportRow.t),
+      orderByList: orderByList?.call(PoiIssueReportRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PoiIssueReportRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<PoiIssueReportRow>(
       where: where?.call(PoiIssueReportRow.t),
@@ -868,11 +972,11 @@ class PoiIssueReportRowRepository {
 
   /// Acquires row-level locks on [PoiIssueReportRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PoiIssueReportRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PoiIssueReportRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<PoiIssueReportRow>(
       where: where(PoiIssueReportRow.t),

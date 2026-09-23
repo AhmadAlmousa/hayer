@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_discovery_unmapped_type.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_discovery_unmapped_type.dart' as _io11b7f4;
 
 abstract class AdminDiscoveryUnmappedTypePage
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminDiscoveryUnmappedTypePage._({
     required this.items,
     required this.total,
@@ -25,7 +24,7 @@ abstract class AdminDiscoveryUnmappedTypePage
   });
 
   factory AdminDiscoveryUnmappedTypePage({
-    required List<_i2.AdminDiscoveryUnmappedType> items,
+    required List<_io11b7f4.AdminDiscoveryUnmappedType> items,
     required int total,
     required int page,
     required int pageSize,
@@ -35,16 +34,17 @@ abstract class AdminDiscoveryUnmappedTypePage
     Map<String, dynamic> jsonSerialization,
   ) {
     return AdminDiscoveryUnmappedTypePage(
-      items: _i3.Protocol().deserialize<List<_i2.AdminDiscoveryUnmappedType>>(
-        jsonSerialization['items'],
-      ),
+      items: _i66y2smk.Protocol()
+          .deserialize<List<_io11b7f4.AdminDiscoveryUnmappedType>>(
+            jsonSerialization['items'],
+          ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
       pageSize: jsonSerialization['pageSize'] as int,
     );
   }
 
-  List<_i2.AdminDiscoveryUnmappedType> items;
+  List<_io11b7f4.AdminDiscoveryUnmappedType> items;
 
   int total;
 
@@ -54,9 +54,9 @@ abstract class AdminDiscoveryUnmappedTypePage
 
   /// Returns a shallow copy of this [AdminDiscoveryUnmappedTypePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminDiscoveryUnmappedTypePage copyWith({
-    List<_i2.AdminDiscoveryUnmappedType>? items,
+    List<_io11b7f4.AdminDiscoveryUnmappedType>? items,
     int? total,
     int? page,
     int? pageSize,
@@ -85,14 +85,14 @@ abstract class AdminDiscoveryUnmappedTypePage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminDiscoveryUnmappedTypePageImpl
     extends AdminDiscoveryUnmappedTypePage {
   _AdminDiscoveryUnmappedTypePageImpl({
-    required List<_i2.AdminDiscoveryUnmappedType> items,
+    required List<_io11b7f4.AdminDiscoveryUnmappedType> items,
     required int total,
     required int page,
     required int pageSize,
@@ -105,10 +105,10 @@ class _AdminDiscoveryUnmappedTypePageImpl
 
   /// Returns a shallow copy of this [AdminDiscoveryUnmappedTypePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminDiscoveryUnmappedTypePage copyWith({
-    List<_i2.AdminDiscoveryUnmappedType>? items,
+    List<_io11b7f4.AdminDiscoveryUnmappedType>? items,
     int? total,
     int? page,
     int? pageSize,

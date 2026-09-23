@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class AnalyticsPoint implements _i1.SerializableModel {
+abstract class AnalyticsPoint
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AnalyticsPoint._({
     required this.bucketStartedAt,
     required this.seriesKey,
@@ -30,7 +30,7 @@ abstract class AnalyticsPoint implements _i1.SerializableModel {
 
   factory AnalyticsPoint.fromJson(Map<String, dynamic> jsonSerialization) {
     return AnalyticsPoint(
-      bucketStartedAt: _i1.DateTimeJsonExtension.fromJson(
+      bucketStartedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['bucketStartedAt'],
       ),
       seriesKey: jsonSerialization['seriesKey'] as String,
@@ -49,7 +49,7 @@ abstract class AnalyticsPoint implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AnalyticsPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AnalyticsPoint copyWith({
     DateTime? bucketStartedAt,
     String? seriesKey,
@@ -68,8 +68,19 @@ abstract class AnalyticsPoint implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AnalyticsPoint',
+      'bucketStartedAt': bucketStartedAt.toJson(),
+      'seriesKey': seriesKey,
+      'seriesLabel': seriesLabel,
+      'value': value,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -88,7 +99,7 @@ class _AnalyticsPointImpl extends AnalyticsPoint {
 
   /// Returns a shallow copy of this [AnalyticsPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AnalyticsPoint copyWith({
     DateTime? bucketStartedAt,

@@ -12,6 +12,8 @@ final class IntentCopy {
       : 'What are you in the mood for?';
   String get categorySearch => ar ? 'ابحث في الفئات' : 'Search categories';
   String get continueLabel => ar ? 'متابعة' : 'Continue';
+  String get back => ar ? 'رجوع' : 'Back';
+  String get next => ar ? 'التالي' : 'Next';
   String get where => ar ? 'أين؟' : 'WHERE?';
   String get wherePrompt => ar ? 'أين نبحث؟' : 'Where should we look?';
   String get currentLocation => ar ? 'موقعي الحالي' : 'Current location';
@@ -37,6 +39,18 @@ final class IntentCopy {
   String get defaults =>
       ar ? 'الإعدادات الافتراضية مناسبة' : 'Sensible defaults are ready';
   String get roomRules => ar ? 'قواعد الغرفة' : 'Room rules';
+  String get majorityTip => ar
+      ? 'يفوز المكان عندما يحبه أكثر من نصف المشاركين.'
+      : 'A place wins when more than half the group likes it.';
+  String get unanimousTip => ar
+      ? 'لا يفوز المكان إلا إذا أعجب جميع المشاركين.'
+      : 'A place wins only when everyone likes it.';
+  String get instantTip => ar
+      ? 'أظهر أول تطابق فورًا وأوقف البطاقات.'
+      : 'Show the first match immediately and stop the deck.';
+  String get afterDeckTip => ar
+      ? 'أكملوا البطاقات ثم شاهدوا النتائج معًا.'
+      : 'Finish the deck before seeing the group results.';
   String get displayName => ar ? 'اسمك' : 'Your name';
   String get createRoom => ar ? 'إنشاء الغرفة' : 'Create room';
   String get replaceSelection =>

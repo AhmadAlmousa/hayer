@@ -10,16 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'admin_live_usage.dart' as _i17fquo2;
+import 'analytics_breakdown.dart' as _iky5xq8l;
+import 'analytics_kpi.dart' as _ixq6s46l;
+import 'analytics_point.dart' as _irt4ny16;
+import 'cache_dashboard_summary.dart' as _iiw95en5;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'admin_live_usage.dart' as _i2;
-import 'analytics_kpi.dart' as _i3;
-import 'analytics_point.dart' as _i4;
-import 'analytics_breakdown.dart' as _i5;
-import 'cache_dashboard_summary.dart' as _i6;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i7;
-
-abstract class AdminAnalyticsOverview implements _i1.SerializableModel {
+abstract class AdminAnalyticsOverview
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminAnalyticsOverview._({
     required this.live,
     required this.kpis,
@@ -35,16 +35,16 @@ abstract class AdminAnalyticsOverview implements _i1.SerializableModel {
   });
 
   factory AdminAnalyticsOverview({
-    required _i2.AdminLiveUsage live,
-    required List<_i3.AnalyticsKpi> kpis,
-    required List<_i4.AnalyticsPoint> sessionTrend,
-    required List<_i5.AnalyticsBreakdown> modeBreakdown,
-    required List<_i5.AnalyticsBreakdown> participantModeBreakdown,
-    required List<_i5.AnalyticsBreakdown> topCities,
-    required List<_i5.AnalyticsBreakdown> topCategories,
-    required List<_i5.AnalyticsBreakdown> topCuisines,
-    required List<_i5.AnalyticsBreakdown> topTypes,
-    required _i6.CacheDashboardSummary cacheSummary,
+    required _i17fquo2.AdminLiveUsage live,
+    required List<_ixq6s46l.AnalyticsKpi> kpis,
+    required List<_irt4ny16.AnalyticsPoint> sessionTrend,
+    required List<_iky5xq8l.AnalyticsBreakdown> modeBreakdown,
+    required List<_iky5xq8l.AnalyticsBreakdown> participantModeBreakdown,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCities,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCategories,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCuisines,
+    required List<_iky5xq8l.AnalyticsBreakdown> topTypes,
+    required _iiw95en5.CacheDashboardSummary cacheSummary,
     required DateTime generatedAt,
   }) = _AdminAnalyticsOverviewImpl;
 
@@ -52,79 +52,86 @@ abstract class AdminAnalyticsOverview implements _i1.SerializableModel {
     Map<String, dynamic> jsonSerialization,
   ) {
     return AdminAnalyticsOverview(
-      live: _i7.Protocol().deserialize<_i2.AdminLiveUsage>(
+      live: _iynev3sz.Protocol().deserialize<_i17fquo2.AdminLiveUsage>(
         jsonSerialization['live'],
       ),
-      kpis: _i7.Protocol().deserialize<List<_i3.AnalyticsKpi>>(
+      kpis: _iynev3sz.Protocol().deserialize<List<_ixq6s46l.AnalyticsKpi>>(
         jsonSerialization['kpis'],
       ),
-      sessionTrend: _i7.Protocol().deserialize<List<_i4.AnalyticsPoint>>(
-        jsonSerialization['sessionTrend'],
-      ),
-      modeBreakdown: _i7.Protocol().deserialize<List<_i5.AnalyticsBreakdown>>(
-        jsonSerialization['modeBreakdown'],
-      ),
-      participantModeBreakdown: _i7.Protocol()
-          .deserialize<List<_i5.AnalyticsBreakdown>>(
+      sessionTrend: _iynev3sz.Protocol()
+          .deserialize<List<_irt4ny16.AnalyticsPoint>>(
+            jsonSerialization['sessionTrend'],
+          ),
+      modeBreakdown: _iynev3sz.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['modeBreakdown'],
+          ),
+      participantModeBreakdown: _iynev3sz.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
             jsonSerialization['participantModeBreakdown'],
           ),
-      topCities: _i7.Protocol().deserialize<List<_i5.AnalyticsBreakdown>>(
-        jsonSerialization['topCities'],
-      ),
-      topCategories: _i7.Protocol().deserialize<List<_i5.AnalyticsBreakdown>>(
-        jsonSerialization['topCategories'],
-      ),
-      topCuisines: _i7.Protocol().deserialize<List<_i5.AnalyticsBreakdown>>(
-        jsonSerialization['topCuisines'],
-      ),
-      topTypes: _i7.Protocol().deserialize<List<_i5.AnalyticsBreakdown>>(
-        jsonSerialization['topTypes'],
-      ),
-      cacheSummary: _i7.Protocol().deserialize<_i6.CacheDashboardSummary>(
-        jsonSerialization['cacheSummary'],
-      ),
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      topCities: _iynev3sz.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['topCities'],
+          ),
+      topCategories: _iynev3sz.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['topCategories'],
+          ),
+      topCuisines: _iynev3sz.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['topCuisines'],
+          ),
+      topTypes: _iynev3sz.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['topTypes'],
+          ),
+      cacheSummary: _iynev3sz.Protocol()
+          .deserialize<_iiw95en5.CacheDashboardSummary>(
+            jsonSerialization['cacheSummary'],
+          ),
+      generatedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
   }
 
-  _i2.AdminLiveUsage live;
+  _i17fquo2.AdminLiveUsage live;
 
-  List<_i3.AnalyticsKpi> kpis;
+  List<_ixq6s46l.AnalyticsKpi> kpis;
 
-  List<_i4.AnalyticsPoint> sessionTrend;
+  List<_irt4ny16.AnalyticsPoint> sessionTrend;
 
-  List<_i5.AnalyticsBreakdown> modeBreakdown;
+  List<_iky5xq8l.AnalyticsBreakdown> modeBreakdown;
 
-  List<_i5.AnalyticsBreakdown> participantModeBreakdown;
+  List<_iky5xq8l.AnalyticsBreakdown> participantModeBreakdown;
 
-  List<_i5.AnalyticsBreakdown> topCities;
+  List<_iky5xq8l.AnalyticsBreakdown> topCities;
 
-  List<_i5.AnalyticsBreakdown> topCategories;
+  List<_iky5xq8l.AnalyticsBreakdown> topCategories;
 
-  List<_i5.AnalyticsBreakdown> topCuisines;
+  List<_iky5xq8l.AnalyticsBreakdown> topCuisines;
 
-  List<_i5.AnalyticsBreakdown> topTypes;
+  List<_iky5xq8l.AnalyticsBreakdown> topTypes;
 
-  _i6.CacheDashboardSummary cacheSummary;
+  _iiw95en5.CacheDashboardSummary cacheSummary;
 
   DateTime generatedAt;
 
   /// Returns a shallow copy of this [AdminAnalyticsOverview]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminAnalyticsOverview copyWith({
-    _i2.AdminLiveUsage? live,
-    List<_i3.AnalyticsKpi>? kpis,
-    List<_i4.AnalyticsPoint>? sessionTrend,
-    List<_i5.AnalyticsBreakdown>? modeBreakdown,
-    List<_i5.AnalyticsBreakdown>? participantModeBreakdown,
-    List<_i5.AnalyticsBreakdown>? topCities,
-    List<_i5.AnalyticsBreakdown>? topCategories,
-    List<_i5.AnalyticsBreakdown>? topCuisines,
-    List<_i5.AnalyticsBreakdown>? topTypes,
-    _i6.CacheDashboardSummary? cacheSummary,
+    _i17fquo2.AdminLiveUsage? live,
+    List<_ixq6s46l.AnalyticsKpi>? kpis,
+    List<_irt4ny16.AnalyticsPoint>? sessionTrend,
+    List<_iky5xq8l.AnalyticsBreakdown>? modeBreakdown,
+    List<_iky5xq8l.AnalyticsBreakdown>? participantModeBreakdown,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCities,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCategories,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCuisines,
+    List<_iky5xq8l.AnalyticsBreakdown>? topTypes,
+    _iiw95en5.CacheDashboardSummary? cacheSummary,
     DateTime? generatedAt,
   });
   @override
@@ -148,23 +155,51 @@ abstract class AdminAnalyticsOverview implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminAnalyticsOverview',
+      'live': live.toJsonForProtocol(),
+      'kpis': kpis.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'sessionTrend': sessionTrend.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'modeBreakdown': modeBreakdown.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'participantModeBreakdown': participantModeBreakdown.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'topCities': topCities.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'topCategories': topCategories.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'topCuisines': topCuisines.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'topTypes': topTypes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'cacheSummary': cacheSummary.toJsonForProtocol(),
+      'generatedAt': generatedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _AdminAnalyticsOverviewImpl extends AdminAnalyticsOverview {
   _AdminAnalyticsOverviewImpl({
-    required _i2.AdminLiveUsage live,
-    required List<_i3.AnalyticsKpi> kpis,
-    required List<_i4.AnalyticsPoint> sessionTrend,
-    required List<_i5.AnalyticsBreakdown> modeBreakdown,
-    required List<_i5.AnalyticsBreakdown> participantModeBreakdown,
-    required List<_i5.AnalyticsBreakdown> topCities,
-    required List<_i5.AnalyticsBreakdown> topCategories,
-    required List<_i5.AnalyticsBreakdown> topCuisines,
-    required List<_i5.AnalyticsBreakdown> topTypes,
-    required _i6.CacheDashboardSummary cacheSummary,
+    required _i17fquo2.AdminLiveUsage live,
+    required List<_ixq6s46l.AnalyticsKpi> kpis,
+    required List<_irt4ny16.AnalyticsPoint> sessionTrend,
+    required List<_iky5xq8l.AnalyticsBreakdown> modeBreakdown,
+    required List<_iky5xq8l.AnalyticsBreakdown> participantModeBreakdown,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCities,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCategories,
+    required List<_iky5xq8l.AnalyticsBreakdown> topCuisines,
+    required List<_iky5xq8l.AnalyticsBreakdown> topTypes,
+    required _iiw95en5.CacheDashboardSummary cacheSummary,
     required DateTime generatedAt,
   }) : super._(
          live: live,
@@ -182,19 +217,19 @@ class _AdminAnalyticsOverviewImpl extends AdminAnalyticsOverview {
 
   /// Returns a shallow copy of this [AdminAnalyticsOverview]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminAnalyticsOverview copyWith({
-    _i2.AdminLiveUsage? live,
-    List<_i3.AnalyticsKpi>? kpis,
-    List<_i4.AnalyticsPoint>? sessionTrend,
-    List<_i5.AnalyticsBreakdown>? modeBreakdown,
-    List<_i5.AnalyticsBreakdown>? participantModeBreakdown,
-    List<_i5.AnalyticsBreakdown>? topCities,
-    List<_i5.AnalyticsBreakdown>? topCategories,
-    List<_i5.AnalyticsBreakdown>? topCuisines,
-    List<_i5.AnalyticsBreakdown>? topTypes,
-    _i6.CacheDashboardSummary? cacheSummary,
+    _i17fquo2.AdminLiveUsage? live,
+    List<_ixq6s46l.AnalyticsKpi>? kpis,
+    List<_irt4ny16.AnalyticsPoint>? sessionTrend,
+    List<_iky5xq8l.AnalyticsBreakdown>? modeBreakdown,
+    List<_iky5xq8l.AnalyticsBreakdown>? participantModeBreakdown,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCities,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCategories,
+    List<_iky5xq8l.AnalyticsBreakdown>? topCuisines,
+    List<_iky5xq8l.AnalyticsBreakdown>? topTypes,
+    _iiw95en5.CacheDashboardSummary? cacheSummary,
     DateTime? generatedAt,
   }) {
     return AdminAnalyticsOverview(

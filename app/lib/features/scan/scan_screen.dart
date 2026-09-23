@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/page_title.dart';
@@ -46,10 +45,12 @@ class _ScanScreenState extends State<ScanScreen> {
             children: [
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: M3EIconButton(
-                  onPressed: _leaveScanner,
+                child: IconButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    _leaveScanner();
+                  },
                   icon: const Icon(Icons.arrow_back_rounded),
-                  haptic: M3EHapticFeedback.light,
                 ),
               ),
               Expanded(
@@ -104,7 +105,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         ],
                         if (widget.scanner.isSupported) ...[
                           const SizedBox(height: 32),
-                          M3EButton.icon(
+                          FilledButton.icon(
                             onPressed: _scanning ? null : _scan,
                             icon: _scanning
                                 ? const SizedBox.square(
@@ -119,13 +120,11 @@ class _ScanScreenState extends State<ScanScreen> {
                                   ? strings.openingScanner
                                   : strings.scanQrCode,
                             ),
-                            size: M3EButtonSize.md,
                           ),
                         ],
                         const SizedBox(height: 12),
-                        M3EButton.outlined(
+                        OutlinedButton(
                           onPressed: () => context.go('/join'),
-                          size: M3EButtonSize.md,
                           child: Text(strings.enterCodeInstead),
                         ),
                       ],

@@ -10,17 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'session_mode.dart' as _i2;
-import 'consensus_rule.dart' as _i3;
-import 'matching_timing.dart' as _i4;
-import 'client_analytics_context.dart' as _i5;
-import 'place_intent_query.dart' as _i6;
-import 'package:hayer_server/src/generated/protocol.dart' as _i7;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'client_analytics_context.dart' as _iae9jhcw;
+import 'consensus_rule.dart' as _idhfk3qj;
+import 'matching_timing.dart' as _inbmjteu;
+import 'place_intent_query.dart' as _i151h6s7;
+import 'session_mode.dart' as _i7rc03rf;
 
 abstract class CreateSessionRequest
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   CreateSessionRequest._({
     required this.mode,
     required this.categoryId,
@@ -42,7 +41,7 @@ abstract class CreateSessionRequest
   });
 
   factory CreateSessionRequest({
-    required _i2.SessionMode mode,
+    required _i7rc03rf.SessionMode mode,
     required String categoryId,
     required List<String> subcategoryIds,
     int? priceLevel,
@@ -53,21 +52,23 @@ abstract class CreateSessionRequest
     required int radiusMeters,
     required int deckSize,
     String? displayName,
-    required _i3.ConsensusRule consensusRule,
-    required _i4.MatchingTiming matchingTiming,
-    _i5.ClientAnalyticsContext? analyticsContext,
+    required _idhfk3qj.ConsensusRule consensusRule,
+    required _inbmjteu.MatchingTiming matchingTiming,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
     List<String>? shortlistPlaceIds,
     int? freshDiscoveryCount,
-    _i6.PlaceIntentQuery? intent,
+    _i151h6s7.PlaceIntentQuery? intent,
   }) = _CreateSessionRequestImpl;
 
   factory CreateSessionRequest.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return CreateSessionRequest(
-      mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
+      mode: _i7rc03rf.SessionMode.fromJson(
+        (jsonSerialization['mode'] as String),
+      ),
       categoryId: jsonSerialization['categoryId'] as String,
-      subcategoryIds: _i7.Protocol().deserialize<List<String>>(
+      subcategoryIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['subcategoryIds'],
       ),
       priceLevel: jsonSerialization['priceLevel'] as int?,
@@ -76,36 +77,36 @@ abstract class CreateSessionRequest
       anchorAddress: jsonSerialization['anchorAddress'] as String?,
       visitAt: jsonSerialization['visitAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
       radiusMeters: jsonSerialization['radiusMeters'] as int,
       deckSize: jsonSerialization['deckSize'] as int,
       displayName: jsonSerialization['displayName'] as String?,
-      consensusRule: _i3.ConsensusRule.fromJson(
+      consensusRule: _idhfk3qj.ConsensusRule.fromJson(
         (jsonSerialization['consensusRule'] as String),
       ),
-      matchingTiming: _i4.MatchingTiming.fromJson(
+      matchingTiming: _inbmjteu.MatchingTiming.fromJson(
         (jsonSerialization['matchingTiming'] as String),
       ),
       analyticsContext: jsonSerialization['analyticsContext'] == null
           ? null
-          : _i7.Protocol().deserialize<_i5.ClientAnalyticsContext>(
+          : _i66y2smk.Protocol().deserialize<_iae9jhcw.ClientAnalyticsContext>(
               jsonSerialization['analyticsContext'],
             ),
       shortlistPlaceIds: jsonSerialization['shortlistPlaceIds'] == null
           ? null
-          : _i7.Protocol().deserialize<List<String>>(
+          : _i66y2smk.Protocol().deserialize<List<String>>(
               jsonSerialization['shortlistPlaceIds'],
             ),
       freshDiscoveryCount: jsonSerialization['freshDiscoveryCount'] as int?,
       intent: jsonSerialization['intent'] == null
           ? null
-          : _i7.Protocol().deserialize<_i6.PlaceIntentQuery>(
+          : _i66y2smk.Protocol().deserialize<_i151h6s7.PlaceIntentQuery>(
               jsonSerialization['intent'],
             ),
     );
   }
 
-  _i2.SessionMode mode;
+  _i7rc03rf.SessionMode mode;
 
   String categoryId;
 
@@ -127,23 +128,23 @@ abstract class CreateSessionRequest
 
   String? displayName;
 
-  _i3.ConsensusRule consensusRule;
+  _idhfk3qj.ConsensusRule consensusRule;
 
-  _i4.MatchingTiming matchingTiming;
+  _inbmjteu.MatchingTiming matchingTiming;
 
-  _i5.ClientAnalyticsContext? analyticsContext;
+  _iae9jhcw.ClientAnalyticsContext? analyticsContext;
 
   List<String>? shortlistPlaceIds;
 
   int? freshDiscoveryCount;
 
-  _i6.PlaceIntentQuery? intent;
+  _i151h6s7.PlaceIntentQuery? intent;
 
   /// Returns a shallow copy of this [CreateSessionRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CreateSessionRequest copyWith({
-    _i2.SessionMode? mode,
+    _i7rc03rf.SessionMode? mode,
     String? categoryId,
     List<String>? subcategoryIds,
     int? priceLevel,
@@ -154,12 +155,12 @@ abstract class CreateSessionRequest
     int? radiusMeters,
     int? deckSize,
     String? displayName,
-    _i3.ConsensusRule? consensusRule,
-    _i4.MatchingTiming? matchingTiming,
-    _i5.ClientAnalyticsContext? analyticsContext,
+    _idhfk3qj.ConsensusRule? consensusRule,
+    _inbmjteu.MatchingTiming? matchingTiming,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
     List<String>? shortlistPlaceIds,
     int? freshDiscoveryCount,
-    _i6.PlaceIntentQuery? intent,
+    _i151h6s7.PlaceIntentQuery? intent,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -217,7 +218,7 @@ abstract class CreateSessionRequest
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -225,7 +226,7 @@ class _Undefined {}
 
 class _CreateSessionRequestImpl extends CreateSessionRequest {
   _CreateSessionRequestImpl({
-    required _i2.SessionMode mode,
+    required _i7rc03rf.SessionMode mode,
     required String categoryId,
     required List<String> subcategoryIds,
     int? priceLevel,
@@ -236,12 +237,12 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     required int radiusMeters,
     required int deckSize,
     String? displayName,
-    required _i3.ConsensusRule consensusRule,
-    required _i4.MatchingTiming matchingTiming,
-    _i5.ClientAnalyticsContext? analyticsContext,
+    required _idhfk3qj.ConsensusRule consensusRule,
+    required _inbmjteu.MatchingTiming matchingTiming,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
     List<String>? shortlistPlaceIds,
     int? freshDiscoveryCount,
-    _i6.PlaceIntentQuery? intent,
+    _i151h6s7.PlaceIntentQuery? intent,
   }) : super._(
          mode: mode,
          categoryId: categoryId,
@@ -264,10 +265,10 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
 
   /// Returns a shallow copy of this [CreateSessionRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CreateSessionRequest copyWith({
-    _i2.SessionMode? mode,
+    _i7rc03rf.SessionMode? mode,
     String? categoryId,
     List<String>? subcategoryIds,
     Object? priceLevel = _Undefined,
@@ -278,8 +279,8 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
     int? radiusMeters,
     int? deckSize,
     Object? displayName = _Undefined,
-    _i3.ConsensusRule? consensusRule,
-    _i4.MatchingTiming? matchingTiming,
+    _idhfk3qj.ConsensusRule? consensusRule,
+    _inbmjteu.MatchingTiming? matchingTiming,
     Object? analyticsContext = _Undefined,
     Object? shortlistPlaceIds = _Undefined,
     Object? freshDiscoveryCount = _Undefined,
@@ -302,7 +303,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
       displayName: displayName is String? ? displayName : this.displayName,
       consensusRule: consensusRule ?? this.consensusRule,
       matchingTiming: matchingTiming ?? this.matchingTiming,
-      analyticsContext: analyticsContext is _i5.ClientAnalyticsContext?
+      analyticsContext: analyticsContext is _iae9jhcw.ClientAnalyticsContext?
           ? analyticsContext
           : this.analyticsContext?.copyWith(),
       shortlistPlaceIds: shortlistPlaceIds is List<String>?
@@ -311,7 +312,7 @@ class _CreateSessionRequestImpl extends CreateSessionRequest {
       freshDiscoveryCount: freshDiscoveryCount is int?
           ? freshDiscoveryCount
           : this.freshDiscoveryCount,
-      intent: intent is _i6.PlaceIntentQuery?
+      intent: intent is _i151h6s7.PlaceIntentQuery?
           ? intent
           : this.intent?.copyWith(),
     );

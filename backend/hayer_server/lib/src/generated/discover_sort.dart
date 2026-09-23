@@ -10,16 +10,17 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _is;
 
-import 'package:serverpod/serverpod.dart' as _i1;
-
-enum DiscoverSort implements _i1.SerializableModel {
+enum DiscoverSort implements _is.SerializableModel {
   best,
   topRated,
   mostReviewed,
   hiddenGems,
   worstRated,
-  recentlyDiscovered;
+  recentlyDiscovered,
+  distanceArea,
+  distanceCurrent;
 
   static DiscoverSort fromJson(String name) {
     switch (name) {
@@ -35,6 +36,10 @@ enum DiscoverSort implements _i1.SerializableModel {
         return DiscoverSort.worstRated;
       case 'recentlyDiscovered':
         return DiscoverSort.recentlyDiscovered;
+      case 'distanceArea':
+        return DiscoverSort.distanceArea;
+      case 'distanceCurrent':
+        return DiscoverSort.distanceCurrent;
       default:
         throw ArgumentError(
           'Value "$name" cannot be converted to "DiscoverSort"',

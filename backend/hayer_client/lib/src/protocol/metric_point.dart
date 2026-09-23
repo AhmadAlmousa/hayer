@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class MetricPoint implements _i1.SerializableModel {
+abstract class MetricPoint
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   MetricPoint._({
     required this.bucketStartedAt,
     required this.metricName,
@@ -30,7 +30,7 @@ abstract class MetricPoint implements _i1.SerializableModel {
 
   factory MetricPoint.fromJson(Map<String, dynamic> jsonSerialization) {
     return MetricPoint(
-      bucketStartedAt: _i1.DateTimeJsonExtension.fromJson(
+      bucketStartedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['bucketStartedAt'],
       ),
       metricName: jsonSerialization['metricName'] as String,
@@ -49,7 +49,7 @@ abstract class MetricPoint implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [MetricPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   MetricPoint copyWith({
     DateTime? bucketStartedAt,
     String? metricName,
@@ -68,8 +68,19 @@ abstract class MetricPoint implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'MetricPoint',
+      'bucketStartedAt': bucketStartedAt.toJson(),
+      'metricName': metricName,
+      'metricValue': metricValue,
+      'sampleCount': sampleCount,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -88,7 +99,7 @@ class _MetricPointImpl extends MetricPoint {
 
   /// Returns a shallow copy of this [MetricPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   MetricPoint copyWith({
     DateTime? bucketStartedAt,

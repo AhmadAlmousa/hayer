@@ -1,5 +1,4 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 
@@ -23,7 +22,7 @@ class _SessionCloseButtonState extends State<SessionCloseButton> {
   bool _ending = false;
 
   @override
-  Widget build(BuildContext context) => M3EIconButton(
+  Widget build(BuildContext context) => IconButton(
     tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
     onPressed: _ending ? null : _close,
     icon: _ending
@@ -48,11 +47,11 @@ class _SessionCloseButtonState extends State<SessionCloseButton> {
         title: Text(strings.endSoloSessionTitle),
         content: Text(strings.endSoloSessionMessage),
         actions: [
-          M3EButton.text(
+          TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(strings.keepSwiping),
           ),
-          M3EButton.filled(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(strings.endSession),
           ),

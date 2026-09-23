@@ -223,9 +223,19 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults>
   /// Shows [search], loading its first page unless it is already shown or
   /// loading.
   void show(DiscoverySearch search) {
+    final searchUpstream = state.error != null || _needsUpstreamSearch(search);
     if (search == _requested && state.error == null) return;
     _restartsInARow = 0;
-    unawaited(_load(search));
+    unawaited(_load(search, searchUpstream: searchUpstream));
+  }
+
+  bool _needsUpstreamSearch(DiscoverySearch search) {
+    final previous = _requested;
+    if (previous == null) return true;
+    return previous.viewport.token != search.viewport.token ||
+        previous.query.categoryIds.join(' ') !=
+            search.query.categoryIds.join(' ') ||
+        previous.query.text != search.query.text;
   }
 
   /// Loads the current search again from its first page, with a fresh count
@@ -240,7 +250,10 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults>
   /// Tries whichever load failed last again.
   void retry() {
     if (state.error != null) {
-      refresh();
+      if (_requested case final search?) {
+        _restartsInARow = 0;
+        unawaited(_load(search, searchUpstream: true));
+      }
     } else if (state.moreError != null) {
       _restartsInARow = 0;
       unawaited(loadMore());
@@ -315,7 +328,11 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults>
     await _load(search, restarted: true);
   }
 
-  Future<void> _load(DiscoverySearch search, {bool restarted = false}) async {
+  Future<void> _load(
+    DiscoverySearch search, {
+    bool restarted = false,
+    bool searchUpstream = false,
+  }) async {
     final generation = ++_generation;
     _requested = search;
     state = state._copyWith(
@@ -325,7 +342,11 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults>
       moreError: null,
     );
     try {
-      final page = await _browse(search, includeMap: true);
+      final page = await _browse(
+        search,
+        includeMap: true,
+        searchUpstream: searchUpstream,
+      );
       if (!_isCurrent(generation)) return;
       _showFirstPage(search, page, restarted: restarted);
     } catch (error) {
@@ -444,10 +465,11 @@ class DiscoveryResultsController extends Notifier<DiscoveryResults>
     DiscoverQueryContext? context,
     String? cursor,
     required bool includeMap,
+    bool searchUpstream = false,
   }) => ref
       .read(discoveryRepositoryProvider)
       .browse(
-        query: search.toWire(),
+        query: search.toWire(searchUpstream: searchUpstream),
         context: context,
         cursor: cursor,
         pageSize:

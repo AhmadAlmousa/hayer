@@ -10,17 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'session_mode.dart' as _i2;
-import 'consensus_rule.dart' as _i3;
-import 'matching_timing.dart' as _i4;
-import 'session_status.dart' as _i5;
-import 'place_intent_query.dart' as _i6;
-import 'package:hayer_server/src/generated/protocol.dart' as _i7;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'consensus_rule.dart' as _idhfk3qj;
+import 'matching_timing.dart' as _inbmjteu;
+import 'place_intent_query.dart' as _i151h6s7;
+import 'session_mode.dart' as _i7rc03rf;
+import 'session_status.dart' as _ikvaqfz2;
 
 abstract class SessionView
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   SessionView._({
     required this.sessionId,
     required this.code,
@@ -51,7 +50,7 @@ abstract class SessionView
   factory SessionView({
     required String sessionId,
     required String code,
-    required _i2.SessionMode mode,
+    required _i7rc03rf.SessionMode mode,
     required String categoryId,
     required List<String> subcategoryIds,
     int? priceLevel,
@@ -63,15 +62,15 @@ abstract class SessionView
     required int radiusMeters,
     required int deckSizeRequested,
     required int deckSizeActual,
-    required _i3.ConsensusRule consensusRule,
-    required _i4.MatchingTiming matchingTiming,
-    required _i5.SessionStatus status,
+    required _idhfk3qj.ConsensusRule consensusRule,
+    required _inbmjteu.MatchingTiming matchingTiming,
+    required _ikvaqfz2.SessionStatus status,
     String? matchedPlaceId,
     required int revision,
     required DateTime createdAt,
     required DateTime expiresAt,
     String? freshnessWarning,
-    _i6.PlaceIntentQuery? intent,
+    _i151h6s7.PlaceIntentQuery? intent,
     int? intentBatchCount,
   }) = _SessionViewImpl;
 
@@ -79,9 +78,11 @@ abstract class SessionView
     return SessionView(
       sessionId: jsonSerialization['sessionId'] as String,
       code: jsonSerialization['code'] as String,
-      mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
+      mode: _i7rc03rf.SessionMode.fromJson(
+        (jsonSerialization['mode'] as String),
+      ),
       categoryId: jsonSerialization['categoryId'] as String,
-      subcategoryIds: _i7.Protocol().deserialize<List<String>>(
+      subcategoryIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['subcategoryIds'],
       ),
       priceLevel: jsonSerialization['priceLevel'] as int?,
@@ -90,32 +91,32 @@ abstract class SessionView
       anchorAddress: jsonSerialization['anchorAddress'] as String?,
       visitAt: jsonSerialization['visitAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['visitAt']),
       countryCode: jsonSerialization['countryCode'] as String,
       radiusMeters: jsonSerialization['radiusMeters'] as int,
       deckSizeRequested: jsonSerialization['deckSizeRequested'] as int,
       deckSizeActual: jsonSerialization['deckSizeActual'] as int,
-      consensusRule: _i3.ConsensusRule.fromJson(
+      consensusRule: _idhfk3qj.ConsensusRule.fromJson(
         (jsonSerialization['consensusRule'] as String),
       ),
-      matchingTiming: _i4.MatchingTiming.fromJson(
+      matchingTiming: _inbmjteu.MatchingTiming.fromJson(
         (jsonSerialization['matchingTiming'] as String),
       ),
-      status: _i5.SessionStatus.fromJson(
+      status: _ikvaqfz2.SessionStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
       matchedPlaceId: jsonSerialization['matchedPlaceId'] as String?,
       revision: jsonSerialization['revision'] as int,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
-      expiresAt: _i1.DateTimeJsonExtension.fromJson(
+      expiresAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiresAt'],
       ),
       freshnessWarning: jsonSerialization['freshnessWarning'] as String?,
       intent: jsonSerialization['intent'] == null
           ? null
-          : _i7.Protocol().deserialize<_i6.PlaceIntentQuery>(
+          : _i66y2smk.Protocol().deserialize<_i151h6s7.PlaceIntentQuery>(
               jsonSerialization['intent'],
             ),
       intentBatchCount: jsonSerialization['intentBatchCount'] as int?,
@@ -126,7 +127,7 @@ abstract class SessionView
 
   String code;
 
-  _i2.SessionMode mode;
+  _i7rc03rf.SessionMode mode;
 
   String categoryId;
 
@@ -150,11 +151,11 @@ abstract class SessionView
 
   int deckSizeActual;
 
-  _i3.ConsensusRule consensusRule;
+  _idhfk3qj.ConsensusRule consensusRule;
 
-  _i4.MatchingTiming matchingTiming;
+  _inbmjteu.MatchingTiming matchingTiming;
 
-  _i5.SessionStatus status;
+  _ikvaqfz2.SessionStatus status;
 
   String? matchedPlaceId;
 
@@ -166,17 +167,17 @@ abstract class SessionView
 
   String? freshnessWarning;
 
-  _i6.PlaceIntentQuery? intent;
+  _i151h6s7.PlaceIntentQuery? intent;
 
   int? intentBatchCount;
 
   /// Returns a shallow copy of this [SessionView]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SessionView copyWith({
     String? sessionId,
     String? code,
-    _i2.SessionMode? mode,
+    _i7rc03rf.SessionMode? mode,
     String? categoryId,
     List<String>? subcategoryIds,
     int? priceLevel,
@@ -188,15 +189,15 @@ abstract class SessionView
     int? radiusMeters,
     int? deckSizeRequested,
     int? deckSizeActual,
-    _i3.ConsensusRule? consensusRule,
-    _i4.MatchingTiming? matchingTiming,
-    _i5.SessionStatus? status,
+    _idhfk3qj.ConsensusRule? consensusRule,
+    _inbmjteu.MatchingTiming? matchingTiming,
+    _ikvaqfz2.SessionStatus? status,
     String? matchedPlaceId,
     int? revision,
     DateTime? createdAt,
     DateTime? expiresAt,
     String? freshnessWarning,
-    _i6.PlaceIntentQuery? intent,
+    _i151h6s7.PlaceIntentQuery? intent,
     int? intentBatchCount,
   });
   @override
@@ -263,7 +264,7 @@ abstract class SessionView
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -273,7 +274,7 @@ class _SessionViewImpl extends SessionView {
   _SessionViewImpl({
     required String sessionId,
     required String code,
-    required _i2.SessionMode mode,
+    required _i7rc03rf.SessionMode mode,
     required String categoryId,
     required List<String> subcategoryIds,
     int? priceLevel,
@@ -285,15 +286,15 @@ class _SessionViewImpl extends SessionView {
     required int radiusMeters,
     required int deckSizeRequested,
     required int deckSizeActual,
-    required _i3.ConsensusRule consensusRule,
-    required _i4.MatchingTiming matchingTiming,
-    required _i5.SessionStatus status,
+    required _idhfk3qj.ConsensusRule consensusRule,
+    required _inbmjteu.MatchingTiming matchingTiming,
+    required _ikvaqfz2.SessionStatus status,
     String? matchedPlaceId,
     required int revision,
     required DateTime createdAt,
     required DateTime expiresAt,
     String? freshnessWarning,
-    _i6.PlaceIntentQuery? intent,
+    _i151h6s7.PlaceIntentQuery? intent,
     int? intentBatchCount,
   }) : super._(
          sessionId: sessionId,
@@ -324,12 +325,12 @@ class _SessionViewImpl extends SessionView {
 
   /// Returns a shallow copy of this [SessionView]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SessionView copyWith({
     String? sessionId,
     String? code,
-    _i2.SessionMode? mode,
+    _i7rc03rf.SessionMode? mode,
     String? categoryId,
     List<String>? subcategoryIds,
     Object? priceLevel = _Undefined,
@@ -341,9 +342,9 @@ class _SessionViewImpl extends SessionView {
     int? radiusMeters,
     int? deckSizeRequested,
     int? deckSizeActual,
-    _i3.ConsensusRule? consensusRule,
-    _i4.MatchingTiming? matchingTiming,
-    _i5.SessionStatus? status,
+    _idhfk3qj.ConsensusRule? consensusRule,
+    _inbmjteu.MatchingTiming? matchingTiming,
+    _ikvaqfz2.SessionStatus? status,
     Object? matchedPlaceId = _Undefined,
     int? revision,
     DateTime? createdAt,
@@ -382,7 +383,7 @@ class _SessionViewImpl extends SessionView {
       freshnessWarning: freshnessWarning is String?
           ? freshnessWarning
           : this.freshnessWarning,
-      intent: intent is _i6.PlaceIntentQuery?
+      intent: intent is _i151h6s7.PlaceIntentQuery?
           ? intent
           : this.intent?.copyWith(),
       intentBatchCount: intentBatchCount is int?

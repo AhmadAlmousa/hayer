@@ -10,14 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_catalog_place.dart' as _i2;
-import 'admin_catalog_type_count.dart' as _i3;
-import 'package:hayer_server/src/generated/protocol.dart' as _i4;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_catalog_place.dart' as _i76u62qe;
+import 'admin_catalog_type_count.dart' as _i189df3w;
 
 abstract class AdminCatalogPage
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminCatalogPage._({
     required this.items,
     required this.total,
@@ -29,36 +28,38 @@ abstract class AdminCatalogPage
   });
 
   factory AdminCatalogPage({
-    required List<_i2.AdminCatalogPlace> items,
+    required List<_i76u62qe.AdminCatalogPlace> items,
     required int total,
     required int page,
     required int pageSize,
-    required List<_i3.AdminCatalogTypeCount> types,
+    required List<_i189df3w.AdminCatalogTypeCount> types,
     required DateTime freshAfter,
     required DateTime generatedAt,
   }) = _AdminCatalogPageImpl;
 
   factory AdminCatalogPage.fromJson(Map<String, dynamic> jsonSerialization) {
     return AdminCatalogPage(
-      items: _i4.Protocol().deserialize<List<_i2.AdminCatalogPlace>>(
-        jsonSerialization['items'],
-      ),
+      items: _i66y2smk.Protocol()
+          .deserialize<List<_i76u62qe.AdminCatalogPlace>>(
+            jsonSerialization['items'],
+          ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
       pageSize: jsonSerialization['pageSize'] as int,
-      types: _i4.Protocol().deserialize<List<_i3.AdminCatalogTypeCount>>(
-        jsonSerialization['types'],
-      ),
-      freshAfter: _i1.DateTimeJsonExtension.fromJson(
+      types: _i66y2smk.Protocol()
+          .deserialize<List<_i189df3w.AdminCatalogTypeCount>>(
+            jsonSerialization['types'],
+          ),
+      freshAfter: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['freshAfter'],
       ),
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
   }
 
-  List<_i2.AdminCatalogPlace> items;
+  List<_i76u62qe.AdminCatalogPlace> items;
 
   int total;
 
@@ -66,7 +67,7 @@ abstract class AdminCatalogPage
 
   int pageSize;
 
-  List<_i3.AdminCatalogTypeCount> types;
+  List<_i189df3w.AdminCatalogTypeCount> types;
 
   DateTime freshAfter;
 
@@ -74,13 +75,13 @@ abstract class AdminCatalogPage
 
   /// Returns a shallow copy of this [AdminCatalogPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminCatalogPage copyWith({
-    List<_i2.AdminCatalogPlace>? items,
+    List<_i76u62qe.AdminCatalogPlace>? items,
     int? total,
     int? page,
     int? pageSize,
-    List<_i3.AdminCatalogTypeCount>? types,
+    List<_i189df3w.AdminCatalogTypeCount>? types,
     DateTime? freshAfter,
     DateTime? generatedAt,
   });
@@ -114,17 +115,17 @@ abstract class AdminCatalogPage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminCatalogPageImpl extends AdminCatalogPage {
   _AdminCatalogPageImpl({
-    required List<_i2.AdminCatalogPlace> items,
+    required List<_i76u62qe.AdminCatalogPlace> items,
     required int total,
     required int page,
     required int pageSize,
-    required List<_i3.AdminCatalogTypeCount> types,
+    required List<_i189df3w.AdminCatalogTypeCount> types,
     required DateTime freshAfter,
     required DateTime generatedAt,
   }) : super._(
@@ -139,14 +140,14 @@ class _AdminCatalogPageImpl extends AdminCatalogPage {
 
   /// Returns a shallow copy of this [AdminCatalogPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminCatalogPage copyWith({
-    List<_i2.AdminCatalogPlace>? items,
+    List<_i76u62qe.AdminCatalogPlace>? items,
     int? total,
     int? page,
     int? pageSize,
-    List<_i3.AdminCatalogTypeCount>? types,
+    List<_i189df3w.AdminCatalogTypeCount>? types,
     DateTime? freshAfter,
     DateTime? generatedAt,
   }) {

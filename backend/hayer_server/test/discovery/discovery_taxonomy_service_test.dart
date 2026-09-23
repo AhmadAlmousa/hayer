@@ -4,6 +4,55 @@ import 'package:test/test.dart';
 
 void main() {
   group('DiscoveryTaxonomyService', () {
+    test('recognizes only the original empty seed for upgrade', () {
+      final bareRoots = [
+        for (final root in DiscoveryTaxonomyService.seedRoots())
+          root.copyWith(children: [], typeAliases: []),
+      ];
+      final now = DateTime.utc(2026);
+      final row = DiscoveryTaxonomyVersionRow(
+        version: 'discovery-taxonomy-v1',
+        revision: 1,
+        status: TaxonomyStatus.active,
+        documentJson: DiscoveryTaxonomyService.encode(bareRoots),
+        validationPassed: true,
+        validationErrors: const [],
+        createdBy: 'system',
+        createdAt: now,
+        validatedAt: now,
+        publishedAt: now,
+      );
+
+      expect(DiscoveryTaxonomyService.isLegacyBareSeed(row), isTrue);
+      expect(
+        DiscoveryTaxonomyService.isLegacyBareSeed(
+          row.copyWith(
+            documentJson: DiscoveryTaxonomyService.encode(
+              DiscoveryTaxonomyService.seedRoots(),
+            ),
+          ),
+        ),
+        isFalse,
+      );
+      expect(
+        DiscoveryTaxonomyService.isLegacyBareSeed(
+          row.copyWith(createdBy: 'operator'),
+        ),
+        isFalse,
+      );
+      expect(
+        DiscoveryTaxonomyService.isLegacyBareSeed(
+          row.copyWith(
+            documentJson: DiscoveryTaxonomyService.encode([
+              bareRoots.first.copyWith(labelEn: 'Edited domain'),
+              ...bareRoots.skip(1),
+            ]),
+          ),
+        ),
+        isFalse,
+      );
+    });
+
     test('nine-domain seed is valid and survives storage encoding', () {
       final roots = DiscoveryTaxonomyService.seedRoots();
 
@@ -16,6 +65,12 @@ void main() {
       );
       expect(restored.map((root) => root.id), roots.map((root) => root.id));
       expect(restored.first.labelAr, isNotEmpty);
+      final restaurants = restored.first.children.firstWhere(
+        (node) => node.id == 'food_restaurants',
+      );
+      expect(restored.first.selectable, isFalse);
+      expect(restaurants.selectable, isTrue);
+      expect(restaurants.selectionGroupRoot, isTrue);
     });
 
     test('rejects duplicate ids anywhere in the tree', () {

@@ -1,6 +1,6 @@
 services:
   postgis:
-    image: postgis/postgis:16-3.5-alpine
+    image: ghcr.io/serverpod/postgres:16@sha256:5c606a4027d2c304d01faffd9db815abddc0e1ce7aea96eda28ad23a6f421ea8
     environment:
       POSTGRES_DB: hayer_test
       POSTGRES_PASSWORD: hayer_test

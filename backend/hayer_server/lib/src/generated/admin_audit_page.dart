@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'admin_audit_entry.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'admin_audit_entry.dart' as _i62lvi00;
 
 abstract class AdminAuditPage
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminAuditPage._({
     required this.items,
     required this.total,
@@ -25,7 +24,7 @@ abstract class AdminAuditPage
   });
 
   factory AdminAuditPage({
-    required List<_i2.AdminAuditEntry> items,
+    required List<_i62lvi00.AdminAuditEntry> items,
     required int total,
     required int page,
     required int pageSize,
@@ -33,7 +32,7 @@ abstract class AdminAuditPage
 
   factory AdminAuditPage.fromJson(Map<String, dynamic> jsonSerialization) {
     return AdminAuditPage(
-      items: _i3.Protocol().deserialize<List<_i2.AdminAuditEntry>>(
+      items: _i66y2smk.Protocol().deserialize<List<_i62lvi00.AdminAuditEntry>>(
         jsonSerialization['items'],
       ),
       total: jsonSerialization['total'] as int,
@@ -42,7 +41,7 @@ abstract class AdminAuditPage
     );
   }
 
-  List<_i2.AdminAuditEntry> items;
+  List<_i62lvi00.AdminAuditEntry> items;
 
   int total;
 
@@ -52,9 +51,9 @@ abstract class AdminAuditPage
 
   /// Returns a shallow copy of this [AdminAuditPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminAuditPage copyWith({
-    List<_i2.AdminAuditEntry>? items,
+    List<_i62lvi00.AdminAuditEntry>? items,
     int? total,
     int? page,
     int? pageSize,
@@ -83,13 +82,13 @@ abstract class AdminAuditPage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminAuditPageImpl extends AdminAuditPage {
   _AdminAuditPageImpl({
-    required List<_i2.AdminAuditEntry> items,
+    required List<_i62lvi00.AdminAuditEntry> items,
     required int total,
     required int page,
     required int pageSize,
@@ -102,10 +101,10 @@ class _AdminAuditPageImpl extends AdminAuditPage {
 
   /// Returns a shallow copy of this [AdminAuditPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminAuditPage copyWith({
-    List<_i2.AdminAuditEntry>? items,
+    List<_i62lvi00.AdminAuditEntry>? items,
     int? total,
     int? page,
     int? pageSize,

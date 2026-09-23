@@ -4,11 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart';
 import 'package:intl/intl.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../app/theme.dart';
 import '../../data/place_detail_repository.dart';
 import '../display_formatters.dart';
 import '../gcc_currency_symbol.dart';
@@ -208,7 +206,10 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
     final discovery = mode is DiscoveryPlaceDetails ? mode : null;
     final countryCode = widget.countryCode;
     final currencyIcon = gccCurrencyIconForCountryCode(countryCode);
-    final hasPhotos = place.photoUrls.isNotEmpty;
+    final photoCount = place.photoUrls.length
+        .clamp(0, ref.watch(placePhotoLimitProvider))
+        .toInt();
+    final hasPhotos = photoCount > 0;
     // Discover states whether a place is open as its search evaluated it,
     // over the photos when there are any, as it does a hidden gem.
     final badges = [
@@ -228,7 +229,11 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
           padding: const EdgeInsets.fromLTRB(24, 4, 24, 28),
           children: [
             if (hasPhotos) ...[
-              _PlacePhotoGallery(place: place, badges: badges),
+              _PlacePhotoGallery(
+                place: place,
+                badges: badges,
+                count: photoCount,
+              ),
               const SizedBox(height: 18),
             ],
             Text(
@@ -246,7 +251,7 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
                 if (!hasPhotos)
                   for (final badge in badges) Chip(label: Text(badge)),
                 if (place.rating != null)
-                  Chip(label: Text('★ ${place.rating!.toStringAsFixed(1)}')),
+                  Chip(label: Text('⭐ ${place.rating!.toStringAsFixed(1)}')),
                 if (place.reviewCount != null)
                   Chip(
                     label: Text(
@@ -265,10 +270,10 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
                 if (discovery == null && place.isOpen != null)
                   _OpenChip(open: place.isOpen!),
                 if (discovery?.openNow == false) const _OpenChip(open: false),
-                if (discovery != null && place.photoUrls.length > 1)
+                if (discovery != null && photoCount > 1)
                   Chip(
                     label: Text(
-                      strings.discoveryPhotoCount(place.photoUrls.length),
+                      strings.discoveryPhotoCount(photoCount),
                     ),
                   ),
               ],
@@ -282,7 +287,7 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
                 padding: const EdgeInsets.only(top: 10),
                 child: Row(
                   children: [
-                    const Icon(Icons.near_me_rounded, size: 18),
+                    const Text('🧭'),
                     const SizedBox(width: 8),
                     Expanded(
                       child: RouteEstimateText(
@@ -300,7 +305,7 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
                 padding: const EdgeInsets.only(top: 10),
                 child: Row(
                   children: [
-                    const Icon(Icons.near_me_rounded, size: 18),
+                    const Text('🧭'),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -315,19 +320,49 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
               ),
               DiscoveryPlaceDetails() => const SizedBox.shrink(),
             },
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => launchPlaceNavigation(context, place),
+                  icon: const Text('🧭'),
+                  label: Text(strings.directions),
+                ),
+                ?saveButton?.call(place),
+                if (place.phoneNumber != null)
+                  OutlinedButton.icon(
+                    onPressed: () => launchUrl(
+                      Uri(scheme: 'tel', path: place.phoneNumber),
+                    ),
+                    icon: const Text('📞'),
+                    label: Text(formatPhoneNumber(place.phoneNumber!)),
+                  ),
+                if (place.websiteUrl != null)
+                  OutlinedButton.icon(
+                    onPressed: () => launchUrl(
+                      Uri.parse(place.websiteUrl!),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    icon: const Text('🌐'),
+                    label: Text(strings.website),
+                  ),
+              ],
+            ),
             if (place.formattedAddress ?? place.address
                 case final address?) ...[
               const SizedBox(height: 14),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.place_outlined),
+                leading: const Text('📍', style: TextStyle(fontSize: 22)),
                 title: Text(address),
               ),
             ],
             if (place.statusText != null)
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.schedule_outlined),
+                leading: const Text('🕒', style: TextStyle(fontSize: 22)),
                 title: Text(place.statusText!),
               ),
             if (place.hours.isNotEmpty) ...[
@@ -357,44 +392,12 @@ class _PlaceDetailsSheetState extends ConsumerState<PlaceDetailsSheet> {
                   child: Text('“${place.featuredReview}”'),
                 ),
               ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                M3EButton.icon(
-                  onPressed: () => launchPlaceNavigation(context, place),
-                  icon: const Icon(Icons.directions_outlined),
-                  label: Text(strings.directions),
-                ),
-                ?saveButton?.call(place),
-                if (place.phoneNumber != null)
-                  M3EButton.icon(
-                    onPressed: () => launchUrl(
-                      Uri(scheme: 'tel', path: place.phoneNumber),
-                    ),
-                    icon: const Icon(Icons.call_outlined),
-                    label: Text(formatPhoneNumber(place.phoneNumber!)),
-                    style: M3EButtonStyle.outlined,
-                  ),
-                if (place.websiteUrl != null)
-                  M3EButton.icon(
-                    onPressed: () => launchUrl(
-                      Uri.parse(place.websiteUrl!),
-                      mode: LaunchMode.externalApplication,
-                    ),
-                    icon: const Icon(Icons.language_outlined),
-                    label: Text(strings.website),
-                    style: M3EButtonStyle.outlined,
-                  ),
-              ],
-            ),
             const SizedBox(height: 10),
             const Divider(),
             ListTile(
               key: const ValueKey('report-poi-issue'),
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.outlined_flag_rounded),
+              leading: const Text('🚩', style: TextStyle(fontSize: 22)),
               title: Text(strings.reportDataIssue),
               subtitle: Text(strings.reportDataIssueExplanation),
               onTap: widget.onReportIssue,
@@ -432,19 +435,21 @@ class _OpenChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     return Chip(
-      avatar: Icon(
-        open ? Icons.check_circle_outline_rounded : Icons.cancel_outlined,
-        color: open ? HayerTheme.success : HayerTheme.coral,
-      ),
+      avatar: Text(open ? '🟢' : '🔴'),
       label: Text(open ? strings.openNow : strings.closedNow),
     );
   }
 }
 
 class _PlacePhotoGallery extends ConsumerStatefulWidget {
-  const _PlacePhotoGallery({required this.place, this.badges = const []});
+  const _PlacePhotoGallery({
+    required this.place,
+    required this.count,
+    this.badges = const [],
+  });
 
   final PlaceSnapshot place;
+  final int count;
 
   /// Short labels drawn over the photos.
   final List<String> badges;
@@ -470,7 +475,7 @@ class _PlacePhotoGalleryState extends ConsumerState<_PlacePhotoGallery> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final photos = PageView.builder(
-                itemCount: widget.place.photoUrls.length,
+                itemCount: widget.count,
                 onPageChanged: (value) => setState(() => _page = value),
                 itemBuilder: (context, index) => CachedNetworkImage(
                   imageUrl: widget.place.photoUrls[index],
@@ -491,7 +496,7 @@ class _PlacePhotoGalleryState extends ConsumerState<_PlacePhotoGallery> {
                   ),
                 ),
               );
-              final total = widget.place.photoUrls.length;
+              final total = widget.count;
               if (widget.badges.isEmpty && total < 2) return photos;
               return Stack(
                 fit: StackFit.expand,
@@ -523,13 +528,12 @@ class _PlacePhotoGalleryState extends ConsumerState<_PlacePhotoGallery> {
           ),
         ),
       ),
-      if (widget.place.photoUrls.length > 1 &&
-          widget.place.photoUrls.length <= _maximumPhotoDots) ...[
+      if (widget.count > 1 && widget.count <= _maximumPhotoDots) ...[
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            for (var index = 0; index < widget.place.photoUrls.length; index++)
+            for (var index = 0; index < widget.count; index++)
               AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 width: index == _page ? 22 : 7,

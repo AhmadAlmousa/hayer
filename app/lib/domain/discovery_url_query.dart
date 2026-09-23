@@ -23,7 +23,9 @@ enum DiscoverySort implements DiscoveryLinkValue {
   mostReviewed('most_reviewed'),
   hiddenGems('hidden_gems'),
   worstRated('worst_rated'),
-  recentlyDiscovered('recent');
+  recentlyDiscovered('recent'),
+  distanceArea('distance_area'),
+  distanceCurrent('distance_current');
 
   const DiscoverySort(this.token);
 
@@ -360,15 +362,13 @@ final class DiscoveryUrlQuery {
       completeness.isNotEmpty ||
       text.isNotEmpty;
 
-  /// How many filters the filter sheet sets: everything except the area, the
-  /// sort and the categories, counting each selected value once.
+  /// How many filters the filter sheet sets, excluding search and sort.
   int get sheetFilterCount =>
       reviewBands.length +
       (priceLevel == null ? 0 : 1) +
       (minimumRating == null ? 0 : 1) +
       hoursWindows.length +
-      completeness.length +
-      (text.isEmpty ? 0 : 1);
+      completeness.length;
 
   /// This query over [viewport] instead.
   DiscoveryUrlQuery withViewport(DiscoveryViewport viewport) =>
@@ -391,6 +391,7 @@ final class DiscoveryUrlQuery {
     viewport: viewport,
     sort: sort,
     categoryIds: categoryIds,
+    text: text,
   );
 
   /// This query with the given parts replaced. [priceLevel] and

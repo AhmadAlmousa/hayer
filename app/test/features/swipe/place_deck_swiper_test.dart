@@ -10,6 +10,51 @@ import 'package:hayer_app/l10n/localization_delegates.dart';
 import 'package:hayer_client/hayer_client.dart';
 
 void main() {
+  testWidgets('swipe card can show multiple photos without casting a vote', (
+    tester,
+  ) async {
+    final controller = CardSwiperController();
+    addTearDown(controller.dispose);
+    final decisions = <(int, bool)>[];
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: hayerLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SizedBox(
+              height: 700,
+              child: PlaceDeckSwiper(
+                sessionId: 'session-1',
+                places: [
+                  _place('photos').copyWith(photoUrls: const [
+                    'https://example.test/one.jpg',
+                    'https://example.test/two.jpg',
+                  ]),
+                ],
+                initialIndex: 0,
+                controller: controller,
+                disabled: false,
+                routeOrigin: RouteOriginMode.sessionAnchor,
+                routeEstimatesEnabled: false,
+                onDecision: (index, liked) {
+                  decisions.add((index, liked));
+                  return true;
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('1 / 2'), findsOneWidget);
+    await tester.tap(find.byTooltip('Next photo'));
+    await tester.pump();
+    expect(find.text('2 / 2'), findsOneWidget);
+    expect(decisions, isEmpty);
+  });
+
   for (final locale in ['en', 'ar']) {
     testWidgets('details return to the same card without voting ($locale)', (
       tester,

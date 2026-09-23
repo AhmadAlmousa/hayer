@@ -201,8 +201,7 @@ abstract final class DiscoveryTypeAutoMapper {
   }) async {
     final observations = await DiscoveryTypeObservationRow.db.find(
       session,
-      orderBy: (table) => table.observationCount,
-      orderDescending: true,
+      orderBy: (table) => table.observationCount.desc(),
       limit: limit.clamp(1, maxTypesPerRun),
     );
     if (observations.isEmpty) return const [];

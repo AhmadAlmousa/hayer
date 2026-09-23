@@ -164,7 +164,7 @@ void main() {
       );
       expect(tester.widget<Text>(find.text(_place(0).name)).maxLines, isNull);
       await tester.drag(
-        find.byType(SingleChildScrollView),
+        find.byKey(const ValueKey('readable-place-place-0')),
         const Offset(0, -500),
       );
       await tester.pumpAndSettle();

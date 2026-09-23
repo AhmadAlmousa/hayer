@@ -42,7 +42,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('changing places clears the previous route while loading', (
+  testWidgets('changing places shows a stable loading label until resolved', (
     tester,
   ) async {
     final repository = _Repository(_Location(null));
@@ -66,7 +66,8 @@ void main() {
     await tester.pump();
 
     expect(find.text('~10 min · 2 km'), findsNothing);
-    expect(find.text('9 km'), findsOneWidget);
+    expect(find.text('Calculating route…'), findsOneWidget);
+    expect(find.text('9 km'), findsNothing);
     repository.requests['second']!.completeError(StateError('Unavailable'));
     await tester.pumpAndSettle();
     expect(find.text('9 km'), findsOneWidget);

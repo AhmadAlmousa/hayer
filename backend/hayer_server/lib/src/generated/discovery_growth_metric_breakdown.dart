@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'discovery_metric_mode.dart' as _i2;
-import 'discovery_metric_operation.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_metric_mode.dart' as _iwc51qy2;
+import 'discovery_metric_operation.dart' as _ipgnhxya;
 
 abstract class DiscoveryGrowthMetricBreakdown
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryGrowthMetricBreakdown._({
     required this.mode,
     required this.operation,
@@ -29,8 +28,8 @@ abstract class DiscoveryGrowthMetricBreakdown
   });
 
   factory DiscoveryGrowthMetricBreakdown({
-    required _i2.DiscoveryMetricMode mode,
-    required _i3.DiscoveryMetricOperation operation,
+    required _iwc51qy2.DiscoveryMetricMode mode,
+    required _ipgnhxya.DiscoveryMetricOperation operation,
     required int observations,
     required int newCatalogPlaces,
     required int cacheHits,
@@ -43,10 +42,10 @@ abstract class DiscoveryGrowthMetricBreakdown
     Map<String, dynamic> jsonSerialization,
   ) {
     return DiscoveryGrowthMetricBreakdown(
-      mode: _i2.DiscoveryMetricMode.fromJson(
+      mode: _iwc51qy2.DiscoveryMetricMode.fromJson(
         (jsonSerialization['mode'] as String),
       ),
-      operation: _i3.DiscoveryMetricOperation.fromJson(
+      operation: _ipgnhxya.DiscoveryMetricOperation.fromJson(
         (jsonSerialization['operation'] as String),
       ),
       observations: jsonSerialization['observations'] as int,
@@ -58,9 +57,9 @@ abstract class DiscoveryGrowthMetricBreakdown
     );
   }
 
-  _i2.DiscoveryMetricMode mode;
+  _iwc51qy2.DiscoveryMetricMode mode;
 
-  _i3.DiscoveryMetricOperation operation;
+  _ipgnhxya.DiscoveryMetricOperation operation;
 
   int observations;
 
@@ -76,10 +75,10 @@ abstract class DiscoveryGrowthMetricBreakdown
 
   /// Returns a shallow copy of this [DiscoveryGrowthMetricBreakdown]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryGrowthMetricBreakdown copyWith({
-    _i2.DiscoveryMetricMode? mode,
-    _i3.DiscoveryMetricOperation? operation,
+    _iwc51qy2.DiscoveryMetricMode? mode,
+    _ipgnhxya.DiscoveryMetricOperation? operation,
     int? observations,
     int? newCatalogPlaces,
     int? cacheHits,
@@ -119,15 +118,15 @@ abstract class DiscoveryGrowthMetricBreakdown
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _DiscoveryGrowthMetricBreakdownImpl
     extends DiscoveryGrowthMetricBreakdown {
   _DiscoveryGrowthMetricBreakdownImpl({
-    required _i2.DiscoveryMetricMode mode,
-    required _i3.DiscoveryMetricOperation operation,
+    required _iwc51qy2.DiscoveryMetricMode mode,
+    required _ipgnhxya.DiscoveryMetricOperation operation,
     required int observations,
     required int newCatalogPlaces,
     required int cacheHits,
@@ -147,11 +146,11 @@ class _DiscoveryGrowthMetricBreakdownImpl
 
   /// Returns a shallow copy of this [DiscoveryGrowthMetricBreakdown]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryGrowthMetricBreakdown copyWith({
-    _i2.DiscoveryMetricMode? mode,
-    _i3.DiscoveryMetricOperation? operation,
+    _iwc51qy2.DiscoveryMetricMode? mode,
+    _ipgnhxya.DiscoveryMetricOperation? operation,
     int? observations,
     int? newCatalogPlaces,
     int? cacheHits,

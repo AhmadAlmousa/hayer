@@ -85,6 +85,7 @@ Future<Widget> _initialize(String? launchLocation) async {
         placePhotoCacheProvider.overrideWithValue(
           buildPlacePhotoCache(photoPolicy),
         ),
+        placePhotoLimitProvider.overrideWithValue(photoPolicy?.fetchCount ?? 6),
         clientAnalyticsMetadataProvider.overrideWithValue(
           ClientAnalyticsMetadata(
             appBuild: build,

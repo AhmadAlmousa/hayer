@@ -3,6 +3,8 @@ fields:
   viewport: DiscoverViewport
   countryCode: String?
   sort: DiscoverSort
+  originLatitude: double?
+  originLongitude: double?
   categoryIds: List<String>
   reviewBands: List<DiscoverReviewBand>
   exactPriceLevel: int?
@@ -10,3 +12,4 @@ fields:
   hoursWindows: List<DiscoverHoursWindow>
   text: String
   completeness: List<DiscoverCompleteness>
+  searchUpstream: bool?

@@ -7,3 +7,5 @@ values:
   - hiddenGems
   - worstRated
   - recentlyDiscovered
+  - distanceArea
+  - distanceCurrent

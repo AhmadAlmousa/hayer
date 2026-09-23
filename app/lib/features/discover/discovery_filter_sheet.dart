@@ -13,7 +13,6 @@ import 'discovery_facets_controller.dart';
 import 'discovery_filter_text.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_search.dart';
-import 'discovery_sort_text.dart';
 
 /// How long the draft stays unchanged before its matches are counted.
 const discoveryPreviewDelay = Duration(milliseconds: 400);
@@ -56,7 +55,6 @@ class DiscoveryFilterSheet extends ConsumerStatefulWidget {
 
 class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
   late DiscoveryUrlQuery _draft = widget.committed;
-  late final _text = TextEditingController(text: widget.committed.text);
   Timer? _debounce;
   int _generation = 0;
 
@@ -82,7 +80,6 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
   @override
   void dispose() {
     _debounce?.cancel();
-    _text.dispose();
     super.dispose();
   }
 
@@ -109,7 +106,12 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
       final counts = await ref
           .read(discoveryRepositoryProvider)
           .facets(
-            query: DiscoverySearch(query: draft).toWire(),
+            query: DiscoverySearch(
+              query: draft,
+              origin:
+                  ref.read(discoveryResultsProvider).loading?.origin ??
+                  ref.read(discoveryResultsProvider).search?.origin,
+            ).toWire(),
             context: context,
           );
       if (!mounted || generation != _generation) return;
@@ -124,12 +126,10 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
   }
 
   void _clear() {
-    _text.clear();
     _edit(_draft.withoutSheetFilters());
   }
 
   void _reset() {
-    _text.text = widget.committed.text;
     _edit(widget.committed);
   }
 
@@ -251,40 +251,7 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                 padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
                 children: [
                   _Section(
-                    title: strings.discoveryFilterTextHint,
-                    child: TextField(
-                      key: const ValueKey('discovery-filter-text'),
-                      controller: _text,
-                      maxLength: maxDiscoveryTextLength,
-                      textInputAction: TextInputAction.search,
-                      onChanged: (value) => _edit(_draft.copyWith(text: value)),
-                      decoration: InputDecoration(
-                        counterText: '',
-                        prefixIcon: const Icon(Icons.search_rounded),
-                        hintText: strings.discoveryFilterTextHint,
-                      ),
-                    ),
-                  ),
-                  _Section(
-                    title: strings.sortBy,
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final sort in DiscoverySort.values)
-                          ChoiceChip(
-                            key: ValueKey(
-                              'discovery-refine-sort-${sort.token}',
-                            ),
-                            label: Text(discoverySortLabel(strings, sort)),
-                            selected: _draft.sort == sort,
-                            onSelected: (_) =>
-                                _edit(_draft.copyWith(sort: sort)),
-                          ),
-                      ],
-                    ),
-                  ),
-                  _Section(
+                    emoji: '💬',
                     title: strings.discoveryFilterReviews,
                     child: _ReviewBands(
                       selected: _draft.reviewBands,
@@ -299,6 +266,7 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                     ),
                   ),
                   _Section(
+                    emoji: '💰',
                     title: strings.discoveryFilterPrice,
                     child: Wrap(
                       spacing: 8,
@@ -327,6 +295,7 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                     ),
                   ),
                   _Section(
+                    emoji: '⭐',
                     title: strings.discoveryFilterRating,
                     child: Wrap(
                       spacing: 8,
@@ -356,6 +325,7 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                     ),
                   ),
                   _Section(
+                    emoji: '🕒',
                     title: strings.discoveryFilterHours,
                     child: Wrap(
                       spacing: 8,
@@ -364,7 +334,14 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                         for (final window in DiscoveryHoursWindow.values)
                           FilterChip(
                             key: ValueKey('discovery-hours-${window.token}'),
-                            label: Text(discoveryHoursLabel(strings, window)),
+                            label: Text(
+                              '${switch (window) {
+                                DiscoveryHoursWindow.openNow => '🟢',
+                                DiscoveryHoursWindow.openLate => '🌙',
+                                DiscoveryHoursWindow.breakfast => '🥐',
+                                DiscoveryHoursWindow.openFriday => '🕌',
+                              }} ${discoveryHoursLabel(strings, window)}',
+                            ),
                             selected: _draft.hoursWindows.contains(window),
                             onSelected: (_) => _edit(
                               _draft.copyWith(
@@ -379,6 +356,7 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                     ),
                   ),
                   _Section(
+                    emoji: '✨',
                     title: strings.discoveryFilterCompleteness,
                     child: Wrap(
                       spacing: 8,
@@ -388,7 +366,12 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                           FilterChip(
                             key: ValueKey('discovery-has-${requirement.token}'),
                             label: Text(
-                              discoveryCompletenessLabel(strings, requirement),
+                              '${switch (requirement) {
+                                DiscoveryCompleteness.photos => '📷',
+                                DiscoveryCompleteness.hours => '🕒',
+                                DiscoveryCompleteness.contact => '📞',
+                                DiscoveryCompleteness.price => '💰',
+                              }} ${discoveryCompletenessLabel(strings, requirement)}',
                             ),
                             selected: _draft.completeness.contains(requirement),
                             onSelected: (_) => _edit(
@@ -404,26 +387,13 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
                     ),
                   ),
                   _Section(
+                    emoji: 'ℹ️',
                     title: strings.discoveryFilterAmenities,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final amenity in amenities)
-                              Semantics(
-                                hint: strings.discoveryAmenitiesUnavailable,
-                                child: FilterChip(
-                                  label: Text(amenity),
-                                  selected: false,
-                                  onSelected: null,
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
+                        Text(amenities.join(' · ')),
+                        const SizedBox(height: 6),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -496,10 +466,15 @@ class _DiscoveryFilterSheetState extends ConsumerState<DiscoveryFilterSheet> {
 }
 
 class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child});
+  const _Section({
+    required this.title,
+    required this.child,
+    required this.emoji,
+  });
 
   final String title;
   final Widget child;
+  final String emoji;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -512,7 +487,7 @@ class _Section extends StatelessWidget {
           child: Semantics(
             header: true,
             child: Text(
-              title,
+              '$emoji  $title',
               style: Theme.of(
                 context,
               ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),

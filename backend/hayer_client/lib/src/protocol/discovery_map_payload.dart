@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discovery_map_aggregate.dart' as _iwyy9blp;
+import 'discovery_map_mode.dart' as _i4gpq0qx;
+import 'discovery_map_point.dart' as _iepk7ohg;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discovery_map_mode.dart' as _i2;
-import 'discovery_map_point.dart' as _i3;
-import 'discovery_map_aggregate.dart' as _i4;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i5;
-
-abstract class DiscoveryMapPayload implements _i1.SerializableModel {
+abstract class DiscoveryMapPayload
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryMapPayload._({
     required this.mode,
     required this.points,
@@ -25,38 +25,40 @@ abstract class DiscoveryMapPayload implements _i1.SerializableModel {
   });
 
   factory DiscoveryMapPayload({
-    required _i2.DiscoveryMapMode mode,
-    required List<_i3.DiscoveryMapPoint> points,
-    required List<_i4.DiscoveryMapAggregate> aggregates,
+    required _i4gpq0qx.DiscoveryMapMode mode,
+    required List<_iepk7ohg.DiscoveryMapPoint> points,
+    required List<_iwyy9blp.DiscoveryMapAggregate> aggregates,
   }) = _DiscoveryMapPayloadImpl;
 
   factory DiscoveryMapPayload.fromJson(Map<String, dynamic> jsonSerialization) {
     return DiscoveryMapPayload(
-      mode: _i2.DiscoveryMapMode.fromJson(
+      mode: _i4gpq0qx.DiscoveryMapMode.fromJson(
         (jsonSerialization['mode'] as String),
       ),
-      points: _i5.Protocol().deserialize<List<_i3.DiscoveryMapPoint>>(
-        jsonSerialization['points'],
-      ),
-      aggregates: _i5.Protocol().deserialize<List<_i4.DiscoveryMapAggregate>>(
-        jsonSerialization['aggregates'],
-      ),
+      points: _iynev3sz.Protocol()
+          .deserialize<List<_iepk7ohg.DiscoveryMapPoint>>(
+            jsonSerialization['points'],
+          ),
+      aggregates: _iynev3sz.Protocol()
+          .deserialize<List<_iwyy9blp.DiscoveryMapAggregate>>(
+            jsonSerialization['aggregates'],
+          ),
     );
   }
 
-  _i2.DiscoveryMapMode mode;
+  _i4gpq0qx.DiscoveryMapMode mode;
 
-  List<_i3.DiscoveryMapPoint> points;
+  List<_iepk7ohg.DiscoveryMapPoint> points;
 
-  List<_i4.DiscoveryMapAggregate> aggregates;
+  List<_iwyy9blp.DiscoveryMapAggregate> aggregates;
 
   /// Returns a shallow copy of this [DiscoveryMapPayload]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryMapPayload copyWith({
-    _i2.DiscoveryMapMode? mode,
-    List<_i3.DiscoveryMapPoint>? points,
-    List<_i4.DiscoveryMapAggregate>? aggregates,
+    _i4gpq0qx.DiscoveryMapMode? mode,
+    List<_iepk7ohg.DiscoveryMapPoint>? points,
+    List<_iwyy9blp.DiscoveryMapAggregate>? aggregates,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -69,16 +71,28 @@ abstract class DiscoveryMapPayload implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryMapPayload',
+      'mode': mode.toJson(),
+      'points': points.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'aggregates': aggregates.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _DiscoveryMapPayloadImpl extends DiscoveryMapPayload {
   _DiscoveryMapPayloadImpl({
-    required _i2.DiscoveryMapMode mode,
-    required List<_i3.DiscoveryMapPoint> points,
-    required List<_i4.DiscoveryMapAggregate> aggregates,
+    required _i4gpq0qx.DiscoveryMapMode mode,
+    required List<_iepk7ohg.DiscoveryMapPoint> points,
+    required List<_iwyy9blp.DiscoveryMapAggregate> aggregates,
   }) : super._(
          mode: mode,
          points: points,
@@ -87,12 +101,12 @@ class _DiscoveryMapPayloadImpl extends DiscoveryMapPayload {
 
   /// Returns a shallow copy of this [DiscoveryMapPayload]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryMapPayload copyWith({
-    _i2.DiscoveryMapMode? mode,
-    List<_i3.DiscoveryMapPoint>? points,
-    List<_i4.DiscoveryMapAggregate>? aggregates,
+    _i4gpq0qx.DiscoveryMapMode? mode,
+    List<_iepk7ohg.DiscoveryMapPoint>? points,
+    List<_iwyy9blp.DiscoveryMapAggregate>? aggregates,
   }) {
     return DiscoveryMapPayload(
       mode: mode ?? this.mode,

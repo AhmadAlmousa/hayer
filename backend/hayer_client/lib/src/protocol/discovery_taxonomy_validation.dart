@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i2;
-
-abstract class DiscoveryTaxonomyValidation implements _i1.SerializableModel {
+abstract class DiscoveryTaxonomyValidation
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryTaxonomyValidation._({
     required this.passed,
     required this.errors,
@@ -33,12 +33,12 @@ abstract class DiscoveryTaxonomyValidation implements _i1.SerializableModel {
     Map<String, dynamic> jsonSerialization,
   ) {
     return DiscoveryTaxonomyValidation(
-      passed: _i1.BoolJsonExtension.fromJson(jsonSerialization['passed']),
-      errors: _i2.Protocol().deserialize<List<String>>(
+      passed: _isc.BoolJsonExtension.fromJson(jsonSerialization['passed']),
+      errors: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['errors'],
       ),
       revision: jsonSerialization['revision'] as int,
-      validatedAt: _i1.DateTimeJsonExtension.fromJson(
+      validatedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['validatedAt'],
       ),
     );
@@ -54,7 +54,7 @@ abstract class DiscoveryTaxonomyValidation implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryTaxonomyValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryTaxonomyValidation copyWith({
     bool? passed,
     List<String>? errors,
@@ -73,8 +73,19 @@ abstract class DiscoveryTaxonomyValidation implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryTaxonomyValidation',
+      'passed': passed,
+      'errors': errors.toJson(),
+      'revision': revision,
+      'validatedAt': validatedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -93,7 +104,7 @@ class _DiscoveryTaxonomyValidationImpl extends DiscoveryTaxonomyValidation {
 
   /// Returns a shallow copy of this [DiscoveryTaxonomyValidation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryTaxonomyValidation copyWith({
     bool? passed,

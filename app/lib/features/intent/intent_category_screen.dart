@@ -14,6 +14,7 @@ import '../discover/discovery_taxonomy_provider.dart';
 import '../discover/pending_discovery_link_notice.dart';
 import '../home/resume_session_button.dart';
 import 'intent_copy.dart';
+import 'intent_process_timeline.dart';
 import 'place_intent_controller.dart';
 
 class IntentCategoryScreen extends ConsumerStatefulWidget {
@@ -104,11 +105,15 @@ class _IntentCategoryScreenState extends ConsumerState<IntentCategoryScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: IntentStepActions(
+        onNext: intent.hasWhat ? () => context.go('/where') : null,
+      ),
       body: SafeArea(
         child: ContentShell(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
+              IntentProcessTimeline(step: 0, onStep: (_) {}),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
                 child: Column(
@@ -183,15 +188,6 @@ class _IntentCategoryScreenState extends ConsumerState<IntentCategoryScreen> {
                   child: Center(
                     child: CircularProgressIndicator(),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                child: FilledButton.icon(
-                  key: const ValueKey('intent-what-continue'),
-                  onPressed: intent.hasWhat ? () => context.go('/where') : null,
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: Text(copy.continueLabel),
                 ),
               ),
             ],
@@ -273,6 +269,7 @@ class _TaxonomyList extends StatelessWidget {
         children: [
           for (final root in roots)
             _TaxonomyNode(
+              key: ValueKey(root.id),
               node: root,
               needle: needle,
               arabic: arabic,
@@ -286,8 +283,9 @@ class _TaxonomyList extends StatelessWidget {
   }
 }
 
-class _TaxonomyNode extends StatelessWidget {
+class _TaxonomyNode extends StatefulWidget {
   const _TaxonomyNode({
+    super.key,
     required this.node,
     required this.needle,
     required this.arabic,
@@ -312,56 +310,160 @@ class _TaxonomyNode extends StatelessWidget {
       value.children.any(_contains);
 
   @override
+  State<_TaxonomyNode> createState() => _TaxonomyNodeState();
+}
+
+class _TaxonomyNodeState extends State<_TaxonomyNode> {
+  late bool _expanded = _shouldStartExpanded;
+
+  bool get _shouldStartExpanded => widget.needle.isNotEmpty;
+
+  @override
+  void didUpdateWidget(covariant _TaxonomyNode oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.needle != widget.needle && widget.needle.isNotEmpty) {
+      _expanded = true;
+    }
+  }
+
+  void _toggleExpanded() => setState(() => _expanded = !_expanded);
+
+  @override
   Widget build(BuildContext context) {
-    final children = needle.isEmpty
+    final node = widget.node;
+    final children = widget.needle.isEmpty
         ? node.children
-        : node.children.where(_contains).toList();
-    final label = discoveryCategoryLabel(node, arabic ? 'ar' : 'en');
+        : node.children.where(widget._contains).toList();
+    final label = discoveryCategoryLabel(
+      node,
+      widget.arabic ? 'ar' : 'en',
+    );
     final selectable = node.selectable == true;
-    final title = selectable
-        ? CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            value: selected.contains(node.id),
-            onChanged: (_) => onTap(node.id),
-            title: Text(label),
+    final isSelected = widget.selected.contains(node.id);
+    final hasChildren = children.isNotEmpty;
+    final colors = Theme.of(context).colorScheme;
+
+    return Card(
+      color: isSelected ? colors.secondaryContainer : null,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            key: ValueKey('intent-category-${node.id}'),
+            contentPadding: const EdgeInsetsDirectional.only(
+              start: 12,
+              end: 4,
+            ),
+            leading: _CategoryMarker(
+              emoji: node.emoji,
+              selected: isSelected,
+            ),
+            title: Text(
+              label,
+              style: TextStyle(
+                fontWeight: selectable ? FontWeight.w700 : FontWeight.w900,
+              ),
+            ),
             subtitle: node.selectionGroupRoot == true
                 ? Text(
-                    arabic
+                    widget.arabic
                         ? 'اختر الكل أو تخصص أكثر'
                         : 'Choose all or narrow it down',
                   )
                 : null,
-            controlAffinity: ListTileControlAffinity.leading,
-          )
-        : ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.category_outlined),
-            title: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+            selected: isSelected,
+            onTap: selectable
+                ? () => widget.onTap(node.id)
+                : hasChildren
+                ? _toggleExpanded
+                : null,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (selectable)
+                  Checkbox(
+                    value: isSelected,
+                    onChanged: (_) => widget.onTap(node.id),
+                  ),
+                if (hasChildren)
+                  IconButton(
+                    key: ValueKey('intent-category-expand-${node.id}'),
+                    tooltip: widget.arabic
+                        ? (_expanded ? 'طي الفئات' : 'عرض الفئات')
+                        : (_expanded ? 'Hide categories' : 'Show categories'),
+                    onPressed: _toggleExpanded,
+                    icon: Icon(
+                      _expanded
+                          ? Icons.expand_less_rounded
+                          : Icons.expand_more_rounded,
+                    ),
+                  ),
+              ],
             ),
-          );
-    if (children.isEmpty) return Card(child: title);
-    return Card(
-      child: ExpansionTile(
-        initiallyExpanded:
-            needle.isNotEmpty ||
-            node.selectionGroupRoot == true ||
-            selected.contains(node.id),
-        tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-        title: title,
-        childrenPadding: const EdgeInsetsDirectional.only(start: 16),
-        children: [
-          for (final child in children)
-            _TaxonomyNode(
-              node: child,
-              needle: needle,
-              arabic: arabic,
-              selected: selected,
-              selectedGroup: selectedGroup,
-              onTap: onTap,
-            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 180),
+            alignment: Alignment.topCenter,
+            child: !_expanded || !hasChildren
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsetsDirectional.only(
+                      start: 16,
+                      end: 4,
+                      bottom: 4,
+                    ),
+                    child: Column(
+                      children: [
+                        for (final child in children)
+                          _TaxonomyNode(
+                            key: ValueKey(child.id),
+                            node: child,
+                            needle: widget.needle,
+                            arabic: widget.arabic,
+                            selected: widget.selected,
+                            selectedGroup: widget.selectedGroup,
+                            onTap: widget.onTap,
+                          ),
+                      ],
+                    ),
+                  ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _CategoryMarker extends StatelessWidget {
+  const _CategoryMarker({required this.emoji, required this.selected});
+
+  final String emoji;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final value = emoji.trim();
+    return ExcludeSemantics(
+      child: Container(
+        width: 44,
+        height: 44,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? colors.primaryContainer : colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: value.isEmpty
+            ? Icon(
+                Icons.category_rounded,
+                color: selected ? colors.onPrimaryContainer : colors.primary,
+              )
+            : Text(
+                value,
+                textScaler: TextScaler.noScaling,
+                style: const TextStyle(fontSize: 25),
+              ),
       ),
     );
   }

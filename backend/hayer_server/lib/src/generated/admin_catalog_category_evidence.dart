@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class AdminCatalogCategoryEvidence
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminCatalogCategoryEvidence._({
     required this.categoryId,
     required this.evidenceQuery,
@@ -35,10 +34,10 @@ abstract class AdminCatalogCategoryEvidence
     return AdminCatalogCategoryEvidence(
       categoryId: jsonSerialization['categoryId'] as String,
       evidenceQuery: jsonSerialization['evidenceQuery'] as String,
-      firstSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      firstSeenAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['firstSeenAt'],
       ),
-      lastSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      lastSeenAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastSeenAt'],
       ),
     );
@@ -54,7 +53,7 @@ abstract class AdminCatalogCategoryEvidence
 
   /// Returns a shallow copy of this [AdminCatalogCategoryEvidence]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminCatalogCategoryEvidence copyWith({
     String? categoryId,
     String? evidenceQuery,
@@ -85,7 +84,7 @@ abstract class AdminCatalogCategoryEvidence
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -104,7 +103,7 @@ class _AdminCatalogCategoryEvidenceImpl extends AdminCatalogCategoryEvidence {
 
   /// Returns a shallow copy of this [AdminCatalogCategoryEvidence]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminCatalogCategoryEvidence copyWith({
     String? categoryId,

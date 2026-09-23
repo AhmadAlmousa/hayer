@@ -27,7 +27,7 @@ Future<List<String>?> showDiscoveryCategorySheet(
 /// The counts come from the committed search's facets, which leave the
 /// category selection out, so they stay right however the selection here
 /// changes and nothing is asked of the server until the draft is applied.
-/// Branches with nothing in view are hidden unless they hold a selection.
+/// Every branch remains available, including categories with no current result.
 class DiscoveryCategorySheet extends ConsumerStatefulWidget {
   const DiscoveryCategorySheet({super.key, required this.committed});
 
@@ -130,8 +130,8 @@ class _DiscoveryCategorySheetState
       selection: _selection,
       expanded: expanded,
       search: search,
+      showEmpty: true,
     );
-    final hidden = tree.hiddenCount(_selection);
     final selected = tree.normalize(_selection).ids;
     final large = MediaQuery.textScalerOf(context).scale(14) > 20;
     String name(String id) => discoveryCategoryName(context, id, tree);
@@ -244,7 +244,6 @@ class _DiscoveryCategorySheetState
                         : strings.discoveryCategoryNoMatch(search),
                   ),
                 ),
-              if (hidden > 0 && search.isEmpty) _HiddenNote(count: hidden),
             ],
           ),
         ),
@@ -419,48 +418,6 @@ class _CategoryTile extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _HiddenNote extends StatelessWidget {
-  const _HiddenNote({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final strings = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final muted = theme.textTheme.bodySmall?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
-    return Padding(
-      key: const ValueKey('discovery-categories-hidden'),
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.travel_explore_rounded,
-            size: 20,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  strings.discoveryCategoriesHidden(count),
-                  style: muted?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                Text(strings.discoveryCategoriesHiddenHint, style: muted),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -5,15 +5,20 @@ import 'package:serverpod/serverpod.dart';
 
 import '../discovery/discovery_area.dart';
 import '../discovery/discovery_contract.dart';
+import '../discovery/discovery_harvest_manifest_service.dart';
 import '../discovery/discovery_harvest_service.dart';
 import '../discovery/discovery_policy_service.dart';
 import '../discovery/discovery_taxonomy_index.dart';
 import '../discovery/discovery_taxonomy_service.dart';
 import '../generated/protocol.dart';
 import '../security/rate_limiter.dart';
+import 'catalog_place_service.dart';
 import 'discovery_cursor.dart';
 import 'place_availability.dart';
 import 'place_detail_view.dart';
+import 'place_services.dart';
+import 'place_source.dart';
+import 'taxonomy.dart';
 
 /// The canonical PostgreSQL read path for Discover.
 ///
@@ -35,6 +40,7 @@ abstract final class DiscoveryQuery {
   /// Server-side grid resolution for the aggregate map: 40 × 40 cells stays
   /// under the 2,000-feature ceiling the map payload promises.
   static const _gridCells = 40;
+  static const _maximumUpstreamQueries = 20;
 
   /// Stale rows keep photos (1), website (8) and description (32), matching
   /// the fields Swipe's stale snapshot still shows.
@@ -73,6 +79,13 @@ abstract final class DiscoveryQuery {
       'discovery-browse',
       discovery.browseRequestsPerMinute,
     );
+    if (query.searchUpstream == true && context == null && cursor == null) {
+      await _searchUpstream(
+        session,
+        prepared,
+        deckSize: pageSize,
+      );
+    }
 
     final types = prepared.filtersByCategory;
     final after = _after('', 'cursor');
@@ -178,6 +191,103 @@ SELECT
     );
     return _integer(rows.single.toColumnMap()['count']);
   }
+
+  /// Searches the committed area and categories when the client asks for a
+  /// new source search. CatalogPlaceService reuses full cached POIs for a
+  /// fresh matching query and writes newly observed places before browse
+  /// reads the catalog below.
+  static Future<void> _searchUpstream(
+    Session session,
+    _PreparedQuery prepared, {
+    required int deckSize,
+  }) async {
+    final request = prepared.query;
+    final text = request.text.trim();
+    List<PlaceQuery> queries;
+    if (prepared.categoryQueries.isNotEmpty) {
+      queries = [
+        for (final query in prepared.categoryQueries.take(
+          _maximumUpstreamQueries,
+        ))
+          PlaceQuery(
+            query: _appendSearchText(query.query, text),
+            categoryId: query.categoryId,
+            arabicFallbackQuery: query.arabicFallbackQuery == null
+                ? null
+                : _appendSearchText(query.arabicFallbackQuery!, text),
+          ),
+      ];
+    } else if (prepared.selectedCategories.contains(
+      DiscoveryContract.otherCategoryId,
+    )) {
+      if (text.isEmpty) return;
+      queries = [PlaceQuery(query: text, categoryId: 'discover_text')];
+    } else if (text.isNotEmpty) {
+      queries = [PlaceQuery(query: text, categoryId: 'discover_text')];
+    } else {
+      final manifest = await DiscoveryHarvestManifestService.activeRow(session);
+      queries = [
+        for (final entry in DiscoveryHarvestManifestService.enabledInOrder(
+          manifest.entries,
+        ).take(_maximumUpstreamQueries))
+          PlaceQuery(
+            query: entry.queryEn,
+            categoryId: entry.id,
+            arabicFallbackQuery: entry.fallbackQueryAr,
+          ),
+      ];
+    }
+    if (queries.isEmpty) return;
+
+    final viewport = request.viewport;
+    final latitude = (viewport.south + viewport.north) / 2;
+    final longitude = (viewport.west + viewport.east) / 2;
+    final halfDiagonal = DiscoveryArea.haversineMeters(
+      latitude,
+      longitude,
+      viewport.north,
+      viewport.east,
+    );
+    final radiusMeters = DiscoveryArea.radiusBucketsMeters.firstWhere(
+      (bucket) => bucket >= halfDiagonal,
+      orElse: () => DiscoveryArea.radiusBucketsMeters.last,
+    );
+    final categoryIds = {
+      for (final query in queries) query.categoryId,
+    };
+    final subcategoryIds = categoryIds.toList()..sort();
+    try {
+      final services = await PlaceServices.forSession(session);
+      await CatalogPlaceService(
+        source: services.source,
+        calibrationVersion: services.calibration.version,
+      ).buildDeckWithOutcome(
+        session,
+        categoryId: 'discover_search',
+        subcategoryIds: subcategoryIds,
+        latitude: latitude,
+        longitude: longitude,
+        radiusMeters: radiusMeters,
+        deckSize: deckSize,
+        countryCode: prepared.context.countryCode,
+        forceRefresh: true,
+        queryOverride: queries,
+        requiredCategoryIdsOverride: categoryIds,
+        preserveFreshCachedSnapshots: true,
+        allowShortFreshCache: true,
+      );
+    } on PlaceSourceException catch (error, stackTrace) {
+      session.log(
+        'Discover source search failed; continuing with cached places.',
+        level: LogLevel.warning,
+        exception: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  static String _appendSearchText(String query, String text) =>
+      text.isEmpty ? query : '$query $text';
 
   static Future<DiscoverFacets> facets(
     Session session, {
@@ -439,6 +549,18 @@ SELECT
             query.minimumRating! > 5)) {
       throw _badRequest('Minimum rating must be between 0 and 5.');
     }
+    if (query.sort == DiscoverSort.distanceCurrent &&
+        (query.originLatitude == null || query.originLongitude == null)) {
+      throw _badRequest('Current location is required for this distance sort.');
+    }
+    if (query.originLatitude case final latitude?
+        when !latitude.isFinite || latitude < -90 || latitude > 90) {
+      throw _badRequest('Invalid sort latitude.');
+    }
+    if (query.originLongitude case final longitude?
+        when !longitude.isFinite || longitude < -180 || longitude > 180) {
+      throw _badRequest('Invalid sort longitude.');
+    }
     final countryCode = DiscoveryArea.resolveCountry(
       query.viewport,
       query.countryCode,
@@ -455,6 +577,22 @@ SELECT
       query.categoryIds,
       otherCategoryId: DiscoveryContract.otherCategoryId,
     );
+    final categoryQueries = <PlaceQuery>[];
+    for (final id in selected) {
+      if (id == DiscoveryContract.otherCategoryId) continue;
+      final node = tree.nodeFor(id);
+      if (node == null) continue;
+      final queryText = node.searchQueryEn?.trim();
+      categoryQueries.add(
+        PlaceQuery(
+          query: queryText == null || queryText.isEmpty
+              ? node.labelEn
+              : queryText,
+          categoryId: id,
+          arabicFallbackQuery: node.searchQueryAr,
+        ),
+      );
+    }
 
     // Millisecond precision survives every client's DateTime serialization,
     // so a returned context always matches the cursor it accompanies.
@@ -484,6 +622,9 @@ SELECT
               ],
               'country': countryCode,
               'sort': query.sort.name,
+              'origin': query.sort == DiscoverSort.distanceCurrent
+                  ? [query.originLatitude, query.originLongitude]
+                  : null,
               'categories': selected,
               'reviewBands': names(query.reviewBands),
               'price': query.exactPriceLevel,
@@ -515,6 +656,8 @@ SELECT
       discovery: discovery,
       freshHours: policy.freshHours,
       aliasOwners: tree.aliasOwners,
+      selectedCategories: selected,
+      categoryQueries: categoryQueries,
       selectedNodeIds: tree.coveredNodeIds(selected.where((id) => id != other)),
       selectOther: selected.contains(other),
       populationCategoryId: selected.length == 1 && selected.single != other
@@ -612,6 +755,9 @@ catalog."countryCode" = @countryCode
     DiscoverSort.worstRated => '-effective.rating',
     DiscoverSort.recentlyDiscovered =>
       'extract(epoch FROM catalog."firstSeenAt")::double precision',
+    DiscoverSort.distanceArea || DiscoverSort.distanceCurrent =>
+      '-ST_Distance(catalog.location, '
+          'ST_SetSRID(ST_MakePoint(@sortLongitude, @sortLatitude), 4326)::geography)',
   };
 
   /// Whether a row sorts strictly after [key] in the Discover order: sort
@@ -667,15 +813,22 @@ catalog."countryCode" = @countryCode
       '(effective.rating IS NOT NULL '
           'AND COALESCE(effective.reviews, 0) >= @worstRatedMinimumReviews)',
     DiscoverSort.hiddenGems => _hiddenGem,
-    DiscoverSort.mostReviewed || DiscoverSort.recentlyDiscovered => 'TRUE',
+    DiscoverSort.mostReviewed ||
+    DiscoverSort.recentlyDiscovered ||
+    DiscoverSort.distanceArea ||
+    DiscoverSort.distanceCurrent => 'TRUE',
   };
 
   static String _categoryFilter(_PreparedQuery value) {
     if (!value.filtersByCategory) return 'TRUE';
     return [
       if (value.selectedNodeIds.isNotEmpty)
-        'alias_map.mapped_node IN '
-            '(SELECT jsonb_array_elements_text(CAST(@selectedNodeIds AS jsonb)))',
+        '(alias_map.mapped_node IN '
+            '(SELECT jsonb_array_elements_text(CAST(@selectedNodeIds AS jsonb))) '
+            'OR EXISTS (SELECT 1 '
+            'FROM json_array_elements_text(catalog."categoryIds") AS evidenced(category_id) '
+            'WHERE evidenced.category_id IN '
+            '(SELECT jsonb_array_elements_text(CAST(@selectedNodeIds AS jsonb)))))',
       if (value.selectOther) 'alias_map.mapped_node IS NULL',
     ].join(' OR ').parenthesized;
   }
@@ -988,6 +1141,8 @@ class _PreparedQuery {
     required this.discovery,
     required this.freshHours,
     required this.aliasOwners,
+    required this.selectedCategories,
+    required this.categoryQueries,
     required this.selectedNodeIds,
     required this.selectOther,
     required this.populationCategoryId,
@@ -999,6 +1154,8 @@ class _PreparedQuery {
   final DiscoveryPolicy discovery;
   final int freshHours;
   final Map<String, String> aliasOwners;
+  final List<String> selectedCategories;
+  final List<PlaceQuery> categoryQueries;
   final Set<String> selectedNodeIds;
   final bool selectOther;
   final String? populationCategoryId;
@@ -1022,6 +1179,12 @@ class _PreparedQuery {
       'west': query.viewport.west,
       'north': query.viewport.north,
       'east': query.viewport.east,
+      'sortLatitude': query.sort == DiscoverSort.distanceCurrent
+          ? query.originLatitude
+          : (query.viewport.south + query.viewport.north) / 2,
+      'sortLongitude': query.sort == DiscoverSort.distanceCurrent
+          ? query.originLongitude
+          : (query.viewport.west + query.viewport.east) / 2,
       // Catalog timestamps are stored as UTC without a zone. A text bound cast
       // to `timestamp` ignores the trailing Z, so no session time zone applies.
       'freshAfter': evaluatedAt

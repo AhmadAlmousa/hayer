@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discover_viewport.dart' as _i1okvcdc;
+import 'discovery_harvest_state.dart' as _i4wyetx8;
+import 'discovery_harvest_trigger.dart' as _ia4mymki;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discovery_harvest_state.dart' as _i2;
-import 'discovery_harvest_trigger.dart' as _i3;
-import 'discover_viewport.dart' as _i4;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i5;
-
-abstract class DiscoveryHarvestStatus implements _i1.SerializableModel {
+abstract class DiscoveryHarvestStatus
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryHarvestStatus._({
     required this.jobId,
     required this.state,
@@ -34,9 +34,9 @@ abstract class DiscoveryHarvestStatus implements _i1.SerializableModel {
 
   factory DiscoveryHarvestStatus({
     required String jobId,
-    required _i2.DiscoveryHarvestState state,
-    required _i3.DiscoveryHarvestTrigger trigger,
-    required _i4.DiscoverViewport bounds,
+    required _i4wyetx8.DiscoveryHarvestState state,
+    required _ia4mymki.DiscoveryHarvestTrigger trigger,
+    required _i1okvcdc.DiscoverViewport bounds,
     required int manifestRevision,
     required int completedQueries,
     required int totalQueries,
@@ -51,36 +51,38 @@ abstract class DiscoveryHarvestStatus implements _i1.SerializableModel {
   ) {
     return DiscoveryHarvestStatus(
       jobId: jsonSerialization['jobId'] as String,
-      state: _i2.DiscoveryHarvestState.fromJson(
+      state: _i4wyetx8.DiscoveryHarvestState.fromJson(
         (jsonSerialization['state'] as String),
       ),
-      trigger: _i3.DiscoveryHarvestTrigger.fromJson(
+      trigger: _ia4mymki.DiscoveryHarvestTrigger.fromJson(
         (jsonSerialization['trigger'] as String),
       ),
-      bounds: _i5.Protocol().deserialize<_i4.DiscoverViewport>(
+      bounds: _iynev3sz.Protocol().deserialize<_i1okvcdc.DiscoverViewport>(
         jsonSerialization['bounds'],
       ),
       manifestRevision: jsonSerialization['manifestRevision'] as int,
       completedQueries: jsonSerialization['completedQueries'] as int,
       totalQueries: jsonSerialization['totalQueries'] as int,
       observedPlaces: jsonSerialization['observedPlaces'] as int,
-      fetchedAt: _i1.DateTimeJsonExtension.fromJson(
+      fetchedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['fetchedAt'],
       ),
       retryAfter: jsonSerialization['retryAfter'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
+          : _isc.DateTimeJsonExtension.fromJson(
+              jsonSerialization['retryAfter'],
+            ),
       failureCode: jsonSerialization['failureCode'] as String?,
     );
   }
 
   String jobId;
 
-  _i2.DiscoveryHarvestState state;
+  _i4wyetx8.DiscoveryHarvestState state;
 
-  _i3.DiscoveryHarvestTrigger trigger;
+  _ia4mymki.DiscoveryHarvestTrigger trigger;
 
-  _i4.DiscoverViewport bounds;
+  _i1okvcdc.DiscoverViewport bounds;
 
   int manifestRevision;
 
@@ -98,12 +100,12 @@ abstract class DiscoveryHarvestStatus implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryHarvestStatus]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryHarvestStatus copyWith({
     String? jobId,
-    _i2.DiscoveryHarvestState? state,
-    _i3.DiscoveryHarvestTrigger? trigger,
-    _i4.DiscoverViewport? bounds,
+    _i4wyetx8.DiscoveryHarvestState? state,
+    _ia4mymki.DiscoveryHarvestTrigger? trigger,
+    _i1okvcdc.DiscoverViewport? bounds,
     int? manifestRevision,
     int? completedQueries,
     int? totalQueries,
@@ -131,8 +133,26 @@ abstract class DiscoveryHarvestStatus implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryHarvestStatus',
+      'jobId': jobId,
+      'state': state.toJson(),
+      'trigger': trigger.toJson(),
+      'bounds': bounds.toJsonForProtocol(),
+      'manifestRevision': manifestRevision,
+      'completedQueries': completedQueries,
+      'totalQueries': totalQueries,
+      'observedPlaces': observedPlaces,
+      'fetchedAt': fetchedAt.toJson(),
+      if (retryAfter != null) 'retryAfter': retryAfter?.toJson(),
+      if (failureCode != null) 'failureCode': failureCode,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -141,9 +161,9 @@ class _Undefined {}
 class _DiscoveryHarvestStatusImpl extends DiscoveryHarvestStatus {
   _DiscoveryHarvestStatusImpl({
     required String jobId,
-    required _i2.DiscoveryHarvestState state,
-    required _i3.DiscoveryHarvestTrigger trigger,
-    required _i4.DiscoverViewport bounds,
+    required _i4wyetx8.DiscoveryHarvestState state,
+    required _ia4mymki.DiscoveryHarvestTrigger trigger,
+    required _i1okvcdc.DiscoverViewport bounds,
     required int manifestRevision,
     required int completedQueries,
     required int totalQueries,
@@ -167,13 +187,13 @@ class _DiscoveryHarvestStatusImpl extends DiscoveryHarvestStatus {
 
   /// Returns a shallow copy of this [DiscoveryHarvestStatus]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryHarvestStatus copyWith({
     String? jobId,
-    _i2.DiscoveryHarvestState? state,
-    _i3.DiscoveryHarvestTrigger? trigger,
-    _i4.DiscoverViewport? bounds,
+    _i4wyetx8.DiscoveryHarvestState? state,
+    _ia4mymki.DiscoveryHarvestTrigger? trigger,
+    _i1okvcdc.DiscoverViewport? bounds,
     int? manifestRevision,
     int? completedQueries,
     int? totalQueries,

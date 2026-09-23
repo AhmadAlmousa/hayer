@@ -10,16 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'route_origin_mode.dart' as _i2;
-import 'discovery_policy.dart' as _i3;
-import 'place_detail_policy.dart' as _i4;
-import 'photo_policy.dart' as _i5;
-import 'package:hayer_server/src/generated/protocol.dart' as _i6;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_policy.dart' as _izqxi2bg;
+import 'photo_policy.dart' as _i8lsha3l;
+import 'place_detail_policy.dart' as _iscbu2bm;
+import 'route_origin_mode.dart' as _itt0gps6;
 
 abstract class CachePolicy
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   CachePolicy._({
     required this.version,
     required this.freshHours,
@@ -52,14 +51,14 @@ abstract class CachePolicy
     required int globalBurst,
     required bool routeEstimatesEnabled,
     required bool allowParticipantLocation,
-    required _i2.RouteOriginMode defaultRouteOrigin,
+    required _itt0gps6.RouteOriginMode defaultRouteOrigin,
     required int routeEstimateCacheMinutes,
     required int routeRequestsPerMinute,
     required int routeBurst,
     required DateTime updatedAt,
-    _i3.DiscoveryPolicy? discovery,
-    _i4.PlaceDetailPolicy? detailRefresh,
-    _i5.PhotoPolicy? photos,
+    _izqxi2bg.DiscoveryPolicy? discovery,
+    _iscbu2bm.PlaceDetailPolicy? detailRefresh,
+    _i8lsha3l.PhotoPolicy? photos,
   }) = _CachePolicyImpl;
 
   factory CachePolicy.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -74,13 +73,13 @@ abstract class CachePolicy
       globalRequestsPerMinute:
           jsonSerialization['globalRequestsPerMinute'] as int,
       globalBurst: jsonSerialization['globalBurst'] as int,
-      routeEstimatesEnabled: _i1.BoolJsonExtension.fromJson(
+      routeEstimatesEnabled: _is.BoolJsonExtension.fromJson(
         jsonSerialization['routeEstimatesEnabled'],
       ),
-      allowParticipantLocation: _i1.BoolJsonExtension.fromJson(
+      allowParticipantLocation: _is.BoolJsonExtension.fromJson(
         jsonSerialization['allowParticipantLocation'],
       ),
-      defaultRouteOrigin: _i2.RouteOriginMode.fromJson(
+      defaultRouteOrigin: _itt0gps6.RouteOriginMode.fromJson(
         (jsonSerialization['defaultRouteOrigin'] as String),
       ),
       routeEstimateCacheMinutes:
@@ -88,22 +87,22 @@ abstract class CachePolicy
       routeRequestsPerMinute:
           jsonSerialization['routeRequestsPerMinute'] as int,
       routeBurst: jsonSerialization['routeBurst'] as int,
-      updatedAt: _i1.DateTimeJsonExtension.fromJson(
+      updatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
       ),
       discovery: jsonSerialization['discovery'] == null
           ? null
-          : _i6.Protocol().deserialize<_i3.DiscoveryPolicy>(
+          : _i66y2smk.Protocol().deserialize<_izqxi2bg.DiscoveryPolicy>(
               jsonSerialization['discovery'],
             ),
       detailRefresh: jsonSerialization['detailRefresh'] == null
           ? null
-          : _i6.Protocol().deserialize<_i4.PlaceDetailPolicy>(
+          : _i66y2smk.Protocol().deserialize<_iscbu2bm.PlaceDetailPolicy>(
               jsonSerialization['detailRefresh'],
             ),
       photos: jsonSerialization['photos'] == null
           ? null
-          : _i6.Protocol().deserialize<_i5.PhotoPolicy>(
+          : _i66y2smk.Protocol().deserialize<_i8lsha3l.PhotoPolicy>(
               jsonSerialization['photos'],
             ),
     );
@@ -129,7 +128,7 @@ abstract class CachePolicy
 
   bool allowParticipantLocation;
 
-  _i2.RouteOriginMode defaultRouteOrigin;
+  _itt0gps6.RouteOriginMode defaultRouteOrigin;
 
   int routeEstimateCacheMinutes;
 
@@ -139,15 +138,15 @@ abstract class CachePolicy
 
   DateTime updatedAt;
 
-  _i3.DiscoveryPolicy? discovery;
+  _izqxi2bg.DiscoveryPolicy? discovery;
 
-  _i4.PlaceDetailPolicy? detailRefresh;
+  _iscbu2bm.PlaceDetailPolicy? detailRefresh;
 
-  _i5.PhotoPolicy? photos;
+  _i8lsha3l.PhotoPolicy? photos;
 
   /// Returns a shallow copy of this [CachePolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CachePolicy copyWith({
     int? version,
     int? freshHours,
@@ -159,14 +158,14 @@ abstract class CachePolicy
     int? globalBurst,
     bool? routeEstimatesEnabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultRouteOrigin,
+    _itt0gps6.RouteOriginMode? defaultRouteOrigin,
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
     DateTime? updatedAt,
-    _i3.DiscoveryPolicy? discovery,
-    _i4.PlaceDetailPolicy? detailRefresh,
-    _i5.PhotoPolicy? photos,
+    _izqxi2bg.DiscoveryPolicy? discovery,
+    _iscbu2bm.PlaceDetailPolicy? detailRefresh,
+    _i8lsha3l.PhotoPolicy? photos,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -221,7 +220,7 @@ abstract class CachePolicy
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -239,14 +238,14 @@ class _CachePolicyImpl extends CachePolicy {
     required int globalBurst,
     required bool routeEstimatesEnabled,
     required bool allowParticipantLocation,
-    required _i2.RouteOriginMode defaultRouteOrigin,
+    required _itt0gps6.RouteOriginMode defaultRouteOrigin,
     required int routeEstimateCacheMinutes,
     required int routeRequestsPerMinute,
     required int routeBurst,
     required DateTime updatedAt,
-    _i3.DiscoveryPolicy? discovery,
-    _i4.PlaceDetailPolicy? detailRefresh,
-    _i5.PhotoPolicy? photos,
+    _izqxi2bg.DiscoveryPolicy? discovery,
+    _iscbu2bm.PlaceDetailPolicy? detailRefresh,
+    _i8lsha3l.PhotoPolicy? photos,
   }) : super._(
          version: version,
          freshHours: freshHours,
@@ -270,7 +269,7 @@ class _CachePolicyImpl extends CachePolicy {
 
   /// Returns a shallow copy of this [CachePolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CachePolicy copyWith({
     int? version,
@@ -283,7 +282,7 @@ class _CachePolicyImpl extends CachePolicy {
     int? globalBurst,
     bool? routeEstimatesEnabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultRouteOrigin,
+    _itt0gps6.RouteOriginMode? defaultRouteOrigin,
     int? routeEstimateCacheMinutes,
     int? routeRequestsPerMinute,
     int? routeBurst,
@@ -314,13 +313,15 @@ class _CachePolicyImpl extends CachePolicy {
           routeRequestsPerMinute ?? this.routeRequestsPerMinute,
       routeBurst: routeBurst ?? this.routeBurst,
       updatedAt: updatedAt ?? this.updatedAt,
-      discovery: discovery is _i3.DiscoveryPolicy?
+      discovery: discovery is _izqxi2bg.DiscoveryPolicy?
           ? discovery
           : this.discovery?.copyWith(),
-      detailRefresh: detailRefresh is _i4.PlaceDetailPolicy?
+      detailRefresh: detailRefresh is _iscbu2bm.PlaceDetailPolicy?
           ? detailRefresh
           : this.detailRefresh?.copyWith(),
-      photos: photos is _i5.PhotoPolicy? ? photos : this.photos?.copyWith(),
+      photos: photos is _i8lsha3l.PhotoPolicy?
+          ? photos
+          : this.photos?.copyWith(),
     );
   }
 }

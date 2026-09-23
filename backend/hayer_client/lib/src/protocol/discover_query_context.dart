@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoverQueryContext implements _i1.SerializableModel {
+abstract class DiscoverQueryContext
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoverQueryContext._({
     required this.fingerprint,
     required this.countryCode,
@@ -38,7 +38,7 @@ abstract class DiscoverQueryContext implements _i1.SerializableModel {
       countryCode: jsonSerialization['countryCode'] as String,
       policyRevision: jsonSerialization['policyRevision'] as int,
       taxonomyRevision: jsonSerialization['taxonomyRevision'] as int,
-      evaluatedAt: _i1.DateTimeJsonExtension.fromJson(
+      evaluatedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['evaluatedAt'],
       ),
     );
@@ -56,7 +56,7 @@ abstract class DiscoverQueryContext implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoverQueryContext]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoverQueryContext copyWith({
     String? fingerprint,
     String? countryCode,
@@ -77,8 +77,20 @@ abstract class DiscoverQueryContext implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoverQueryContext',
+      'fingerprint': fingerprint,
+      'countryCode': countryCode,
+      'policyRevision': policyRevision,
+      'taxonomyRevision': taxonomyRevision,
+      'evaluatedAt': evaluatedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -99,7 +111,7 @@ class _DiscoverQueryContextImpl extends DiscoverQueryContext {
 
   /// Returns a shallow copy of this [DiscoverQueryContext]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoverQueryContext copyWith({
     String? fingerprint,

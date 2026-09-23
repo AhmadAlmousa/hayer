@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class AnalyticsBreakdown implements _i1.SerializableModel {
+abstract class AnalyticsBreakdown
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AnalyticsBreakdown._({
     required this.key,
     required this.label,
@@ -52,7 +52,7 @@ abstract class AnalyticsBreakdown implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AnalyticsBreakdown]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AnalyticsBreakdown copyWith({
     String? key,
     String? label,
@@ -73,8 +73,20 @@ abstract class AnalyticsBreakdown implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AnalyticsBreakdown',
+      'key': key,
+      'label': label,
+      'value': value,
+      'percentage': percentage,
+      'sampleCount': sampleCount,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +107,7 @@ class _AnalyticsBreakdownImpl extends AnalyticsBreakdown {
 
   /// Returns a shallow copy of this [AnalyticsBreakdown]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AnalyticsBreakdown copyWith({
     String? key,

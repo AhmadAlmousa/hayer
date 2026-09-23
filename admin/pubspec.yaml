@@ -28,9 +28,9 @@ dependencies:
   material_ui: ^1.1.0
   motor: ^1.1.0
   passkeys: ^2.22.3
-  serverpod_auth_idp_client: 3.4.13
-  serverpod_auth_idp_flutter: 3.4.13
-  serverpod_flutter: 3.4.13
+  serverpod_auth_idp_client: 4.0.0
+  serverpod_auth_idp_flutter: 4.0.0
+  serverpod_flutter: 4.0.0
   web: ^1.1.1
 
 dev_dependencies:

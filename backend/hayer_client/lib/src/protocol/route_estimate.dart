@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class RouteEstimate implements _i1.SerializableModel {
+abstract class RouteEstimate
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   RouteEstimate._({
     required this.distanceMeters,
     required this.durationSeconds,
@@ -32,10 +32,10 @@ abstract class RouteEstimate implements _i1.SerializableModel {
     return RouteEstimate(
       distanceMeters: jsonSerialization['distanceMeters'] as int,
       durationSeconds: jsonSerialization['durationSeconds'] as int,
-      trafficAware: _i1.BoolJsonExtension.fromJson(
+      trafficAware: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['trafficAware'],
       ),
-      checkedAt: _i1.DateTimeJsonExtension.fromJson(
+      checkedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['checkedAt'],
       ),
     );
@@ -51,7 +51,7 @@ abstract class RouteEstimate implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [RouteEstimate]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RouteEstimate copyWith({
     int? distanceMeters,
     int? durationSeconds,
@@ -70,8 +70,19 @@ abstract class RouteEstimate implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'RouteEstimate',
+      'distanceMeters': distanceMeters,
+      'durationSeconds': durationSeconds,
+      'trafficAware': trafficAware,
+      'checkedAt': checkedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -90,7 +101,7 @@ class _RouteEstimateImpl extends RouteEstimate {
 
   /// Returns a shallow copy of this [RouteEstimate]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RouteEstimate copyWith({
     int? distanceMeters,

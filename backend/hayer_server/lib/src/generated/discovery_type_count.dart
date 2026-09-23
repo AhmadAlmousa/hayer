@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DiscoveryTypeCount
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryTypeCount._({
     this.primaryType,
     required this.taxonomyNodeId,
@@ -43,7 +42,7 @@ abstract class DiscoveryTypeCount
 
   /// Returns a shallow copy of this [DiscoveryTypeCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryTypeCount copyWith({
     String? primaryType,
     String? taxonomyNodeId,
@@ -71,7 +70,7 @@ abstract class DiscoveryTypeCount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -90,7 +89,7 @@ class _DiscoveryTypeCountImpl extends DiscoveryTypeCount {
 
   /// Returns a shallow copy of this [DiscoveryTypeCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryTypeCount copyWith({
     Object? primaryType = _Undefined,

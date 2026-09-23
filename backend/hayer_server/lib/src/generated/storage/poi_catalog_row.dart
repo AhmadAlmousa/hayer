@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../place_snapshot.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../place_snapshot.dart' as _iv1jjw8m;
 
 abstract class PoiCatalogRow
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   PoiCatalogRow._({
     this.id,
     required this.provider,
@@ -27,6 +26,7 @@ abstract class PoiCatalogRow
     required this.countryCode,
     required this.latitude,
     required this.longitude,
+    required this.location,
     required this.categoryIds,
     required this.snapshot,
     required this.calibrationVersion,
@@ -38,7 +38,7 @@ abstract class PoiCatalogRow
   });
 
   factory PoiCatalogRow({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String provider,
     required String providerPlaceId,
     String? featureId,
@@ -47,8 +47,9 @@ abstract class PoiCatalogRow
     required String countryCode,
     required double latitude,
     required double longitude,
+    required _is.GeographyPoint location,
     required List<String> categoryIds,
-    required _i2.PlaceSnapshot snapshot,
+    required _iv1jjw8m.PlaceSnapshot snapshot,
     required String calibrationVersion,
     required DateTime sourceCheckedAt,
     required DateTime firstSeenAt,
@@ -61,7 +62,7 @@ abstract class PoiCatalogRow
     return PoiCatalogRow(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       provider: jsonSerialization['provider'] as String,
       providerPlaceId: jsonSerialization['providerPlaceId'] as String,
       featureId: jsonSerialization['featureId'] as String?,
@@ -70,25 +71,28 @@ abstract class PoiCatalogRow
       countryCode: jsonSerialization['countryCode'] as String,
       latitude: (jsonSerialization['latitude'] as num).toDouble(),
       longitude: (jsonSerialization['longitude'] as num).toDouble(),
-      categoryIds: _i3.Protocol().deserialize<List<String>>(
+      location: _is.GeographyPointJsonExtension.fromJson(
+        jsonSerialization['location'],
+      ),
+      categoryIds: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['categoryIds'],
       ),
-      snapshot: _i3.Protocol().deserialize<_i2.PlaceSnapshot>(
+      snapshot: _i66y2smk.Protocol().deserialize<_iv1jjw8m.PlaceSnapshot>(
         jsonSerialization['snapshot'],
       ),
       calibrationVersion: jsonSerialization['calibrationVersion'] as String,
-      sourceCheckedAt: _i1.DateTimeJsonExtension.fromJson(
+      sourceCheckedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['sourceCheckedAt'],
       ),
-      firstSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      firstSeenAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['firstSeenAt'],
       ),
-      lastSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      lastSeenAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastSeenAt'],
       ),
       quarantinedAt: jsonSerialization['quarantinedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['quarantinedAt'],
             ),
       quarantineReason: jsonSerialization['quarantineReason'] as String?,
@@ -100,7 +104,7 @@ abstract class PoiCatalogRow
   static const db = PoiCatalogRowRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String provider;
 
@@ -118,9 +122,11 @@ abstract class PoiCatalogRow
 
   double longitude;
 
+  _is.GeographyPoint location;
+
   List<String> categoryIds;
 
-  _i2.PlaceSnapshot snapshot;
+  _iv1jjw8m.PlaceSnapshot snapshot;
 
   String calibrationVersion;
 
@@ -135,13 +141,13 @@ abstract class PoiCatalogRow
   String? quarantineReason;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [PoiCatalogRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PoiCatalogRow copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? provider,
     String? providerPlaceId,
     String? featureId,
@@ -150,8 +156,9 @@ abstract class PoiCatalogRow
     String? countryCode,
     double? latitude,
     double? longitude,
+    _is.GeographyPoint? location,
     List<String>? categoryIds,
-    _i2.PlaceSnapshot? snapshot,
+    _iv1jjw8m.PlaceSnapshot? snapshot,
     String? calibrationVersion,
     DateTime? sourceCheckedAt,
     DateTime? firstSeenAt,
@@ -172,6 +179,7 @@ abstract class PoiCatalogRow
       'countryCode': countryCode,
       'latitude': latitude,
       'longitude': longitude,
+      'location': location.toJson(),
       'categoryIds': categoryIds.toJson(),
       'snapshot': snapshot.toJson(),
       'calibrationVersion': calibrationVersion,
@@ -193,12 +201,11 @@ abstract class PoiCatalogRow
   }
 
   static PoiCatalogRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<PoiCatalogRowTable>? where,
+    _is.WhereExpressionBuilder<PoiCatalogRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PoiCatalogRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
+    _is.OrderByBuilder<PoiCatalogRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
     PoiCatalogRowInclude? include,
   }) {
     return PoiCatalogRowIncludeList._(
@@ -206,7 +213,6 @@ abstract class PoiCatalogRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PoiCatalogRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(PoiCatalogRow.t),
       include: include,
     );
@@ -214,7 +220,7 @@ abstract class PoiCatalogRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -222,7 +228,7 @@ class _Undefined {}
 
 class _PoiCatalogRowImpl extends PoiCatalogRow {
   _PoiCatalogRowImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String provider,
     required String providerPlaceId,
     String? featureId,
@@ -231,8 +237,9 @@ class _PoiCatalogRowImpl extends PoiCatalogRow {
     required String countryCode,
     required double latitude,
     required double longitude,
+    required _is.GeographyPoint location,
     required List<String> categoryIds,
-    required _i2.PlaceSnapshot snapshot,
+    required _iv1jjw8m.PlaceSnapshot snapshot,
     required String calibrationVersion,
     required DateTime sourceCheckedAt,
     required DateTime firstSeenAt,
@@ -249,6 +256,7 @@ class _PoiCatalogRowImpl extends PoiCatalogRow {
          countryCode: countryCode,
          latitude: latitude,
          longitude: longitude,
+         location: location,
          categoryIds: categoryIds,
          snapshot: snapshot,
          calibrationVersion: calibrationVersion,
@@ -261,7 +269,7 @@ class _PoiCatalogRowImpl extends PoiCatalogRow {
 
   /// Returns a shallow copy of this [PoiCatalogRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PoiCatalogRow copyWith({
     Object? id = _Undefined,
@@ -273,8 +281,9 @@ class _PoiCatalogRowImpl extends PoiCatalogRow {
     String? countryCode,
     double? latitude,
     double? longitude,
+    _is.GeographyPoint? location,
     List<String>? categoryIds,
-    _i2.PlaceSnapshot? snapshot,
+    _iv1jjw8m.PlaceSnapshot? snapshot,
     String? calibrationVersion,
     DateTime? sourceCheckedAt,
     DateTime? firstSeenAt,
@@ -283,7 +292,7 @@ class _PoiCatalogRowImpl extends PoiCatalogRow {
     Object? quarantineReason = _Undefined,
   }) {
     return PoiCatalogRow(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       provider: provider ?? this.provider,
       providerPlaceId: providerPlaceId ?? this.providerPlaceId,
       featureId: featureId is String? ? featureId : this.featureId,
@@ -292,6 +301,7 @@ class _PoiCatalogRowImpl extends PoiCatalogRow {
       countryCode: countryCode ?? this.countryCode,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      location: location ?? this.location,
       categoryIds: categoryIds ?? this.categoryIds.map((e0) => e0).toList(),
       snapshot: snapshot ?? this.snapshot.copyWith(),
       calibrationVersion: calibrationVersion ?? this.calibrationVersion,
@@ -308,166 +318,177 @@ class _PoiCatalogRowImpl extends PoiCatalogRow {
   }
 }
 
-class PoiCatalogRowUpdateTable extends _i1.UpdateTable<PoiCatalogRowTable> {
+class PoiCatalogRowUpdateTable extends _is.UpdateTable<PoiCatalogRowTable> {
   PoiCatalogRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> provider(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> provider(String value) => _is.ColumnValue(
     table.provider,
     value,
   );
 
-  _i1.ColumnValue<String, String> providerPlaceId(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> providerPlaceId(String value) =>
+      _is.ColumnValue(
         table.providerPlaceId,
         value,
       );
 
-  _i1.ColumnValue<String, String> featureId(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> featureId(String? value) => _is.ColumnValue(
     table.featureId,
     value,
   );
 
-  _i1.ColumnValue<String, String> normalizedName(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> normalizedName(String value) =>
+      _is.ColumnValue(
         table.normalizedName,
         value,
       );
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<String, String> countryCode(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> countryCode(String value) => _is.ColumnValue(
     table.countryCode,
     value,
   );
 
-  _i1.ColumnValue<double, double> latitude(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> latitude(double value) => _is.ColumnValue(
     table.latitude,
     value,
   );
 
-  _i1.ColumnValue<double, double> longitude(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> longitude(double value) => _is.ColumnValue(
     table.longitude,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> categoryIds(List<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyPoint, _is.GeographyPoint> location(
+    _is.GeographyPoint value,
+  ) => _is.ColumnValue(
+    table.location,
+    value,
+  );
+
+  _is.ColumnValue<List<String>, List<String>> categoryIds(List<String> value) =>
+      _is.ColumnValue(
         table.categoryIds,
         value,
       );
 
-  _i1.ColumnValue<_i2.PlaceSnapshot, _i2.PlaceSnapshot> snapshot(
-    _i2.PlaceSnapshot value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_iv1jjw8m.PlaceSnapshot, _iv1jjw8m.PlaceSnapshot> snapshot(
+    _iv1jjw8m.PlaceSnapshot value,
+  ) => _is.ColumnValue(
     table.snapshot,
     value,
   );
 
-  _i1.ColumnValue<String, String> calibrationVersion(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> calibrationVersion(String value) =>
+      _is.ColumnValue(
         table.calibrationVersion,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> sourceCheckedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> sourceCheckedAt(DateTime value) =>
+      _is.ColumnValue(
         table.sourceCheckedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> firstSeenAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> firstSeenAt(DateTime value) =>
+      _is.ColumnValue(
         table.firstSeenAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> lastSeenAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> lastSeenAt(DateTime value) =>
+      _is.ColumnValue(
         table.lastSeenAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> quarantinedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> quarantinedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.quarantinedAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> quarantineReason(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> quarantineReason(String? value) =>
+      _is.ColumnValue(
         table.quarantineReason,
         value,
       );
 }
 
-class PoiCatalogRowTable extends _i1.Table<_i1.UuidValue?> {
+class PoiCatalogRowTable extends _is.Table<_is.UuidValue?> {
   PoiCatalogRowTable({super.tableRelation})
     : super(tableName: 'hayer_poi_catalog') {
     updateTable = PoiCatalogRowUpdateTable(this);
-    provider = _i1.ColumnString(
+    provider = _is.ColumnString(
       'provider',
       this,
     );
-    providerPlaceId = _i1.ColumnString(
+    providerPlaceId = _is.ColumnString(
       'providerPlaceId',
       this,
     );
-    featureId = _i1.ColumnString(
+    featureId = _is.ColumnString(
       'featureId',
       this,
     );
-    normalizedName = _i1.ColumnString(
+    normalizedName = _is.ColumnString(
       'normalizedName',
       this,
     );
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    countryCode = _i1.ColumnString(
+    countryCode = _is.ColumnString(
       'countryCode',
       this,
     );
-    latitude = _i1.ColumnDouble(
+    latitude = _is.ColumnDouble(
       'latitude',
       this,
     );
-    longitude = _i1.ColumnDouble(
+    longitude = _is.ColumnDouble(
       'longitude',
       this,
     );
-    categoryIds = _i1.ColumnSerializable<List<String>>(
+    location = _is.ColumnGeographyPoint(
+      'location',
+      this,
+    );
+    categoryIds = _is.ColumnSerializable<List<String>>(
       'categoryIds',
       this,
     );
-    snapshot = _i1.ColumnSerializable<_i2.PlaceSnapshot>(
+    snapshot = _is.ColumnSerializable<_iv1jjw8m.PlaceSnapshot>(
       'snapshot',
       this,
     );
-    calibrationVersion = _i1.ColumnString(
+    calibrationVersion = _is.ColumnString(
       'calibrationVersion',
       this,
     );
-    sourceCheckedAt = _i1.ColumnDateTime(
+    sourceCheckedAt = _is.ColumnDateTime(
       'sourceCheckedAt',
       this,
     );
-    firstSeenAt = _i1.ColumnDateTime(
+    firstSeenAt = _is.ColumnDateTime(
       'firstSeenAt',
       this,
     );
-    lastSeenAt = _i1.ColumnDateTime(
+    lastSeenAt = _is.ColumnDateTime(
       'lastSeenAt',
       this,
     );
-    quarantinedAt = _i1.ColumnDateTime(
+    quarantinedAt = _is.ColumnDateTime(
       'quarantinedAt',
       this,
     );
-    quarantineReason = _i1.ColumnString(
+    quarantineReason = _is.ColumnString(
       'quarantineReason',
       this,
     );
@@ -475,40 +496,42 @@ class PoiCatalogRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final PoiCatalogRowUpdateTable updateTable;
 
-  late final _i1.ColumnString provider;
+  late final _is.ColumnString provider;
 
-  late final _i1.ColumnString providerPlaceId;
+  late final _is.ColumnString providerPlaceId;
 
-  late final _i1.ColumnString featureId;
+  late final _is.ColumnString featureId;
 
-  late final _i1.ColumnString normalizedName;
+  late final _is.ColumnString normalizedName;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnString countryCode;
+  late final _is.ColumnString countryCode;
 
-  late final _i1.ColumnDouble latitude;
+  late final _is.ColumnDouble latitude;
 
-  late final _i1.ColumnDouble longitude;
+  late final _is.ColumnDouble longitude;
 
-  late final _i1.ColumnSerializable<List<String>> categoryIds;
+  late final _is.ColumnGeographyPoint location;
 
-  late final _i1.ColumnSerializable<_i2.PlaceSnapshot> snapshot;
+  late final _is.ColumnSerializable<List<String>> categoryIds;
 
-  late final _i1.ColumnString calibrationVersion;
+  late final _is.ColumnSerializable<_iv1jjw8m.PlaceSnapshot> snapshot;
 
-  late final _i1.ColumnDateTime sourceCheckedAt;
+  late final _is.ColumnString calibrationVersion;
 
-  late final _i1.ColumnDateTime firstSeenAt;
+  late final _is.ColumnDateTime sourceCheckedAt;
 
-  late final _i1.ColumnDateTime lastSeenAt;
+  late final _is.ColumnDateTime firstSeenAt;
 
-  late final _i1.ColumnDateTime quarantinedAt;
+  late final _is.ColumnDateTime lastSeenAt;
 
-  late final _i1.ColumnString quarantineReason;
+  late final _is.ColumnDateTime quarantinedAt;
+
+  late final _is.ColumnString quarantineReason;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     provider,
     providerPlaceId,
@@ -518,6 +541,7 @@ class PoiCatalogRowTable extends _i1.Table<_i1.UuidValue?> {
     countryCode,
     latitude,
     longitude,
+    location,
     categoryIds,
     snapshot,
     calibrationVersion,
@@ -529,23 +553,22 @@ class PoiCatalogRowTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class PoiCatalogRowInclude extends _i1.IncludeObject {
+class PoiCatalogRowInclude extends _is.IncludeObject {
   PoiCatalogRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PoiCatalogRow.t;
+  _is.Table<_is.UuidValue?> get table => PoiCatalogRow.t;
 }
 
-class PoiCatalogRowIncludeList extends _i1.IncludeList {
+class PoiCatalogRowIncludeList extends _is.IncludeList {
   PoiCatalogRowIncludeList._({
-    _i1.WhereExpressionBuilder<PoiCatalogRowTable>? where,
+    _is.WhereExpressionBuilder<PoiCatalogRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -553,10 +576,10 @@ class PoiCatalogRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PoiCatalogRow.t;
+  _is.Table<_is.UuidValue?> get table => PoiCatalogRow.t;
 }
 
 class PoiCatalogRowRepository {
@@ -585,22 +608,20 @@ class PoiCatalogRowRepository {
   /// );
   /// ```
   Future<List<PoiCatalogRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PoiCatalogRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PoiCatalogRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PoiCatalogRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<PoiCatalogRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PoiCatalogRow>(
       where: where?.call(PoiCatalogRow.t),
       orderBy: orderBy?.call(PoiCatalogRow.t),
       orderByList: orderByList?.call(PoiCatalogRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -627,21 +648,19 @@ class PoiCatalogRowRepository {
   /// );
   /// ```
   Future<PoiCatalogRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PoiCatalogRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PoiCatalogRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<PoiCatalogRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<PoiCatalogRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PoiCatalogRow>(
       where: where?.call(PoiCatalogRow.t),
       orderBy: orderBy?.call(PoiCatalogRow.t),
       orderByList: orderByList?.call(PoiCatalogRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -651,11 +670,11 @@ class PoiCatalogRowRepository {
 
   /// Finds a single [PoiCatalogRow] by its [id] or null if no such row exists.
   Future<PoiCatalogRow?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PoiCatalogRow>(
       id,
@@ -675,16 +694,22 @@ class PoiCatalogRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiCatalogRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PoiCatalogRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<PoiCatalogRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -692,12 +717,81 @@ class PoiCatalogRowRepository {
   ///
   /// The returned [PoiCatalogRow] will have its `id` field set.
   Future<PoiCatalogRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PoiCatalogRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<PoiCatalogRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [PoiCatalogRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [PoiCatalogRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<PoiCatalogRow>> upsert(
+    _is.DatabaseSession session,
+    List<PoiCatalogRow> rows, {
+    required _is.ColumnSelections<PoiCatalogRowTable> conflictColumns,
+    _is.ColumnSelections<PoiCatalogRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<PoiCatalogRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<PoiCatalogRow>(
+      rows,
+      conflictColumns: conflictColumns(PoiCatalogRow.t),
+      updateColumns: updateColumns?.call(PoiCatalogRow.t),
+      updateWhere: updateWhere?.call(PoiCatalogRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [PoiCatalogRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [PoiCatalogRow] will have its `id` field set.
+  Future<PoiCatalogRow?> upsertRow(
+    _is.DatabaseSession session,
+    PoiCatalogRow row, {
+    required _is.ColumnSelections<PoiCatalogRowTable> conflictColumns,
+    _is.ColumnSelections<PoiCatalogRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<PoiCatalogRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<PoiCatalogRow>(
+      row,
+      conflictColumns: conflictColumns(PoiCatalogRow.t),
+      updateColumns: updateColumns?.call(PoiCatalogRow.t),
+      updateWhere: updateWhere?.call(PoiCatalogRow.t),
       transaction: transaction,
     );
   }
@@ -707,16 +801,22 @@ class PoiCatalogRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiCatalogRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PoiCatalogRow> rows, {
-    _i1.ColumnSelections<PoiCatalogRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PoiCatalogRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<PoiCatalogRow>(
       rows,
       columns: columns?.call(PoiCatalogRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -724,10 +824,10 @@ class PoiCatalogRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<PoiCatalogRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PoiCatalogRow row, {
-    _i1.ColumnSelections<PoiCatalogRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PoiCatalogRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<PoiCatalogRow>(
       row,
@@ -739,10 +839,10 @@ class PoiCatalogRowRepository {
   /// Updates a single [PoiCatalogRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<PoiCatalogRow?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<PoiCatalogRowUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<PoiCatalogRowUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<PoiCatalogRow>(
       id,
@@ -753,16 +853,20 @@ class PoiCatalogRowRepository {
 
   /// Updates all [PoiCatalogRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiCatalogRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<PoiCatalogRowUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<PoiCatalogRowTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<PoiCatalogRowUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<PoiCatalogRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PoiCatalogRowTable>? orderBy,
-    _i1.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PoiCatalogRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<PoiCatalogRow>(
       columnValues: columnValues(PoiCatalogRow.t.updateTable),
@@ -771,30 +875,44 @@ class PoiCatalogRowRepository {
       offset: offset,
       orderBy: orderBy?.call(PoiCatalogRow.t),
       orderByList: orderByList?.call(PoiCatalogRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [PoiCatalogRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiCatalogRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PoiCatalogRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PoiCatalogRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<PoiCatalogRow>(
       rows,
+      orderBy: orderBy?.call(PoiCatalogRow.t),
+      orderByList: orderByList?.call(PoiCatalogRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [PoiCatalogRow].
   Future<PoiCatalogRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PoiCatalogRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<PoiCatalogRow>(
       row,
@@ -803,24 +921,37 @@ class PoiCatalogRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<PoiCatalogRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PoiCatalogRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PoiCatalogRowTable> where,
+    _is.OrderByBuilder<PoiCatalogRowTable>? orderBy,
+    _is.OrderByListBuilder<PoiCatalogRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<PoiCatalogRow>(
       where: where(PoiCatalogRow.t),
+      orderBy: orderBy?.call(PoiCatalogRow.t),
+      orderByList: orderByList?.call(PoiCatalogRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PoiCatalogRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PoiCatalogRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<PoiCatalogRow>(
       where: where?.call(PoiCatalogRow.t),
@@ -831,11 +962,11 @@ class PoiCatalogRowRepository {
 
   /// Acquires row-level locks on [PoiCatalogRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PoiCatalogRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PoiCatalogRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<PoiCatalogRow>(
       where: where(PoiCatalogRow.t),

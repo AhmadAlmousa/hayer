@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'client_analytics_context.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'client_analytics_context.dart' as _iae9jhcw;
 
 abstract class SwipeCommand
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   SwipeCommand._({
     required this.sessionId,
     required this.placeId,
@@ -34,22 +33,22 @@ abstract class SwipeCommand
     required int swipeIndex,
     required DateTime clientSwipedAt,
     required String idempotencyKey,
-    _i2.ClientAnalyticsContext? analyticsContext,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   }) = _SwipeCommandImpl;
 
   factory SwipeCommand.fromJson(Map<String, dynamic> jsonSerialization) {
     return SwipeCommand(
       sessionId: jsonSerialization['sessionId'] as String,
       placeId: jsonSerialization['placeId'] as String,
-      liked: _i1.BoolJsonExtension.fromJson(jsonSerialization['liked']),
+      liked: _is.BoolJsonExtension.fromJson(jsonSerialization['liked']),
       swipeIndex: jsonSerialization['swipeIndex'] as int,
-      clientSwipedAt: _i1.DateTimeJsonExtension.fromJson(
+      clientSwipedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['clientSwipedAt'],
       ),
       idempotencyKey: jsonSerialization['idempotencyKey'] as String,
       analyticsContext: jsonSerialization['analyticsContext'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ClientAnalyticsContext>(
+          : _i66y2smk.Protocol().deserialize<_iae9jhcw.ClientAnalyticsContext>(
               jsonSerialization['analyticsContext'],
             ),
     );
@@ -67,11 +66,11 @@ abstract class SwipeCommand
 
   String idempotencyKey;
 
-  _i2.ClientAnalyticsContext? analyticsContext;
+  _iae9jhcw.ClientAnalyticsContext? analyticsContext;
 
   /// Returns a shallow copy of this [SwipeCommand]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SwipeCommand copyWith({
     String? sessionId,
     String? placeId,
@@ -79,7 +78,7 @@ abstract class SwipeCommand
     int? swipeIndex,
     DateTime? clientSwipedAt,
     String? idempotencyKey,
-    _i2.ClientAnalyticsContext? analyticsContext,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -113,7 +112,7 @@ abstract class SwipeCommand
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -127,7 +126,7 @@ class _SwipeCommandImpl extends SwipeCommand {
     required int swipeIndex,
     required DateTime clientSwipedAt,
     required String idempotencyKey,
-    _i2.ClientAnalyticsContext? analyticsContext,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   }) : super._(
          sessionId: sessionId,
          placeId: placeId,
@@ -140,7 +139,7 @@ class _SwipeCommandImpl extends SwipeCommand {
 
   /// Returns a shallow copy of this [SwipeCommand]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SwipeCommand copyWith({
     String? sessionId,
@@ -158,7 +157,7 @@ class _SwipeCommandImpl extends SwipeCommand {
       swipeIndex: swipeIndex ?? this.swipeIndex,
       clientSwipedAt: clientSwipedAt ?? this.clientSwipedAt,
       idempotencyKey: idempotencyKey ?? this.idempotencyKey,
-      analyticsContext: analyticsContext is _i2.ClientAnalyticsContext?
+      analyticsContext: analyticsContext is _iae9jhcw.ClientAnalyticsContext?
           ? analyticsContext
           : this.analyticsContext?.copyWith(),
     );

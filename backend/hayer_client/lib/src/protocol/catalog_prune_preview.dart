@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class CatalogPrunePreview implements _i1.SerializableModel {
+abstract class CatalogPrunePreview
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CatalogPrunePreview._({
     required this.eligibleCount,
     required this.retentionDays,
@@ -30,7 +30,7 @@ abstract class CatalogPrunePreview implements _i1.SerializableModel {
     return CatalogPrunePreview(
       eligibleCount: jsonSerialization['eligibleCount'] as int,
       retentionDays: jsonSerialization['retentionDays'] as int,
-      cutoff: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['cutoff']),
+      cutoff: _isc.DateTimeJsonExtension.fromJson(jsonSerialization['cutoff']),
     );
   }
 
@@ -42,7 +42,7 @@ abstract class CatalogPrunePreview implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CatalogPrunePreview]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CatalogPrunePreview copyWith({
     int? eligibleCount,
     int? retentionDays,
@@ -59,8 +59,18 @@ abstract class CatalogPrunePreview implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CatalogPrunePreview',
+      'eligibleCount': eligibleCount,
+      'retentionDays': retentionDays,
+      'cutoff': cutoff.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -77,7 +87,7 @@ class _CatalogPrunePreviewImpl extends CatalogPrunePreview {
 
   /// Returns a shallow copy of this [CatalogPrunePreview]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CatalogPrunePreview copyWith({
     int? eligibleCount,

@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class ReverseGeocodeResult implements _i1.SerializableModel {
+abstract class ReverseGeocodeResult
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ReverseGeocodeResult._({
     required this.formattedAddress,
     this.locality,
@@ -54,7 +54,7 @@ abstract class ReverseGeocodeResult implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ReverseGeocodeResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ReverseGeocodeResult copyWith({
     String? formattedAddress,
     String? locality,
@@ -75,8 +75,20 @@ abstract class ReverseGeocodeResult implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ReverseGeocodeResult',
+      'formattedAddress': formattedAddress,
+      if (locality != null) 'locality': locality,
+      if (city != null) 'city': city,
+      if (region != null) 'region': region,
+      if (countryCode != null) 'countryCode': countryCode,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -99,7 +111,7 @@ class _ReverseGeocodeResultImpl extends ReverseGeocodeResult {
 
   /// Returns a shallow copy of this [ReverseGeocodeResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ReverseGeocodeResult copyWith({
     String? formattedAddress,

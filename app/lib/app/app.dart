@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' as cupertino_ui;
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -93,8 +92,8 @@ class _HayerAppState extends ConsumerState<HayerApp> {
         child: result,
       );
       if (isApple) {
-        result = CupertinoTheme(
-          data: CupertinoThemeData(
+        result = cupertino_ui.CupertinoTheme(
+          data: cupertino_ui.CupertinoThemeData(
             brightness: Theme.of(context).brightness,
             primaryColor: HayerTheme.teal,
             scaffoldBackgroundColor: Theme.of(context).colorScheme.surface,
@@ -102,10 +101,7 @@ class _HayerAppState extends ConsumerState<HayerApp> {
           child: result,
         );
       }
-      return M3ETheme(
-        data: M3EThemeData.fromMaterial(Theme.of(context)),
-        child: result,
-      );
+      return result;
     };
   }
 }
@@ -151,14 +147,13 @@ class _UpdateRequiredScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 24),
-                  M3EButton.icon(
+                  FilledButton.icon(
                     onPressed: () => launchUrl(
                       Uri.parse('https://hayer.almou.sa/download'),
                       mode: LaunchMode.externalApplication,
                     ),
                     icon: const Icon(Icons.download_rounded),
                     label: Text(strings.downloadUpdate),
-                    size: M3EButtonSize.md,
                   ),
                 ],
               ),

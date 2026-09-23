@@ -55,8 +55,7 @@ abstract final class SessionProgressService {
       final participants = await ParticipantRow.db.find(
         session,
         where: (table) => table.sessionId.equals(sessionId),
-        orderBy: (table) => table.isHost,
-        orderDescending: true,
+        orderBy: (table) => table.isHost.desc(),
         transaction: transaction,
       );
       final swipes = await SwipeRow.db.find(

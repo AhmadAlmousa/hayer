@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class AdminCatalogHeatCell implements _i1.SerializableModel {
+abstract class AdminCatalogHeatCell
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminCatalogHeatCell._({
     required this.latitude,
     required this.longitude,
@@ -44,7 +44,7 @@ abstract class AdminCatalogHeatCell implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminCatalogHeatCell]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminCatalogHeatCell copyWith({
     double? latitude,
     double? longitude,
@@ -61,8 +61,18 @@ abstract class AdminCatalogHeatCell implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminCatalogHeatCell',
+      'latitude': latitude,
+      'longitude': longitude,
+      'count': count,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -79,7 +89,7 @@ class _AdminCatalogHeatCellImpl extends AdminCatalogHeatCell {
 
   /// Returns a shallow copy of this [AdminCatalogHeatCell]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminCatalogHeatCell copyWith({
     double? latitude,

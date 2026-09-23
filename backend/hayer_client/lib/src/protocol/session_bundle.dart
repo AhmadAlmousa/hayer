@@ -10,16 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'destination_choice_state.dart' as _ivseuofk;
+import 'participant_view.dart' as _ir2xxgfs;
+import 'place_snapshot.dart' as _ikbous9x;
+import 'route_estimate_policy.dart' as _i3152jei;
+import 'session_view.dart' as _ivtyz9dh;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'session_view.dart' as _i2;
-import 'place_snapshot.dart' as _i3;
-import 'participant_view.dart' as _i4;
-import 'route_estimate_policy.dart' as _i5;
-import 'destination_choice_state.dart' as _i6;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i7;
-
-abstract class SessionBundle implements _i1.SerializableModel {
+abstract class SessionBundle
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SessionBundle._({
     required this.session,
     required this.deck,
@@ -30,63 +30,65 @@ abstract class SessionBundle implements _i1.SerializableModel {
   });
 
   factory SessionBundle({
-    required _i2.SessionView session,
-    required List<_i3.PlaceSnapshot> deck,
-    required List<_i4.ParticipantView> participants,
-    required _i4.ParticipantView selfParticipant,
-    _i5.RouteEstimatePolicy? routeEstimatePolicy,
-    _i6.DestinationChoiceState? destinationChoices,
+    required _ivtyz9dh.SessionView session,
+    required List<_ikbous9x.PlaceSnapshot> deck,
+    required List<_ir2xxgfs.ParticipantView> participants,
+    required _ir2xxgfs.ParticipantView selfParticipant,
+    _i3152jei.RouteEstimatePolicy? routeEstimatePolicy,
+    _ivseuofk.DestinationChoiceState? destinationChoices,
   }) = _SessionBundleImpl;
 
   factory SessionBundle.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionBundle(
-      session: _i7.Protocol().deserialize<_i2.SessionView>(
+      session: _iynev3sz.Protocol().deserialize<_ivtyz9dh.SessionView>(
         jsonSerialization['session'],
       ),
-      deck: _i7.Protocol().deserialize<List<_i3.PlaceSnapshot>>(
+      deck: _iynev3sz.Protocol().deserialize<List<_ikbous9x.PlaceSnapshot>>(
         jsonSerialization['deck'],
       ),
-      participants: _i7.Protocol().deserialize<List<_i4.ParticipantView>>(
-        jsonSerialization['participants'],
-      ),
-      selfParticipant: _i7.Protocol().deserialize<_i4.ParticipantView>(
-        jsonSerialization['selfParticipant'],
-      ),
+      participants: _iynev3sz.Protocol()
+          .deserialize<List<_ir2xxgfs.ParticipantView>>(
+            jsonSerialization['participants'],
+          ),
+      selfParticipant: _iynev3sz.Protocol()
+          .deserialize<_ir2xxgfs.ParticipantView>(
+            jsonSerialization['selfParticipant'],
+          ),
       routeEstimatePolicy: jsonSerialization['routeEstimatePolicy'] == null
           ? null
-          : _i7.Protocol().deserialize<_i5.RouteEstimatePolicy>(
+          : _iynev3sz.Protocol().deserialize<_i3152jei.RouteEstimatePolicy>(
               jsonSerialization['routeEstimatePolicy'],
             ),
       destinationChoices: jsonSerialization['destinationChoices'] == null
           ? null
-          : _i7.Protocol().deserialize<_i6.DestinationChoiceState>(
+          : _iynev3sz.Protocol().deserialize<_ivseuofk.DestinationChoiceState>(
               jsonSerialization['destinationChoices'],
             ),
     );
   }
 
-  _i2.SessionView session;
+  _ivtyz9dh.SessionView session;
 
-  List<_i3.PlaceSnapshot> deck;
+  List<_ikbous9x.PlaceSnapshot> deck;
 
-  List<_i4.ParticipantView> participants;
+  List<_ir2xxgfs.ParticipantView> participants;
 
-  _i4.ParticipantView selfParticipant;
+  _ir2xxgfs.ParticipantView selfParticipant;
 
-  _i5.RouteEstimatePolicy? routeEstimatePolicy;
+  _i3152jei.RouteEstimatePolicy? routeEstimatePolicy;
 
-  _i6.DestinationChoiceState? destinationChoices;
+  _ivseuofk.DestinationChoiceState? destinationChoices;
 
   /// Returns a shallow copy of this [SessionBundle]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   SessionBundle copyWith({
-    _i2.SessionView? session,
-    List<_i3.PlaceSnapshot>? deck,
-    List<_i4.ParticipantView>? participants,
-    _i4.ParticipantView? selfParticipant,
-    _i5.RouteEstimatePolicy? routeEstimatePolicy,
-    _i6.DestinationChoiceState? destinationChoices,
+    _ivtyz9dh.SessionView? session,
+    List<_ikbous9x.PlaceSnapshot>? deck,
+    List<_ir2xxgfs.ParticipantView>? participants,
+    _ir2xxgfs.ParticipantView? selfParticipant,
+    _i3152jei.RouteEstimatePolicy? routeEstimatePolicy,
+    _ivseuofk.DestinationChoiceState? destinationChoices,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -104,8 +106,25 @@ abstract class SessionBundle implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SessionBundle',
+      'session': session.toJsonForProtocol(),
+      'deck': deck.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'participants': participants.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
+      'selfParticipant': selfParticipant.toJsonForProtocol(),
+      if (routeEstimatePolicy != null)
+        'routeEstimatePolicy': routeEstimatePolicy?.toJsonForProtocol(),
+      if (destinationChoices != null)
+        'destinationChoices': destinationChoices?.toJsonForProtocol(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -113,12 +132,12 @@ class _Undefined {}
 
 class _SessionBundleImpl extends SessionBundle {
   _SessionBundleImpl({
-    required _i2.SessionView session,
-    required List<_i3.PlaceSnapshot> deck,
-    required List<_i4.ParticipantView> participants,
-    required _i4.ParticipantView selfParticipant,
-    _i5.RouteEstimatePolicy? routeEstimatePolicy,
-    _i6.DestinationChoiceState? destinationChoices,
+    required _ivtyz9dh.SessionView session,
+    required List<_ikbous9x.PlaceSnapshot> deck,
+    required List<_ir2xxgfs.ParticipantView> participants,
+    required _ir2xxgfs.ParticipantView selfParticipant,
+    _i3152jei.RouteEstimatePolicy? routeEstimatePolicy,
+    _ivseuofk.DestinationChoiceState? destinationChoices,
   }) : super._(
          session: session,
          deck: deck,
@@ -130,13 +149,13 @@ class _SessionBundleImpl extends SessionBundle {
 
   /// Returns a shallow copy of this [SessionBundle]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   SessionBundle copyWith({
-    _i2.SessionView? session,
-    List<_i3.PlaceSnapshot>? deck,
-    List<_i4.ParticipantView>? participants,
-    _i4.ParticipantView? selfParticipant,
+    _ivtyz9dh.SessionView? session,
+    List<_ikbous9x.PlaceSnapshot>? deck,
+    List<_ir2xxgfs.ParticipantView>? participants,
+    _ir2xxgfs.ParticipantView? selfParticipant,
     Object? routeEstimatePolicy = _Undefined,
     Object? destinationChoices = _Undefined,
   }) {
@@ -146,10 +165,11 @@ class _SessionBundleImpl extends SessionBundle {
       participants:
           participants ?? this.participants.map((e0) => e0.copyWith()).toList(),
       selfParticipant: selfParticipant ?? this.selfParticipant.copyWith(),
-      routeEstimatePolicy: routeEstimatePolicy is _i5.RouteEstimatePolicy?
+      routeEstimatePolicy: routeEstimatePolicy is _i3152jei.RouteEstimatePolicy?
           ? routeEstimatePolicy
           : this.routeEstimatePolicy?.copyWith(),
-      destinationChoices: destinationChoices is _i6.DestinationChoiceState?
+      destinationChoices:
+          destinationChoices is _ivseuofk.DestinationChoiceState?
           ? destinationChoices
           : this.destinationChoices?.copyWith(),
     );

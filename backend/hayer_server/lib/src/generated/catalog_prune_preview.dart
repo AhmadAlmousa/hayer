@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class CatalogPrunePreview
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   CatalogPrunePreview._({
     required this.eligibleCount,
     required this.retentionDays,
@@ -31,7 +30,7 @@ abstract class CatalogPrunePreview
     return CatalogPrunePreview(
       eligibleCount: jsonSerialization['eligibleCount'] as int,
       retentionDays: jsonSerialization['retentionDays'] as int,
-      cutoff: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['cutoff']),
+      cutoff: _is.DateTimeJsonExtension.fromJson(jsonSerialization['cutoff']),
     );
   }
 
@@ -43,7 +42,7 @@ abstract class CatalogPrunePreview
 
   /// Returns a shallow copy of this [CatalogPrunePreview]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CatalogPrunePreview copyWith({
     int? eligibleCount,
     int? retentionDays,
@@ -71,7 +70,7 @@ abstract class CatalogPrunePreview
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -88,7 +87,7 @@ class _CatalogPrunePreviewImpl extends CatalogPrunePreview {
 
   /// Returns a shallow copy of this [CatalogPrunePreview]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CatalogPrunePreview copyWith({
     int? eligibleCount,

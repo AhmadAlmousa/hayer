@@ -10,8 +10,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// How many photos a place carries, and how long a device keeps them.
 ///
@@ -19,7 +18,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// not gated on discovery. fetchCount and width shape what the parser stores
 /// on the next observation of a place; cacheCount and cacheDays shape each
 /// device's own image cache and reach the app through BootstrapInfo.
-abstract class PhotoPolicy implements _i1.SerializableModel {
+abstract class PhotoPolicy
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   PhotoPolicy._({
     required this.fetchCount,
     required this.width,
@@ -57,7 +57,7 @@ abstract class PhotoPolicy implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [PhotoPolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   PhotoPolicy copyWith({
     int? fetchCount,
     int? width,
@@ -76,8 +76,19 @@ abstract class PhotoPolicy implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'PhotoPolicy',
+      'fetchCount': fetchCount,
+      'width': width,
+      'cacheCount': cacheCount,
+      'cacheDays': cacheDays,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -96,7 +107,7 @@ class _PhotoPolicyImpl extends PhotoPolicy {
 
   /// Returns a shallow copy of this [PhotoPolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   PhotoPolicy copyWith({
     int? fetchCount,

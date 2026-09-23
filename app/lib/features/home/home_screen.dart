@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/changelog.dart';
@@ -78,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            M3EIconButton(
+                            IconButton(
                               key: const ValueKey('theme-toggle'),
                               tooltip:
                                   Theme.of(context).brightness ==
@@ -95,25 +95,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                             SizedBox(
-                              width: 92,
-                              child: M3ESegmentedButton<String>(
+                              width: 160,
+                              child: SegmentedButton<String>(
                                 showSelectedIcon: false,
                                 segments: const [
-                                  M3ESegment(value: 'en', label: 'EN'),
-                                  M3ESegment(value: 'ar', label: 'ع'),
+                                  ButtonSegment(value: 'en', label: Text('EN')),
+                                  ButtonSegment(value: 'ar', label: Text('ع')),
                                 ],
                                 selected: {
                                   Localizations.localeOf(context).languageCode,
                                 },
                                 onSelectionChanged: (value) {
-                                  M3EHaptics.selection();
+                                  HapticFeedback.selectionClick();
                                   ref
                                       .read(localeControllerProvider.notifier)
                                       .select(value.single);
                                 },
                               ),
                             ),
-                            M3EIconButton(
+                            IconButton(
                               tooltip: strings.joinSession,
                               onPressed: () => context.push('/scan'),
                               icon: const Icon(Icons.qr_code_scanner_rounded),
@@ -376,7 +376,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
           actions: [
-            M3EButton.text(
+            TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(MaterialLocalizations.of(context).closeButtonLabel),
             ),

@@ -1,0 +1,20 @@
+/* Type faces used by the Material 3 Design Kit source.
+   The source's own Font-theme variables set BOTH font roles to "Roboto"
+   (--static-font-brand / --static-font-plain in tokens/fig-tokens.css), so the
+   stacks below are the file's values verbatim. The kit's annotation UI also
+   draws in Google Sans / Google Sans Text / Google Symbols; those are
+   proprietary, ship no webfont, and are documented in readme.md rather than
+   named here. Roboto, Roboto Mono, Roboto Flex and Flow Circular load below. */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Flow+Circular&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap");
+
+:root{
+  /* Font theme collection, verbatim from the source file */
+  --m3-font-brand:"Roboto","Roboto Flex",system-ui,sans-serif;
+  --m3-font-plain:"Roboto",system-ui,sans-serif;
+  --m3-font-mono:"Roboto Mono",ui-monospace,monospace;
+  --m3-font-wireframe:"Flow Circular","Roboto",system-ui,sans-serif;
+  --m3-weight-regular:400;
+  --m3-weight-medium:500;
+  --m3-weight-bold:600;
+}

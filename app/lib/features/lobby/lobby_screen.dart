@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/providers.dart';
@@ -178,8 +177,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen>
     setBrowserPageTitle('${strings.lobby} — ${strings.appName}');
     final bundle = _bundle;
     return Scaffold(
-      appBar: M3EAppBar.top(
-        leading: M3EIconButton(
+      appBar: AppBar(
+        leading: IconButton(
           tooltip: strings.backToHome,
           onPressed: () => context.go('/'),
           icon: const Icon(Icons.home_outlined),
@@ -490,7 +489,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen>
             ),
           ),
           actions: [
-            M3EButton.text(
+            TextButton(
               onPressed: () => Navigator.pop(dialogContext),
               child: Text(MaterialLocalizations.of(context).closeButtonLabel),
             ),

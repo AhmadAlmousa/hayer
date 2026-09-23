@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discover_viewport.dart' as _i1okvcdc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discover_viewport.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class DiscoveryCoverageFootprint implements _i1.SerializableModel {
+abstract class DiscoveryCoverageFootprint
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryCoverageFootprint._({
     required this.cellId,
     required this.bounds,
@@ -29,7 +29,7 @@ abstract class DiscoveryCoverageFootprint implements _i1.SerializableModel {
 
   factory DiscoveryCoverageFootprint({
     required String cellId,
-    required _i2.DiscoverViewport bounds,
+    required _i1okvcdc.DiscoverViewport bounds,
     required int manifestRevision,
     required List<String> completedQueryGroups,
     required List<String> incompleteQueryGroups,
@@ -43,35 +43,37 @@ abstract class DiscoveryCoverageFootprint implements _i1.SerializableModel {
   ) {
     return DiscoveryCoverageFootprint(
       cellId: jsonSerialization['cellId'] as String,
-      bounds: _i3.Protocol().deserialize<_i2.DiscoverViewport>(
+      bounds: _iynev3sz.Protocol().deserialize<_i1okvcdc.DiscoverViewport>(
         jsonSerialization['bounds'],
       ),
       manifestRevision: jsonSerialization['manifestRevision'] as int,
-      completedQueryGroups: _i3.Protocol().deserialize<List<String>>(
+      completedQueryGroups: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['completedQueryGroups'],
       ),
-      incompleteQueryGroups: _i3.Protocol().deserialize<List<String>>(
+      incompleteQueryGroups: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['incompleteQueryGroups'],
       ),
       lastAttemptAt: jsonSerialization['lastAttemptAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastAttemptAt'],
             ),
       lastSuccessAt: jsonSerialization['lastSuccessAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastSuccessAt'],
             ),
       retryAfter: jsonSerialization['retryAfter'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
+          : _isc.DateTimeJsonExtension.fromJson(
+              jsonSerialization['retryAfter'],
+            ),
     );
   }
 
   String cellId;
 
-  _i2.DiscoverViewport bounds;
+  _i1okvcdc.DiscoverViewport bounds;
 
   int manifestRevision;
 
@@ -87,10 +89,10 @@ abstract class DiscoveryCoverageFootprint implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryCoverageFootprint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryCoverageFootprint copyWith({
     String? cellId,
-    _i2.DiscoverViewport? bounds,
+    _i1okvcdc.DiscoverViewport? bounds,
     int? manifestRevision,
     List<String>? completedQueryGroups,
     List<String>? incompleteQueryGroups,
@@ -114,8 +116,23 @@ abstract class DiscoveryCoverageFootprint implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryCoverageFootprint',
+      'cellId': cellId,
+      'bounds': bounds.toJsonForProtocol(),
+      'manifestRevision': manifestRevision,
+      'completedQueryGroups': completedQueryGroups.toJson(),
+      'incompleteQueryGroups': incompleteQueryGroups.toJson(),
+      if (lastAttemptAt != null) 'lastAttemptAt': lastAttemptAt?.toJson(),
+      if (lastSuccessAt != null) 'lastSuccessAt': lastSuccessAt?.toJson(),
+      if (retryAfter != null) 'retryAfter': retryAfter?.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -124,7 +141,7 @@ class _Undefined {}
 class _DiscoveryCoverageFootprintImpl extends DiscoveryCoverageFootprint {
   _DiscoveryCoverageFootprintImpl({
     required String cellId,
-    required _i2.DiscoverViewport bounds,
+    required _i1okvcdc.DiscoverViewport bounds,
     required int manifestRevision,
     required List<String> completedQueryGroups,
     required List<String> incompleteQueryGroups,
@@ -144,11 +161,11 @@ class _DiscoveryCoverageFootprintImpl extends DiscoveryCoverageFootprint {
 
   /// Returns a shallow copy of this [DiscoveryCoverageFootprint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryCoverageFootprint copyWith({
     String? cellId,
-    _i2.DiscoverViewport? bounds,
+    _i1okvcdc.DiscoverViewport? bounds,
     int? manifestRevision,
     List<String>? completedQueryGroups,
     List<String>? incompleteQueryGroups,

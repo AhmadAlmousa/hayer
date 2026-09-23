@@ -22,6 +22,9 @@ final placePhotoCacheProvider = Provider<BaseCacheManager>(
   (ref) => buildPlacePhotoCache(null),
 );
 
+/// Maximum photos shown per place, matching the published admin fetch policy.
+final placePhotoLimitProvider = Provider<int>((ref) => 6);
+
 /// What the app uses when the server has not told it otherwise: an older
 /// server that does not send a photo policy, or a failed bootstrap.
 const fallbackPhotoCacheCount = 400;

@@ -81,11 +81,11 @@ final class PlaceIntentState {
     );
   }
 
-  link.DiscoveryUrlQuery toDiscoveryQuery() {
+  link.DiscoveryUrlQuery toDiscoveryQuery({int? radiusMeters}) {
     if (!hasWhat || !hasWhere) {
       throw StateError('WHAT and WHERE are required before exploring.');
     }
-    final radiusDegrees = radiusMeters / 111320;
+    final radiusDegrees = (radiusMeters ?? this.radiusMeters) / 111320;
     final longitudeDegrees =
         radiusDegrees / math.cos(latitude! * math.pi / 180).abs().clamp(.2, 1);
     final viewport = link.DiscoveryViewport.tryCreate(
@@ -297,7 +297,7 @@ class PlaceIntentController extends Notifier<PlaceIntentState> {
   }
 
   /// Adopts a committed Explore link when it can be represented by consumer
-  /// setup: one curated selection group and an area no wider than 10 km.
+  /// setup: one curated selection group and an area no wider than 20 km.
   bool adoptDiscovery(
     api.DiscoveryTaxonomySnapshot snapshot,
     link.DiscoveryUrlQuery query,
@@ -322,15 +322,17 @@ class PlaceIntentController extends Notifier<PlaceIntentState> {
         111320 *
         math.cos(latitude * math.pi / 180).abs();
     final diameter = math.max(heightMeters, widthMeters);
-    if (diameter > 10000) return false;
+    if (diameter > 20000) return false;
     state = PlaceIntentState(
       taxonomyRevision: snapshot.revision,
       selectionGroupId: groups.single,
       categoryIds: query.categoryIds,
       latitude: latitude,
       longitude: longitude,
-      radiusMeters: (diameter / 2).round().clamp(500, 5000),
-      sort: api.DiscoverSort.values[query.sort.index],
+      radiusMeters: (diameter / 2).round().clamp(500, 10000),
+      sort: query.sort == link.DiscoverySort.distanceCurrent
+          ? api.DiscoverSort.best
+          : api.DiscoverSort.values[query.sort.index],
       reviewBands: [
         for (final value in query.reviewBands)
           api.DiscoverReviewBand.values[value.index],

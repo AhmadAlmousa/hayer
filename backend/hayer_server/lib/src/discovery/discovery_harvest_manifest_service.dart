@@ -16,8 +16,7 @@ abstract final class DiscoveryHarvestManifestService {
     final active = await DiscoveryHarvestManifestRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(DiscoveryManifestStatus.active),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       transaction: transaction,
       lockMode: lockMode,
     );
@@ -46,8 +45,7 @@ abstract final class DiscoveryHarvestManifestService {
     final seeded = await DiscoveryHarvestManifestRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(DiscoveryManifestStatus.active),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       transaction: transaction,
       lockMode: lockMode,
     );
@@ -64,8 +62,7 @@ abstract final class DiscoveryHarvestManifestService {
     final existing = await DiscoveryHarvestManifestRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(DiscoveryManifestStatus.draft),
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
     );
     if (existing != null) return view(existing);
 
@@ -91,8 +88,7 @@ abstract final class DiscoveryHarvestManifestService {
     final concurrent = await DiscoveryHarvestManifestRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(DiscoveryManifestStatus.draft),
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
     );
     if (concurrent == null) {
       throw StateError('Could not create an editable harvest manifest draft.');
@@ -106,8 +102,7 @@ abstract final class DiscoveryHarvestManifestService {
     final rows = await DiscoveryHarvestManifestRow.db.find(
       session,
       where: (table) => table.status.notEquals(DiscoveryManifestStatus.draft),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       limit: 30,
     );
     return rows.map(view).toList(growable: false);

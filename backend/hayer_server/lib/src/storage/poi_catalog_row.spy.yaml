@@ -11,6 +11,7 @@ fields:
   countryCode: String
   latitude: double
   longitude: double
+  location: GeographyPoint
   categoryIds: List<String>
   snapshot: PlaceSnapshot
   calibrationVersion: String

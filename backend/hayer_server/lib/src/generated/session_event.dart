@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'session_event_type.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'session_event_type.dart' as _iq1mdhv4;
 
 abstract class SessionEvent
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   SessionEvent._({
     required this.sessionId,
     required this.type,
@@ -25,7 +24,7 @@ abstract class SessionEvent
 
   factory SessionEvent({
     required String sessionId,
-    required _i2.SessionEventType type,
+    required _iq1mdhv4.SessionEventType type,
     required int revision,
     required DateTime occurredAt,
   }) = _SessionEventImpl;
@@ -33,11 +32,11 @@ abstract class SessionEvent
   factory SessionEvent.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionEvent(
       sessionId: jsonSerialization['sessionId'] as String,
-      type: _i2.SessionEventType.fromJson(
+      type: _iq1mdhv4.SessionEventType.fromJson(
         (jsonSerialization['type'] as String),
       ),
       revision: jsonSerialization['revision'] as int,
-      occurredAt: _i1.DateTimeJsonExtension.fromJson(
+      occurredAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['occurredAt'],
       ),
     );
@@ -45,7 +44,7 @@ abstract class SessionEvent
 
   String sessionId;
 
-  _i2.SessionEventType type;
+  _iq1mdhv4.SessionEventType type;
 
   int revision;
 
@@ -53,10 +52,10 @@ abstract class SessionEvent
 
   /// Returns a shallow copy of this [SessionEvent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SessionEvent copyWith({
     String? sessionId,
-    _i2.SessionEventType? type,
+    _iq1mdhv4.SessionEventType? type,
     int? revision,
     DateTime? occurredAt,
   });
@@ -84,14 +83,14 @@ abstract class SessionEvent
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _SessionEventImpl extends SessionEvent {
   _SessionEventImpl({
     required String sessionId,
-    required _i2.SessionEventType type,
+    required _iq1mdhv4.SessionEventType type,
     required int revision,
     required DateTime occurredAt,
   }) : super._(
@@ -103,11 +102,11 @@ class _SessionEventImpl extends SessionEvent {
 
   /// Returns a shallow copy of this [SessionEvent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SessionEvent copyWith({
     String? sessionId,
-    _i2.SessionEventType? type,
+    _iq1mdhv4.SessionEventType? type,
     int? revision,
     DateTime? occurredAt,
   }) {

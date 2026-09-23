@@ -45,26 +45,28 @@ void main() {
 
     final window = openingHoursWindow(hours, DateTime(2026, 9, 2, 19));
 
-    // An hour of padding each side of 17:00-23:00, and nothing of the night.
-    expect(window.startHour, 16);
-    expect(window.endHour, 24);
-  });
-
-  test('widens the window to keep the current hour in view', () {
-    final hours = [
-      OpeningPeriod(
-        day: DateTime.monday,
-        openMinutes: 18 * 60,
-        closeMinutes: 22 * 60,
-        overnight: false,
-      ),
-    ];
-
-    final window = openingHoursWindow(hours, DateTime(2026, 9, 2, 9));
-
-    expect(window.startHour, 9);
+    expect(window.startHour, 17);
     expect(window.endHour, 23);
   });
+
+  test(
+    'starts at the first opening hour even when the current time is earlier',
+    () {
+      final hours = [
+        OpeningPeriod(
+          day: DateTime.monday,
+          openMinutes: 18 * 60,
+          closeMinutes: 22 * 60,
+          overnight: false,
+        ),
+      ];
+
+      final window = openingHoursWindow(hours, DateTime(2026, 9, 2, 9));
+
+      expect(window.startHour, 18);
+      expect(window.endHour, 22);
+    },
+  );
 
   test('draws a daytime band when a place lists no hours', () {
     final window = openingHoursWindow(const [], DateTime(2026, 9, 2, 12));

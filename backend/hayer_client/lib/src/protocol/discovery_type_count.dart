@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoveryTypeCount implements _i1.SerializableModel {
+abstract class DiscoveryTypeCount
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryTypeCount._({
     this.primaryType,
     required this.taxonomyNodeId,
@@ -42,7 +42,7 @@ abstract class DiscoveryTypeCount implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryTypeCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryTypeCount copyWith({
     String? primaryType,
     String? taxonomyNodeId,
@@ -59,8 +59,18 @@ abstract class DiscoveryTypeCount implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryTypeCount',
+      if (primaryType != null) 'primaryType': primaryType,
+      'taxonomyNodeId': taxonomyNodeId,
+      'count': count,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -79,7 +89,7 @@ class _DiscoveryTypeCountImpl extends DiscoveryTypeCount {
 
   /// Returns a shallow copy of this [DiscoveryTypeCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryTypeCount copyWith({
     Object? primaryType = _Undefined,

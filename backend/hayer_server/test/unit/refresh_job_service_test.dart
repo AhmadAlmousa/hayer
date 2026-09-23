@@ -1,5 +1,6 @@
 import 'package:hayer_server/src/admin/refresh_job_service.dart';
 import 'package:hayer_server/src/generated/protocol.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -58,6 +59,7 @@ PoiCoverageRow _coverage({
   countryCode: 'SA',
   anchorLatitude: 24.7136,
   anchorLongitude: 46.6753,
+  location: const GeographyPoint(longitude: 46.6753, latitude: 24.7136),
   radiusMeters: 3000,
   calibrationVersion: 'test',
   resultCount: resultCount,

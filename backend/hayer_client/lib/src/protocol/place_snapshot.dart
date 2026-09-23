@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'opening_period.dart' as _iutwk5y0;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'opening_period.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class PlaceSnapshot implements _i1.SerializableModel {
+abstract class PlaceSnapshot
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   PlaceSnapshot._({
     required this.placeId,
     this.featureId,
@@ -57,7 +57,7 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
     String? priceText,
     bool? isOpen,
     String? statusText,
-    required List<_i2.OpeningPeriod> hours,
+    required List<_iutwk5y0.OpeningPeriod> hours,
     required int distanceMeters,
     required double latitude,
     required double longitude,
@@ -80,7 +80,7 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
       featureId: jsonSerialization['featureId'] as String?,
       name: jsonSerialization['name'] as String,
       primaryType: jsonSerialization['primaryType'] as String?,
-      categoryIds: _i3.Protocol().deserialize<List<String>>(
+      categoryIds: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['categoryIds'],
       ),
       rating: (jsonSerialization['rating'] as num?)?.toDouble(),
@@ -89,9 +89,9 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
       priceText: jsonSerialization['priceText'] as String?,
       isOpen: jsonSerialization['isOpen'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isOpen']),
+          : _isc.BoolJsonExtension.fromJson(jsonSerialization['isOpen']),
       statusText: jsonSerialization['statusText'] as String?,
-      hours: _i3.Protocol().deserialize<List<_i2.OpeningPeriod>>(
+      hours: _iynev3sz.Protocol().deserialize<List<_iutwk5y0.OpeningPeriod>>(
         jsonSerialization['hours'],
       ),
       distanceMeters: jsonSerialization['distanceMeters'] as int,
@@ -102,18 +102,18 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
       phoneNumber: jsonSerialization['phoneNumber'] as String?,
       websiteUrl: jsonSerialization['websiteUrl'] as String?,
       mapsUrl: jsonSerialization['mapsUrl'] as String?,
-      photoUrls: _i3.Protocol().deserialize<List<String>>(
+      photoUrls: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['photoUrls'],
       ),
       featuredReview: jsonSerialization['featuredReview'] as String?,
       editorialSummary: jsonSerialization['editorialSummary'] as String?,
-      attributions: _i3.Protocol().deserialize<List<String>>(
+      attributions: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['attributions'],
       ),
-      sourceCheckedAt: _i1.DateTimeJsonExtension.fromJson(
+      sourceCheckedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['sourceCheckedAt'],
       ),
-      isStale: _i1.BoolJsonExtension.fromJson(jsonSerialization['isStale']),
+      isStale: _isc.BoolJsonExtension.fromJson(jsonSerialization['isStale']),
     );
   }
 
@@ -139,7 +139,7 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
 
   String? statusText;
 
-  List<_i2.OpeningPeriod> hours;
+  List<_iutwk5y0.OpeningPeriod> hours;
 
   int distanceMeters;
 
@@ -171,7 +171,7 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [PlaceSnapshot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   PlaceSnapshot copyWith({
     String? placeId,
     String? featureId,
@@ -184,7 +184,7 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
     String? priceText,
     bool? isOpen,
     String? statusText,
-    List<_i2.OpeningPeriod>? hours,
+    List<_iutwk5y0.OpeningPeriod>? hours,
     int? distanceMeters,
     double? latitude,
     double? longitude,
@@ -234,8 +234,41 @@ abstract class PlaceSnapshot implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'PlaceSnapshot',
+      'placeId': placeId,
+      if (featureId != null) 'featureId': featureId,
+      'name': name,
+      if (primaryType != null) 'primaryType': primaryType,
+      'categoryIds': categoryIds.toJson(),
+      if (rating != null) 'rating': rating,
+      if (reviewCount != null) 'reviewCount': reviewCount,
+      if (priceLevel != null) 'priceLevel': priceLevel,
+      if (priceText != null) 'priceText': priceText,
+      if (isOpen != null) 'isOpen': isOpen,
+      if (statusText != null) 'statusText': statusText,
+      'hours': hours.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'distanceMeters': distanceMeters,
+      'latitude': latitude,
+      'longitude': longitude,
+      if (address != null) 'address': address,
+      if (formattedAddress != null) 'formattedAddress': formattedAddress,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
+      if (websiteUrl != null) 'websiteUrl': websiteUrl,
+      if (mapsUrl != null) 'mapsUrl': mapsUrl,
+      'photoUrls': photoUrls.toJson(),
+      if (featuredReview != null) 'featuredReview': featuredReview,
+      if (editorialSummary != null) 'editorialSummary': editorialSummary,
+      'attributions': attributions.toJson(),
+      'sourceCheckedAt': sourceCheckedAt.toJson(),
+      'isStale': isStale,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -254,7 +287,7 @@ class _PlaceSnapshotImpl extends PlaceSnapshot {
     String? priceText,
     bool? isOpen,
     String? statusText,
-    required List<_i2.OpeningPeriod> hours,
+    required List<_iutwk5y0.OpeningPeriod> hours,
     required int distanceMeters,
     required double latitude,
     required double longitude,
@@ -300,7 +333,7 @@ class _PlaceSnapshotImpl extends PlaceSnapshot {
 
   /// Returns a shallow copy of this [PlaceSnapshot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   PlaceSnapshot copyWith({
     String? placeId,
@@ -314,7 +347,7 @@ class _PlaceSnapshotImpl extends PlaceSnapshot {
     Object? priceText = _Undefined,
     Object? isOpen = _Undefined,
     Object? statusText = _Undefined,
-    List<_i2.OpeningPeriod>? hours,
+    List<_iutwk5y0.OpeningPeriod>? hours,
     int? distanceMeters,
     double? latitude,
     double? longitude,

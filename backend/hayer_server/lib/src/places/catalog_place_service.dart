@@ -42,13 +42,18 @@ class CatalogPlaceService {
     required String countryCode,
   }) async {
     if (placeIds.isEmpty) return const [];
+    final anchor = GeographyPoint(
+      longitude: longitude,
+      latitude: latitude,
+    );
     final rows = await PoiCatalogRow.db.find(
       session,
       where: (table) =>
           table.provider.equals('google-web') &
           table.providerPlaceId.inSet(placeIds.toSet()) &
           table.countryCode.equals(countryCode) &
-          table.quarantinedAt.equals(null),
+          table.quarantinedAt.equals(null) &
+          table.location.distanceWithin(anchor, radiusMeters.toDouble()),
       limit: placeIds.length,
     );
     final settings = await _settings(session);
@@ -117,6 +122,8 @@ class CatalogPlaceService {
     int? maximumPriceLevel,
     required String countryCode,
     bool forceRefresh = false,
+    bool preserveFreshCachedSnapshots = false,
+    bool allowShortFreshCache = false,
     void Function(ProviderOperation operation)? onProviderOperation,
     List<PlaceQuery>? queryOverride,
     Set<String>? requiredCategoryIdsOverride,
@@ -150,7 +157,7 @@ class CatalogPlaceService {
         coverage.invalidatedAt == null &&
         coverage.calibrationVersion == calibrationVersion &&
         coverage.expiresAt.isAfter(now) &&
-        coverage.resultCount >= deckSize;
+        coverage.resultCount >= (allowShortFreshCache ? 1 : deckSize);
     final nearby = await _nearbyCatalog(
       session,
       latitude: latitude,
@@ -173,7 +180,11 @@ class CatalogPlaceService {
       deckSize: deckSize,
       maximumPriceLevel: maximumPriceLevel,
     );
-    if (!forceRefresh && coverageIsFresh && cachedDeck.length >= deckSize) {
+    if (!forceRefresh &&
+        coverageIsFresh &&
+        (allowShortFreshCache
+            ? cachedDeck.isNotEmpty
+            : cachedDeck.length >= deckSize)) {
       await _metric(session, 'cache_hit_rate', 1);
       await DiscoveryMetrics.record(
         session,
@@ -187,17 +198,19 @@ class CatalogPlaceService {
       );
     }
 
-    final refreshKey = catalogRefreshKey(
-      calibrationVersion: calibrationVersion,
-      parentCategoryId: categoryId,
-      queries: queries,
-      countryCode: countryCode,
-      latitude: latitude,
-      longitude: longitude,
-      radiusMeters: radiusMeters,
-      deckSize: deckSize,
-      maximumPriceLevel: maximumPriceLevel,
-    );
+    final refreshKey =
+        catalogRefreshKey(
+          calibrationVersion: calibrationVersion,
+          parentCategoryId: categoryId,
+          queries: queries,
+          countryCode: countryCode,
+          latitude: latitude,
+          longitude: longitude,
+          radiusMeters: radiusMeters,
+          deckSize: deckSize,
+          maximumPriceLevel: maximumPriceLevel,
+        ) +
+        (preserveFreshCachedSnapshots ? '|preserve-fresh-cache' : '');
     Future<_LiveCatalogRefresh>? refresh;
     try {
       refresh = _inFlightRefreshes.putIfAbsent(
@@ -216,6 +229,7 @@ class CatalogPlaceService {
           now: now,
           queries: queries,
           requiredCategoryIds: requiredCategoryIds,
+          preserveFreshCachedSnapshots: preserveFreshCachedSnapshots,
           onProviderOperation: onProviderOperation,
         ),
       );
@@ -279,6 +293,7 @@ class CatalogPlaceService {
     required DateTime now,
     required List<PlaceQuery> queries,
     required Set<String> requiredCategoryIds,
+    required bool preserveFreshCachedSnapshots,
     void Function(ProviderOperation operation)? onProviderOperation,
   }) async {
     final typedSource = source;
@@ -345,6 +360,14 @@ class CatalogPlaceService {
       );
       // A completed source operation is persisted outside its cancellation
       // scope, so the request keeps awaiting an already-started DB transaction.
+      final preservedPlaceIds = preserveFreshCachedSnapshots
+          ? await _freshCachedPlaceIds(
+              session,
+              live.observed,
+              countryCode: countryCode,
+              freshAfter: now.subtract(Duration(hours: settings.freshHours)),
+            )
+          : const <String>{};
       await _persist(
         session,
         live.observed,
@@ -357,6 +380,7 @@ class CatalogPlaceService {
         now: now,
         freshHours: settings.freshHours,
         partialFailureCode: live.partialFailureCode,
+        preserveExistingCatalogRows: preservedPlaceIds,
       );
       // The provider can still return a place operators quarantined. Keep it
       // out of new decks, as the cache does, by choosing from the fresh
@@ -436,25 +460,10 @@ class CatalogPlaceService {
       'evidencePrefix': evidencePrefix,
       'maximumPriceLevel': maximumPriceLevel ?? -1,
     });
-    late final DatabaseResult spatialRows;
-    try {
-      spatialRows = await session.db.unsafeQuery(
-        nearbyCatalogByLocationSql,
-        parameters: parameters,
-      );
-    } on DatabaseQueryException catch (error, stackTrace) {
-      if (!isMissingCatalogLocation(error)) rethrow;
-      session.log(
-        'PostGIS location column is unavailable; using coordinate fallback.',
-        level: LogLevel.warning,
-        exception: error,
-        stackTrace: stackTrace,
-      );
-      spatialRows = await session.db.unsafeQuery(
-        nearbyCatalogByCoordinatesSql,
-        parameters: parameters,
-      );
-    }
+    final spatialRows = await session.db.unsafeQuery(
+      nearbyCatalogByLocationSql,
+      parameters: parameters,
+    );
     final identities = spatialRows
         .map((row) => row.toColumnMap()['providerPlaceId'] as String)
         .toSet();
@@ -497,6 +506,31 @@ class CatalogPlaceService {
     ];
   }
 
+  Future<Set<String>> _freshCachedPlaceIds(
+    Session session,
+    List<PlaceSnapshot> places, {
+    required String countryCode,
+    required DateTime freshAfter,
+  }) async {
+    final placeIds = {for (final place in places) place.placeId};
+    if (placeIds.isEmpty) return const {};
+    final rows = await PoiCatalogRow.db.find(
+      session,
+      where: (table) =>
+          table.provider.equals('google-web') &
+          table.providerPlaceId.inSet(placeIds) &
+          table.countryCode.equals(countryCode) &
+          table.quarantinedAt.equals(null),
+      limit: placeIds.length,
+    );
+    return {
+      for (final row in rows)
+        if (row.calibrationVersion == calibrationVersion &&
+            !row.sourceCheckedAt.isBefore(freshAfter))
+          row.providerPlaceId,
+    };
+  }
+
   Future<void> _persist(
     Session session,
     List<PlaceSnapshot> places, {
@@ -509,6 +543,7 @@ class CatalogPlaceService {
     required DateTime now,
     required int freshHours,
     required String? partialFailureCode,
+    required Set<String> preserveExistingCatalogRows,
   }) async {
     final queryKey = {
       parentCategoryId,
@@ -532,6 +567,7 @@ class CatalogPlaceService {
         parentCategoryId: parentCategoryId,
         queries: queries,
       ),
+      preserveExistingCatalogRows: preserveExistingCatalogRows,
       coverage: CatalogObservationCoverage(
         coverageKey: coverageKey,
         queryKey: queryKey.join(','),

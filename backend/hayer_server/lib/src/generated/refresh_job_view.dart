@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'job_status.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'job_status.dart' as _iayt1i3u;
 
 abstract class RefreshJobView
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   RefreshJobView._({
     required this.jobId,
     required this.coverageKey,
@@ -31,7 +30,7 @@ abstract class RefreshJobView
   factory RefreshJobView({
     required String jobId,
     required String coverageKey,
-    required _i2.JobStatus status,
+    required _iayt1i3u.JobStatus status,
     required String requestedBy,
     required String reason,
     required DateTime createdAt,
@@ -44,18 +43,20 @@ abstract class RefreshJobView
     return RefreshJobView(
       jobId: jsonSerialization['jobId'] as String,
       coverageKey: jsonSerialization['coverageKey'] as String,
-      status: _i2.JobStatus.fromJson((jsonSerialization['status'] as String)),
+      status: _iayt1i3u.JobStatus.fromJson(
+        (jsonSerialization['status'] as String),
+      ),
       requestedBy: jsonSerialization['requestedBy'] as String,
       reason: jsonSerialization['reason'] as String,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
       startedAt: jsonSerialization['startedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['startedAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['startedAt']),
       completedAt: jsonSerialization['completedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['completedAt'],
             ),
       errorCode: jsonSerialization['errorCode'] as String?,
@@ -66,7 +67,7 @@ abstract class RefreshJobView
 
   String coverageKey;
 
-  _i2.JobStatus status;
+  _iayt1i3u.JobStatus status;
 
   String requestedBy;
 
@@ -82,11 +83,11 @@ abstract class RefreshJobView
 
   /// Returns a shallow copy of this [RefreshJobView]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   RefreshJobView copyWith({
     String? jobId,
     String? coverageKey,
-    _i2.JobStatus? status,
+    _iayt1i3u.JobStatus? status,
     String? requestedBy,
     String? reason,
     DateTime? createdAt,
@@ -128,7 +129,7 @@ abstract class RefreshJobView
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -138,7 +139,7 @@ class _RefreshJobViewImpl extends RefreshJobView {
   _RefreshJobViewImpl({
     required String jobId,
     required String coverageKey,
-    required _i2.JobStatus status,
+    required _iayt1i3u.JobStatus status,
     required String requestedBy,
     required String reason,
     required DateTime createdAt,
@@ -159,12 +160,12 @@ class _RefreshJobViewImpl extends RefreshJobView {
 
   /// Returns a shallow copy of this [RefreshJobView]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   RefreshJobView copyWith({
     String? jobId,
     String? coverageKey,
-    _i2.JobStatus? status,
+    _iayt1i3u.JobStatus? status,
     String? requestedBy,
     String? reason,
     DateTime? createdAt,

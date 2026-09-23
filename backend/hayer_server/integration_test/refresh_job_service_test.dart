@@ -202,6 +202,10 @@ Future<void> _seed(Session session, String id) async {
       countryCode: 'SA',
       anchorLatitude: 24.7136,
       anchorLongitude: 46.6753,
+      location: const GeographyPoint(
+        longitude: 46.6753,
+        latitude: 24.7136,
+      ),
       radiusMeters: 3000,
       calibrationVersion: 'fixture',
       resultCount: 20,

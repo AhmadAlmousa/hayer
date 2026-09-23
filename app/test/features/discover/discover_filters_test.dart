@@ -198,8 +198,8 @@ void main() {
       expect(find.text('Search names and descriptions'), findsNothing);
       expect(find.textContaining('review text'), findsNothing);
 
-      // The list builds lazily, so the amenities exist only once scrolled to.
-      final wifi = find.widgetWithText(FilterChip, 'Wi-Fi');
+      // Amenities are informational text until the catalog supports them.
+      final wifi = find.textContaining('Wi-Fi');
       await tester.scrollUntilVisible(
         wifi,
         200,
@@ -211,13 +211,11 @@ void main() {
             .first,
       );
       await tester.pumpAndSettle();
-      expect(tester.widget<FilterChip>(wifi).onSelected, isNull);
+      expect(find.widgetWithText(FilterChip, 'Wi-Fi'), findsNothing);
       expect(
         find.text('Amenity filters are not available yet.'),
         findsOneWidget,
       );
-      await tester.tap(wifi, warnIfMissed: false);
-      await tester.pump();
       expect(
         tester
             .widget<TextButton>(
@@ -234,7 +232,7 @@ void main() {
 
       expect(_parameters(router)['cat'], 'coffee');
       expect(_parameters(router), isNot(contains('reviews')));
-      expect(_parameters(router), isNot(contains('q')));
+      expect(_parameters(router)['q'], 'late');
     });
 
     testWidgets('draws prices in the country the server resolved for the '
@@ -289,7 +287,7 @@ void main() {
   });
 
   group('the category tree', () {
-    testWidgets('rolls counts up, hides empty branches and applies a '
+    testWidgets('rolls counts up, shows other branches and applies a '
         'selection as one search', (tester) async {
       final router = await pumpDiscover(tester, fixture, _riyadhLink);
       await _open(tester, _categories);
@@ -300,10 +298,10 @@ void main() {
         find.descendant(of: _row('food'), matching: find.text('19')),
         findsOneWidget,
       );
-      expect(_row('things'), findsNothing);
+      expect(_row('things'), findsOneWidget);
       expect(
         find.text('3 categories have nothing in view and are hidden.'),
-        findsOneWidget,
+        findsNothing,
       );
       expect(find.text('Show all 24 places'), findsOneWidget);
 
@@ -315,7 +313,7 @@ void main() {
         find.descendant(of: _row('cafes'), matching: find.text('12')),
         findsOneWidget,
       );
-      expect(_row('tea'), findsNothing);
+      expect(_row('tea'), findsOneWidget);
 
       await tester.tap(_checkbox('coffee'));
       await tester.pumpAndSettle();

@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'place_detail_refresh_state.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'place_detail_refresh_state.dart' as _ik3zwp4j;
 
 abstract class AdminCatalogDetailRefresh
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminCatalogDetailRefresh._({
     required this.state,
     this.lastAttemptAt,
@@ -27,7 +26,7 @@ abstract class AdminCatalogDetailRefresh
   });
 
   factory AdminCatalogDetailRefresh({
-    required _i2.PlaceDetailRefreshState state,
+    required _ik3zwp4j.PlaceDetailRefreshState state,
     DateTime? lastAttemptAt,
     DateTime? lastCheckedAt,
     DateTime? lastSuccessAt,
@@ -40,33 +39,33 @@ abstract class AdminCatalogDetailRefresh
     Map<String, dynamic> jsonSerialization,
   ) {
     return AdminCatalogDetailRefresh(
-      state: _i2.PlaceDetailRefreshState.fromJson(
+      state: _ik3zwp4j.PlaceDetailRefreshState.fromJson(
         (jsonSerialization['state'] as String),
       ),
       lastAttemptAt: jsonSerialization['lastAttemptAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastAttemptAt'],
             ),
       lastCheckedAt: jsonSerialization['lastCheckedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastCheckedAt'],
             ),
       lastSuccessAt: jsonSerialization['lastSuccessAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastSuccessAt'],
             ),
       retryAfter: jsonSerialization['retryAfter'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
       lastFailureCode: jsonSerialization['lastFailureCode'] as String?,
       attemptCount: jsonSerialization['attemptCount'] as int,
     );
   }
 
-  _i2.PlaceDetailRefreshState state;
+  _ik3zwp4j.PlaceDetailRefreshState state;
 
   DateTime? lastAttemptAt;
 
@@ -82,9 +81,9 @@ abstract class AdminCatalogDetailRefresh
 
   /// Returns a shallow copy of this [AdminCatalogDetailRefresh]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminCatalogDetailRefresh copyWith({
-    _i2.PlaceDetailRefreshState? state,
+    _ik3zwp4j.PlaceDetailRefreshState? state,
     DateTime? lastAttemptAt,
     DateTime? lastCheckedAt,
     DateTime? lastSuccessAt,
@@ -122,7 +121,7 @@ abstract class AdminCatalogDetailRefresh
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -130,7 +129,7 @@ class _Undefined {}
 
 class _AdminCatalogDetailRefreshImpl extends AdminCatalogDetailRefresh {
   _AdminCatalogDetailRefreshImpl({
-    required _i2.PlaceDetailRefreshState state,
+    required _ik3zwp4j.PlaceDetailRefreshState state,
     DateTime? lastAttemptAt,
     DateTime? lastCheckedAt,
     DateTime? lastSuccessAt,
@@ -149,10 +148,10 @@ class _AdminCatalogDetailRefreshImpl extends AdminCatalogDetailRefresh {
 
   /// Returns a shallow copy of this [AdminCatalogDetailRefresh]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminCatalogDetailRefresh copyWith({
-    _i2.PlaceDetailRefreshState? state,
+    _ik3zwp4j.PlaceDetailRefreshState? state,
     Object? lastAttemptAt = _Undefined,
     Object? lastCheckedAt = _Undefined,
     Object? lastSuccessAt = _Undefined,

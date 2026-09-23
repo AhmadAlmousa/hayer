@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class SessionResultTally implements _i1.SerializableModel {
+abstract class SessionResultTally
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SessionResultTally._({
     required this.placeId,
     required this.likeCount,
@@ -33,7 +33,7 @@ abstract class SessionResultTally implements _i1.SerializableModel {
       placeId: jsonSerialization['placeId'] as String,
       likeCount: jsonSerialization['likeCount'] as int,
       voterCount: jsonSerialization['voterCount'] as int,
-      match: _i1.BoolJsonExtension.fromJson(jsonSerialization['match']),
+      match: _isc.BoolJsonExtension.fromJson(jsonSerialization['match']),
     );
   }
 
@@ -47,7 +47,7 @@ abstract class SessionResultTally implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [SessionResultTally]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   SessionResultTally copyWith({
     String? placeId,
     int? likeCount,
@@ -66,8 +66,19 @@ abstract class SessionResultTally implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SessionResultTally',
+      'placeId': placeId,
+      'likeCount': likeCount,
+      'voterCount': voterCount,
+      'match': match,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -86,7 +97,7 @@ class _SessionResultTallyImpl extends SessionResultTally {
 
   /// Returns a shallow copy of this [SessionResultTally]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   SessionResultTally copyWith({
     String? placeId,

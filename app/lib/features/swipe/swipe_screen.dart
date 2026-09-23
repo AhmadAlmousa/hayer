@@ -5,7 +5,6 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../app/theme.dart';
 import '../../core/providers.dart';
@@ -255,7 +254,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                       ),
                     ),
                   ),
-                  M3EIconButton(
+                  IconButton(
                     tooltip: strings.lobby,
                     onPressed: bundle.session.mode == SessionMode.multiplayer
                         ? () => context.push(
@@ -565,15 +564,12 @@ class _SwipeButton extends StatelessWidget {
     label: semanticLabel,
     child: SizedBox.square(
       dimension: size,
-      child: M3EIconButton(
+      child: IconButton.filledTonal(
         onPressed: onTap,
-        variant: M3EIconButtonVariant.tonal,
-        visualSize: Size.square(size),
-        decoration: M3EIconButtonDecoration(
-          backgroundColor: WidgetStatePropertyAll(
-            color.withValues(alpha: .14),
-          ),
-          foregroundColor: WidgetStatePropertyAll(color),
+        style: IconButton.styleFrom(
+          backgroundColor: color.withValues(alpha: .14),
+          foregroundColor: color,
+          fixedSize: Size.square(size),
         ),
         icon: Icon(icon, size: size * .46),
       ),

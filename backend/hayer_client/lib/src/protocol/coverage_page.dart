@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'coverage_record.dart' as _i7dm26zo;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'coverage_record.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class CoveragePage implements _i1.SerializableModel {
+abstract class CoveragePage
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CoveragePage._({
     required this.items,
     required this.total,
@@ -24,7 +24,7 @@ abstract class CoveragePage implements _i1.SerializableModel {
   });
 
   factory CoveragePage({
-    required List<_i2.CoverageRecord> items,
+    required List<_i7dm26zo.CoverageRecord> items,
     required int total,
     required int page,
     required int pageSize,
@@ -32,7 +32,7 @@ abstract class CoveragePage implements _i1.SerializableModel {
 
   factory CoveragePage.fromJson(Map<String, dynamic> jsonSerialization) {
     return CoveragePage(
-      items: _i3.Protocol().deserialize<List<_i2.CoverageRecord>>(
+      items: _iynev3sz.Protocol().deserialize<List<_i7dm26zo.CoverageRecord>>(
         jsonSerialization['items'],
       ),
       total: jsonSerialization['total'] as int,
@@ -41,7 +41,7 @@ abstract class CoveragePage implements _i1.SerializableModel {
     );
   }
 
-  List<_i2.CoverageRecord> items;
+  List<_i7dm26zo.CoverageRecord> items;
 
   int total;
 
@@ -51,9 +51,9 @@ abstract class CoveragePage implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CoveragePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CoveragePage copyWith({
-    List<_i2.CoverageRecord>? items,
+    List<_i7dm26zo.CoverageRecord>? items,
     int? total,
     int? page,
     int? pageSize,
@@ -70,14 +70,25 @@ abstract class CoveragePage implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CoveragePage',
+      'items': items.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'total': total,
+      'page': page,
+      'pageSize': pageSize,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _CoveragePageImpl extends CoveragePage {
   _CoveragePageImpl({
-    required List<_i2.CoverageRecord> items,
+    required List<_i7dm26zo.CoverageRecord> items,
     required int total,
     required int page,
     required int pageSize,
@@ -90,10 +101,10 @@ class _CoveragePageImpl extends CoveragePage {
 
   /// Returns a shallow copy of this [CoveragePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CoveragePage copyWith({
-    List<_i2.CoverageRecord>? items,
+    List<_i7dm26zo.CoverageRecord>? items,
     int? total,
     int? page,
     int? pageSize,

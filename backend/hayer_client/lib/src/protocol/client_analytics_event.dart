@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'client_analytics_context.dart' as _iae9jhcw;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'client_analytics_context.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class ClientAnalyticsEvent implements _i1.SerializableModel {
+abstract class ClientAnalyticsEvent
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ClientAnalyticsEvent._({
     required this.eventId,
     required this.eventName,
@@ -32,7 +32,7 @@ abstract class ClientAnalyticsEvent implements _i1.SerializableModel {
     required String eventId,
     required String eventName,
     required DateTime occurredAt,
-    required _i2.ClientAnalyticsContext context,
+    required _iae9jhcw.ClientAnalyticsContext context,
     String? sessionId,
     String? placeId,
     int? deckPosition,
@@ -46,12 +46,13 @@ abstract class ClientAnalyticsEvent implements _i1.SerializableModel {
     return ClientAnalyticsEvent(
       eventId: jsonSerialization['eventId'] as String,
       eventName: jsonSerialization['eventName'] as String,
-      occurredAt: _i1.DateTimeJsonExtension.fromJson(
+      occurredAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['occurredAt'],
       ),
-      context: _i3.Protocol().deserialize<_i2.ClientAnalyticsContext>(
-        jsonSerialization['context'],
-      ),
+      context: _iynev3sz.Protocol()
+          .deserialize<_iae9jhcw.ClientAnalyticsContext>(
+            jsonSerialization['context'],
+          ),
       sessionId: jsonSerialization['sessionId'] as String?,
       placeId: jsonSerialization['placeId'] as String?,
       deckPosition: jsonSerialization['deckPosition'] as int?,
@@ -66,7 +67,7 @@ abstract class ClientAnalyticsEvent implements _i1.SerializableModel {
 
   DateTime occurredAt;
 
-  _i2.ClientAnalyticsContext context;
+  _iae9jhcw.ClientAnalyticsContext context;
 
   String? sessionId;
 
@@ -80,12 +81,12 @@ abstract class ClientAnalyticsEvent implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ClientAnalyticsEvent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ClientAnalyticsEvent copyWith({
     String? eventId,
     String? eventName,
     DateTime? occurredAt,
-    _i2.ClientAnalyticsContext? context,
+    _iae9jhcw.ClientAnalyticsContext? context,
     String? sessionId,
     String? placeId,
     int? deckPosition,
@@ -110,8 +111,25 @@ abstract class ClientAnalyticsEvent implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ClientAnalyticsEvent',
+      'eventId': eventId,
+      'eventName': eventName,
+      'occurredAt': occurredAt.toJson(),
+      'context': context.toJsonForProtocol(),
+      if (sessionId != null) 'sessionId': sessionId,
+      if (placeId != null) 'placeId': placeId,
+      if (deckPosition != null) 'deckPosition': deckPosition,
+      if (visibleMilliseconds != null)
+        'visibleMilliseconds': visibleMilliseconds,
+      if (outcomeCode != null) 'outcomeCode': outcomeCode,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -122,7 +140,7 @@ class _ClientAnalyticsEventImpl extends ClientAnalyticsEvent {
     required String eventId,
     required String eventName,
     required DateTime occurredAt,
-    required _i2.ClientAnalyticsContext context,
+    required _iae9jhcw.ClientAnalyticsContext context,
     String? sessionId,
     String? placeId,
     int? deckPosition,
@@ -142,13 +160,13 @@ class _ClientAnalyticsEventImpl extends ClientAnalyticsEvent {
 
   /// Returns a shallow copy of this [ClientAnalyticsEvent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ClientAnalyticsEvent copyWith({
     String? eventId,
     String? eventName,
     DateTime? occurredAt,
-    _i2.ClientAnalyticsContext? context,
+    _iae9jhcw.ClientAnalyticsContext? context,
     Object? sessionId = _Undefined,
     Object? placeId = _Undefined,
     Object? deckPosition = _Undefined,

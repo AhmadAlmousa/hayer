@@ -564,6 +564,10 @@ void main() {
               countryCode: 'SA',
               latitude: unreferenced.latitude,
               longitude: unreferenced.longitude,
+              location: GeographyPoint(
+                longitude: unreferenced.longitude,
+                latitude: unreferenced.latitude,
+              ),
               categoryIds: const ['restaurant'],
               snapshot: unreferenced,
               calibrationVersion: _calibrationVersion,
@@ -1410,6 +1414,10 @@ Future<void> _seedRestaurantCatalog(
             countryCode: 'SA',
             latitude: place.latitude,
             longitude: place.longitude,
+            location: GeographyPoint(
+              longitude: place.longitude,
+              latitude: place.latitude,
+            ),
             categoryIds: const ['restaurant'],
             snapshot: place,
             calibrationVersion: _calibrationVersion,
@@ -1449,6 +1457,10 @@ Future<void> _seedRestaurantCatalog(
         countryCode: 'SA',
         anchorLatitude: _anchorLatitude,
         anchorLongitude: _anchorLongitude,
+        location: const GeographyPoint(
+          longitude: _anchorLongitude,
+          latitude: _anchorLatitude,
+        ),
         radiusMeters: 500,
         calibrationVersion: _calibrationVersion,
         resultCount: places.length,

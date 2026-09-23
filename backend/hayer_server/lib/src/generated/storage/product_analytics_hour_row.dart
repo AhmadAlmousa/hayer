@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ProductAnalyticsHourRow
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ProductAnalyticsHourRow._({
     this.id,
     required this.aggregateKey,
@@ -59,7 +58,7 @@ abstract class ProductAnalyticsHourRow
     return ProductAnalyticsHourRow(
       id: jsonSerialization['id'] as int?,
       aggregateKey: jsonSerialization['aggregateKey'] as String,
-      bucketStartedAt: _i1.DateTimeJsonExtension.fromJson(
+      bucketStartedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['bucketStartedAt'],
       ),
       metricName: jsonSerialization['metricName'] as String,
@@ -74,7 +73,7 @@ abstract class ProductAnalyticsHourRow
       placeName: jsonSerialization['placeName'] as String,
       total: (jsonSerialization['total'] as num).toDouble(),
       sampleCount: jsonSerialization['sampleCount'] as int,
-      updatedAt: _i1.DateTimeJsonExtension.fromJson(
+      updatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['updatedAt'],
       ),
     );
@@ -118,11 +117,11 @@ abstract class ProductAnalyticsHourRow
   DateTime updatedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ProductAnalyticsHourRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProductAnalyticsHourRow copyWith({
     int? id,
     String? aggregateKey,
@@ -174,12 +173,11 @@ abstract class ProductAnalyticsHourRow
   }
 
   static ProductAnalyticsHourRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
+    _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
+    _is.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
     ProductAnalyticsHourRowInclude? include,
   }) {
     return ProductAnalyticsHourRowIncludeList._(
@@ -187,7 +185,6 @@ abstract class ProductAnalyticsHourRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProductAnalyticsHourRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(ProductAnalyticsHourRow.t),
       include: include,
     );
@@ -195,7 +192,7 @@ abstract class ProductAnalyticsHourRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -240,7 +237,7 @@ class _ProductAnalyticsHourRowImpl extends ProductAnalyticsHourRow {
 
   /// Returns a shallow copy of this [ProductAnalyticsHourRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProductAnalyticsHourRow copyWith({
     Object? id = _Undefined,
@@ -282,148 +279,148 @@ class _ProductAnalyticsHourRowImpl extends ProductAnalyticsHourRow {
 }
 
 class ProductAnalyticsHourRowUpdateTable
-    extends _i1.UpdateTable<ProductAnalyticsHourRowTable> {
+    extends _is.UpdateTable<ProductAnalyticsHourRowTable> {
   ProductAnalyticsHourRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> aggregateKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> aggregateKey(String value) => _is.ColumnValue(
     table.aggregateKey,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> bucketStartedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> bucketStartedAt(DateTime value) =>
+      _is.ColumnValue(
         table.bucketStartedAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> metricName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> metricName(String value) => _is.ColumnValue(
     table.metricName,
     value,
   );
 
-  _i1.ColumnValue<String, String> modeKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> modeKey(String value) => _is.ColumnValue(
     table.modeKey,
     value,
   );
 
-  _i1.ColumnValue<String, String> countryCode(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> countryCode(String value) => _is.ColumnValue(
     table.countryCode,
     value,
   );
 
-  _i1.ColumnValue<String, String> cityKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> cityKey(String value) => _is.ColumnValue(
     table.cityKey,
     value,
   );
 
-  _i1.ColumnValue<String, String> cityName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> cityName(String value) => _is.ColumnValue(
     table.cityName,
     value,
   );
 
-  _i1.ColumnValue<String, String> categoryId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> categoryId(String value) => _is.ColumnValue(
     table.categoryId,
     value,
   );
 
-  _i1.ColumnValue<String, String> taxonomyKind(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> taxonomyKind(String value) => _is.ColumnValue(
     table.taxonomyKind,
     value,
   );
 
-  _i1.ColumnValue<String, String> taxonomyId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> taxonomyId(String value) => _is.ColumnValue(
     table.taxonomyId,
     value,
   );
 
-  _i1.ColumnValue<String, String> placeId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> placeId(String value) => _is.ColumnValue(
     table.placeId,
     value,
   );
 
-  _i1.ColumnValue<String, String> placeName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> placeName(String value) => _is.ColumnValue(
     table.placeName,
     value,
   );
 
-  _i1.ColumnValue<double, double> total(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> total(double value) => _is.ColumnValue(
     table.total,
     value,
   );
 
-  _i1.ColumnValue<int, int> sampleCount(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> sampleCount(int value) => _is.ColumnValue(
     table.sampleCount,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> updatedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> updatedAt(DateTime value) =>
+      _is.ColumnValue(
         table.updatedAt,
         value,
       );
 }
 
-class ProductAnalyticsHourRowTable extends _i1.Table<int?> {
+class ProductAnalyticsHourRowTable extends _is.Table<int?> {
   ProductAnalyticsHourRowTable({super.tableRelation})
     : super(tableName: 'hayer_product_analytics_hour') {
     updateTable = ProductAnalyticsHourRowUpdateTable(this);
-    aggregateKey = _i1.ColumnString(
+    aggregateKey = _is.ColumnString(
       'aggregateKey',
       this,
     );
-    bucketStartedAt = _i1.ColumnDateTime(
+    bucketStartedAt = _is.ColumnDateTime(
       'bucketStartedAt',
       this,
     );
-    metricName = _i1.ColumnString(
+    metricName = _is.ColumnString(
       'metricName',
       this,
     );
-    modeKey = _i1.ColumnString(
+    modeKey = _is.ColumnString(
       'modeKey',
       this,
     );
-    countryCode = _i1.ColumnString(
+    countryCode = _is.ColumnString(
       'countryCode',
       this,
     );
-    cityKey = _i1.ColumnString(
+    cityKey = _is.ColumnString(
       'cityKey',
       this,
     );
-    cityName = _i1.ColumnString(
+    cityName = _is.ColumnString(
       'cityName',
       this,
     );
-    categoryId = _i1.ColumnString(
+    categoryId = _is.ColumnString(
       'categoryId',
       this,
     );
-    taxonomyKind = _i1.ColumnString(
+    taxonomyKind = _is.ColumnString(
       'taxonomyKind',
       this,
     );
-    taxonomyId = _i1.ColumnString(
+    taxonomyId = _is.ColumnString(
       'taxonomyId',
       this,
     );
-    placeId = _i1.ColumnString(
+    placeId = _is.ColumnString(
       'placeId',
       this,
     );
-    placeName = _i1.ColumnString(
+    placeName = _is.ColumnString(
       'placeName',
       this,
     );
-    total = _i1.ColumnDouble(
+    total = _is.ColumnDouble(
       'total',
       this,
     );
-    sampleCount = _i1.ColumnInt(
+    sampleCount = _is.ColumnInt(
       'sampleCount',
       this,
     );
-    updatedAt = _i1.ColumnDateTime(
+    updatedAt = _is.ColumnDateTime(
       'updatedAt',
       this,
     );
@@ -431,38 +428,38 @@ class ProductAnalyticsHourRowTable extends _i1.Table<int?> {
 
   late final ProductAnalyticsHourRowUpdateTable updateTable;
 
-  late final _i1.ColumnString aggregateKey;
+  late final _is.ColumnString aggregateKey;
 
-  late final _i1.ColumnDateTime bucketStartedAt;
+  late final _is.ColumnDateTime bucketStartedAt;
 
-  late final _i1.ColumnString metricName;
+  late final _is.ColumnString metricName;
 
-  late final _i1.ColumnString modeKey;
+  late final _is.ColumnString modeKey;
 
-  late final _i1.ColumnString countryCode;
+  late final _is.ColumnString countryCode;
 
-  late final _i1.ColumnString cityKey;
+  late final _is.ColumnString cityKey;
 
-  late final _i1.ColumnString cityName;
+  late final _is.ColumnString cityName;
 
-  late final _i1.ColumnString categoryId;
+  late final _is.ColumnString categoryId;
 
-  late final _i1.ColumnString taxonomyKind;
+  late final _is.ColumnString taxonomyKind;
 
-  late final _i1.ColumnString taxonomyId;
+  late final _is.ColumnString taxonomyId;
 
-  late final _i1.ColumnString placeId;
+  late final _is.ColumnString placeId;
 
-  late final _i1.ColumnString placeName;
+  late final _is.ColumnString placeName;
 
-  late final _i1.ColumnDouble total;
+  late final _is.ColumnDouble total;
 
-  late final _i1.ColumnInt sampleCount;
+  late final _is.ColumnInt sampleCount;
 
-  late final _i1.ColumnDateTime updatedAt;
+  late final _is.ColumnDateTime updatedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     aggregateKey,
     bucketStartedAt,
@@ -482,23 +479,22 @@ class ProductAnalyticsHourRowTable extends _i1.Table<int?> {
   ];
 }
 
-class ProductAnalyticsHourRowInclude extends _i1.IncludeObject {
+class ProductAnalyticsHourRowInclude extends _is.IncludeObject {
   ProductAnalyticsHourRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ProductAnalyticsHourRow.t;
+  _is.Table<int?> get table => ProductAnalyticsHourRow.t;
 }
 
-class ProductAnalyticsHourRowIncludeList extends _i1.IncludeList {
+class ProductAnalyticsHourRowIncludeList extends _is.IncludeList {
   ProductAnalyticsHourRowIncludeList._({
-    _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
+    _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -506,10 +502,10 @@ class ProductAnalyticsHourRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProductAnalyticsHourRow.t;
+  _is.Table<int?> get table => ProductAnalyticsHourRow.t;
 }
 
 class ProductAnalyticsHourRowRepository {
@@ -538,22 +534,20 @@ class ProductAnalyticsHourRowRepository {
   /// );
   /// ```
   Future<List<ProductAnalyticsHourRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ProductAnalyticsHourRow>(
       where: where?.call(ProductAnalyticsHourRow.t),
       orderBy: orderBy?.call(ProductAnalyticsHourRow.t),
       orderByList: orderByList?.call(ProductAnalyticsHourRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -580,21 +574,19 @@ class ProductAnalyticsHourRowRepository {
   /// );
   /// ```
   Future<ProductAnalyticsHourRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ProductAnalyticsHourRow>(
       where: where?.call(ProductAnalyticsHourRow.t),
       orderBy: orderBy?.call(ProductAnalyticsHourRow.t),
       orderByList: orderByList?.call(ProductAnalyticsHourRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -604,11 +596,11 @@ class ProductAnalyticsHourRowRepository {
 
   /// Finds a single [ProductAnalyticsHourRow] by its [id] or null if no such row exists.
   Future<ProductAnalyticsHourRow?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ProductAnalyticsHourRow>(
       id,
@@ -628,16 +620,22 @@ class ProductAnalyticsHourRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsHourRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProductAnalyticsHourRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ProductAnalyticsHourRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -645,12 +643,81 @@ class ProductAnalyticsHourRowRepository {
   ///
   /// The returned [ProductAnalyticsHourRow] will have its `id` field set.
   Future<ProductAnalyticsHourRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProductAnalyticsHourRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ProductAnalyticsHourRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ProductAnalyticsHourRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ProductAnalyticsHourRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProductAnalyticsHourRow>> upsert(
+    _is.DatabaseSession session,
+    List<ProductAnalyticsHourRow> rows, {
+    required _is.ColumnSelections<ProductAnalyticsHourRowTable> conflictColumns,
+    _is.ColumnSelections<ProductAnalyticsHourRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ProductAnalyticsHourRow>(
+      rows,
+      conflictColumns: conflictColumns(ProductAnalyticsHourRow.t),
+      updateColumns: updateColumns?.call(ProductAnalyticsHourRow.t),
+      updateWhere: updateWhere?.call(ProductAnalyticsHourRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ProductAnalyticsHourRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ProductAnalyticsHourRow] will have its `id` field set.
+  Future<ProductAnalyticsHourRow?> upsertRow(
+    _is.DatabaseSession session,
+    ProductAnalyticsHourRow row, {
+    required _is.ColumnSelections<ProductAnalyticsHourRowTable> conflictColumns,
+    _is.ColumnSelections<ProductAnalyticsHourRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ProductAnalyticsHourRow>(
+      row,
+      conflictColumns: conflictColumns(ProductAnalyticsHourRow.t),
+      updateColumns: updateColumns?.call(ProductAnalyticsHourRow.t),
+      updateWhere: updateWhere?.call(ProductAnalyticsHourRow.t),
       transaction: transaction,
     );
   }
@@ -660,16 +727,22 @@ class ProductAnalyticsHourRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsHourRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProductAnalyticsHourRow> rows, {
-    _i1.ColumnSelections<ProductAnalyticsHourRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProductAnalyticsHourRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ProductAnalyticsHourRow>(
       rows,
       columns: columns?.call(ProductAnalyticsHourRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -677,10 +750,10 @@ class ProductAnalyticsHourRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ProductAnalyticsHourRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProductAnalyticsHourRow row, {
-    _i1.ColumnSelections<ProductAnalyticsHourRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProductAnalyticsHourRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ProductAnalyticsHourRow>(
       row,
@@ -692,11 +765,11 @@ class ProductAnalyticsHourRowRepository {
   /// Updates a single [ProductAnalyticsHourRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProductAnalyticsHourRow?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ProductAnalyticsHourRowUpdateTable>
+    required _is.ColumnValueListBuilder<ProductAnalyticsHourRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ProductAnalyticsHourRow>(
       id,
@@ -707,17 +780,21 @@ class ProductAnalyticsHourRowRepository {
 
   /// Updates all [ProductAnalyticsHourRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsHourRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ProductAnalyticsHourRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ProductAnalyticsHourRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable> where,
+    required _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
-    _i1.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ProductAnalyticsHourRow>(
       columnValues: columnValues(ProductAnalyticsHourRow.t.updateTable),
@@ -726,30 +803,44 @@ class ProductAnalyticsHourRowRepository {
       offset: offset,
       orderBy: orderBy?.call(ProductAnalyticsHourRow.t),
       orderByList: orderByList?.call(ProductAnalyticsHourRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [ProductAnalyticsHourRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsHourRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProductAnalyticsHourRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ProductAnalyticsHourRow>(
       rows,
+      orderBy: orderBy?.call(ProductAnalyticsHourRow.t),
+      orderByList: orderByList?.call(ProductAnalyticsHourRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [ProductAnalyticsHourRow].
   Future<ProductAnalyticsHourRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProductAnalyticsHourRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ProductAnalyticsHourRow>(
       row,
@@ -758,24 +849,37 @@ class ProductAnalyticsHourRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsHourRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable> where,
+    _is.OrderByBuilder<ProductAnalyticsHourRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsHourRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ProductAnalyticsHourRow>(
       where: where(ProductAnalyticsHourRow.t),
+      orderBy: orderBy?.call(ProductAnalyticsHourRow.t),
+      orderByList: orderByList?.call(ProductAnalyticsHourRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ProductAnalyticsHourRow>(
       where: where?.call(ProductAnalyticsHourRow.t),
@@ -786,11 +890,11 @@ class ProductAnalyticsHourRowRepository {
 
   /// Acquires row-level locks on [ProductAnalyticsHourRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProductAnalyticsHourRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProductAnalyticsHourRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ProductAnalyticsHourRow>(
       where: where(ProductAnalyticsHourRow.t),

@@ -10,17 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'session_mode.dart' as _i2;
-import 'place_intent_query.dart' as _i3;
-import 'consensus_rule.dart' as _i4;
-import 'matching_timing.dart' as _i5;
-import 'client_analytics_context.dart' as _i6;
-import 'package:hayer_server/src/generated/protocol.dart' as _i7;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'client_analytics_context.dart' as _iae9jhcw;
+import 'consensus_rule.dart' as _idhfk3qj;
+import 'matching_timing.dart' as _inbmjteu;
+import 'place_intent_query.dart' as _i151h6s7;
+import 'session_mode.dart' as _i7rc03rf;
 
 abstract class CreateIntentSessionRequest
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   CreateIntentSessionRequest._({
     required this.mode,
     required this.intent,
@@ -31,59 +30,61 @@ abstract class CreateIntentSessionRequest
   });
 
   factory CreateIntentSessionRequest({
-    required _i2.SessionMode mode,
-    required _i3.PlaceIntentQuery intent,
+    required _i7rc03rf.SessionMode mode,
+    required _i151h6s7.PlaceIntentQuery intent,
     String? displayName,
-    required _i4.ConsensusRule consensusRule,
-    required _i5.MatchingTiming matchingTiming,
-    _i6.ClientAnalyticsContext? analyticsContext,
+    required _idhfk3qj.ConsensusRule consensusRule,
+    required _inbmjteu.MatchingTiming matchingTiming,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   }) = _CreateIntentSessionRequestImpl;
 
   factory CreateIntentSessionRequest.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return CreateIntentSessionRequest(
-      mode: _i2.SessionMode.fromJson((jsonSerialization['mode'] as String)),
-      intent: _i7.Protocol().deserialize<_i3.PlaceIntentQuery>(
+      mode: _i7rc03rf.SessionMode.fromJson(
+        (jsonSerialization['mode'] as String),
+      ),
+      intent: _i66y2smk.Protocol().deserialize<_i151h6s7.PlaceIntentQuery>(
         jsonSerialization['intent'],
       ),
       displayName: jsonSerialization['displayName'] as String?,
-      consensusRule: _i4.ConsensusRule.fromJson(
+      consensusRule: _idhfk3qj.ConsensusRule.fromJson(
         (jsonSerialization['consensusRule'] as String),
       ),
-      matchingTiming: _i5.MatchingTiming.fromJson(
+      matchingTiming: _inbmjteu.MatchingTiming.fromJson(
         (jsonSerialization['matchingTiming'] as String),
       ),
       analyticsContext: jsonSerialization['analyticsContext'] == null
           ? null
-          : _i7.Protocol().deserialize<_i6.ClientAnalyticsContext>(
+          : _i66y2smk.Protocol().deserialize<_iae9jhcw.ClientAnalyticsContext>(
               jsonSerialization['analyticsContext'],
             ),
     );
   }
 
-  _i2.SessionMode mode;
+  _i7rc03rf.SessionMode mode;
 
-  _i3.PlaceIntentQuery intent;
+  _i151h6s7.PlaceIntentQuery intent;
 
   String? displayName;
 
-  _i4.ConsensusRule consensusRule;
+  _idhfk3qj.ConsensusRule consensusRule;
 
-  _i5.MatchingTiming matchingTiming;
+  _inbmjteu.MatchingTiming matchingTiming;
 
-  _i6.ClientAnalyticsContext? analyticsContext;
+  _iae9jhcw.ClientAnalyticsContext? analyticsContext;
 
   /// Returns a shallow copy of this [CreateIntentSessionRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CreateIntentSessionRequest copyWith({
-    _i2.SessionMode? mode,
-    _i3.PlaceIntentQuery? intent,
+    _i7rc03rf.SessionMode? mode,
+    _i151h6s7.PlaceIntentQuery? intent,
     String? displayName,
-    _i4.ConsensusRule? consensusRule,
-    _i5.MatchingTiming? matchingTiming,
-    _i6.ClientAnalyticsContext? analyticsContext,
+    _idhfk3qj.ConsensusRule? consensusRule,
+    _inbmjteu.MatchingTiming? matchingTiming,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,7 +116,7 @@ abstract class CreateIntentSessionRequest
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -123,12 +124,12 @@ class _Undefined {}
 
 class _CreateIntentSessionRequestImpl extends CreateIntentSessionRequest {
   _CreateIntentSessionRequestImpl({
-    required _i2.SessionMode mode,
-    required _i3.PlaceIntentQuery intent,
+    required _i7rc03rf.SessionMode mode,
+    required _i151h6s7.PlaceIntentQuery intent,
     String? displayName,
-    required _i4.ConsensusRule consensusRule,
-    required _i5.MatchingTiming matchingTiming,
-    _i6.ClientAnalyticsContext? analyticsContext,
+    required _idhfk3qj.ConsensusRule consensusRule,
+    required _inbmjteu.MatchingTiming matchingTiming,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   }) : super._(
          mode: mode,
          intent: intent,
@@ -140,14 +141,14 @@ class _CreateIntentSessionRequestImpl extends CreateIntentSessionRequest {
 
   /// Returns a shallow copy of this [CreateIntentSessionRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CreateIntentSessionRequest copyWith({
-    _i2.SessionMode? mode,
-    _i3.PlaceIntentQuery? intent,
+    _i7rc03rf.SessionMode? mode,
+    _i151h6s7.PlaceIntentQuery? intent,
     Object? displayName = _Undefined,
-    _i4.ConsensusRule? consensusRule,
-    _i5.MatchingTiming? matchingTiming,
+    _idhfk3qj.ConsensusRule? consensusRule,
+    _inbmjteu.MatchingTiming? matchingTiming,
     Object? analyticsContext = _Undefined,
   }) {
     return CreateIntentSessionRequest(
@@ -156,7 +157,7 @@ class _CreateIntentSessionRequestImpl extends CreateIntentSessionRequest {
       displayName: displayName is String? ? displayName : this.displayName,
       consensusRule: consensusRule ?? this.consensusRule,
       matchingTiming: matchingTiming ?? this.matchingTiming,
-      analyticsContext: analyticsContext is _i6.ClientAnalyticsContext?
+      analyticsContext: analyticsContext is _iae9jhcw.ClientAnalyticsContext?
           ? analyticsContext
           : this.analyticsContext?.copyWith(),
     );

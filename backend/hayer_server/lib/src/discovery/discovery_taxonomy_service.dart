@@ -10,6 +10,98 @@ abstract final class DiscoveryTaxonomyService {
   static const maxDepth = 8;
   static const maxNodes = 1000;
 
+  /// Replaces only the original nine empty domains after an existing database
+  /// is upgraded to a server that ships the full Discover tree.
+  static Future<void> upgradeLegacySeed(Serverpod pod) async {
+    final session = await pod.createSession(enableLogging: true);
+    try {
+      final upgraded = await session.db.transaction((transaction) async {
+        final active = await DiscoveryTaxonomyVersionRow.db.findFirstRow(
+          session,
+          where: (table) => table.status.equals(TaxonomyStatus.active),
+          orderBy: (table) => table.publishedAt.desc(),
+          transaction: transaction,
+          lockMode: LockMode.forUpdate,
+        );
+        if (active == null || !isLegacyBareSeed(active)) return false;
+
+        final roots = seedRoots();
+        final errors = validate(roots);
+        if (errors.isNotEmpty) {
+          throw StateError('The bundled Discover taxonomy is invalid: $errors');
+        }
+        final now = DateTime.now().toUtc();
+        active.status = TaxonomyStatus.superseded;
+        await DiscoveryTaxonomyVersionRow.db.updateRow(
+          session,
+          active,
+          transaction: transaction,
+        );
+        await DiscoveryTaxonomyVersionRow.db.insertRow(
+          session,
+          DiscoveryTaxonomyVersionRow(
+            version: 'discovery-taxonomy-seed-v2',
+            revision: active.revision + 1,
+            status: TaxonomyStatus.active,
+            documentJson: encode(roots),
+            validationPassed: true,
+            validationErrors: const [],
+            createdBy: 'system',
+            createdAt: now,
+            validatedAt: now,
+            publishedAt: now,
+          ),
+          transaction: transaction,
+        );
+        return true;
+      });
+      if (upgraded) {
+        session.log(
+          'Upgraded the original Discover taxonomy to the full seed.',
+        );
+      }
+    } finally {
+      await session.close();
+    }
+  }
+
+  static bool isLegacyBareSeed(DiscoveryTaxonomyVersionRow row) {
+    if (row.version != 'discovery-taxonomy-v1' ||
+        row.revision != 1 ||
+        row.createdBy != 'system' ||
+        row.status != TaxonomyStatus.active) {
+      return false;
+    }
+    final roots = decode(row.documentJson);
+    const original = [
+      ('food', 'Food & Drinks', 'الأطعمة والمشروبات', '🍹'),
+      ('todo', 'Things to Do', 'أنشطة ومعالم', '🏰'),
+      ('stay', 'Accommodation', 'أماكن الإقامة', '🏨'),
+      ('ent', 'Entertainment', 'الترفيه', '🍿'),
+      ('wellness', 'Wellness', 'العافية', '😌'),
+      ('tours', 'Tours & Travel', 'الجولات والسفر', '🚌'),
+      ('shopping', 'Shopping', 'التسوق', '🛍️'),
+      ('sports', 'Activities & Sports', 'الأنشطة والرياضة', '⚽'),
+      ('religion', 'Religion & Worship', 'الدين والعبادة', '⛩️'),
+    ];
+    if (roots.length != original.length) return false;
+    for (var i = 0; i < roots.length; i++) {
+      final node = roots[i];
+      final (id, english, arabic, emoji) = original[i];
+      if (node.id != id ||
+          node.labelEn != english ||
+          node.labelAr != arabic ||
+          node.emoji != emoji ||
+          node.typeAliases.isNotEmpty ||
+          node.children.isNotEmpty ||
+          node.selectable != false ||
+          node.selectionGroupRoot != false) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   static Future<DiscoveryTaxonomyVersionRow> activeRow(
     Session session, {
     Transaction? transaction,
@@ -18,8 +110,7 @@ abstract final class DiscoveryTaxonomyService {
     final active = await DiscoveryTaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.active),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       transaction: transaction,
       lockMode: lockMode,
     );
@@ -48,8 +139,7 @@ abstract final class DiscoveryTaxonomyService {
     final seeded = await DiscoveryTaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.active),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       transaction: transaction,
       lockMode: lockMode,
     );
@@ -77,8 +167,7 @@ abstract final class DiscoveryTaxonomyService {
     final existing = await DiscoveryTaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.draft),
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
     );
     if (existing != null) return view(existing);
 
@@ -104,8 +193,7 @@ abstract final class DiscoveryTaxonomyService {
     final concurrent = await DiscoveryTaxonomyVersionRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(TaxonomyStatus.draft),
-      orderBy: (table) => table.createdAt,
-      orderDescending: true,
+      orderBy: (table) => table.createdAt.desc(),
     );
     if (concurrent == null) {
       throw StateError('Could not create an editable Discover taxonomy draft.');
@@ -119,8 +207,7 @@ abstract final class DiscoveryTaxonomyService {
     final rows = await DiscoveryTaxonomyVersionRow.db.find(
       session,
       where: (table) => table.status.notEquals(TaxonomyStatus.draft),
-      orderBy: (table) => table.publishedAt,
-      orderDescending: true,
+      orderBy: (table) => table.publishedAt.desc(),
       limit: 30,
     );
     return rows.map(view).toList(growable: false);

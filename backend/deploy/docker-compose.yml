@@ -8,7 +8,7 @@ services:
   runtime-init:
     <<: *server-image
     command:
-      - hayer-runtime-init
+      - /opt/hayer/bundles/runtime-init/bin/hayer-runtime-init
       - /run/hayer/server
       - /run/hayer/gateway
       - /run/hayer/public
@@ -45,7 +45,7 @@ services:
 
   place-canary:
     <<: *server-image
-    command: ["hayer-place-canary"]
+    command: ["/opt/hayer/bundles/place-canary/bin/hayer-place-canary"]
     restart: "no"
     networks: [hayer]
 
@@ -57,11 +57,18 @@ services:
       - |
         cp /run/hayer/server/passwords.yaml config/passwords.yaml
         cp /run/hayer/public/assetlinks.json web/static/.well-known/assetlinks.json
-        exec hayer-server --mode=production --server-id=default --logging=normal --role=monolith --apply-migrations
+        exec /opt/hayer/bundles/server/bin/hayer-server --mode=production --server-id=default --logging=normal --role=monolith --apply-migrations
     restart: unless-stopped
     environment:
       HAYER_ADMIN_ENROLLMENT_ENABLED: "${HAYER_ADMIN_ENROLLMENT_ENABLED:-false}"
       HAYER_GEOCODER_ENDPOINT: "${HAYER_GEOCODER_ENDPOINT:-https://nominatim.openstreetmap.org/reverse}"
+      # FlutterRoute's default no-caches only index.html, the bootstrap, the
+      # service worker and the two manifests; main.dart.js/.wasm/.mjs get
+      # public, max-age=86400. Those filenames are not content-hashed and the
+      # service worker is now the self-unregistering stub, so nothing
+      # invalidates them and a deploy stayed invisible for a day. ETag
+      # revalidation still returns 304, so an unchanged bundle is not refetched.
+      SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL: "no-cache, private"
     depends_on:
       runtime-init:
         condition: service_completed_successfully
@@ -83,7 +90,7 @@ services:
     <<: *server-image
     restart: "no"
     command:
-      - hayer-public-gateway-canary
+      - /opt/hayer/bundles/public-gateway-canary/bin/hayer-public-gateway-canary
       - ${HAYER_PUBLIC_API_URL:-https://hayer.almou.sa/api/}
     depends_on:
       gateway:
@@ -91,7 +98,7 @@ services:
     networks: [hayer]
 
   postgres:
-    image: postgis/postgis:16-3.5-alpine@sha256:47e961a569fd52ff31f0fe205ed91eeab17d9f5fff6722e6d7ea6b588748b293
+    image: ghcr.io/serverpod/postgres:16@sha256:5c606a4027d2c304d01faffd9db815abddc0e1ce7aea96eda28ad23a6f421ea8
     restart: unless-stopped
     depends_on:
       runtime-init:

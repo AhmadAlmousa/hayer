@@ -10,14 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'discovery_coverage.dart' as _i2;
-import 'discovery_harvest_status.dart' as _i3;
-import 'package:hayer_server/src/generated/protocol.dart' as _i4;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_coverage.dart' as _i8yqti93;
+import 'discovery_harvest_status.dart' as _iaeap9p2;
 
 abstract class DiscoveryAreaReceipt
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryAreaReceipt._({
     required this.coverage,
     this.job,
@@ -26,8 +25,8 @@ abstract class DiscoveryAreaReceipt
   });
 
   factory DiscoveryAreaReceipt({
-    required _i2.DiscoveryCoverage coverage,
-    _i3.DiscoveryHarvestStatus? job,
+    required _i8yqti93.DiscoveryCoverage coverage,
+    _iaeap9p2.DiscoveryHarvestStatus? job,
     DateTime? retryAfter,
     required DateTime fetchedAt,
   }) = _DiscoveryAreaReceiptImpl;
@@ -36,26 +35,26 @@ abstract class DiscoveryAreaReceipt
     Map<String, dynamic> jsonSerialization,
   ) {
     return DiscoveryAreaReceipt(
-      coverage: _i4.Protocol().deserialize<_i2.DiscoveryCoverage>(
+      coverage: _i66y2smk.Protocol().deserialize<_i8yqti93.DiscoveryCoverage>(
         jsonSerialization['coverage'],
       ),
       job: jsonSerialization['job'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.DiscoveryHarvestStatus>(
+          : _i66y2smk.Protocol().deserialize<_iaeap9p2.DiscoveryHarvestStatus>(
               jsonSerialization['job'],
             ),
       retryAfter: jsonSerialization['retryAfter'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
-      fetchedAt: _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['retryAfter']),
+      fetchedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['fetchedAt'],
       ),
     );
   }
 
-  _i2.DiscoveryCoverage coverage;
+  _i8yqti93.DiscoveryCoverage coverage;
 
-  _i3.DiscoveryHarvestStatus? job;
+  _iaeap9p2.DiscoveryHarvestStatus? job;
 
   DateTime? retryAfter;
 
@@ -63,10 +62,10 @@ abstract class DiscoveryAreaReceipt
 
   /// Returns a shallow copy of this [DiscoveryAreaReceipt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryAreaReceipt copyWith({
-    _i2.DiscoveryCoverage? coverage,
-    _i3.DiscoveryHarvestStatus? job,
+    _i8yqti93.DiscoveryCoverage? coverage,
+    _iaeap9p2.DiscoveryHarvestStatus? job,
     DateTime? retryAfter,
     DateTime? fetchedAt,
   });
@@ -94,7 +93,7 @@ abstract class DiscoveryAreaReceipt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -102,8 +101,8 @@ class _Undefined {}
 
 class _DiscoveryAreaReceiptImpl extends DiscoveryAreaReceipt {
   _DiscoveryAreaReceiptImpl({
-    required _i2.DiscoveryCoverage coverage,
-    _i3.DiscoveryHarvestStatus? job,
+    required _i8yqti93.DiscoveryCoverage coverage,
+    _iaeap9p2.DiscoveryHarvestStatus? job,
     DateTime? retryAfter,
     required DateTime fetchedAt,
   }) : super._(
@@ -115,17 +114,19 @@ class _DiscoveryAreaReceiptImpl extends DiscoveryAreaReceipt {
 
   /// Returns a shallow copy of this [DiscoveryAreaReceipt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryAreaReceipt copyWith({
-    _i2.DiscoveryCoverage? coverage,
+    _i8yqti93.DiscoveryCoverage? coverage,
     Object? job = _Undefined,
     Object? retryAfter = _Undefined,
     DateTime? fetchedAt,
   }) {
     return DiscoveryAreaReceipt(
       coverage: coverage ?? this.coverage.copyWith(),
-      job: job is _i3.DiscoveryHarvestStatus? ? job : this.job?.copyWith(),
+      job: job is _iaeap9p2.DiscoveryHarvestStatus?
+          ? job
+          : this.job?.copyWith(),
       retryAfter: retryAfter is DateTime? ? retryAfter : this.retryAfter,
       fetchedAt: fetchedAt ?? this.fetchedAt,
     );

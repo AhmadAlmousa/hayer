@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&amp;display=block" rel="stylesheet">
+<link rel="stylesheet" href="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/tokens/fig-tokens.css">
+<link rel="stylesheet" href="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/tokens/typography.css">
+<link rel="stylesheet" href="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/tokens/shape.css">
+<link rel="stylesheet" href="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/tokens/base.css">
+<link rel="stylesheet" href="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/styles.css">
+<script src="_ds/m3-expressive-design-system-baa786d2-9b59-4849-b582-2010bab7452d/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>body{margin:0;background:#DEE5E4;font-family:Nunito,system-ui,sans-serif}a{color:#00696B;text-decoration:none}a:hover{color:#0E9594}</style>
+</helmet>
+
+<section style="padding:40px 44px 40px;border-bottom:1px solid rgba(0,0,0,.08)" id="t2">
+<div style="display:flex;align-items:baseline;gap:10px;margin:0 0 6px">
+<a href="#t2" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#161D1D;color:#fff;border-radius:4px">2</a>
+<span style="font:900 14px/1.2 Nunito,sans-serif;color:#161D1D">The full taxonomy as a tree — replaces <a href="#1c">1c</a>’s category chips</span>
+</div>
+<p style="margin:0 0 26px;max-width:780px;font:400 12.5px/1.6 Nunito,sans-serif;color:#3F4948">Your nine domains, four levels deep (Food &amp; Drinks → Restaurants → Cuisine → Asian → Japanese → Sushi). <b>Both screens are live</b> — expand/collapse any branch, tap a leaf to select it. Counts roll up from the leaves and the whole tree is viewport-scoped: a branch with nothing in view is not rendered at all (<a href="#2a">2a</a> footer says how many that is). Parent types that also hold places of their own (Japanese, Middle Eastern, Chicken) count themselves plus their children.</p>
+<div style="display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:9px" id="2a">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#2a" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:#00696B;color:#fff;border-radius:5px">2a</a><b style="font:800 11px Nunito;color:#161D1D">Live</b> · full-screen category tree</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="padding:6px 16px 0;display:flex;align-items:center;gap:4px">
+<button style="width:40px;height:40px;border:none;border-radius:20px;background:transparent;color:#3F4948;display:grid;place-items:center;cursor:pointer"><span style="font:22px 'Material Symbols Rounded'">arrow_back</span></button>
+<div style="flex:1;font:900 22px Nunito;color:#161D1D">Categories</div>
+<button onClick="{{ collapseAll }}" style="height:36px;border:1px solid #BEC8C8;border-radius:18px;background:#fff;color:#00696B;font:900 12.5px Nunito;padding:0 12px;cursor:pointer">Collapse all</button>
+</div>
+<div style="padding:10px 16px 8px">
+<div style="height:48px;border-radius:24px;background:#DDE4E3;display:flex;align-items:center;padding:0 14px;gap:10px">
+<span style="font:20px 'Material Symbols Rounded';color:#3F4948">search</span>
+<div style="flex:1;font:700 13.5px Nunito;color:#3F4948">Find a category — “sushi”, “spa”, “park”</div>
+</div>
+</div>
+<div style="padding:0 16px 8px;font:700 12px/17px Nunito;color:#3F4948">{{ taxTotal }} places in view · {{ pickedCount }} types selected</div>
+<div style="flex:1;overflow:auto;padding:0 16px 8px;scrollbar-gutter:stable">
+<sc-for list="{{ taxRows }}" as="r" hint-placeholder-count="14">
+<button onClick="{{ r.onClick }}" style="{{ r.style }}">
+<span style="{{ r.emojiStyle }}">{{ r.emoji }}</span>
+<span style="{{ r.glyphStyle }}">{{ r.glyph }}</span>
+<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.label }}</span>
+<span style="{{ r.subStyle }}">{{ r.sub }}</span>
+<span style="{{ r.countStyle }}">{{ r.count }}</span>
+</button>
+</sc-for>
+<div style="display:flex;gap:8px;align-items:flex-start;padding:12px;border-radius:16px;background:#DDE4E3;margin-top:14px">
+<span style="font:20px 'Material Symbols Rounded';color:#3F4948;flex-shrink:0">travel_explore</span>
+<div style="font:700 11.5px/16px Nunito;color:#3F4948">{{ hiddenLeaves }} categories have nothing in this view and are hidden. Pan or zoom out to bring them back.</div>
+</div>
+</div>
+<sc-if value="{{ pickedCount }}" hint-placeholder-val="{{ 0 }}">
+<div style="padding:10px 16px 0;display:flex;gap:7px;flex-wrap:wrap">
+<sc-for list="{{ pickedChips }}" as="p" hint-placeholder-count="2">
+<button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}<span style="font:18px 'Material Symbols Rounded'">close</span></button>
+</sc-for>
+<button onClick="{{ clearPicked }}" style="height:34px;border:1px solid #BEC8C8;border-radius:17px;background:transparent;color:#3F4948;padding:0 12px;font:800 12.5px Nunito;cursor:pointer">Clear</button>
+</div>
+</sc-if>
+<div style="padding:12px 16px 16px">
+<button style="width:100%;height:56px;border:none;border-radius:18px;background:#00696B;color:#fff;font:800 16px Nunito;cursor:pointer">{{ treeCta }}</button>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px" id="2b">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#2b" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:#00696B;color:#fff;border-radius:5px">2b</a><b style="font:800 11px Nunito;color:#161D1D">Live</b> · same tree as a sheet over the map</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;position:relative;overflow:hidden;background:#E9E4DC">
+<div style="position:absolute;left:-337px;top:-215px;width:1024px;height:1024px;display:grid;grid-template-columns:repeat(4,256px);grid-template-rows:repeat(4,256px)">
+<sc-for list="{{ tiles13 }}" as="t" hint-placeholder-count="16"><div style="width:256px;height:256px;background:#E9E4DC url({{ t.src }}) center/256px 256px no-repeat"></div></sc-for>
+</div>
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.32)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:88%;background:#F4FBFA;border-radius:28px 28px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.22);display:flex;flex-direction:column;overflow:hidden">
+<div style="display:flex;justify-content:center;padding:10px 0 6px"><div style="width:40px;height:4px;border-radius:2px;background:#BEC8C8"></div></div>
+<div style="padding:0 20px 8px;display:flex;align-items:center;gap:10px">
+<div style="flex:1">
+<div style="font:900 20px/26px Nunito;color:#161D1D">Browse categories</div>
+<div style="font:700 12px/17px Nunito;color:#3F4948">{{ taxTotal }} places in this view</div>
+</div>
+<button onClick="{{ collapseAll }}" style="width:40px;height:40px;border:none;border-radius:20px;background:#DDE4E3;color:#161D1D;display:grid;place-items:center;cursor:pointer"><span style="font:22px 'Material Symbols Rounded'">unfold_less</span></button>
+</div>
+<div style="flex:1;overflow:auto;padding:0 16px 8px;scrollbar-gutter:stable">
+<sc-for list="{{ taxRows }}" as="r" hint-placeholder-count="14">
+<button onClick="{{ r.onClick }}" style="{{ r.style }}">
+<span style="{{ r.emojiStyle }}">{{ r.emoji }}</span>
+<span style="{{ r.glyphStyle }}">{{ r.glyph }}</span>
+<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.label }}</span>
+<span style="{{ r.subStyle }}">{{ r.sub }}</span>
+<span style="{{ r.countStyle }}">{{ r.count }}</span>
+</button>
+</sc-for>
+</div>
+<div style="padding:10px 16px 16px;border-top:1px solid #BEC8C8;display:flex;gap:10px;align-items:center">
+<button onClick="{{ clearPicked }}" style="height:56px;border:1px solid #6F7979;border-radius:18px;background:transparent;color:#00696B;font:800 15px Nunito;padding:0 18px;cursor:pointer">Clear</button>
+<button style="flex:1;height:56px;border:none;border-radius:18px;background:#00696B;color:#fff;font:800 16px Nunito;cursor:pointer">{{ treeCta }}</button>
+</div>
+</div>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+</div>
+<p style="margin:24px 0 0;font:400 12px/1.5 Nunito,sans-serif;color:rgba(0,0,0,.5)">Try next: “wire <a href="#2b">2b</a> into <a href="#1c">1c</a>’s Categories chip” · “show only leaves with 3+ places” · “add the Arabic labels to the tree”</p>
+</section>
+
+<section style="padding:40px 44px 40px;border-bottom:1px solid rgba(0,0,0,.08)" id="t1">
+<div style="display:flex;align-items:baseline;gap:10px;margin:0 0 6px">
+<a href="#t1" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#161D1D;color:#fff;border-radius:4px">1</a>
+<span style="font:900 14px/1.2 Nunito,sans-serif;color:#161D1D">“Got time” — the second discovery mode</span>
+</div>
+<p style="margin:0 0 26px;max-width:780px;font:400 12.5px/1.6 Nunito,sans-serif;color:#3F4948">Same teal/Nunito/M3-Expressive vocabulary as the live app. Map-first, viewport = the query, solo, ends at <i>open a place → go</i>. <b><a href="#1c">1c</a> is live</b> — change the sort, tap category chips, tap pins, drag the sheet handle. <a href="#1d">1d</a>/<a href="#1e">1e</a>/<a href="#1f">1f</a> are the other three constructions you asked for, same data.</p>
+
+<div style="display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:9px" id="1a">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#1a" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#161D1D;border-radius:5px">1a</a>Home — two heroes, equal weight</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;display:flex;flex-direction:column;padding:8px 24px 28px;box-sizing:border-box">
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:2px">
+<button style="width:40px;height:40px;border:none;border-radius:20px;background:transparent;color:#3F4948;display:grid;place-items:center;cursor:pointer"><span style="font:22px 'Material Symbols Rounded'">dark_mode</span></button>
+<div style="width:92px;height:40px;display:flex;border:1px solid #6F7979;border-radius:20px;overflow:hidden">
+<div style="flex:1;display:grid;place-items:center;background:#9CF1F1;font:800 13px Nunito;color:#002020">EN</div>
+<div style="flex:1;display:grid;place-items:center;font:800 15px Nunito;color:#3F4948;border-left:1px solid #6F7979">ع</div>
+</div>
+<button style="width:40px;height:40px;border:none;border-radius:20px;background:transparent;color:#3F4948;display:grid;place-items:center;cursor:pointer"><span style="font:22px 'Material Symbols Rounded'">qr_code_scanner</span></button>
+</div>
+<div style="height:18px"></div>
+<div style="display:flex;align-items:center;gap:14px">
+<img src="app/assets/branding/hayer_icon.png" alt="Hayer" style="width:64px;height:64px;border-radius:20px;display:block">
+<div>
+<div style="font:900 30px/34px Nunito;color:#161D1D">Hayer</div>
+<div style="font:400 14px/20px Nunito;color:#3F4948">Swipe less. Decide together.</div>
+</div>
+</div>
+<div style="height:26px"></div>
+<div style="font:900 13px Nunito;color:#3F4948;letter-spacing:.04em">HOW MUCH TIME DO YOU HAVE?</div>
+<div style="height:12px"></div>
+<button style="text-align:left;border:2px solid #00696B;border-radius:28px;background:#9CF1F1;padding:22px;cursor:pointer;display:block;width:100%" style-hover="background:#8AEDEC">
+<div style="display:flex;align-items:center;gap:14px">
+<div style="width:56px;height:56px;border-radius:18px;background:#00696B;color:#fff;display:grid;place-items:center;flex-shrink:0"><span style="font:30px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">bolt</span></div>
+<div style="flex:1">
+<div style="font:900 24px/28px Nunito;color:#002020">In a hurry</div>
+<div style="font:700 13px/18px Nunito;color:#00494B">Pick a vibe, swipe a deck, decide in a minute</div>
+</div>
+</div>
+<div style="height:14px"></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<span style="padding:5px 10px;border-radius:99px;background:rgba(0,73,75,.14);font:800 11.5px Nunito;color:#002020">10 cards</span>
+<span style="padding:5px 10px;border-radius:99px;background:rgba(0,73,75,.14);font:800 11.5px Nunito;color:#002020">Solo or group</span>
+<span style="padding:5px 10px;border-radius:99px;background:rgba(0,73,75,.14);font:800 11.5px Nunito;color:#002020">~60 sec</span>
+</div>
+</button>
+<div style="height:14px"></div>
+<button style="text-align:left;border:1px solid #BEC8C8;border-radius:28px;background:#EFF5F4;padding:22px;cursor:pointer;display:block;width:100%" style-hover="border-color:#00696B">
+<div style="display:flex;align-items:center;gap:14px">
+<div style="width:56px;height:56px;border-radius:18px;background:#FFDEA6;color:#271900;display:grid;place-items:center;flex-shrink:0"><span style="font:30px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">explore</span></div>
+<div style="flex:1">
+<div style="font:900 24px/28px Nunito;color:#161D1D">Got time</div>
+<div style="font:700 13px/18px Nunito;color:#3F4948">Dig through every place on the map, your way</div>
+</div>
+</div>
+<div style="height:14px"></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<span style="padding:5px 10px;border-radius:99px;background:#DDE4E3;font:800 11.5px Nunito;color:#161D1D">Sort &amp; filter</span>
+<span style="padding:5px 10px;border-radius:99px;background:#DDE4E3;font:800 11.5px Nunito;color:#161D1D">Hidden gems</span>
+<span style="padding:5px 10px;border-radius:99px;background:#DDE4E3;font:800 11.5px Nunito;color:#161D1D">Full map</span>
+</div>
+</button>
+<div style="flex:1"></div>
+<button style="height:56px;border:1px solid #6F7979;border-radius:18px;background:transparent;color:#00696B;display:flex;align-items:center;justify-content:center;gap:8px;font:800 16px Nunito;cursor:pointer"><span style="font:20px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">bookmarks</span>Saved places</button>
+<div style="height:12px"></div>
+<button style="height:56px;border:1px solid #6F7979;border-radius:18px;background:transparent;color:#00696B;display:flex;align-items:center;justify-content:center;gap:8px;font:800 16px Nunito;cursor:pointer"><span style="font:20px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">group_add</span>Join a session</button>
+<div style="height:14px"></div>
+<button style="height:36px;border:none;background:transparent;color:#00696B;display:flex;align-items:center;justify-content:center;gap:8px;font:800 14px Nunito;cursor:pointer"><span style="font:18px 'Material Symbols Rounded'">privacy_tip</span>Your data</button>
+<div style="text-align:center;font:400 11px/16px Nunito;color:#3F4948;font-variant-numeric:tabular-nums">Hayer 1.9.0 (23)</div>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px" id="1b">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#1b" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#161D1D;border-radius:5px">1b</a>Home — full-bleed split, map peeking</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0;position:relative">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;position:relative;overflow:hidden">
+<div style="position:absolute;left:0;right:0;top:0;height:56%;overflow:hidden;background:#00696B">
+<div style="position:absolute;left:-337px;top:-485px;width:1024px;height:1024px;display:grid;grid-template-columns:repeat(4,256px);grid-template-rows:repeat(4,256px);opacity:.55">
+<sc-for list="{{ tiles13 }}" as="t" hint-placeholder-count="16"><div style="width:256px;height:256px;background:#E9E4DC url({{ t.src }}) center/256px 256px no-repeat"></div></sc-for>
+</div>
+<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,105,107,.55) 0%,rgba(0,105,107,.86) 62%,#F4FBFA 100%)"></div>
+<div style="position:absolute;left:24px;top:24px;display:flex;align-items:center;gap:12px">
+<img src="app/assets/branding/hayer_icon.png" alt="Hayer" style="width:48px;height:48px;border-radius:16px;display:block">
+<div style="font:900 24px/28px Nunito;color:#fff">Hayer</div>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:86px">
+<div style="font:900 34px/38px Nunito;color:#fff;text-wrap:pretty">Riyadh, right now</div>
+<div style="height:6px"></div>
+<div style="font:700 15px/22px Nunito;color:rgba(255,255,255,.88)">1,284 places in view · 41 opened this week</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;top:52%;padding:0 20px 20px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px">
+<button style="flex:1;text-align:left;border:none;border-radius:28px;background:#161D1D;padding:20px;cursor:pointer;position:relative;overflow:hidden;color:#fff">
+<div style="display:flex;align-items:flex-start;gap:12px">
+<div style="width:48px;height:48px;border-radius:16px;background:#FFDEA6;color:#271900;display:grid;place-items:center;flex-shrink:0"><span style="font:26px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">explore</span></div>
+<div style="flex:1">
+<div style="font:900 26px/30px Nunito">Got time</div>
+<div style="font:700 13px/19px Nunito;color:rgba(255,255,255,.72);margin-top:3px">Every category, every rating, every review count — sorted how you want, filtered down to the street.</div>
+</div>
+<span style="font:26px 'Material Symbols Rounded';color:#9CF1F1">arrow_outward</span>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px">
+<span style="padding:6px 11px;border-radius:99px;background:rgba(156,241,241,.18);font:800 11.5px Nunito;color:#9CF1F1">🏆 Top rated</span>
+<span style="padding:6px 11px;border-radius:99px;background:rgba(156,241,241,.18);font:800 11.5px Nunito;color:#9CF1F1">💎 Hidden gems</span>
+<span style="padding:6px 11px;border-radius:99px;background:rgba(156,241,241,.18);font:800 11.5px Nunito;color:#9CF1F1">🆕 New</span>
+</div>
+</button>
+<button style="text-align:left;border:2px solid #00696B;border-radius:28px;background:#9CF1F1;padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:12px">
+<div style="width:44px;height:44px;border-radius:14px;background:#00696B;color:#fff;display:grid;place-items:center;flex-shrink:0"><span style="font:24px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">bolt</span></div>
+<div style="flex:1">
+<div style="font:900 20px/24px Nunito;color:#002020">In a hurry</div>
+<div style="font:700 12.5px/17px Nunito;color:#00494B">A 10-card deck, swiped in a minute</div>
+</div>
+<span style="font:24px 'Material Symbols Rounded';color:#002020">chevron_right</span>
+</button>
+<div style="display:flex;gap:10px">
+<button style="flex:1;height:48px;border:1px solid #6F7979;border-radius:16px;background:transparent;color:#00696B;display:flex;align-items:center;justify-content:center;gap:7px;font:800 14px Nunito;cursor:pointer"><span style="font:19px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">bookmarks</span>Saved</button>
+<button style="flex:1;height:48px;border:1px solid #6F7979;border-radius:16px;background:transparent;color:#00696B;display:flex;align-items:center;justify-content:center;gap:7px;font:800 14px Nunito;cursor:pointer"><span style="font:19px 'Material Symbols Rounded';font-variation-settings:'FILL' 1">group_add</span>Join</button>
+</div>
+</div>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px" id="1c">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#1c" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:#00696B;color:#fff;border-radius:5px">1c</a><b style="font:800 11px Nunito;color:#161D1D">Live</b> · drag sheet over full-bleed map</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;position:relative;overflow:hidden;background:#E9E4DC">
+<div style="position:absolute;left:-337px;top:-215px;width:1024px;height:1024px;display:grid;grid-template-columns:repeat(4,256px);grid-template-rows:repeat(4,256px)">
+<sc-for list="{{ tiles13 }}" as="t" hint-placeholder-count="16"><div style="width:256px;height:256px;background:#E9E4DC url({{ t.src }}) center/256px 256px no-repeat"></div></sc-for>
+</div>
+<sc-for list="{{ pins }}" as="p" hint-placeholder-count="10">
+<button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+</sc-for>
+<div style="position:absolute;left:12px;right:12px;top:10px;display:flex;flex-direction:column;gap:8px">
+<div style="height:52px;border-radius:26px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;padding:0 6px 0 16px;gap:10px">
+<span style="font:22px 'Material Symbols Rounded';color:#3F4948">search</span>
+<div style="flex:1;font:700 14px Nunito;color:#161D1D">Al Olaya · this view</div>
+<div style="width:40px;height:40px;border-radius:20px;background:#9CF1F1;color:#002020;display:grid;place-items:center"><span style="font:22px 'Material Symbols Rounded'">my_location</span></div>
+</div>
+<div style="display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px">
+<button onClick="{{ cycleSort }}" style="height:40px;flex-shrink:0;border:none;border-radius:20px;background:#00696B;color:#fff;display:flex;align-items:center;gap:6px;padding:0 14px;font:900 13px Nunito;box-shadow:0 2px 6px rgba(0,0,0,.18);cursor:pointer"><span style="font:18px 'Material Symbols Rounded'">swap_vert</span>{{ sortLabel }}</button>
+<button onClick="{{ toggleFilters }}" style="height:40px;flex-shrink:0;border:1px solid #BEC8C8;border-radius:20px;background:#fff;color:#161D1D;display:flex;align-items:center;gap:6px;padding:0 14px;font:900 13px Nunito;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:pointer"><span style="font:18px 'Material Symbols Rounded'">tune</span>Filters<sc-if value="{{ filterCount }}" hint-placeholder-val="{{ 0 }}"><span style="min-width:18px;height:18px;border-radius:9px;background:#EC6A5E;color:#fff;font:900 11px Nunito;display:grid;place-items:center;padding:0 4px">{{ filterCount }}</span></sc-if></button>
+<sc-for list="{{ catChips }}" as="c" hint-placeholder-count="3">
+<button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+</sc-for>
+</div>
+<sc-if value="{{ subChips.length }}" hint-placeholder-val="{{ 0 }}">
+<div style="display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px">
+<sc-for list="{{ subChips }}" as="s" hint-placeholder-count="4">
+<button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ hiddenCatNote }}" hint-placeholder-val="{{ false }}">
+<div style="align-self:flex-start;padding:5px 10px;border-radius:99px;background:rgba(22,29,29,.72);color:#fff;font:700 11px Nunito">{{ hiddenCatNote }}</div>
+</sc-if>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:{{ sheetHeight }};background:#F4FBFA;border-radius:28px 28px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.18);transition:height 340ms cubic-bezier(.2,0,0,1);display:flex;flex-direction:column;overflow:hidden">
+<button onClick="{{ toggleSheet }}" style="border:none;background:transparent;padding:10px 0 6px;cursor:pointer;display:flex;justify-content:center"><div style="width:40px;height:4px;border-radius:2px;background:#BEC8C8"></div></button>
+<div style="padding:0 20px 8px;display:flex;align-items:flex-end;gap:8px">
+<div style="flex:1">
+<div style="font:900 20px/26px Nunito;color:#161D1D">{{ resultCount }} places in view</div>
+<div style="font:700 12px/17px Nunito;color:#3F4948">{{ sortExplainer }}</div>
+</div>
+<button onClick="{{ toggleSheet }}" style="height:32px;border:1px solid #BEC8C8;border-radius:16px;background:#fff;color:#00696B;font:900 12px Nunito;padding:0 12px;cursor:pointer">{{ sheetToggleLabel }}</button>
+</div>
+<div style="flex:1;overflow:auto;padding:0 12px 16px">
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+<button onClick="{{ r.onClick }}" style="{{ r.style }}">
+<div style="width:56px;height:56px;border-radius:16px;background:{{ r.thumbBg }};display:grid;place-items:center;font-size:26px;flex-shrink:0">{{ r.emoji }}</div>
+<div style="flex:1;min-width:0;text-align:left">
+<div style="display:flex;align-items:baseline;gap:6px">
+<div style="font:900 15px/20px Nunito;color:#161D1D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.rank }}. {{ r.name }}</div>
+</div>
+<div style="font:700 12px/17px Nunito;color:#3F4948;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.meta }}</div>
+<div style="font:700 11.5px/16px Nunito;color:{{ r.tagColor }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.tag }}</div>
+</div>
+<div style="text-align:right;flex-shrink:0">
+<div style="font:900 16px Nunito;color:#00696B">★ {{ r.rating }}</div>
+<div style="font:700 11px Nunito;color:#3F4948">{{ r.reviews }}</div>
+</div>
+</button>
+</sc-for>
+<div style="text-align:center;font:400 11px/16px Nunito;color:#3F4948;padding:10px 20px 0">Place information from Google Maps · ratings refreshed within 72 h · map tiles © Esri, OpenStreetMap</div>
+</div>
+</div>
+<sc-if value="{{ filtersOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.32)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;max-height:92%;background:#F4FBFA;border-radius:28px 28px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.22);display:flex;flex-direction:column;overflow:hidden">
+<div style="display:flex;justify-content:center;padding:10px 0 6px"><div style="width:40px;height:4px;border-radius:2px;background:#BEC8C8"></div></div>
+<div style="padding:0 20px 10px;display:flex;align-items:center;gap:10px">
+<div style="flex:1;font:900 22px/28px Nunito;color:#161D1D">Advanced filters</div>
+<button onClick="{{ resetFilters }}" style="border:none;background:transparent;color:#00696B;font:900 13px Nunito;cursor:pointer">Reset</button>
+<button onClick="{{ toggleFilters }}" style="width:40px;height:40px;border:none;border-radius:20px;background:#DDE4E3;color:#161D1D;display:grid;place-items:center;cursor:pointer"><span style="font:22px 'Material Symbols Rounded'">close</span></button>
+</div>
+<div style="flex:1;overflow:auto;padding:0 20px 8px">
+<div style="font:900 13px Nunito;color:#161D1D;margin-bottom:8px">Number of reviews</div>
+<div style="display:flex;align-items:flex-end;gap:5px;height:82px">
+<sc-for list="{{ bins }}" as="b" hint-placeholder-count="6">
+<button onClick="{{ b.onClick }}" style="{{ b.wrapStyle }}">
+<div style="font:900 10px Nunito;color:{{ b.countColor }}">{{ b.count }}</div>
+<div style="width:100%;height:{{ b.barHeight }};border-radius:6px 6px 0 0;background:{{ b.barColor }}"></div>
+<div style="font:800 9.5px Nunito;color:#3F4948;white-space:nowrap">{{ b.label }}</div>
+</button>
+</sc-for>
+</div>
+<div style="height:16px"></div>
+<div style="font:900 13px Nunito;color:#161D1D;margin-bottom:8px">Price range</div>
+<div style="display:flex;gap:7px">
+<sc-for list="{{ priceChips }}" as="p" hint-placeholder-count="5">
+<button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+</sc-for>
+</div>
+<div style="height:16px"></div>
+<div style="font:900 13px Nunito;color:#161D1D;margin-bottom:8px">Minimum rating · {{ minRatingLabel }}</div>
+<div style="display:flex;gap:7px">
+<sc-for list="{{ ratingChips }}" as="p" hint-placeholder-count="4">
+<button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+</sc-for>
+</div>
+<div style="height:16px"></div>
+<div style="font:900 13px Nunito;color:#161D1D;margin-bottom:8px">Opening-hour window</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap">
+<sc-for list="{{ hourChips }}" as="p" hint-placeholder-count="4">
+<button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+</sc-for>
+</div>
+<div style="height:16px"></div>
+<div style="font:900 13px Nunito;color:#161D1D;margin-bottom:8px">Search names &amp; review text</div>
+<div style="height:52px;border-radius:16px;background:#DDE4E3;display:flex;align-items:center;padding:0 14px;gap:10px">
+<span style="font:20px 'Material Symbols Rounded';color:#3F4948">format_quote</span>
+<div style="flex:1;font:700 14px Nunito;color:#3F4948">e.g. “quiet”, “rooftop”, “kunafa”</div>
+</div>
+<div style="height:16px"></div>
+<div style="font:900 13px Nunito;color:#161D1D;margin-bottom:8px">Amenities</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap">
+<sc-for list="{{ amenityChips }}" as="p" hint-placeholder-count="5">
+<button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+</sc-for>
+</div>
+<div style="height:10px"></div>
+<div style="display:flex;gap:8px;align-items:flex-start;padding:12px;border-radius:16px;background:#FFDEA6;color:#271900">
+<span style="font:20px 'Material Symbols Rounded';flex-shrink:0">info</span>
+<div style="font:700 11.5px/16px Nunito">Amenities and review-text search need fields the extractor does not capture yet — shown here so we can spec them, gated in the build.</div>
+</div>
+</div>
+<div style="padding:12px 20px 18px;border-top:1px solid #BEC8C8;display:flex;gap:12px">
+<button onClick="{{ resetFilters }}" style="flex:1;height:56px;border:1px solid #6F7979;border-radius:18px;background:transparent;color:#00696B;font:800 16px Nunito;cursor:pointer">Clear</button>
+<button onClick="{{ toggleFilters }}" style="flex:2;height:56px;border:none;border-radius:18px;background:#00696B;color:#fff;font:800 16px Nunito;cursor:pointer">Show {{ resultCount }} places</button>
+</div>
+</div>
+</sc-if>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px" id="1d">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#1d" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#161D1D;border-radius:5px">1d</a>Map shrinks to a sticky top pane</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+<div style="height:300px;flex-shrink:0;position:relative;overflow:hidden;background:#E9E4DC">
+<div style="position:absolute;left:-337px;top:-485px;width:1024px;height:1024px;display:grid;grid-template-columns:repeat(4,256px);grid-template-rows:repeat(4,256px)">
+<sc-for list="{{ tiles13 }}" as="t" hint-placeholder-count="16"><div style="width:256px;height:256px;background:#E9E4DC url({{ t.src }}) center/256px 256px no-repeat"></div></sc-for>
+</div>
+<div style="position:absolute;left:30%;top:38%;padding:5px 9px;border-radius:12px;background:#fff;border:2px solid #00696B;box-shadow:0 2px 6px rgba(0,0,0,.24);font:900 12px Nunito;color:#00696B">4.7</div>
+<div style="position:absolute;left:58%;top:26%;padding:5px 9px;border-radius:12px;background:#fff;border:1px solid #BEC8C8;box-shadow:0 2px 6px rgba(0,0,0,.18);font:900 12px Nunito;color:#161D1D">4.4</div>
+<div style="position:absolute;left:47%;top:58%;padding:5px 9px;border-radius:12px;background:#161D1D;box-shadow:0 2px 6px rgba(0,0,0,.24);font:900 12px Nunito;color:#fff">4.9</div>
+<div style="position:absolute;left:72%;top:47%;padding:5px 9px;border-radius:12px;background:#fff;border:1px solid #BEC8C8;box-shadow:0 2px 6px rgba(0,0,0,.18);font:900 12px Nunito;color:#161D1D">4.5</div>
+<div style="position:absolute;left:18%;top:66%;padding:5px 9px;border-radius:12px;background:#fff;border:1px solid #BEC8C8;box-shadow:0 2px 6px rgba(0,0,0,.18);font:900 12px Nunito;color:#161D1D">4.2</div>
+<div style="position:absolute;left:12px;right:12px;top:10px;height:48px;border-radius:24px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;padding:0 8px 0 14px;gap:10px">
+<span style="font:20px 'Material Symbols Rounded';color:#3F4948">search</span>
+<div style="flex:1;font:700 13.5px Nunito;color:#161D1D">Al Olaya · this view</div>
+<div style="width:36px;height:36px;border-radius:18px;background:#9CF1F1;color:#002020;display:grid;place-items:center"><span style="font:20px 'Material Symbols Rounded'">my_location</span></div>
+</div>
+<div style="position:absolute;left:50%;bottom:10px;transform:translateX(-50%);height:36px;padding:0 14px;border-radius:18px;background:#161D1D;color:#fff;display:flex;align-items:center;gap:6px;font:900 12.5px Nunito;box-shadow:0 3px 10px rgba(0,0,0,.24)"><span style="font:18px 'Material Symbols Rounded'">refresh</span>Search this area</div>
+</div>
+<div style="flex-shrink:0;padding:10px 12px 8px;background:#F4FBFA;border-bottom:1px solid #BEC8C8;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:7px;overflow:hidden">
+<div style="height:36px;flex-shrink:0;border-radius:18px;background:#00696B;color:#fff;display:flex;align-items:center;gap:6px;padding:0 12px;font:900 12.5px Nunito"><span style="font:17px 'Material Symbols Rounded'">swap_vert</span>Most reviewed</div>
+<div style="height:36px;flex-shrink:0;border:1px solid #BEC8C8;border-radius:18px;background:#fff;color:#161D1D;display:flex;align-items:center;gap:6px;padding:0 12px;font:900 12.5px Nunito"><span style="font:17px 'Material Symbols Rounded'">tune</span>Filters</div>
+<div style="height:36px;flex-shrink:0;border:1px solid rgba(0,105,107,.42);border-radius:18px;background:#DDE4E3;color:#3F4948;display:flex;align-items:center;padding:0 12px;font:800 12.5px Nunito">🍽️ Restaurants 42</div>
+<div style="height:36px;flex-shrink:0;border:1px solid rgba(0,105,107,.42);border-radius:18px;background:#DDE4E3;color:#3F4948;display:flex;align-items:center;padding:0 12px;font:800 12.5px Nunito">☕ Cafes 31</div>
+</div>
+<div style="font:900 14px Nunito;color:#161D1D">96 places in view <span style="font:700 12px Nunito;color:#3F4948">· most reviewed first</span></div>
+</div>
+<div style="flex:1;overflow:hidden;padding:6px 12px 12px">
+<sc-for list="{{ staticRows }}" as="r" hint-placeholder-count="6">
+<div style="display:flex;gap:12px;align-items:center;padding:10px 8px;border-radius:20px">
+<div style="width:52px;height:52px;border-radius:16px;background:{{ r.thumbBg }};display:grid;place-items:center;font-size:24px;flex-shrink:0">{{ r.emoji }}</div>
+<div style="flex:1;min-width:0">
+<div style="font:900 15px/20px Nunito;color:#161D1D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</div>
+<div style="font:700 12px/17px Nunito;color:#3F4948;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.meta }}</div>
+</div>
+<div style="text-align:right;flex-shrink:0">
+<div style="font:900 15px Nunito;color:#00696B">★ {{ r.rating }}</div>
+<div style="font:700 11px Nunito;color:#3F4948">{{ r.reviews }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px" id="1e">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#1e" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#161D1D;border-radius:5px">1e</a>List-first, floating Map button</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column">
+<div style="padding:6px 16px 0;display:flex;align-items:center;gap:4px">
+<button style="width:40px;height:40px;border:none;border-radius:20px;background:transparent;color:#3F4948;display:grid;place-items:center;cursor:pointer"><span style="font:22px 'Material Symbols Rounded'">arrow_back</span></button>
+<div style="flex:1;font:900 22px Nunito;color:#161D1D">Explore</div>
+<button style="width:40px;height:40px;border:none;border-radius:20px;background:transparent;color:#3F4948;display:grid;place-items:center;cursor:pointer"><span style="font:22px 'Material Symbols Rounded'">bookmarks</span></button>
+</div>
+<div style="padding:10px 16px 0">
+<div style="height:52px;border-radius:26px;background:#DDE4E3;display:flex;align-items:center;padding:0 8px 0 16px;gap:10px">
+<span style="font:22px 'Material Symbols Rounded';color:#3F4948">search</span>
+<div style="flex:1;font:700 14px Nunito;color:#3F4948">Search Al Olaya — names, reviews</div>
+</div>
+</div>
+<div style="padding:12px 16px 0;display:flex;gap:7px;overflow:hidden">
+<div style="height:38px;flex-shrink:0;border-radius:19px;background:#00696B;color:#fff;display:flex;align-items:center;gap:6px;padding:0 13px;font:900 13px Nunito"><span style="font:18px 'Material Symbols Rounded'">workspace_premium</span>Best</div>
+<div style="height:38px;flex-shrink:0;border:1px solid #BEC8C8;border-radius:19px;background:#fff;color:#161D1D;display:flex;align-items:center;gap:6px;padding:0 13px;font:900 13px Nunito"><span style="font:18px 'Material Symbols Rounded'">tune</span>Filters<span style="min-width:18px;height:18px;border-radius:9px;background:#EC6A5E;color:#fff;font:900 11px Nunito;display:grid;place-items:center;padding:0 4px">2</span></div>
+<div style="height:38px;flex-shrink:0;border:1px solid rgba(0,105,107,.42);border-radius:19px;background:#DDE4E3;color:#3F4948;display:flex;align-items:center;padding:0 13px;font:800 13px Nunito">💎 Gems</div>
+</div>
+<div style="padding:14px 16px 6px;font:900 14px Nunito;color:#161D1D">96 places <span style="font:700 12px Nunito;color:#3F4948">· 500 m–3 km</span></div>
+<div style="flex:1;overflow:hidden;padding:0 12px">
+<sc-for list="{{ staticRowsBest }}" as="r" hint-placeholder-count="8">
+<div style="display:flex;gap:12px;align-items:center;padding:11px 8px;border-bottom:1px solid rgba(190,200,200,.5)">
+<div style="width:56px;height:56px;border-radius:16px;background:{{ r.thumbBg }};display:grid;place-items:center;font-size:26px;flex-shrink:0">{{ r.emoji }}</div>
+<div style="flex:1;min-width:0">
+<div style="font:900 15px/20px Nunito;color:#161D1D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</div>
+<div style="font:700 12px/17px Nunito;color:#3F4948;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.meta }}</div>
+<div style="font:700 11.5px/16px Nunito;color:{{ r.tagColor }}">{{ r.tag }}</div>
+</div>
+<div style="text-align:right;flex-shrink:0">
+<div style="font:900 16px Nunito;color:#00696B">★ {{ r.rating }}</div>
+<div style="font:700 11px Nunito;color:#3F4948">{{ r.reviews }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="position:absolute;left:50%;bottom:20px;transform:translateX(-50%);height:56px;padding:0 22px;border-radius:18px;background:#161D1D;color:#fff;display:flex;align-items:center;gap:8px;font:900 15px Nunito;box-shadow:0 6px 18px rgba(0,0,0,.3)"><span style="font:22px 'Material Symbols Rounded'">map</span>Map</div>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px" id="1f">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#1f" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#161D1D;border-radius:5px">1f</a>Map background, translucent list layer</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;position:relative;overflow:hidden;background:#E9E4DC">
+<div style="position:absolute;left:-337px;top:-215px;width:1024px;height:1024px;display:grid;grid-template-columns:repeat(4,256px);grid-template-rows:repeat(4,256px)">
+<sc-for list="{{ tiles13 }}" as="t" hint-placeholder-count="16"><div style="width:256px;height:256px;background:#E9E4DC url({{ t.src }}) center/256px 256px no-repeat"></div></sc-for>
+</div>
+<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(244,251,250,0) 0%,rgba(244,251,250,.2) 30%,rgba(244,251,250,.78) 58%,rgba(244,251,250,.94) 100%)"></div>
+<div style="position:absolute;left:34%;top:16%;padding:5px 9px;border-radius:12px;background:#161D1D;box-shadow:0 2px 6px rgba(0,0,0,.24);font:900 12px Nunito;color:#fff">4.9</div>
+<div style="position:absolute;left:62%;top:24%;padding:5px 9px;border-radius:12px;background:#fff;border:1px solid #BEC8C8;box-shadow:0 2px 6px rgba(0,0,0,.18);font:900 12px Nunito;color:#161D1D">4.4</div>
+<div style="position:absolute;left:20%;top:30%;padding:5px 9px;border-radius:12px;background:#fff;border:1px solid #BEC8C8;box-shadow:0 2px 6px rgba(0,0,0,.18);font:900 12px Nunito;color:#161D1D">4.6</div>
+<div style="position:absolute;left:12px;right:12px;top:10px;display:flex;flex-direction:column;gap:8px">
+<div style="height:52px;border-radius:26px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);box-shadow:0 3px 10px rgba(0,0,0,.16);display:flex;align-items:center;padding:0 6px 0 16px;gap:10px">
+<span style="font:22px 'Material Symbols Rounded';color:#3F4948">search</span>
+<div style="flex:1;font:700 14px Nunito;color:#161D1D">Al Olaya · this view</div>
+<div style="width:40px;height:40px;border-radius:20px;background:#9CF1F1;color:#002020;display:grid;place-items:center"><span style="font:22px 'Material Symbols Rounded'">my_location</span></div>
+</div>
+<div style="display:flex;gap:7px;overflow:hidden">
+<div style="height:38px;flex-shrink:0;border-radius:19px;background:#00696B;color:#fff;display:flex;align-items:center;gap:6px;padding:0 13px;font:900 13px Nunito"><span style="font:18px 'Material Symbols Rounded'">diamond</span>Hidden gems</div>
+<div style="height:38px;flex-shrink:0;border-radius:19px;background:rgba(255,255,255,.92);border:1px solid #BEC8C8;color:#161D1D;display:flex;align-items:center;gap:6px;padding:0 13px;font:900 13px Nunito"><span style="font:18px 'Material Symbols Rounded'">tune</span>Filters</div>
+<div style="height:38px;flex-shrink:0;border-radius:19px;background:rgba(255,255,255,.92);border:1px solid rgba(0,105,107,.42);color:#3F4948;display:flex;align-items:center;padding:0 13px;font:800 13px Nunito">☕ Cafes 31</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;top:46%;padding:0 14px 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:9px">
+<div style="display:flex;align-items:center;gap:8px;padding:0 6px">
+<div style="flex:1;font:900 16px Nunito;color:#161D1D">14 gems in view</div>
+<div style="font:700 11.5px Nunito;color:#3F4948">4.5+ · under 500 reviews</div>
+</div>
+<sc-for list="{{ staticRowsGems }}" as="r" hint-placeholder-count="5">
+<div style="display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:22px;background:rgba(255,255,255,.86);backdrop-filter:blur(6px);border:1px solid rgba(190,200,200,.6)">
+<div style="width:50px;height:50px;border-radius:15px;background:{{ r.thumbBg }};display:grid;place-items:center;font-size:24px;flex-shrink:0">{{ r.emoji }}</div>
+<div style="flex:1;min-width:0">
+<div style="font:900 15px/20px Nunito;color:#161D1D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</div>
+<div style="font:700 12px/17px Nunito;color:#3F4948;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.meta }}</div>
+</div>
+<div style="text-align:right;flex-shrink:0">
+<div style="font:900 16px Nunito;color:#00696B">★ {{ r.rating }}</div>
+<div style="font:700 11px Nunito;color:#3F4948">{{ r.reviews }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:9px" id="1h">
+<div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.55)"><a href="#1h" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#161D1D;border-radius:5px">1h</a>Place detail, discovery context</div>
+<div style="width:412px;height:916px;border-radius:28px;overflow:hidden;background:#F4FBFA;box-shadow:0 0 0 8px rgb(202,196,208);display:flex;flex-direction:column;flex-shrink:0">
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.StatusBar" hint-size="100%,52px"></x-import>
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+<div style="position:relative;height:250px;flex-shrink:0;background:#9CF1F1">
+<image-slot id="gt-detail-hero" shape="rect" placeholder="Drop a photo of Nabt Fenjan"></image-slot>
+<div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.45) 0%,transparent 40%,rgba(0,0,0,.55) 100%)"></div>
+<div style="position:absolute;top:12px;left:12px;width:40px;height:40px;border-radius:20px;background:rgba(0,0,0,.54);color:#fff;display:grid;place-items:center"><span style="font:22px 'Material Symbols Rounded'">arrow_back</span></div>
+<div style="position:absolute;top:12px;right:12px;display:flex;gap:8px">
+<div style="width:40px;height:40px;border-radius:20px;background:rgba(0,0,0,.54);color:#fff;display:grid;place-items:center"><span style="font:22px 'Material Symbols Rounded'">bookmark_border</span></div>
+<div style="width:40px;height:40px;border-radius:20px;background:rgba(0,0,0,.54);color:#fff;display:grid;place-items:center"><span style="font:22px 'Material Symbols Rounded'">map</span></div>
+</div>
+<div style="position:absolute;left:16px;bottom:12px;display:flex;gap:8px;pointer-events:none">
+<div style="padding:6px 10px;border-radius:99px;background:#18A058;color:#fff;font:800 12px Nunito">Open now</div>
+<div style="padding:6px 10px;border-radius:99px;background:#161D1D;color:#9CF1F1;font:800 12px Nunito">💎 Hidden gem</div>
+</div>
+</div>
+<div style="flex:1;overflow:hidden;padding:16px 20px 0">
+<div style="font:900 26px/32px Nunito;color:#161D1D">Nabt Fenjan</div>
+<div style="height:4px"></div>
+<div style="font:700 14px/20px Nunito;color:#3F4948">Coffee shop · ☕ Specialty coffee · <span style="font:700 15px Nunito">﷼﷼</span> · 2.2 km</div>
+<div style="height:12px"></div>
+<div style="display:flex;gap:8px">
+<div style="flex:1;border:1px solid #BEC8C8;border-radius:18px;background:#EFF5F4;padding:12px;text-align:center">
+<div style="font:900 22px Nunito;color:#00696B">4.8</div>
+<div style="font:700 11px Nunito;color:#3F4948">rating</div>
+</div>
+<div style="flex:1;border:1px solid #BEC8C8;border-radius:18px;background:#EFF5F4;padding:12px;text-align:center">
+<div style="font:900 22px Nunito;color:#161D1D">320</div>
+<div style="font:700 11px Nunito;color:#3F4948">reviews</div>
+</div>
+<div style="flex:1;border:1px solid #BEC8C8;border-radius:18px;background:#EFF5F4;padding:12px;text-align:center">
+<div style="font:900 22px Nunito;color:#161D1D">#2</div>
+<div style="font:700 11px Nunito;color:#3F4948">of 31 cafes</div>
+</div>
+</div>
+<div style="height:14px"></div>
+<div style="border:1px solid #BEC8C8;border-radius:18px;padding:12px 14px;background:#EFF5F4">
+<div style="font:900 12.5px Nunito;color:#161D1D;margin-bottom:8px">Where it sits in this view</div>
+<div style="display:flex;align-items:flex-end;gap:4px;height:44px">
+<div style="flex:1;height:26%;border-radius:4px 4px 0 0;background:#DDE4E3"></div>
+<div style="flex:1;height:44%;border-radius:4px 4px 0 0;background:#DDE4E3"></div>
+<div style="flex:1;height:70%;border-radius:4px 4px 0 0;background:#DDE4E3"></div>
+<div style="flex:1;height:100%;border-radius:4px 4px 0 0;background:#00696B"></div>
+<div style="flex:1;height:58%;border-radius:4px 4px 0 0;background:#DDE4E3"></div>
+<div style="flex:1;height:30%;border-radius:4px 4px 0 0;background:#DDE4E3"></div>
+</div>
+<div style="font:700 11px Nunito;color:#3F4948;margin-top:6px">Rated higher than 94% of cafes in view, on 320 reviews</div>
+</div>
+<div style="height:14px"></div>
+<div style="font:400 14px/20px Nunito;color:#3F4948">“Tiny corner roastery, mostly regulars, the V60 is the thing to order.”</div>
+<div style="height:12px"></div>
+<div style="display:flex;flex-wrap:wrap;gap:7px">
+<div style="height:30px;display:flex;align-items:center;padding:0 11px;border-radius:15px;background:#DDE4E3;font:800 12px Nunito;color:#3F4948">Closes 23:00</div>
+<div style="height:30px;display:flex;align-items:center;padding:0 11px;border-radius:15px;background:#DDE4E3;font:800 12px Nunito;color:#3F4948">Opened 2026</div>
+<div style="height:30px;display:flex;align-items:center;padding:0 11px;border-radius:15px;background:#DDE4E3;font:800 12px Nunito;color:#3F4948">3 photos</div>
+</div>
+</div>
+<div style="padding:12px 20px 18px;display:flex;gap:10px">
+<button style="flex:2;height:56px;border:none;border-radius:18px;background:#00696B;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font:800 16px Nunito;cursor:pointer"><span style="font:20px 'Material Symbols Rounded'">directions</span>Go</button>
+<button style="flex:1;height:56px;border:1px solid #6F7979;border-radius:18px;background:transparent;color:#00696B;display:flex;align-items:center;justify-content:center;gap:8px;font:800 15px Nunito;cursor:pointer"><span style="font:20px 'Material Symbols Rounded'">bookmark_border</span>Save</button>
+</div>
+</div>
+<x-import component-from-global-scope="M3ExpressiveDesignSystem_baa786.GestureBar" hint-size="100%,24px"></x-import>
+</div>
+</div>
+
+</div>
+<p style="margin:24px 0 0;font:400 12px/1.5 Nunito,sans-serif;color:rgba(0,0,0,.5)">Try next: “go with <a href="#1c">1c</a>, but put the sort chip in the sheet header” · “<a href="#1b">1b</a>’s hero with <a href="#1a">1a</a>’s equal weighting” · “add the multiplayer hand-off to <a href="#1h">1h</a>”</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1050}}">
+const PLACES = [
+  { id:'najd', name:'Najd Village', type:'Saudi restaurant', emoji:'🍽️', cat:'restaurant', sub:'middle_eastern', subLabel:'🥙 Middle Eastern', rating:4.4, reviews:12400, price:2, open:true, dist:4.2, x:34, y:52, age:240, amen:['family','outdoor'] },
+  { id:'lusin', name:'Lusin', type:'Armenian restaurant', emoji:'🥘', cat:'restaurant', sub:'fine_dining', subLabel:'🍽️ Fine dining', rating:4.5, reviews:8900, price:3, open:true, dist:3.1, x:56, y:38, age:300, amen:['reserve'] },
+  { id:'myazu', name:'Myazu', type:'Japanese restaurant', emoji:'🍱', cat:'restaurant', sub:'japanese', subLabel:'🍱 Japanese', rating:4.4, reviews:3400, price:4, open:true, dist:2.6, x:48, y:63, age:280, amen:['reserve'] },
+  { id:'takya', name:'Takya Kitchen', type:'Saudi restaurant', emoji:'🍛', cat:'restaurant', sub:'middle_eastern', subLabel:'🥙 Middle Eastern', rating:4.6, reviews:1900, price:3, open:false, dist:5.4, x:22, y:33, age:120, amen:['outdoor'] },
+  { id:'roman', name:'Al Romansiah', type:'Saudi restaurant', emoji:'🍽️', cat:'restaurant', sub:'middle_eastern', subLabel:'🥙 Middle Eastern', rating:4.3, reviews:27600, price:1, open:true, dist:6.8, x:66, y:72, age:400, amen:['family'] },
+  { id:'burgerm', name:'Burger Maker', type:'Burger joint', emoji:'🍔', cat:'restaurant', sub:'hamburger', subLabel:'🍔 Burgers', rating:3.6, reviews:640, price:1, open:true, dist:1.7, x:70, y:57, age:150, amen:[] },
+  { id:'camel', name:'Camel Step', type:'Coffee shop', emoji:'☕', cat:'cafe', sub:'coffee_shop', subLabel:'☕ Coffee shop', rating:4.7, reviews:1240, price:2, open:true, dist:1.9, x:44, y:44, age:90, amen:['wifi','outdoor'] },
+  { id:'nabt', name:'Nabt Fenjan', type:'Coffee shop', emoji:'☕', cat:'cafe', sub:'espresso_bar', subLabel:'☕ Espresso bar', rating:4.8, reviews:320, price:2, open:true, dist:2.2, x:61, y:52, age:40, amen:['wifi'] },
+  { id:'sum', name:'Sum Coffee', type:'Espresso bar', emoji:'☕', cat:'cafe', sub:'espresso_bar', subLabel:'☕ Espresso bar', rating:4.6, reviews:88, price:2, open:true, dist:3.6, x:28, y:66, age:18, amen:['wifi'] },
+  { id:'halfm', name:'Half Million', type:'Coffee shop', emoji:'☕', cat:'cafe', sub:'coffee_shop', subLabel:'☕ Coffee shop', rating:4.2, reviews:5600, price:2, open:true, dist:1.4, x:52, y:29, age:350, amen:['wifi','outdoor'] },
+  { id:'brew', name:'Brew92', type:'Coffee shop', emoji:'☕', cat:'cafe', sub:'coffee_shop', subLabel:'☕ Coffee shop', rating:4.5, reviews:2100, price:2, open:false, dist:4.8, x:74, y:44, age:260, amen:['wifi'] },
+  { id:'roof', name:'Rooftop Tea Room', type:'Tea house', emoji:'🫖', cat:'cafe', sub:'tea_house', subLabel:'🫖 Tea house', rating:4.9, reviews:46, price:2, open:true, dist:2.9, x:40, y:74, age:12, amen:['outdoor'] },
+  { id:'kap', name:'King Abdullah Park', type:'Park', emoji:'🌳', cat:'todo', sub:'park', subLabel:'🌳 Park', rating:4.5, reviews:41000, price:0, open:true, dist:7.2, x:18, y:58, age:500, amen:['family','outdoor'] },
+  { id:'diriyah', name:'Diriyah', type:'Landmark', emoji:'📍', cat:'todo', sub:'landmark', subLabel:'📍 Landmark', rating:4.7, reviews:15800, price:0, open:true, dist:12.4, x:12, y:24, age:460, amen:['family'] },
+  { id:'gallery', name:'Hayy Jameel Gallery', type:'Art gallery', emoji:'🖼️', cat:'todo', sub:'art_gallery', subLabel:'🖼️ Art gallery', rating:4.6, reviews:210, price:0, open:false, dist:3.9, x:64, y:18, age:30, amen:[] },
+  { id:'blvd', name:'Boulevard City', type:'Shopping mall', emoji:'🛍️', cat:'todo', sub:'shopping_mall', subLabel:'🛍️ Shopping mall', rating:4.3, reviews:63000, price:0, open:true, dist:8.3, x:78, y:62, age:420, amen:['family'] },
+];
+
+const CATS = [
+  { id:'restaurant', label:'🍽️ Restaurants' },
+  { id:'cafe', label:'☕ Cafes' },
+  { id:'todo', label:'🎯 Things to do' },
+];
+
+const SORTS = [
+  { id:'best', label:'Best', explainer:'Rating weighted by how many people rated it' },
+  { id:'rated', label:'Top rated', explainer:'Highest rating first, any review count' },
+  { id:'reviewed', label:'Most reviewed', explainer:'The busiest places in this view' },
+  { id:'gems', label:'💎 Hidden gems', explainer:'4.5+ on fewer than 500 reviews' },
+  { id:'worst', label:'Worst rated', explainer:'Lowest rating first — useful for ruling out' },
+  { id:'new', label:'🆕 Recently discovered', explainer:'Newest to our catalog' },
+];
+
+const BINS = [
+  { id:'b1', label:'1–50', min:1, max:50 },
+  { id:'b2', label:'50–100', min:50, max:100 },
+  { id:'b3', label:'100–250', min:100, max:250 },
+  { id:'b4', label:'250–500', min:250, max:500 },
+  { id:'b5', label:'500–1k', min:500, max:1000 },
+  { id:'b6', label:'1k+', min:1000, max:1e9 },
+];
+
+const AMENITIES = ['Outdoor seating', 'Wi-Fi', 'Family section', 'Takes reservations', 'Parking'];
+const HOURS = ['Open now', 'Open late (after 23:00)', 'Open for breakfast', 'Open Friday'];
+
+const L = (id, label, n) => ({ id, label, n });
+const TAX = [
+  { id:'food', emoji:'🍹', label:'Food & Drinks', children:[
+    { id:'rest', label:'Restaurants', children:[
+      { id:'cuisine', label:'Cuisine', children:[
+        L('american','American',6),
+        { id:'asian', label:'Asian', children:[
+          L('asianfusion','Asian fusion',2), L('chinese','Chinese',5), L('indian','Indian',9), L('indonesian','Indonesian',0),
+          { id:'japanese', label:'Japanese', own:3, children:[ L('izakaya','Izakaya',1), L('sushi','Sushi',4) ] },
+          L('korean','Korean',2), L('thai','Thai',3), L('vietnamese','Vietnamese',1),
+        ]},
+        { id:'european', label:'European', children:[ L('french','French',2), L('german','German',0), L('italian','Italian',7), L('medi','Mediterranean',4) ]},
+        { id:'latam', label:'Latin American', children:[ L('mexican','Mexican',2) ]},
+        { id:'mideast', label:'Middle Eastern', own:14, children:[ L('turkish','Turkish',5) ]},
+        L('western','Western',3),
+      ]},
+      { id:'specialty', label:'Specialty / Main Food', children:[
+        L('bbq','Barbecue',4), L('asador','Asador',0),
+        { id:'chicken', label:'Chicken', own:6, children:[ L('wings','Chicken wings',2) ]},
+        L('fish','Fish',1), L('hamburger','Hamburger',11), L('meat','Meat',3), L('noodle','Noodle shop',2),
+        L('pizza','Pizza',8), L('seafood','Seafood',3), L('steak','Steak house',2), L('sushi2','Sushi',4),
+      ]},
+      { id:'style', label:'Dining Style', children:[
+        L('bistro','Bistro',2), L('buffet','Buffet',3), L('cafeteria','Cafeteria',1), L('diner','Diner',2),
+        L('downhome','Down home cooking',0), L('family','Family restaurant',9), L('fastfood','Fast food',16),
+        L('fine','Fine dining',5), L('foodcourt','Food court',3),
+      ]},
+      { id:'meal', label:'Meal', children:[ L('breakfast','Breakfast',7), L('brunch','Brunch',4), L('lunch','Lunch',6) ]},
+      { id:'dietary', label:'Dietary', children:[ L('gf','Gluten free',1), L('halal','Halal',22), L('healthfood','Health food',3), L('vegan','Vegan',2), L('vegetarian','Vegetarian',3) ]},
+    ]},
+    { id:'cafes', label:'Cafes & Coffee', children:[ L('cafe','Cafe',12), L('coffeeshop','Coffee shop',18), L('coffeestand','Coffee stand',4), L('espresso','Espresso bar',6), L('teahouse','Tea house',3) ]},
+    { id:'bars', label:'Bars & Nightlife', children:[ L('bar','Bar',0), L('bargrill','Bar and grill',0), L('brewpub','Brewpub',0), L('cocktail','Cocktail bar',0), L('gastropub','Gastropub',0), L('hookah','Hookah bar',7), L('livemusicbar','Live music bar',0), L('lounge','Lounge',5), L('nightclub','Night club',0), L('pub','Pub',0), L('sportsbar','Sports bar',0), L('tapas','Tapas bar',1), L('winebar','Wine bar',0) ]},
+    { id:'bakery', label:'Bakeries, Desserts & Sweets', children:[ L('bakeryshop','Bakery',9), L('candy','Candy store',2), L('chocolate','Chocolate shop',4), L('dessert','Dessert',6), L('dessertshop','Dessert shop',5), L('donut','Donut shop',3), L('icecream','Ice cream shop',7), L('pastry','Pastry shop',4) ]},
+    { id:'quick', label:'Quick Bites & Prepared Food', children:[ L('deli','Deli',2), L('juice','Juice shop',8), L('sandwich','Sandwich shop',6), L('snack','Snack bar',3) ]},
+    { id:'services', label:'Food Services', children:[ L('mealdelivery','Meal delivery',5), L('mealtakeaway','Meal takeaway',9), L('pizzatakeaway','Pizza takeaway',3) ]},
+  ]},
+  { id:'todo', emoji:'🏰', label:'Things to Do', children:[
+    { id:'attractions', label:'Attractions', children:[ L('touristattraction','Tourist attraction',6), L('obsdeck','Observation deck',2), L('scenic','Scenic spot',3), L('touristinfo','Tourist information center',1) ]},
+    { id:'culture', label:'Culture & History', children:[ L('artgallery','Art gallery',4), L('artmuseum','Art museum',2), L('castle','Castle',0), L('histlandmark','Historical landmark',5), L('memorial','Memorial park',1), L('museum','Museum',3) ]},
+    { id:'nature', label:'Nature & Outdoors', children:[
+      { id:'beach', label:'Beach', children:[ L('publicbeach','Public beach',0) ]},
+      L('garden','Garden',3), L('hiking','Hiking area',2), L('lake','Lake',0), L('naturepreserve','Nature preserve',1),
+      { id:'parks', label:'Parks', children:[ L('park','Park',11), L('citypark','City park',4), L('statepark','State park',0) ]},
+    ]},
+    { id:'familyatt', label:'Family Attractions', children:[ L('amusementpark','Amusement park',2), L('childrenamusement','Children amusement center',5), L('zoo','Zoo',0) ]},
+  ]},
+  { id:'stay', emoji:'🏨', label:'Accommodation', children:[
+    { id:'hotels', label:'Hotels', children:[ L('hotel','Hotel',14), L('extendedstay','Extended stay hotel',3), L('resort','Resort hotel',2), L('motel','Motel',1) ]},
+    { id:'guest', label:'Guest Accommodation', children:[ L('bnb','Bed and breakfast',1), L('guesthouse','Guest house',4), L('inn','Inn',0), L('lodge','Lodge',0), L('privateroom','Private guest room',2), L('indoorlodging','Indoor lodging',1) ]},
+    { id:'rentals', label:'Vacation Rentals', children:[ L('cottage','Cottage',0), L('holidayapt','Holiday apartment rental',3), L('holidayhome','Holiday home',1), L('vacapt','Vacation apartment',2), L('vacagency','Vacation home rental agency',1), L('villa','Villa',2) ]},
+    { id:'altstay', label:'Alternative Accommodation', children:[ L('farmstay','Farmstay',0), L('hostel','Hostel',1), L('selfcatering','Self catering accommodation',2), L('serviced','Serviced accommodation',3) ]},
+    { id:'camping', label:'Camping & RV', children:[ L('campground','Campground',1), L('rvpark','RV park',0) ]},
+  ]},
+  { id:'ent', emoji:'🍿', label:'Entertainment', children:[
+    { id:'entnight', label:'Nightlife', children:[ L('disco','Disco',0) ]},
+    { id:'live', label:'Live Entertainment', children:[ L('karaoke','Karaoke bar',2), L('livemusicvenue','Live music venue',3) ]},
+    { id:'games', label:'Games & Amusement', children:[ L('amusementcenter','Amusement center',4), L('arcade','Video arcade',3) ]},
+    { id:'events', label:'Events', children:[ L('eventvenue','Event venue',6) ]},
+  ]},
+  { id:'wellness', emoji:'😌', label:'Wellness', children:[
+    { id:'spagroup', label:'Spa', children:[ L('dayspa','Day spa',3), L('spa','Spa',7), L('spahealth','Spa and health club',2) ]},
+    L('sauna','Sauna',1),
+  ]},
+  { id:'tours', emoji:'🚌', label:'Tours & Travel', children:[
+    { id:'toursgroup', label:'Tours', children:[ L('boattour','Boat tour agency',0), L('sightseeing','Sightseeing tour agency',2), L('touragency','Tour agency',3), L('touroperator','Tour operator',1) ]},
+    { id:'travelserv', label:'Travel Services', children:[ L('travelagency','Travel agency',5) ]},
+  ]},
+  { id:'shopping', emoji:'🛍️', label:'Shopping', children:[
+    { id:'foodmarkets', label:'Food Markets', children:[ L('market','Market',6) ]},
+    { id:'specialtyfood', label:'Specialty Food Shops', children:[ L('candy2','Candy store',2), L('chocolate2','Chocolate shop',4), L('pastry2','Pastry shop',4) ]},
+  ]},
+  { id:'sports', emoji:'⚽', label:'Activities & Sports', children:[
+    { id:'sportsfac', label:'Sports Facilities', children:[ L('sportscomplex','Sports complex',3), L('stadium','Stadium',2) ]},
+    { id:'swim', label:'Swimming', children:[ L('pool','Swimming pool',4) ]},
+  ]},
+  { id:'religion', emoji:'⛩️', label:'Religion & Worship', children:[
+    L('buddhist','Buddhist temple',0), L('hindu','Hindu temple',0), L('mosque','Mosque',41),
+  ]},
+];
+
+const EMO = {
+  // groups
+  rest:'🍴', cuisine:'🌍', asian:'🥢', european:'🇪🇺', latam:'🌮', mideast:'🥙', specialty:'🍖', chicken:'🍗',
+  style:'🍽️', meal:'🕐', dietary:'🥗', cafes:'☕', bars:'🍸', bakery:'🧁', quick:'🥪', services:'🛵', japanese:'🍱',
+  beach:'🏖️', parks:'🌳', attractions:'🎡', culture:'🏛️', nature:'🌲', familyatt:'🎠', hotels:'🏨', guest:'🛏️',
+  rentals:'🏡', altstay:'🏕️', camping:'⛺', entnight:'🪩', live:'🎤', games:'🎮', events:'🎉', spagroup:'💆',
+  toursgroup:'🧭', travelserv:'✈️', foodmarkets:'🧺', specialtyfood:'🍬', sportsfac:'🏟️', swim:'🏊',
+  // leaves — food
+  american:'🍔', asianfusion:'🍲', chinese:'🥡', indian:'🍛', indonesian:'🍚', izakaya:'🏮', sushi:'🍣', korean:'🍲',
+  thai:'🍜', vietnamese:'🍲', french:'🥐', german:'🥨', italian:'🍝', medi:'🫒', mexican:'🌮', turkish:'🍢', western:'🤠',
+  bbq:'🍖', asador:'🔥', wings:'🍗', fish:'🐟', hamburger:'🍔', meat:'🥩', noodle:'🍜', pizza:'🍕', seafood:'🦐',
+  steak:'🥩', sushi2:'🍣', bistro:'🍷', buffet:'🍽️', cafeteria:'🍱', diner:'🍳', downhome:'🏠', family:'👪',
+  fastfood:'🍟', fine:'🥂', foodcourt:'🍱', breakfast:'🍳', brunch:'🥞', lunch:'🥗', gf:'🌾', halal:'🕌',
+  healthfood:'🥗', vegan:'🌱', vegetarian:'🥦', cafe:'☕', coffeeshop:'☕', coffeestand:'☕', espresso:'☕',
+  teahouse:'🫖', bar:'🍺', bargrill:'🍻', brewpub:'🍺', cocktail:'🍸', gastropub:'🍽️', hookah:'💨', livemusicbar:'🎸',
+  lounge:'🛋️', nightclub:'🪩', pub:'🍺', sportsbar:'📺', tapas:'🍤', winebar:'🍷', bakeryshop:'🥖', candy:'🍬',
+  chocolate:'🍫', dessert:'🍮', dessertshop:'🍨', donut:'🍩', icecream:'🍦', pastry:'🥐', deli:'🥓', juice:'🧃',
+  sandwich:'🥪', snack:'🍿', mealdelivery:'🛵', mealtakeaway:'🥡', pizzatakeaway:'🍕',
+  // things to do
+  touristattraction:'📸', obsdeck:'🔭', scenic:'🏞️', touristinfo:'📍', artgallery:'🖼️', artmuseum:'🎨', castle:'🏰',
+  histlandmark:'🗿', memorial:'🕊️', museum:'🏛️', publicbeach:'🏖️', garden:'🌷', hiking:'🥾', lake:'🏞️',
+  naturepreserve:'🦋', park:'🌳', citypark:'🌳', statepark:'🏞️', amusementpark:'🎢', childrenamusement:'🧸', zoo:'🦁',
+  // accommodation
+  hotel:'🏨', extendedstay:'🏨', resort:'🌴', motel:'🛏️', bnb:'🍳', guesthouse:'🏠', inn:'🏨', lodge:'🏔️',
+  privateroom:'🚪', indoorlodging:'🛌', cottage:'🏡', holidayapt:'🏢', holidayhome:'🏡', vacapt:'🏢', vacagency:'🗝️',
+  villa:'🏛️', farmstay:'🚜', hostel:'🎒', selfcatering:'🍳', serviced:'🧹', campground:'⛺', rvpark:'🚐',
+  // entertainment
+  disco:'🪩', karaoke:'🎤', livemusicvenue:'🎸', amusementcenter:'🕹️', arcade:'👾', eventvenue:'🎉',
+  // wellness
+  dayspa:'💆', spa:'🧖', spahealth:'💪', sauna:'🔥',
+  // tours & travel
+  boattour:'⛵', sightseeing:'🚌', touragency:'🧳', touroperator:'🗺️', travelagency:'✈️',
+  // shopping
+  market:'🧺', candy2:'🍬', chocolate2:'🍫', pastry2:'🥐',
+  // sports
+  sportscomplex:'🏟️', stadium:'🏟️', pool:'🏊',
+  // religion
+  buddhist:'☸️', hindu:'🕉️', mosque:'🕌',
+};
+
+const CHIP_ON = 'height:40px;flex-shrink:0;border:none;border-radius:20px;background:#00696B;color:#fff;display:flex;align-items:center;gap:6px;padding:0 14px;font:900 13px Nunito;box-shadow:0 2px 6px rgba(0,0,0,.18);cursor:pointer';
+const CHIP_OFF = 'height:40px;flex-shrink:0;border:1px solid rgba(0,105,107,.42);border-radius:20px;background:#fff;color:#3F4948;display:flex;align-items:center;gap:6px;padding:0 14px;font:800 13px Nunito;box-shadow:0 2px 6px rgba(0,0,0,.12);cursor:pointer';
+const SUB_ON = 'height:34px;flex-shrink:0;border:none;border-radius:17px;background:#161D1D;color:#fff;display:flex;align-items:center;padding:0 12px;font:900 12px Nunito;box-shadow:0 2px 6px rgba(0,0,0,.18);cursor:pointer';
+const SUB_OFF = 'height:34px;flex-shrink:0;border:1px solid #BEC8C8;border-radius:17px;background:rgba(255,255,255,.94);color:#3F4948;display:flex;align-items:center;padding:0 12px;font:800 12px Nunito;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer';
+const PILL_ON = 'height:36px;border:none;border-radius:18px;background:#00696B;color:#fff;display:flex;align-items:center;padding:0 14px;font:900 13px Nunito;cursor:pointer';
+const PILL_OFF = 'height:36px;border:1px solid #BEC8C8;border-radius:18px;background:#fff;color:#3F4948;display:flex;align-items:center;padding:0 14px;font:800 13px Nunito;cursor:pointer';
+
+class Component extends DCLogic {
+  state = {
+    sort: 'best',
+    cat: null,
+    sub: null,
+    sheet: 'half',
+    filtersOpen: false,
+    bins: [],
+    price: null,
+    minRating: null,
+    hours: [],
+    amenities: [],
+    selected: null,
+    expanded: ['food', 'rest', 'cuisine', 'asian'],
+    picked: ['sushi', 'halal'],
+  };
+
+  nodeTotal(n) {
+    if (!n.children) return n.n || 0;
+    return (n.own || 0) + n.children.reduce((sum, c) => sum + this.nodeTotal(c), 0);
+  }
+
+  flattenTax() {
+    const rows = [];
+    const walk = (nodes, depth) => {
+      nodes.forEach(n => {
+        const total = this.nodeTotal(n);
+        if (!total) return;
+        const kids = (n.children || []).filter(c => this.nodeTotal(c) > 0);
+        const open = this.state.expanded.includes(n.id);
+        const picked = this.state.picked.includes(n.id);
+        rows.push({ node: n, depth, total, kids, open, picked, leaf: kids.length === 0 });
+        if (open && kids.length) walk(kids, depth + 1);
+      });
+    };
+    walk(TAX, 0);
+    return rows;
+  }
+
+  taxRows() {
+    return this.flattenTax().map(r => {
+      const n = r.node;
+      const domain = r.depth === 0;
+      const indent = r.depth * 18;
+      const base = 'width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:Nunito;text-align:left;';
+      let style;
+      if (domain) {
+        style = base + `height:62px;margin:6px 0 2px;padding:0 16px;border-radius:22px;border:${r.open ? '2px solid #00696B' : '1px solid #BEC8C8'};background:${r.open ? '#9CF1F1' : '#EFF5F4'};color:${r.open ? '#002020' : '#161D1D'};font:900 18px Nunito`;
+      } else if (!r.leaf) {
+        style = base + `height:46px;margin-left:${indent}px;width:calc(100% - ${indent}px);padding:0 12px;border-radius:14px;border:none;border-left:2px solid ${r.open ? '#00696B' : '#BEC8C8'};background:${r.open ? 'rgba(0,105,107,.07)' : 'transparent'};color:#161D1D;font:800 15px Nunito`;
+      } else {
+        style = base + `height:42px;margin-left:${indent}px;width:calc(100% - ${indent}px);padding:0 12px;border-radius:14px;border:${r.picked ? '2px solid #00696B' : 'none'};border-left:${r.picked ? '2px solid #00696B' : '2px solid #DDE4E3'};background:${r.picked ? '#9CF1F1' : 'transparent'};color:${r.picked ? '#002020' : '#3F4948'};font:${r.picked ? '900' : '700'} 14px Nunito`;
+      }
+      const glyph = r.leaf ? (r.picked ? 'check_circle' : 'radio_button_unchecked') : r.open ? 'expand_more' : 'chevron_right';
+      return {
+        style,
+        glyph,
+        glyphStyle: `font:${domain ? 24 : r.leaf ? 18 : 21}px 'Material Symbols Rounded';color:${r.picked ? '#00696B' : domain ? 'inherit' : '#3F4948'};flex-shrink:0;order:${domain ? 0 : -1}`,
+        emoji: n.emoji || EMO[n.id] || '',
+        emojiStyle: domain
+          ? 'width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.65);display:grid;place-items:center;font-size:22px;flex-shrink:0'
+          : (n.emoji || EMO[n.id])
+            ? `font-size:${r.leaf ? 16 : 18}px;line-height:1;flex-shrink:0;width:22px;text-align:center;opacity:${r.leaf && !r.picked ? .8 : 1}`
+            : 'display:none',
+        label: n.label,
+        sub: r.leaf ? '' : `${r.kids.length} ${r.depth === 0 ? 'groups' : 'types'}`,
+        subStyle: r.leaf ? 'display:none' : 'font:700 11px Nunito;color:#3F4948;flex-shrink:0',
+        count: r.total,
+        countStyle: `font:900 ${domain ? 15 : 13}px Nunito;color:${r.picked ? '#00696B' : domain ? 'inherit' : '#161D1D'};flex-shrink:0;min-width:26px;text-align:right`,
+        onClick: () => {
+          if (r.leaf) {
+            this.toggleIn('picked', n.id);
+          } else {
+            this.toggleIn('expanded', n.id);
+          }
+        },
+      };
+    });
+  }
+
+  toggleIn(key, value) {
+    this.setState(s => {
+      const list = s[key];
+      return { [key]: list.includes(value) ? list.filter(v => v !== value) : [...list, value] };
+    });
+  }
+
+  matches(p) {
+    const s = this.state;
+    if (s.cat && p.cat !== s.cat) return false;
+    if (s.sub && p.sub !== s.sub) return false;
+    if (s.price != null && p.price !== s.price) return false;
+    if (s.minRating != null && p.rating < s.minRating) return false;
+    if (s.bins.length) {
+      const hit = s.bins.some(id => {
+        const b = BINS.find(b => b.id === id);
+        return p.reviews >= b.min && p.reviews < b.max;
+      });
+      if (!hit) return false;
+    }
+    if (s.hours.includes('Open now') && !p.open) return false;
+    return true;
+  }
+
+  sorted(list) {
+    const by = {
+      best: (a, b) => b.rating * Math.log10(b.reviews + 10) - a.rating * Math.log10(a.reviews + 10),
+      rated: (a, b) => b.rating - a.rating,
+      reviewed: (a, b) => b.reviews - a.reviews,
+      gems: (a, b) => (b.rating - (b.reviews > 500 ? 2 : 0)) - (a.rating - (a.reviews > 500 ? 2 : 0)),
+      worst: (a, b) => a.rating - b.rating,
+      new: (a, b) => a.age - b.age,
+    }[this.state.sort];
+    return [...list].sort(by);
+  }
+
+  thumb(cat) {
+    return cat === 'restaurant' ? '#9CF1F1' : cat === 'cafe' ? '#FFDEA6' : '#DDE4E3';
+  }
+
+  tagFor(p) {
+    if (p.rating >= 4.5 && p.reviews < 500) return { text: `💎 Hidden gem · only ${p.reviews} reviews`, color: '#00696B' };
+    if (p.age <= 45) return { text: `🆕 Added ${p.age} days ago`, color: '#00696B' };
+    if (p.rating < 4) return { text: '⚠️ Rated below 4.0', color: '#EC6A5E' };
+    if (p.reviews > 20000) return { text: `🔥 ${(p.reviews / 1000).toFixed(0)}k reviews`, color: '#3F4948' };
+    return { text: p.open ? 'Open now' : 'Closed now', color: p.open ? '#18A058' : '#EC6A5E' };
+  }
+
+  compact(n) {
+    return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k reviews` : `${n} reviews`;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const tiles13 = [];
+    for (let y = 3513; y <= 3516; y++) {
+      for (let x = 5156; x <= 5159; x++) {
+        tiles13.push({ src: `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/13/${y}/${x}` });
+      }
+    }
+
+    const visible = this.sorted(PLACES.filter(p => this.matches(p)));
+    const catScope = { state: { ...s, cat: null, sub: null }, matches: this.matches };
+    const catBase = PLACES.filter(p => catScope.matches(p));
+
+    const catChips = CATS.map(c => {
+      const count = catBase.filter(p => p.cat === c.id).length;
+      return { c, count };
+    })
+      .filter(({ count }) => count > 0)
+      .map(({ c, count }) => ({
+        label: `${c.label} ${count}`,
+        style: s.cat === c.id ? CHIP_ON : CHIP_OFF,
+        onClick: () => this.setState({ cat: s.cat === c.id ? null : c.id, sub: null, selected: null }),
+      }));
+    const hiddenCats = CATS.length - catChips.length;
+
+    const subs = [];
+    if (s.cat) {
+      const seen = new Map();
+      catBase.filter(p => p.cat === s.cat).forEach(p => seen.set(p.sub, { label: p.subLabel, count: (seen.get(p.sub)?.count || 0) + 1 }));
+      seen.forEach((v, k) => subs.push({ id: k, ...v }));
+      subs.sort((a, b) => b.count - a.count);
+    }
+    const subChips = subs.map(x => ({
+      label: `${x.label} ${x.count}`,
+      style: s.sub === x.id ? SUB_ON : SUB_OFF,
+      onClick: () => this.setState({ sub: s.sub === x.id ? null : x.id, selected: null }),
+    }));
+
+    const rows = visible.map((p, i) => {
+      const tag = this.tagFor(p);
+      const on = s.selected === p.id;
+      return {
+        rank: i + 1,
+        name: p.name,
+        emoji: p.emoji,
+        rating: p.rating.toFixed(1),
+        reviews: this.compact(p.reviews),
+        meta: `${p.type} · ${p.dist} km${p.price ? ' · ' + '﷼'.repeat(p.price) : ''}`,
+        tag: tag.text,
+        tagColor: tag.color,
+        thumbBg: this.thumb(p.cat),
+        style: `width:100%;display:flex;gap:12px;align-items:center;padding:10px 8px;border-radius:20px;border:${on ? '2px solid #00696B' : '1px solid transparent'};background:${on ? '#9CF1F1' : 'transparent'};cursor:pointer;text-align:left;font-family:Nunito`,
+        onClick: () => this.setState({ selected: on ? null : p.id, sheet: 'half' }),
+      };
+    });
+
+    const pins = visible.map(p => {
+      const on = s.selected === p.id;
+      const gem = p.rating >= 4.5 && p.reviews < 500;
+      const bg = on ? '#00696B' : gem ? '#161D1D' : '#fff';
+      const fg = on || gem ? '#fff' : '#161D1D';
+      return {
+        label: p.rating.toFixed(1),
+        style: `position:absolute;left:${p.x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${on ? 1.22 : 1});padding:5px 9px;border-radius:12px;background:${bg};color:${fg};border:${on ? '2px solid #fff' : '1px solid #BEC8C8'};box-shadow:0 2px 6px rgba(0,0,0,.24);font:900 12px Nunito;cursor:pointer;transition:transform 180ms cubic-bezier(.2,0,0,1)`,
+        onClick: () => this.setState({ selected: on ? null : p.id }),
+      };
+    });
+
+    const binBase = PLACES.filter(p => (!s.cat || p.cat === s.cat) && (!s.sub || p.sub === s.sub));
+    const maxBin = Math.max(1, ...BINS.map(b => binBase.filter(p => p.reviews >= b.min && p.reviews < b.max).length));
+    const bins = BINS.map(b => {
+      const count = binBase.filter(p => p.reviews >= b.min && p.reviews < b.max).length;
+      const on = s.bins.includes(b.id);
+      return {
+        label: b.label,
+        count,
+        countColor: on ? '#00696B' : '#3F4948',
+        barHeight: `${Math.max(8, (count / maxBin) * 52)}px`,
+        barColor: on ? '#00696B' : count ? '#9CF1F1' : '#DDE4E3',
+        wrapStyle: 'flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:flex-end;border:none;background:transparent;padding:0;cursor:pointer;font-family:Nunito',
+        onClick: () => this.toggleIn('bins', b.id),
+      };
+    });
+
+    const priceChips = [
+      { v: null, l: 'Any' }, { v: 1, l: '﷼' }, { v: 2, l: '﷼﷼' }, { v: 3, l: '﷼﷼﷼' }, { v: 4, l: '﷼﷼﷼﷼' },
+    ].map(x => ({
+      label: x.l,
+      style: (s.price === x.v ? PILL_ON : PILL_OFF) + ';flex:1;justify-content:center',
+      onClick: () => this.setState({ price: x.v }),
+    }));
+
+    const ratingChips = [null, 3.5, 4, 4.5].map(v => ({
+      label: v == null ? 'Any' : `${v}+`,
+      style: (s.minRating === v ? PILL_ON : PILL_OFF) + ';flex:1;justify-content:center',
+      onClick: () => this.setState({ minRating: v }),
+    }));
+
+    const hourChips = HOURS.map(h => ({
+      label: h,
+      style: s.hours.includes(h) ? PILL_ON : PILL_OFF,
+      onClick: () => this.toggleIn('hours', h),
+    }));
+
+    const amenityChips = AMENITIES.map(a => ({
+      label: a,
+      style: s.amenities.includes(a) ? PILL_ON : PILL_OFF,
+      onClick: () => this.toggleIn('amenities', a),
+    }));
+
+    const filterCount = s.bins.length + s.hours.length + s.amenities.length + (s.price != null ? 1 : 0) + (s.minRating != null ? 1 : 0);
+    const sortDef = SORTS.find(x => x.id === s.sort);
+
+    const staticPick = (ids) => ids.map(id => {
+      const p = PLACES.find(x => x.id === id);
+      const tag = this.tagFor(p);
+      return {
+        name: p.name, emoji: p.emoji, rating: p.rating.toFixed(1), reviews: this.compact(p.reviews),
+        meta: `${p.type} · ${p.dist} km${p.price ? ' · ' + '﷼'.repeat(p.price) : ''}`,
+        tag: tag.text, tagColor: tag.color, thumbBg: this.thumb(p.cat),
+      };
+    });
+
+    const findNode = (nodes, id) => {
+      for (const n of nodes) {
+        if (n.id === id) return n;
+        if (n.children) { const hit = findNode(n.children, id); if (hit) return hit; }
+      }
+      return null;
+    };
+    const pickedChips = s.picked.map(id => {
+      const n = findNode(TAX, id);
+      return {
+        label: n ? `${n.label} ${this.nodeTotal(n)}` : id,
+        style: 'height:34px;border:none;border-radius:17px;background:#00696B;color:#fff;display:flex;align-items:center;gap:6px;padding:0 8px 0 12px;font:900 12.5px Nunito;cursor:pointer',
+        onClick: () => this.toggleIn('picked', id),
+      };
+    });
+    const pickedTotal = s.picked.reduce((sum, id) => {
+      const n = findNode(TAX, id);
+      return sum + (n ? this.nodeTotal(n) : 0);
+    }, 0);
+    const taxTotal = TAX.reduce((sum, n) => sum + this.nodeTotal(n), 0);
+    const hiddenLeaves = (() => {
+      let hidden = 0;
+      const walk = ns => ns.forEach(n => {
+        if (!this.nodeTotal(n)) hidden += 1;
+        else if (n.children) walk(n.children);
+      });
+      walk(TAX);
+      return hidden;
+    })();
+
+    return {
+      tiles13,
+      taxRows: this.taxRows(),
+      pickedChips,
+      pickedCount: s.picked.length,
+      pickedTotal,
+      taxTotal,
+      hiddenLeaves,
+      treeCta: s.picked.length ? `Show ${pickedTotal} places` : `Show all ${taxTotal} places`,
+      collapseAll: () => this.setState({ expanded: [] }),
+      clearPicked: () => this.setState({ picked: [] }),
+      rows,
+      pins,
+      catChips,
+      subChips,
+      bins,
+      priceChips,
+      ratingChips,
+      hourChips,
+      amenityChips,
+      filterCount,
+      filtersOpen: s.filtersOpen,
+      resultCount: visible.length,
+      sortLabel: sortDef.label,
+      sortExplainer: sortDef.explainer,
+      minRatingLabel: s.minRating == null ? 'any' : `${s.minRating}+`,
+      hiddenCatNote: hiddenCats ? `${hiddenCats} categories not in this view` : false,
+      sheetHeight: s.sheet === 'full' ? '100%' : '52%',
+      sheetToggleLabel: s.sheet === 'full' ? 'Show map' : 'Full list',
+      toggleSheet: () => this.setState({ sheet: s.sheet === 'full' ? 'half' : 'full' }),
+      cycleSort: () => {
+        const i = SORTS.findIndex(x => x.id === s.sort);
+        this.setState({ sort: SORTS[(i + 1) % SORTS.length].id });
+      },
+      toggleFilters: () => this.setState({ filtersOpen: !s.filtersOpen }),
+      resetFilters: () => this.setState({ bins: [], price: null, minRating: null, hours: [], amenities: [] }),
+      staticRows: staticPick(['blvd', 'kap', 'roman', 'diriyah', 'najd', 'halfm']),
+      staticRowsBest: staticPick(['nabt', 'camel', 'takya', 'lusin', 'roof', 'gallery', 'najd', 'brew']),
+      staticRowsGems: staticPick(['roof', 'nabt', 'sum', 'gallery', 'takya']),
+    };
+  }
+}
+</script>
+</body>
+</html>

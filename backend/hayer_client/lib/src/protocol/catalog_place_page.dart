@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'place_snapshot.dart' as _ikbous9x;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'place_snapshot.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class CatalogPlacePage implements _i1.SerializableModel {
+abstract class CatalogPlacePage
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CatalogPlacePage._({
     required this.items,
     required this.total,
@@ -24,7 +24,7 @@ abstract class CatalogPlacePage implements _i1.SerializableModel {
   });
 
   factory CatalogPlacePage({
-    required List<_i2.PlaceSnapshot> items,
+    required List<_ikbous9x.PlaceSnapshot> items,
     required int total,
     required int page,
     required int pageSize,
@@ -32,7 +32,7 @@ abstract class CatalogPlacePage implements _i1.SerializableModel {
 
   factory CatalogPlacePage.fromJson(Map<String, dynamic> jsonSerialization) {
     return CatalogPlacePage(
-      items: _i3.Protocol().deserialize<List<_i2.PlaceSnapshot>>(
+      items: _iynev3sz.Protocol().deserialize<List<_ikbous9x.PlaceSnapshot>>(
         jsonSerialization['items'],
       ),
       total: jsonSerialization['total'] as int,
@@ -41,7 +41,7 @@ abstract class CatalogPlacePage implements _i1.SerializableModel {
     );
   }
 
-  List<_i2.PlaceSnapshot> items;
+  List<_ikbous9x.PlaceSnapshot> items;
 
   int total;
 
@@ -51,9 +51,9 @@ abstract class CatalogPlacePage implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CatalogPlacePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CatalogPlacePage copyWith({
-    List<_i2.PlaceSnapshot>? items,
+    List<_ikbous9x.PlaceSnapshot>? items,
     int? total,
     int? page,
     int? pageSize,
@@ -70,14 +70,25 @@ abstract class CatalogPlacePage implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'CatalogPlacePage',
+      'items': items.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'total': total,
+      'page': page,
+      'pageSize': pageSize,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _CatalogPlacePageImpl extends CatalogPlacePage {
   _CatalogPlacePageImpl({
-    required List<_i2.PlaceSnapshot> items,
+    required List<_ikbous9x.PlaceSnapshot> items,
     required int total,
     required int page,
     required int pageSize,
@@ -90,10 +101,10 @@ class _CatalogPlacePageImpl extends CatalogPlacePage {
 
   /// Returns a shallow copy of this [CatalogPlacePage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CatalogPlacePage copyWith({
-    List<_i2.PlaceSnapshot>? items,
+    List<_ikbous9x.PlaceSnapshot>? items,
     int? total,
     int? page,
     int? pageSize,

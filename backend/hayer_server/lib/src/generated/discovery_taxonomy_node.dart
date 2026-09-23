@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'discovery_taxonomy_node.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'discovery_taxonomy_node.dart' as _i3sj4yil;
 
 abstract class DiscoveryTaxonomyNode
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   DiscoveryTaxonomyNode._({
     required this.id,
     required this.labelEn,
@@ -36,7 +35,7 @@ abstract class DiscoveryTaxonomyNode
     required String labelAr,
     required String emoji,
     required List<String> typeAliases,
-    required List<_i2.DiscoveryTaxonomyNode> children,
+    required List<_i3sj4yil.DiscoveryTaxonomyNode> children,
     bool? selectable,
     bool? selectionGroupRoot,
     String? searchQueryEn,
@@ -51,18 +50,19 @@ abstract class DiscoveryTaxonomyNode
       labelEn: jsonSerialization['labelEn'] as String,
       labelAr: jsonSerialization['labelAr'] as String,
       emoji: jsonSerialization['emoji'] as String,
-      typeAliases: _i3.Protocol().deserialize<List<String>>(
+      typeAliases: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['typeAliases'],
       ),
-      children: _i3.Protocol().deserialize<List<_i2.DiscoveryTaxonomyNode>>(
-        jsonSerialization['children'],
-      ),
+      children: _i66y2smk.Protocol()
+          .deserialize<List<_i3sj4yil.DiscoveryTaxonomyNode>>(
+            jsonSerialization['children'],
+          ),
       selectable: jsonSerialization['selectable'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['selectable']),
+          : _is.BoolJsonExtension.fromJson(jsonSerialization['selectable']),
       selectionGroupRoot: jsonSerialization['selectionGroupRoot'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['selectionGroupRoot'],
             ),
       searchQueryEn: jsonSerialization['searchQueryEn'] as String?,
@@ -80,7 +80,7 @@ abstract class DiscoveryTaxonomyNode
 
   List<String> typeAliases;
 
-  List<_i2.DiscoveryTaxonomyNode> children;
+  List<_i3sj4yil.DiscoveryTaxonomyNode> children;
 
   bool? selectable;
 
@@ -92,14 +92,14 @@ abstract class DiscoveryTaxonomyNode
 
   /// Returns a shallow copy of this [DiscoveryTaxonomyNode]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryTaxonomyNode copyWith({
     String? id,
     String? labelEn,
     String? labelAr,
     String? emoji,
     List<String>? typeAliases,
-    List<_i2.DiscoveryTaxonomyNode>? children,
+    List<_i3sj4yil.DiscoveryTaxonomyNode>? children,
     bool? selectable,
     bool? selectionGroupRoot,
     String? searchQueryEn,
@@ -141,7 +141,7 @@ abstract class DiscoveryTaxonomyNode
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -154,7 +154,7 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
     required String labelAr,
     required String emoji,
     required List<String> typeAliases,
-    required List<_i2.DiscoveryTaxonomyNode> children,
+    required List<_i3sj4yil.DiscoveryTaxonomyNode> children,
     bool? selectable,
     bool? selectionGroupRoot,
     String? searchQueryEn,
@@ -174,7 +174,7 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
 
   /// Returns a shallow copy of this [DiscoveryTaxonomyNode]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryTaxonomyNode copyWith({
     String? id,
@@ -182,7 +182,7 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
     String? labelAr,
     String? emoji,
     List<String>? typeAliases,
-    List<_i2.DiscoveryTaxonomyNode>? children,
+    List<_i3sj4yil.DiscoveryTaxonomyNode>? children,
     Object? selectable = _Undefined,
     Object? selectionGroupRoot = _Undefined,
     Object? searchQueryEn = _Undefined,

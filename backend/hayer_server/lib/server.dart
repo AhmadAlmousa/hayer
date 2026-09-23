@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/core.dart' hide RateLimiter;
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
@@ -11,6 +11,7 @@ import 'src/generated/protocol.dart';
 import 'src/auth/revocable_jwt_token_manager.dart';
 import 'src/admin/refresh_job_service.dart';
 import 'src/analytics/analytics_aggregation_service.dart';
+import 'src/discovery/discovery_taxonomy_service.dart';
 import 'src/places/vela_calibration_sync.dart';
 import 'src/security/public_gateway_access.dart';
 import 'src/security/rate_limiter.dart';
@@ -115,6 +116,7 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+  await DiscoveryTaxonomyService.upgradeLegacySeed(pod);
   unawaited(MaintenanceService.run(pod));
   unawaited(AnalyticsAggregationService.run(pod));
   unawaited(RefreshJobService.run(pod));

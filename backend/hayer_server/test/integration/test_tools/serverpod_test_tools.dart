@@ -8,106 +8,129 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: no_leading_underscores_for_library_prefixes
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
-import 'package:serverpod_test/serverpod_test.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
-import 'dart:async' as _i3;
-import 'package:hayer_server/src/generated/admin_live_usage.dart' as _i4;
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _ida;
+import 'dart:io' as _idi;
+import 'dart:typed_data' as _idt;
 import 'package:hayer_server/src/generated/admin_analytics_overview.dart'
-    as _i5;
-import 'package:hayer_server/src/generated/analytics_filter.dart' as _i6;
-import 'package:hayer_server/src/generated/admin_usage_analytics.dart' as _i7;
-import 'package:hayer_server/src/generated/admin_place_analytics.dart' as _i8;
-import 'package:hayer_server/src/generated/place_ranking.dart' as _i9;
-import 'package:hayer_server/src/generated/location_suggestion.dart' as _i10;
-import 'package:hayer_server/src/generated/admin_map_location.dart' as _i11;
-import 'package:hayer_server/src/generated/admin_discovery_taxonomy_version.dart'
-    as _i12;
-import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
-    as _i13;
-import 'package:hayer_server/src/generated/discovery_taxonomy_validation.dart'
-    as _i14;
-import 'package:hayer_server/src/generated/admin_discovery_harvest_manifest_version.dart'
-    as _i15;
-import 'package:hayer_server/src/generated/discovery_harvest_manifest_entry.dart'
-    as _i16;
-import 'package:hayer_server/src/generated/discovery_harvest_manifest_validation.dart'
-    as _i17;
-import 'package:hayer_server/src/generated/admin_discovery_harvest_job_page.dart'
-    as _i18;
-import 'package:hayer_server/src/generated/discovery_harvest_state.dart'
-    as _i19;
-import 'package:hayer_server/src/generated/discovery_harvest_requester.dart'
-    as _i20;
-import 'package:hayer_server/src/generated/discovery_harvest_trigger.dart'
-    as _i21;
-import 'package:hayer_server/src/generated/admin_discovery_unmapped_type_page.dart'
-    as _i22;
-import 'package:hayer_server/src/generated/discovery_type_mapping_issue.dart'
-    as _i23;
-import 'package:hayer_server/src/generated/admin_discovery_auto_map_report.dart'
-    as _i24;
-import 'package:hayer_server/src/generated/discovery_growth_metrics.dart'
-    as _i25;
-import 'package:hayer_server/src/generated/admin_taxonomy_version.dart' as _i26;
-import 'package:hayer_server/src/generated/admin_taxonomy_item.dart' as _i27;
-import 'package:hayer_server/src/generated/taxonomy_validation.dart' as _i28;
-import 'package:hayer_server/src/generated/cache_dashboard_summary.dart'
-    as _i29;
-import 'package:hayer_server/src/generated/catalog_place_page.dart' as _i30;
-import 'package:hayer_server/src/generated/admin_catalog_page.dart' as _i31;
-import 'package:hayer_server/src/generated/admin_catalog_query.dart' as _i32;
-import 'package:hayer_server/src/generated/admin_catalog_heatmap.dart' as _i33;
+    as _idsppazh;
+import 'package:hayer_server/src/generated/admin_audit_page.dart' as _i4bq687n;
+import 'package:hayer_server/src/generated/admin_catalog_heatmap.dart'
+    as _iyoqovm2;
+import 'package:hayer_server/src/generated/admin_catalog_page.dart'
+    as _i89g735c;
 import 'package:hayer_server/src/generated/admin_catalog_place_detail.dart'
-    as _i34;
-import 'package:hayer_server/src/generated/coverage_page.dart' as _i35;
-import 'package:hayer_server/src/generated/refresh_job_page.dart' as _i36;
-import 'package:hayer_server/src/generated/job_status.dart' as _i37;
-import 'package:hayer_server/src/generated/admin_poi_issue_page.dart' as _i38;
-import 'package:hayer_server/src/generated/poi_issue_status.dart' as _i39;
-import 'package:hayer_server/src/generated/admin_audit_page.dart' as _i40;
-import 'package:hayer_server/src/generated/metric_point.dart' as _i41;
-import 'package:hayer_server/src/generated/catalog_prune_preview.dart' as _i42;
-import 'package:hayer_server/src/generated/cache_policy.dart' as _i43;
-import 'package:hayer_server/src/generated/calibration_validation.dart' as _i44;
-import 'package:hayer_server/src/generated/discovery_config.dart' as _i45;
-import 'package:hayer_server/src/generated/bootstrap_info.dart' as _i46;
-import 'package:hayer_server/src/generated/discovery_taxonomy_snapshot.dart'
-    as _i47;
-import 'package:hayer_server/src/generated/discover_browse_page.dart' as _i48;
-import 'package:hayer_server/src/generated/discover_query.dart' as _i49;
-import 'package:hayer_server/src/generated/discover_query_context.dart' as _i50;
-import 'package:hayer_server/src/generated/discover_facets.dart' as _i51;
-import 'package:hayer_server/src/generated/discover_place_context.dart' as _i52;
-import 'package:hayer_server/src/generated/poi_identity.dart' as _i53;
-import 'package:hayer_server/src/generated/discovery_area_receipt.dart' as _i54;
-import 'package:hayer_server/src/generated/discover_viewport.dart' as _i55;
-import 'package:hayer_server/src/generated/discovery_harvest_status.dart'
-    as _i56;
-import 'package:hayer_server/src/generated/session_bundle.dart' as _i57;
-import 'package:hayer_server/src/generated/create_intent_session_request.dart'
-    as _i58;
-import 'package:hayer_server/src/generated/create_session_request.dart' as _i59;
+    as _ir1uanvg;
+import 'package:hayer_server/src/generated/admin_catalog_query.dart'
+    as _irwp97y8;
+import 'package:hayer_server/src/generated/admin_discovery_auto_map_report.dart'
+    as _iymix0m1;
+import 'package:hayer_server/src/generated/admin_discovery_harvest_job_page.dart'
+    as _i3d2sn96;
+import 'package:hayer_server/src/generated/admin_discovery_harvest_manifest_version.dart'
+    as _i80rbsdl;
+import 'package:hayer_server/src/generated/admin_discovery_taxonomy_version.dart'
+    as _iuv077si;
+import 'package:hayer_server/src/generated/admin_discovery_unmapped_type_page.dart'
+    as _itcbf05o;
+import 'package:hayer_server/src/generated/admin_live_usage.dart' as _ij1omh3s;
+import 'package:hayer_server/src/generated/admin_map_location.dart'
+    as _id24mwbk;
+import 'package:hayer_server/src/generated/admin_place_analytics.dart'
+    as _i6sv5w5r;
+import 'package:hayer_server/src/generated/admin_poi_issue_page.dart'
+    as _i816guy7;
+import 'package:hayer_server/src/generated/admin_taxonomy_item.dart'
+    as _iknb2ssh;
+import 'package:hayer_server/src/generated/admin_taxonomy_version.dart'
+    as _il8pe2vw;
+import 'package:hayer_server/src/generated/admin_usage_analytics.dart'
+    as _ip3prhwg;
+import 'package:hayer_server/src/generated/analytics_filter.dart' as _io95pjgl;
+import 'package:hayer_server/src/generated/bootstrap_info.dart' as _ingz4lfm;
+import 'package:hayer_server/src/generated/cache_dashboard_summary.dart'
+    as _i2iimoyt;
+import 'package:hayer_server/src/generated/cache_policy.dart' as _iki9k23r;
+import 'package:hayer_server/src/generated/calibration_validation.dart'
+    as _inizs74n;
+import 'package:hayer_server/src/generated/catalog_place_page.dart'
+    as _i9cy84ul;
+import 'package:hayer_server/src/generated/catalog_prune_preview.dart'
+    as _i8owksfh;
 import 'package:hayer_server/src/generated/client_analytics_context.dart'
-    as _i60;
-import 'package:hayer_server/src/generated/session_progress.dart' as _i61;
-import 'package:hayer_server/src/generated/swipe_command.dart' as _i62;
-import 'package:hayer_server/src/generated/client_analytics_event.dart' as _i63;
-import 'package:hayer_server/src/generated/session_result.dart' as _i64;
-import 'package:hayer_server/src/generated/session_event.dart' as _i65;
-import 'package:hayer_server/src/generated/place_detail_result.dart' as _i66;
-import 'package:hayer_server/src/generated/poi_issue_type.dart' as _i67;
-import 'package:hayer_server/src/generated/reverse_geocode_result.dart' as _i68;
-import 'package:hayer_server/src/generated/route_estimate.dart' as _i69;
-import 'package:hayer_server/src/generated/taxonomy_snapshot.dart' as _i70;
+    as _i27wduqt;
+import 'package:hayer_server/src/generated/client_analytics_event.dart'
+    as _ijxgu45w;
+import 'package:hayer_server/src/generated/coverage_page.dart' as _iv6o9y3r;
+import 'package:hayer_server/src/generated/create_intent_session_request.dart'
+    as _ixcrxp97;
+import 'package:hayer_server/src/generated/create_session_request.dart'
+    as _i0ekxi7v;
+import 'package:hayer_server/src/generated/discover_browse_page.dart'
+    as _ittjpqhz;
+import 'package:hayer_server/src/generated/discover_facets.dart' as _ijp8zw6x;
+import 'package:hayer_server/src/generated/discover_place_context.dart'
+    as _i6f8x5xa;
+import 'package:hayer_server/src/generated/discover_query.dart' as _ihawuuna;
+import 'package:hayer_server/src/generated/discover_query_context.dart'
+    as _inlyh5cd;
+import 'package:hayer_server/src/generated/discover_viewport.dart' as _iiv6nix0;
+import 'package:hayer_server/src/generated/discovery_area_receipt.dart'
+    as _ibc8f5xz;
+import 'package:hayer_server/src/generated/discovery_config.dart' as _istfcu63;
+import 'package:hayer_server/src/generated/discovery_growth_metrics.dart'
+    as _inttsn21;
+import 'package:hayer_server/src/generated/discovery_harvest_manifest_entry.dart'
+    as _i3e9y9n0;
+import 'package:hayer_server/src/generated/discovery_harvest_manifest_validation.dart'
+    as _i4yjxj5d;
+import 'package:hayer_server/src/generated/discovery_harvest_requester.dart'
+    as _iwqitzx8;
+import 'package:hayer_server/src/generated/discovery_harvest_state.dart'
+    as _iyp4kdhc;
+import 'package:hayer_server/src/generated/discovery_harvest_status.dart'
+    as _iexkxgvj;
+import 'package:hayer_server/src/generated/discovery_harvest_trigger.dart'
+    as _icld1y30;
+import 'package:hayer_server/src/generated/discovery_taxonomy_node.dart'
+    as _i4tuidgb;
+import 'package:hayer_server/src/generated/discovery_taxonomy_snapshot.dart'
+    as _itvusv22;
+import 'package:hayer_server/src/generated/discovery_taxonomy_validation.dart'
+    as _ikqbkmjm;
+import 'package:hayer_server/src/generated/discovery_type_mapping_issue.dart'
+    as _ikfn4app;
+import 'package:hayer_server/src/generated/job_status.dart' as _ihx06ldu;
+import 'package:hayer_server/src/generated/location_suggestion.dart'
+    as _i0kksqr9;
+import 'package:hayer_server/src/generated/metric_point.dart' as _i983cip7;
+import 'package:hayer_server/src/generated/place_detail_result.dart'
+    as _irlspcdw;
+import 'package:hayer_server/src/generated/place_ranking.dart' as _i9qr9wrr;
+import 'package:hayer_server/src/generated/poi_identity.dart' as _i94aau9x;
+import 'package:hayer_server/src/generated/poi_issue_status.dart' as _ipw0isr1;
+import 'package:hayer_server/src/generated/poi_issue_type.dart' as _ilxj59hy;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:hayer_server/src/generated/refresh_job_page.dart' as _iopwx7ny;
+import 'package:hayer_server/src/generated/reverse_geocode_result.dart'
+    as _ijrye8m9;
+import 'package:hayer_server/src/generated/route_estimate.dart' as _i4vc8byu;
+import 'package:hayer_server/src/generated/session_bundle.dart' as _ivawt5yq;
+import 'package:hayer_server/src/generated/session_event.dart' as _imklzot3;
+import 'package:hayer_server/src/generated/session_progress.dart' as _iel59819;
+import 'package:hayer_server/src/generated/session_result.dart' as _i6o6gwx7;
+import 'package:hayer_server/src/generated/swipe_command.dart' as _it9hvd8t;
+import 'package:hayer_server/src/generated/taxonomy_snapshot.dart' as _ia0gy6rh;
+import 'package:hayer_server/src/generated/taxonomy_validation.dart'
+    as _igued3rx;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i71;
-import 'package:hayer_server/src/generated/protocol.dart' as _i72;
-import 'dart:typed_data' as _i73;
+    as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i74;
+    as _iais;
+import 'package:serverpod_test/serverpod_test.dart' as _ist;
 import 'package:hayer_server/src/generated/protocol.dart';
 import 'package:hayer_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -152,7 +175,7 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 ///
 /// [serverpodLoggingMode] The logging mode used when creating Serverpod. Defaults to `ServerpodLoggingMode.normal`
 ///
-/// [serverpodStartTimeout] The timeout to use when starting Serverpod, which connects to the database among other things. Defaults to `Duration(seconds: 30)`.
+/// [serverpodStartTimeout] The timeout to use when starting Serverpod, which connects to the database among other things. Defaults to `Duration(seconds: 120)`.
 ///
 /// [testServerOutputMode] Options for controlling test server output during test execution. Defaults to `TestServerOutputMode.normal`.
 /// ```dart
@@ -177,30 +200,42 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// and before it is used to start the server. Use this to override particular
 /// settings in the server configuration.
 ///
+/// [databaseInterceptor] Optional interceptor that replaces the default database for each session.
+/// See [Serverpod.databaseInterceptor] for more information.
+///
 /// [testGroupTagsOverride] By default Serverpod test tools tags the `withServerpod` test group with `"integration"`.
 /// This is to provide a simple way to only run unit or integration tests.
 /// This property allows this tag to be overridden to something else. Defaults to `['integration']`.
 ///
 /// [experimentalFeatures] Optionally specify experimental features. See [Serverpod] for more information.
-@_i1.isTestGroup
+///
+/// [serverDirectory] The server package directory `config/<runMode>.yaml`, `config/passwords.yaml`,
+/// and `migrations/<module>/...` are resolved against. Defaults to
+/// [Directory.current] at the time the test boots. Pass this when the test
+/// isolate's cwd is not the server package root (e.g. running tests from a
+/// workspace parent directory) so config and migrations are still loaded
+/// from the right place.
+@_ist.isTestGroup
 void withServerpod(
   String testGroupName,
-  _i1.TestClosure<TestEndpoints> testClosure, {
+  _ist.TestClosure<TestEndpoints> testClosure, {
   bool? applyMigrations,
-  _i2.ServerpodConfig Function(_i2.ServerpodConfig)? configOverride,
+  _is.ServerpodConfig Function(_is.ServerpodConfig)? configOverride,
+  _is.DatabaseInterceptor? databaseInterceptor,
   bool? enableSessionLogging,
-  _i2.ExperimentalFeatures? experimentalFeatures,
-  _i1.RollbackDatabase? rollbackDatabase,
+  _is.ExperimentalFeatures? experimentalFeatures,
+  _ist.RollbackDatabase? rollbackDatabase,
   String? runMode,
-  _i2.RuntimeParametersListBuilder? runtimeParametersBuilder,
-  _i2.ServerpodLoggingMode? serverpodLoggingMode,
+  _is.RuntimeParametersListBuilder? runtimeParametersBuilder,
+  _idi.Directory? serverDirectory,
+  _is.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
-  _i1.TestServerOutputMode? testServerOutputMode,
+  _ist.TestServerOutputMode? testServerOutputMode,
 }) {
-  _i1.buildWithServerpod<_InternalTestEndpoints>(
+  _ist.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
-    _i1.TestServerpod(
+    _ist.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),
       serializationManager: Protocol(),
@@ -209,9 +244,11 @@ void withServerpod(
       isDatabaseEnabled: true,
       serverpodLoggingMode: serverpodLoggingMode,
       testServerOutputMode: testServerOutputMode,
+      serverDirectory: serverDirectory,
       experimentalFeatures: experimentalFeatures,
       configOverride: configOverride,
       runtimeParametersBuilder: runtimeParametersBuilder,
+      databaseInterceptor: databaseInterceptor,
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
@@ -246,11 +283,11 @@ class TestEndpoints {
 }
 
 class _InternalTestEndpoints extends TestEndpoints
-    implements _i1.InternalTestEndpoints {
+    implements _ist.InternalTestEndpoints {
   @override
   void initialize(
-    _i2.SerializationManager serializationManager,
-    _i2.EndpointDispatch endpoints,
+    _is.SerializationManager serializationManager,
+    _is.EndpointDispatch endpoints,
   ) {
     admin = _AdminEndpoint(
       endpoints,
@@ -305,16 +342,16 @@ class _AdminEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i4.AdminLiveUsage> liveUsage(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ij1omh3s.AdminLiveUsage> liveUsage(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'liveUsage',
           );
@@ -323,7 +360,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'liveUsage',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -331,7 +368,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i4.AdminLiveUsage>);
+                as _ida.Future<_ij1omh3s.AdminLiveUsage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -339,13 +376,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i5.AdminAnalyticsOverview> analyticsOverview(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i6.AnalyticsFilter filter,
+  _ida.Future<_idsppazh.AdminAnalyticsOverview> analyticsOverview(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _io95pjgl.AnalyticsFilter filter,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'analyticsOverview',
           );
@@ -354,7 +391,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'analyticsOverview',
-          parameters: _i1.testObjectToJson({'filter': filter}),
+          parameters: _ist.testObjectToJson({'filter': filter}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -362,7 +399,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i5.AdminAnalyticsOverview>);
+                as _ida.Future<_idsppazh.AdminAnalyticsOverview>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -370,13 +407,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i7.AdminUsageAnalytics> usageAnalytics(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i6.AnalyticsFilter filter,
+  _ida.Future<_ip3prhwg.AdminUsageAnalytics> usageAnalytics(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _io95pjgl.AnalyticsFilter filter,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'usageAnalytics',
           );
@@ -385,7 +422,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'usageAnalytics',
-          parameters: _i1.testObjectToJson({'filter': filter}),
+          parameters: _ist.testObjectToJson({'filter': filter}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -393,7 +430,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i7.AdminUsageAnalytics>);
+                as _ida.Future<_ip3prhwg.AdminUsageAnalytics>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -401,15 +438,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i8.AdminPlaceAnalytics> placeAnalytics(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i6.AnalyticsFilter filter,
-    required _i9.PlaceRanking ranking,
+  _ida.Future<_i6sv5w5r.AdminPlaceAnalytics> placeAnalytics(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _io95pjgl.AnalyticsFilter filter,
+    required _i9qr9wrr.PlaceRanking ranking,
     required int minimumSamples,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'placeAnalytics',
           );
@@ -418,7 +455,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'placeAnalytics',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'filter': filter,
             'ranking': ranking,
             'minimumSamples': minimumSamples,
@@ -430,7 +467,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i8.AdminPlaceAnalytics>);
+                as _ida.Future<_i6sv5w5r.AdminPlaceAnalytics>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -438,14 +475,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<List<_i10.LocationSuggestion>> suggestAdminLocation(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<List<_i0kksqr9.LocationSuggestion>> suggestAdminLocation(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String query,
     required String countryCode,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'suggestAdminLocation',
           );
@@ -454,7 +491,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'suggestAdminLocation',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'query': query,
             'countryCode': countryCode,
           }),
@@ -465,7 +502,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i10.LocationSuggestion>>);
+                as _ida.Future<List<_i0kksqr9.LocationSuggestion>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -473,15 +510,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i11.AdminMapLocation> reverseAdminLocation(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_id24mwbk.AdminMapLocation> reverseAdminLocation(
+    _ist.TestSessionBuilder sessionBuilder, {
     required double latitude,
     required double longitude,
     required String countryCode,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'reverseAdminLocation',
           );
@@ -490,7 +527,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'reverseAdminLocation',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'latitude': latitude,
             'longitude': longitude,
             'countryCode': countryCode,
@@ -502,7 +539,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i11.AdminMapLocation>);
+                as _ida.Future<_id24mwbk.AdminMapLocation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -510,12 +547,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> discoveryTaxonomyDraft(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion> discoveryTaxonomyDraft(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryTaxonomyDraft',
           );
@@ -524,7 +561,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryTaxonomyDraft',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -532,7 +569,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+                as _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -540,12 +577,11 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<List<_i12.AdminDiscoveryTaxonomyVersion>> discoveryTaxonomyHistory(
-    _i1.TestSessionBuilder sessionBuilder,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<List<_iuv077si.AdminDiscoveryTaxonomyVersion>>
+  discoveryTaxonomyHistory(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryTaxonomyHistory',
           );
@@ -554,7 +590,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryTaxonomyHistory',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -562,7 +598,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i12.AdminDiscoveryTaxonomyVersion>>);
+                as _ida.Future<List<_iuv077si.AdminDiscoveryTaxonomyVersion>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -570,16 +606,17 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> saveDiscoveryTaxonomyDraft(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion>
+  saveDiscoveryTaxonomyDraft(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
-    required List<_i13.DiscoveryTaxonomyNode> roots,
+    required List<_i4tuidgb.DiscoveryTaxonomyNode> roots,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'saveDiscoveryTaxonomyDraft',
           );
@@ -588,7 +625,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'saveDiscoveryTaxonomyDraft',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -601,7 +638,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+                as _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -609,15 +646,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i14.DiscoveryTaxonomyValidation> validateDiscoveryTaxonomyDraft(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ikqbkmjm.DiscoveryTaxonomyValidation>
+  validateDiscoveryTaxonomyDraft(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'validateDiscoveryTaxonomyDraft',
           );
@@ -626,7 +664,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'validateDiscoveryTaxonomyDraft',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -638,7 +676,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.DiscoveryTaxonomyValidation>);
+                as _ida.Future<_ikqbkmjm.DiscoveryTaxonomyValidation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -646,15 +684,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> publishDiscoveryTaxonomy(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion> publishDiscoveryTaxonomy(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'publishDiscoveryTaxonomy',
           );
@@ -663,7 +701,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'publishDiscoveryTaxonomy',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -675,7 +713,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+                as _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -683,15 +721,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i12.AdminDiscoveryTaxonomyVersion> rollbackDiscoveryTaxonomy(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion>
+  rollbackDiscoveryTaxonomy(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int expectedActiveRevision,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'rollbackDiscoveryTaxonomy',
           );
@@ -700,7 +739,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'rollbackDiscoveryTaxonomy',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'expectedActiveRevision': expectedActiveRevision,
@@ -712,7 +751,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.AdminDiscoveryTaxonomyVersion>);
+                as _ida.Future<_iuv077si.AdminDiscoveryTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -720,11 +759,11 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>
-  discoveryHarvestManifestDraft(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>
+  discoveryHarvestManifestDraft(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryHarvestManifestDraft',
           );
@@ -733,7 +772,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryHarvestManifestDraft',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -741,7 +780,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>);
+                as _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -749,11 +788,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<List<_i15.AdminDiscoveryHarvestManifestVersion>>
-  discoveryHarvestManifestHistory(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<List<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>>
+  discoveryHarvestManifestHistory(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryHarvestManifestHistory',
           );
@@ -762,7 +803,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryHarvestManifestHistory',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -770,7 +811,9 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i15.AdminDiscoveryHarvestManifestVersion>>);
+                as _ida.Future<
+                  List<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>
+                >);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -778,17 +821,17 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>
+  _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>
   saveDiscoveryHarvestManifestDraft(
-    _i1.TestSessionBuilder sessionBuilder, {
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
-    required List<_i16.DiscoveryHarvestManifestEntry> entries,
+    required List<_i3e9y9n0.DiscoveryHarvestManifestEntry> entries,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'saveDiscoveryHarvestManifestDraft',
           );
@@ -797,7 +840,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'saveDiscoveryHarvestManifestDraft',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -810,7 +853,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>);
+                as _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -818,16 +861,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i17.DiscoveryHarvestManifestValidation>
+  _ida.Future<_i4yjxj5d.DiscoveryHarvestManifestValidation>
   validateDiscoveryHarvestManifestDraft(
-    _i1.TestSessionBuilder sessionBuilder, {
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'validateDiscoveryHarvestManifestDraft',
           );
@@ -836,7 +879,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'validateDiscoveryHarvestManifestDraft',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -848,7 +891,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i17.DiscoveryHarvestManifestValidation>);
+                as _ida.Future<_i4yjxj5d.DiscoveryHarvestManifestValidation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -856,16 +899,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>
+  _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>
   publishDiscoveryHarvestManifest(
-    _i1.TestSessionBuilder sessionBuilder, {
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'publishDiscoveryHarvestManifest',
           );
@@ -874,7 +917,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'publishDiscoveryHarvestManifest',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -886,7 +929,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>);
+                as _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -894,16 +937,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>
+  _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>
   rollbackDiscoveryHarvestManifest(
-    _i1.TestSessionBuilder sessionBuilder, {
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int expectedActiveRevision,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'rollbackDiscoveryHarvestManifest',
           );
@@ -912,7 +955,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'rollbackDiscoveryHarvestManifest',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'expectedActiveRevision': expectedActiveRevision,
@@ -924,7 +967,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.AdminDiscoveryHarvestManifestVersion>);
+                as _ida.Future<_i80rbsdl.AdminDiscoveryHarvestManifestVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -932,18 +975,18 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i18.AdminDiscoveryHarvestJobPage> discoveryHarvestJobs(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_i3d2sn96.AdminDiscoveryHarvestJobPage> discoveryHarvestJobs(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
-    _i19.DiscoveryHarvestState? state,
-    _i20.DiscoveryHarvestRequester? requester,
-    _i21.DiscoveryHarvestTrigger? trigger,
+    _iyp4kdhc.DiscoveryHarvestState? state,
+    _iwqitzx8.DiscoveryHarvestRequester? requester,
+    _icld1y30.DiscoveryHarvestTrigger? trigger,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryHarvestJobs',
           );
@@ -952,7 +995,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryHarvestJobs',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -967,7 +1010,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i18.AdminDiscoveryHarvestJobPage>);
+                as _ida.Future<_i3d2sn96.AdminDiscoveryHarvestJobPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -975,16 +1018,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i22.AdminDiscoveryUnmappedTypePage> discoveryUnmappedTypes(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_itcbf05o.AdminDiscoveryUnmappedTypePage> discoveryUnmappedTypes(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
-    _i23.DiscoveryTypeMappingIssue? issue,
+    _ikfn4app.DiscoveryTypeMappingIssue? issue,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryUnmappedTypes',
           );
@@ -993,7 +1036,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryUnmappedTypes',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -1006,7 +1049,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.AdminDiscoveryUnmappedTypePage>);
+                as _ida.Future<_itcbf05o.AdminDiscoveryUnmappedTypePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1014,12 +1057,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i24.AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_iymix0m1.AdminDiscoveryAutoMapReport> discoveryAutoMappedTypes(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryAutoMappedTypes',
           );
@@ -1028,7 +1071,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryAutoMappedTypes',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1036,7 +1079,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i24.AdminDiscoveryAutoMapReport>);
+                as _ida.Future<_iymix0m1.AdminDiscoveryAutoMapReport>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1044,14 +1087,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i25.DiscoveryGrowthMetrics> discoveryGrowthMetrics(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_inttsn21.DiscoveryGrowthMetrics> discoveryGrowthMetrics(
+    _ist.TestSessionBuilder sessionBuilder, {
     required DateTime from,
     required DateTime to,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'discoveryGrowthMetrics',
           );
@@ -1060,7 +1103,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'discoveryGrowthMetrics',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'from': from,
             'to': to,
           }),
@@ -1071,7 +1114,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i25.DiscoveryGrowthMetrics>);
+                as _ida.Future<_inttsn21.DiscoveryGrowthMetrics>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1079,12 +1122,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i26.AdminTaxonomyVersion> taxonomyDraft(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_il8pe2vw.AdminTaxonomyVersion> taxonomyDraft(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'taxonomyDraft',
           );
@@ -1093,7 +1136,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'taxonomyDraft',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1101,7 +1144,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i26.AdminTaxonomyVersion>);
+                as _ida.Future<_il8pe2vw.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1109,12 +1152,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<List<_i26.AdminTaxonomyVersion>> taxonomyHistory(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<_il8pe2vw.AdminTaxonomyVersion>> taxonomyHistory(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'taxonomyHistory',
           );
@@ -1123,7 +1166,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'taxonomyHistory',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1131,7 +1174,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i26.AdminTaxonomyVersion>>);
+                as _ida.Future<List<_il8pe2vw.AdminTaxonomyVersion>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1139,16 +1182,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i26.AdminTaxonomyVersion> saveTaxonomyDraft(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_il8pe2vw.AdminTaxonomyVersion> saveTaxonomyDraft(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
-    required List<_i27.AdminTaxonomyItem> items,
+    required List<_iknb2ssh.AdminTaxonomyItem> items,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'saveTaxonomyDraft',
           );
@@ -1157,7 +1200,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'saveTaxonomyDraft',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -1170,7 +1213,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i26.AdminTaxonomyVersion>);
+                as _ida.Future<_il8pe2vw.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1178,17 +1221,17 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i28.TaxonomyValidation> validateTaxonomyDraft(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_igued3rx.TaxonomyValidation> validateTaxonomyDraft(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
-    required _i11.AdminMapLocation location,
+    required _id24mwbk.AdminMapLocation location,
     required int radiusMeters,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'validateTaxonomyDraft',
           );
@@ -1197,7 +1240,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'validateTaxonomyDraft',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -1211,7 +1254,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i28.TaxonomyValidation>);
+                as _ida.Future<_igued3rx.TaxonomyValidation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1219,15 +1262,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i26.AdminTaxonomyVersion> publishTaxonomy(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_il8pe2vw.AdminTaxonomyVersion> publishTaxonomy(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
     required int revision,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'publishTaxonomy',
           );
@@ -1236,7 +1279,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'publishTaxonomy',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
             'revision': revision,
@@ -1248,7 +1291,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i26.AdminTaxonomyVersion>);
+                as _ida.Future<_il8pe2vw.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1256,14 +1299,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i26.AdminTaxonomyVersion> rollbackTaxonomy(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_il8pe2vw.AdminTaxonomyVersion> rollbackTaxonomy(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
     required String version,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'rollbackTaxonomy',
           );
@@ -1272,7 +1315,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'rollbackTaxonomy',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'version': version,
           }),
@@ -1283,7 +1326,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i26.AdminTaxonomyVersion>);
+                as _ida.Future<_il8pe2vw.AdminTaxonomyVersion>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1291,12 +1334,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i29.CacheDashboardSummary> summary(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i2iimoyt.CacheDashboardSummary> summary(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'summary',
           );
@@ -1305,7 +1348,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'summary',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1313,7 +1356,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i29.CacheDashboardSummary>);
+                as _ida.Future<_i2iimoyt.CacheDashboardSummary>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1321,16 +1364,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i30.CatalogPlacePage> catalog(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_i9cy84ul.CatalogPlacePage> catalog(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
     required bool includeQuarantined,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'catalog',
           );
@@ -1339,7 +1382,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'catalog',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -1352,7 +1395,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i30.CatalogPlacePage>);
+                as _ida.Future<_i9cy84ul.CatalogPlacePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1360,15 +1403,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i31.AdminCatalogPage> catalogPlaces(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i32.AdminCatalogQuery query,
+  _ida.Future<_i89g735c.AdminCatalogPage> catalogPlaces(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _irwp97y8.AdminCatalogQuery query,
     required int page,
     required int pageSize,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'catalogPlaces',
           );
@@ -1377,7 +1420,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'catalogPlaces',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'query': query,
             'page': page,
             'pageSize': pageSize,
@@ -1389,7 +1432,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i31.AdminCatalogPage>);
+                as _ida.Future<_i89g735c.AdminCatalogPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1397,13 +1440,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i33.AdminCatalogHeatmap> catalogHeatmap(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i32.AdminCatalogQuery query,
+  _ida.Future<_iyoqovm2.AdminCatalogHeatmap> catalogHeatmap(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _irwp97y8.AdminCatalogQuery query,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'catalogHeatmap',
           );
@@ -1412,7 +1455,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'catalogHeatmap',
-          parameters: _i1.testObjectToJson({'query': query}),
+          parameters: _ist.testObjectToJson({'query': query}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1420,7 +1463,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i33.AdminCatalogHeatmap>);
+                as _ida.Future<_iyoqovm2.AdminCatalogHeatmap>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1428,13 +1471,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i34.AdminCatalogPlaceDetail> catalogPlace(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ir1uanvg.AdminCatalogPlaceDetail> catalogPlace(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int catalogId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'catalogPlace',
           );
@@ -1443,7 +1486,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'catalogPlace',
-          parameters: _i1.testObjectToJson({'catalogId': catalogId}),
+          parameters: _ist.testObjectToJson({'catalogId': catalogId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1451,7 +1494,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i34.AdminCatalogPlaceDetail>);
+                as _ida.Future<_ir1uanvg.AdminCatalogPlaceDetail>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1459,15 +1502,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i35.CoveragePage> coverage(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iv6o9y3r.CoveragePage> coverage(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'coverage',
           );
@@ -1476,7 +1519,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'coverage',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -1488,7 +1531,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i35.CoveragePage>);
+                as _ida.Future<_iv6o9y3r.CoveragePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1496,16 +1539,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i36.RefreshJobPage> refreshJobs(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iopwx7ny.RefreshJobPage> refreshJobs(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
-    _i37.JobStatus? status,
+    _ihx06ldu.JobStatus? status,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'refreshJobs',
           );
@@ -1514,7 +1557,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'refreshJobs',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -1527,7 +1570,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i36.RefreshJobPage>);
+                as _ida.Future<_iopwx7ny.RefreshJobPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1535,16 +1578,16 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i38.AdminPoiIssuePage> poiIssues(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_i816guy7.AdminPoiIssuePage> poiIssues(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
-    _i39.PoiIssueStatus? status,
+    _ipw0isr1.PoiIssueStatus? status,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'poiIssues',
           );
@@ -1553,7 +1596,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'poiIssues',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -1566,7 +1609,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AdminPoiIssuePage>);
+                as _ida.Future<_i816guy7.AdminPoiIssuePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1574,13 +1617,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> claimPoiIssue(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> claimPoiIssue(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reportId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'claimPoiIssue',
           );
@@ -1589,7 +1632,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'claimPoiIssue',
-          parameters: _i1.testObjectToJson({'reportId': reportId}),
+          parameters: _ist.testObjectToJson({'reportId': reportId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1597,7 +1640,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1605,14 +1648,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> releasePoiIssue(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> releasePoiIssue(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reportId,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'releasePoiIssue',
           );
@@ -1621,7 +1664,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'releasePoiIssue',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reportId': reportId,
             'reason': reason,
           }),
@@ -1632,7 +1675,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1640,15 +1683,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> resolvePoiIssue(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> resolvePoiIssue(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reportId,
     required String resolution,
     required String sourceEvidence,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'resolvePoiIssue',
           );
@@ -1657,7 +1700,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'resolvePoiIssue',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reportId': reportId,
             'resolution': resolution,
             'sourceEvidence': sourceEvidence,
@@ -1669,7 +1712,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1677,15 +1720,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> dismissPoiIssue(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> dismissPoiIssue(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reportId,
     required String resolution,
     required String sourceEvidence,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'dismissPoiIssue',
           );
@@ -1694,7 +1737,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'dismissPoiIssue',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reportId': reportId,
             'resolution': resolution,
             'sourceEvidence': sourceEvidence,
@@ -1706,7 +1749,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1714,14 +1757,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> reopenPoiIssue(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> reopenPoiIssue(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reportId,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'reopenPoiIssue',
           );
@@ -1730,7 +1773,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'reopenPoiIssue',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reportId': reportId,
             'reason': reason,
           }),
@@ -1741,7 +1784,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1749,15 +1792,15 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i40.AdminAuditPage> auditLog(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_i4bq687n.AdminAuditPage> auditLog(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
     String? query,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'auditLog',
           );
@@ -1766,7 +1809,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'auditLog',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'page': page,
             'pageSize': pageSize,
             'query': query,
@@ -1778,7 +1821,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i40.AdminAuditPage>);
+                as _ida.Future<_i4bq687n.AdminAuditPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1786,13 +1829,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<List<_i41.MetricPoint>> metricTrend(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<List<_i983cip7.MetricPoint>> metricTrend(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int hours,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'metricTrend',
           );
@@ -1801,7 +1844,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'metricTrend',
-          parameters: _i1.testObjectToJson({'hours': hours}),
+          parameters: _ist.testObjectToJson({'hours': hours}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1809,7 +1852,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i41.MetricPoint>>);
+                as _ida.Future<List<_i983cip7.MetricPoint>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1817,12 +1860,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i42.CatalogPrunePreview> prunePreview(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_i8owksfh.CatalogPrunePreview> prunePreview(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'prunePreview',
           );
@@ -1831,7 +1874,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'prunePreview',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1839,7 +1882,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i42.CatalogPrunePreview>);
+                as _ida.Future<_i8owksfh.CatalogPrunePreview>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1847,13 +1890,13 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<int> pruneCatalog(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<int> pruneCatalog(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'pruneCatalog',
           );
@@ -1862,7 +1905,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'pruneCatalog',
-          parameters: _i1.testObjectToJson({'reason': reason}),
+          parameters: _ist.testObjectToJson({'reason': reason}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1870,7 +1913,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1878,12 +1921,12 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i43.CachePolicy> policy(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_iki9k23r.CachePolicy> policy(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'policy',
           );
@@ -1892,7 +1935,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'policy',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -1900,7 +1943,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i43.CachePolicy>);
+                as _ida.Future<_iki9k23r.CachePolicy>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1908,14 +1951,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i43.CachePolicy> updatePolicy(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iki9k23r.CachePolicy> updatePolicy(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String reason,
-    required _i43.CachePolicy policy,
+    required _iki9k23r.CachePolicy policy,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'updatePolicy',
           );
@@ -1924,7 +1967,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'updatePolicy',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'reason': reason,
             'policy': policy,
           }),
@@ -1935,7 +1978,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i43.CachePolicy>);
+                as _ida.Future<_iki9k23r.CachePolicy>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1943,14 +1986,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> quarantine(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> quarantine(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String providerPlaceId,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'quarantine',
           );
@@ -1959,7 +2002,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'quarantine',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'providerPlaceId': providerPlaceId,
             'reason': reason,
           }),
@@ -1970,7 +2013,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1978,14 +2021,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> restore(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> restore(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String providerPlaceId,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'restore',
           );
@@ -1994,7 +2037,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'restore',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'providerPlaceId': providerPlaceId,
             'reason': reason,
           }),
@@ -2005,7 +2048,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2013,14 +2056,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<String> refreshCoverage(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<String> refreshCoverage(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String coverageKey,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'refreshCoverage',
           );
@@ -2029,7 +2072,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'refreshCoverage',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'coverageKey': coverageKey,
             'reason': reason,
           }),
@@ -2040,7 +2083,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2048,14 +2091,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> cancelRefreshJob(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> cancelRefreshJob(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String jobId,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'cancelRefreshJob',
           );
@@ -2064,7 +2107,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'cancelRefreshJob',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'jobId': jobId,
             'reason': reason,
           }),
@@ -2075,7 +2118,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2083,14 +2126,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<int> invalidateCoverage(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<int> invalidateCoverage(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String coverageKey,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'invalidateCoverage',
           );
@@ -2099,7 +2142,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'invalidateCoverage',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'coverageKey': coverageKey,
             'reason': reason,
           }),
@@ -2110,7 +2153,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<int>);
+                as _ida.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2118,14 +2161,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<_i44.CalibrationValidation> validateCalibration(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_inizs74n.CalibrationValidation> validateCalibration(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String version,
     required String documentJson,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'validateCalibration',
           );
@@ -2134,7 +2177,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'validateCalibration',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'version': version,
             'documentJson': documentJson,
           }),
@@ -2145,7 +2188,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i44.CalibrationValidation>);
+                as _ida.Future<_inizs74n.CalibrationValidation>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2153,14 +2196,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> activateCalibration(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> activateCalibration(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String version,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'activateCalibration',
           );
@@ -2169,7 +2212,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'activateCalibration',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'version': version,
             'reason': reason,
           }),
@@ -2180,7 +2223,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2188,14 +2231,14 @@ class _AdminEndpoint {
     });
   }
 
-  _i3.Future<bool> rollbackCalibration(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<bool> rollbackCalibration(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String version,
     required String reason,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'admin',
             method: 'rollbackCalibration',
           );
@@ -2204,7 +2247,7 @@ class _AdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'admin',
           methodName: 'rollbackCalibration',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'version': version,
             'reason': reason,
           }),
@@ -2215,7 +2258,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2230,16 +2273,16 @@ class _BootstrapEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i45.DiscoveryConfig> discoveryConfig(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_istfcu63.DiscoveryConfig> discoveryConfig(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'bootstrap',
             method: 'discoveryConfig',
           );
@@ -2248,7 +2291,7 @@ class _BootstrapEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'bootstrap',
           methodName: 'discoveryConfig',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2256,7 +2299,7 @@ class _BootstrapEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i45.DiscoveryConfig>);
+                as _ida.Future<_istfcu63.DiscoveryConfig>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2264,13 +2307,13 @@ class _BootstrapEndpoint {
     });
   }
 
-  _i3.Future<_i46.BootstrapInfo> getInfo(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ingz4lfm.BootstrapInfo> getInfo(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int build,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'bootstrap',
             method: 'getInfo',
           );
@@ -2279,7 +2322,7 @@ class _BootstrapEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'bootstrap',
           methodName: 'getInfo',
-          parameters: _i1.testObjectToJson({'build': build}),
+          parameters: _ist.testObjectToJson({'build': build}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2287,7 +2330,7 @@ class _BootstrapEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i46.BootstrapInfo>);
+                as _ida.Future<_ingz4lfm.BootstrapInfo>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2302,16 +2345,16 @@ class _DiscoverEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i47.DiscoveryTaxonomySnapshot> taxonomy(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_itvusv22.DiscoveryTaxonomySnapshot> taxonomy(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'discover',
             method: 'taxonomy',
           );
@@ -2320,7 +2363,7 @@ class _DiscoverEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'discover',
           methodName: 'taxonomy',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2328,7 +2371,7 @@ class _DiscoverEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i47.DiscoveryTaxonomySnapshot>);
+                as _ida.Future<_itvusv22.DiscoveryTaxonomySnapshot>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2336,17 +2379,17 @@ class _DiscoverEndpoint {
     });
   }
 
-  _i3.Future<_i48.DiscoverBrowsePage> browse(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i49.DiscoverQuery query,
-    _i50.DiscoverQueryContext? context,
+  _ida.Future<_ittjpqhz.DiscoverBrowsePage> browse(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _ihawuuna.DiscoverQuery query,
+    _inlyh5cd.DiscoverQueryContext? context,
     String? cursor,
     required int pageSize,
     required bool includeMap,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'discover',
             method: 'browse',
           );
@@ -2355,7 +2398,7 @@ class _DiscoverEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'discover',
           methodName: 'browse',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'query': query,
             'context': context,
             'cursor': cursor,
@@ -2369,7 +2412,7 @@ class _DiscoverEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i48.DiscoverBrowsePage>);
+                as _ida.Future<_ittjpqhz.DiscoverBrowsePage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2377,14 +2420,14 @@ class _DiscoverEndpoint {
     });
   }
 
-  _i3.Future<_i51.DiscoverFacets> facets(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i49.DiscoverQuery query,
-    required _i50.DiscoverQueryContext context,
+  _ida.Future<_ijp8zw6x.DiscoverFacets> facets(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _ihawuuna.DiscoverQuery query,
+    required _inlyh5cd.DiscoverQueryContext context,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'discover',
             method: 'facets',
           );
@@ -2393,7 +2436,7 @@ class _DiscoverEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'discover',
           methodName: 'facets',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'query': query,
             'context': context,
           }),
@@ -2404,7 +2447,7 @@ class _DiscoverEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i51.DiscoverFacets>);
+                as _ida.Future<_ijp8zw6x.DiscoverFacets>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2412,15 +2455,15 @@ class _DiscoverEndpoint {
     });
   }
 
-  _i3.Future<_i52.DiscoverPlaceContext> placeContext(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i53.PoiIdentity identity,
-    required _i49.DiscoverQuery query,
-    required _i50.DiscoverQueryContext context,
+  _ida.Future<_i6f8x5xa.DiscoverPlaceContext> placeContext(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _i94aau9x.PoiIdentity identity,
+    required _ihawuuna.DiscoverQuery query,
+    required _inlyh5cd.DiscoverQueryContext context,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'discover',
             method: 'placeContext',
           );
@@ -2429,7 +2472,7 @@ class _DiscoverEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'discover',
           methodName: 'placeContext',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'identity': identity,
             'query': query,
             'context': context,
@@ -2441,7 +2484,7 @@ class _DiscoverEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i52.DiscoverPlaceContext>);
+                as _ida.Future<_i6f8x5xa.DiscoverPlaceContext>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2449,14 +2492,14 @@ class _DiscoverEndpoint {
     });
   }
 
-  _i3.Future<_i54.DiscoveryAreaReceipt> ensureArea(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i55.DiscoverViewport viewport,
+  _ida.Future<_ibc8f5xz.DiscoveryAreaReceipt> ensureArea(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _iiv6nix0.DiscoverViewport viewport,
     String? countryCode,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'discover',
             method: 'ensureArea',
           );
@@ -2465,7 +2508,7 @@ class _DiscoverEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'discover',
           methodName: 'ensureArea',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'viewport': viewport,
             'countryCode': countryCode,
           }),
@@ -2476,7 +2519,7 @@ class _DiscoverEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i54.DiscoveryAreaReceipt>);
+                as _ida.Future<_ibc8f5xz.DiscoveryAreaReceipt>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2484,15 +2527,15 @@ class _DiscoverEndpoint {
     });
   }
 
-  _i3.Future<_i54.DiscoveryAreaReceipt> deepen(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i55.DiscoverViewport viewport,
+  _ida.Future<_ibc8f5xz.DiscoveryAreaReceipt> deepen(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _iiv6nix0.DiscoverViewport viewport,
     String? countryCode,
     required String idempotencyKey,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'discover',
             method: 'deepen',
           );
@@ -2501,7 +2544,7 @@ class _DiscoverEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'discover',
           methodName: 'deepen',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'viewport': viewport,
             'countryCode': countryCode,
             'idempotencyKey': idempotencyKey,
@@ -2513,7 +2556,7 @@ class _DiscoverEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i54.DiscoveryAreaReceipt>);
+                as _ida.Future<_ibc8f5xz.DiscoveryAreaReceipt>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2521,13 +2564,13 @@ class _DiscoverEndpoint {
     });
   }
 
-  _i3.Future<_i56.DiscoveryHarvestStatus> harvestStatus(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iexkxgvj.DiscoveryHarvestStatus> harvestStatus(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String jobId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'discover',
             method: 'harvestStatus',
           );
@@ -2536,7 +2579,7 @@ class _DiscoverEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'discover',
           methodName: 'harvestStatus',
-          parameters: _i1.testObjectToJson({'jobId': jobId}),
+          parameters: _ist.testObjectToJson({'jobId': jobId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2544,7 +2587,7 @@ class _DiscoverEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i56.DiscoveryHarvestStatus>);
+                as _ida.Future<_iexkxgvj.DiscoveryHarvestStatus>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2559,18 +2602,18 @@ class _HayerSessionEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i57.SessionBundle> createFromIntent(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i58.CreateIntentSessionRequest request,
+  _ida.Future<_ivawt5yq.SessionBundle> createFromIntent(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _ixcrxp97.CreateIntentSessionRequest request,
     required String idempotencyKey,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'createFromIntent',
           );
@@ -2579,7 +2622,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'createFromIntent',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'request': request,
             'idempotencyKey': idempotencyKey,
           }),
@@ -2590,7 +2633,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i57.SessionBundle>);
+                as _ida.Future<_ivawt5yq.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2598,14 +2641,14 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i57.SessionBundle> create(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i59.CreateSessionRequest request,
+  _ida.Future<_ivawt5yq.SessionBundle> create(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _i0ekxi7v.CreateSessionRequest request,
     required String idempotencyKey,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'create',
           );
@@ -2614,7 +2657,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'create',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'request': request,
             'idempotencyKey': idempotencyKey,
           }),
@@ -2625,7 +2668,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i57.SessionBundle>);
+                as _ida.Future<_ivawt5yq.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2633,15 +2676,15 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i57.SessionBundle> extendSolo(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ivawt5yq.SessionBundle> extendSolo(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required int expectedRevision,
     required String idempotencyKey,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'extendSolo',
           );
@@ -2650,7 +2693,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'extendSolo',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'sessionId': sessionId,
             'expectedRevision': expectedRevision,
             'idempotencyKey': idempotencyKey,
@@ -2662,7 +2705,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i57.SessionBundle>);
+                as _ida.Future<_ivawt5yq.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2670,15 +2713,15 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i57.SessionBundle> join(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ivawt5yq.SessionBundle> join(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String code,
     required String displayName,
-    _i60.ClientAnalyticsContext? analyticsContext,
+    _i27wduqt.ClientAnalyticsContext? analyticsContext,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'join',
           );
@@ -2687,7 +2730,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'join',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'code': code,
             'displayName': displayName,
             'analyticsContext': analyticsContext,
@@ -2699,7 +2742,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i57.SessionBundle>);
+                as _ida.Future<_ivawt5yq.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2707,13 +2750,13 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i57.SessionBundle> load(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ivawt5yq.SessionBundle> load(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'load',
           );
@@ -2722,7 +2765,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'load',
-          parameters: _i1.testObjectToJson({'sessionId': sessionId}),
+          parameters: _ist.testObjectToJson({'sessionId': sessionId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2730,7 +2773,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i57.SessionBundle>);
+                as _ida.Future<_ivawt5yq.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2738,13 +2781,13 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i61.SessionProgress> progress(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iel59819.SessionProgress> progress(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'progress',
           );
@@ -2753,7 +2796,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'progress',
-          parameters: _i1.testObjectToJson({'sessionId': sessionId}),
+          parameters: _ist.testObjectToJson({'sessionId': sessionId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2761,7 +2804,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i61.SessionProgress>);
+                as _ida.Future<_iel59819.SessionProgress>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2769,13 +2812,13 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<void> abandon(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<void> abandon(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'abandon',
           );
@@ -2784,7 +2827,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'abandon',
-          parameters: _i1.testObjectToJson({'sessionId': sessionId}),
+          parameters: _ist.testObjectToJson({'sessionId': sessionId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2792,7 +2835,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2800,13 +2843,13 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i57.SessionBundle> swipe(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i62.SwipeCommand command,
+  _ida.Future<_ivawt5yq.SessionBundle> swipe(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _it9hvd8t.SwipeCommand command,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'swipe',
           );
@@ -2815,7 +2858,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'swipe',
-          parameters: _i1.testObjectToJson({'command': command}),
+          parameters: _ist.testObjectToJson({'command': command}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2823,7 +2866,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i57.SessionBundle>);
+                as _ida.Future<_ivawt5yq.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2831,16 +2874,16 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<_i57.SessionBundle> chooseDestination(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ivawt5yq.SessionBundle> chooseDestination(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
     required int expectedRevision,
-    _i60.ClientAnalyticsContext? analyticsContext,
+    _i27wduqt.ClientAnalyticsContext? analyticsContext,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'chooseDestination',
           );
@@ -2849,7 +2892,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'chooseDestination',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'sessionId': sessionId,
             'placeId': placeId,
             'expectedRevision': expectedRevision,
@@ -2862,7 +2905,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i57.SessionBundle>);
+                as _ida.Future<_ivawt5yq.SessionBundle>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2870,13 +2913,13 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<void> recordClientAnalytics(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i63.ClientAnalyticsEvent event,
+  _ida.Future<void> recordClientAnalytics(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _ijxgu45w.ClientAnalyticsEvent event,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'recordClientAnalytics',
           );
@@ -2885,7 +2928,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'recordClientAnalytics',
-          parameters: _i1.testObjectToJson({'event': event}),
+          parameters: _ist.testObjectToJson({'event': event}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2893,7 +2936,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2901,13 +2944,13 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Future<List<_i64.SessionResult>> results(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<List<_i6o6gwx7.SessionResult>> results(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'hayerSession',
             method: 'results',
           );
@@ -2916,7 +2959,7 @@ class _HayerSessionEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'hayerSession',
           methodName: 'results',
-          parameters: _i1.testObjectToJson({'sessionId': sessionId}),
+          parameters: _ist.testObjectToJson({'sessionId': sessionId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2924,7 +2967,7 @@ class _HayerSessionEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i64.SessionResult>>);
+                as _ida.Future<List<_i6o6gwx7.SessionResult>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2932,15 +2975,16 @@ class _HayerSessionEndpoint {
     });
   }
 
-  _i3.Stream<_i65.SessionEvent> watch(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Stream<_imklzot3.SessionEvent> watch(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
   }) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i65.SessionEvent>();
-    _i1.callStreamFunctionAndHandleExceptions(
+    var _localTestStreamManager =
+        _ist.TestStreamManager<_imklzot3.SessionEvent>();
+    _ist.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
               endpoint: 'hayerSession',
               method: 'watch',
             );
@@ -2971,18 +3015,18 @@ class _PlaceEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i66.PlaceDetailResult> details(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i53.PoiIdentity identity,
+  _ida.Future<_irlspcdw.PlaceDetailResult> details(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _i94aau9x.PoiIdentity identity,
     String? sessionId,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'place',
             method: 'details',
           );
@@ -2991,7 +3035,7 @@ class _PlaceEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'place',
           methodName: 'details',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'identity': identity,
             'sessionId': sessionId,
           }),
@@ -3002,7 +3046,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i66.PlaceDetailResult>);
+                as _ida.Future<_irlspcdw.PlaceDetailResult>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3010,16 +3054,16 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<String> reportCatalogIssue(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<String> reportCatalogIssue(
+    _ist.TestSessionBuilder sessionBuilder, {
     required int catalogId,
-    required _i67.PoiIssueType issueType,
+    required _ilxj59hy.PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'place',
             method: 'reportCatalogIssue',
           );
@@ -3028,7 +3072,7 @@ class _PlaceEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'place',
           methodName: 'reportCatalogIssue',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'catalogId': catalogId,
             'issueType': issueType,
             'details': details,
@@ -3041,7 +3085,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3049,16 +3093,16 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<List<_i10.LocationSuggestion>> suggest(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<List<_i0kksqr9.LocationSuggestion>> suggest(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String query,
     double? latitude,
     double? longitude,
     required String countryCode,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'place',
             method: 'suggest',
           );
@@ -3067,7 +3111,7 @@ class _PlaceEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'place',
           methodName: 'suggest',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'query': query,
             'latitude': latitude,
             'longitude': longitude,
@@ -3080,7 +3124,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i10.LocationSuggestion>>);
+                as _ida.Future<List<_i0kksqr9.LocationSuggestion>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3088,15 +3132,15 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<String> reverseGeocode(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<String> reverseGeocode(
+    _ist.TestSessionBuilder sessionBuilder, {
     required double latitude,
     required double longitude,
     required String languageCode,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'place',
             method: 'reverseGeocode',
           );
@@ -3105,7 +3149,7 @@ class _PlaceEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'place',
           methodName: 'reverseGeocode',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'latitude': latitude,
             'longitude': longitude,
             'languageCode': languageCode,
@@ -3117,7 +3161,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3125,15 +3169,15 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<_i68.ReverseGeocodeResult> reverseGeocodeDetails(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_ijrye8m9.ReverseGeocodeResult> reverseGeocodeDetails(
+    _ist.TestSessionBuilder sessionBuilder, {
     required double latitude,
     required double longitude,
     required String languageCode,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'place',
             method: 'reverseGeocodeDetails',
           );
@@ -3142,7 +3186,7 @@ class _PlaceEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'place',
           methodName: 'reverseGeocodeDetails',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'latitude': latitude,
             'longitude': longitude,
             'languageCode': languageCode,
@@ -3154,7 +3198,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i68.ReverseGeocodeResult>);
+                as _ida.Future<_ijrye8m9.ReverseGeocodeResult>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3162,16 +3206,16 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<_i69.RouteEstimate> routeEstimate(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_i4vc8byu.RouteEstimate> routeEstimate(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
     double? originLatitude,
     double? originLongitude,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'place',
             method: 'routeEstimate',
           );
@@ -3180,7 +3224,7 @@ class _PlaceEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'place',
           methodName: 'routeEstimate',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'sessionId': sessionId,
             'placeId': placeId,
             'originLatitude': originLatitude,
@@ -3193,7 +3237,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i69.RouteEstimate>);
+                as _ida.Future<_i4vc8byu.RouteEstimate>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3201,17 +3245,17 @@ class _PlaceEndpoint {
     });
   }
 
-  _i3.Future<String> reportIssue(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<String> reportIssue(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionId,
     required String placeId,
-    required _i67.PoiIssueType issueType,
+    required _ilxj59hy.PoiIssueType issueType,
     String? details,
     required String idempotencyKey,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'place',
             method: 'reportIssue',
           );
@@ -3220,7 +3264,7 @@ class _PlaceEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'place',
           methodName: 'reportIssue',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'sessionId': sessionId,
             'placeId': placeId,
             'issueType': issueType,
@@ -3234,7 +3278,7 @@ class _PlaceEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3249,16 +3293,16 @@ class _TaxonomyEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i70.TaxonomySnapshot> current(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ia0gy6rh.TaxonomySnapshot> current(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'taxonomy',
             method: 'current',
           );
@@ -3267,7 +3311,7 @@ class _TaxonomyEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'taxonomy',
           methodName: 'current',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3275,7 +3319,7 @@ class _TaxonomyEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i70.TaxonomySnapshot>);
+                as _ida.Future<_ia0gy6rh.TaxonomySnapshot>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3290,16 +3334,16 @@ class _AdminAuthEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<String> currentOperator(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<String> currentOperator(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'adminAuth',
             method: 'currentOperator',
           );
@@ -3308,7 +3352,7 @@ class _AdminAuthEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'adminAuth',
           methodName: 'currentOperator',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3316,7 +3360,7 @@ class _AdminAuthEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<String>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3324,10 +3368,10 @@ class _AdminAuthEndpoint {
     });
   }
 
-  _i3.Future<void> logout(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> logout(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'adminAuth',
             method: 'logout',
           );
@@ -3336,7 +3380,7 @@ class _AdminAuthEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'adminAuth',
           methodName: 'logout',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3344,7 +3388,7 @@ class _AdminAuthEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3359,16 +3403,16 @@ class _AdminEnrollmentEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<({_i71.AuthSuccess auth, String operator})> begin(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<({_iacs.AuthSuccess auth, String operator})> begin(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'adminEnrollment',
             method: 'begin',
           );
@@ -3377,7 +3421,7 @@ class _AdminEnrollmentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'adminEnrollment',
           methodName: 'begin',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -3386,8 +3430,8 @@ class _AdminEnrollmentEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i72.Protocol()
-                  .deserialize<({_i71.AuthSuccess auth, String operator})>(
+              (record) => _i66y2smk.Protocol()
+                  .deserialize<({_iacs.AuthSuccess auth, String operator})>(
                     record,
                   ),
             );
@@ -3405,17 +3449,17 @@ class _AnonymousIdpEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i71.AuthSuccess> login(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iacs.AuthSuccess> login(
+    _ist.TestSessionBuilder sessionBuilder, {
     String? token,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'anonymousIdp',
             method: 'login',
           );
@@ -3424,7 +3468,7 @@ class _AnonymousIdpEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'anonymousIdp',
           methodName: 'login',
-          parameters: _i1.testObjectToJson({'token': token}),
+          parameters: _ist.testObjectToJson({'token': token}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3432,7 +3476,7 @@ class _AnonymousIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i71.AuthSuccess>);
+                as _ida.Future<_iacs.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3447,17 +3491,17 @@ class _JwtRefreshEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<_i71.AuthSuccess> refreshAccessToken(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String refreshToken,
+  _ida.Future<_iacs.AuthSuccess> refreshAccessToken(
+    _ist.TestSessionBuilder sessionBuilder, {
+    String? refreshToken,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'jwtRefresh',
             method: 'refreshAccessToken',
           );
@@ -3466,7 +3510,7 @@ class _JwtRefreshEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'jwtRefresh',
           methodName: 'refreshAccessToken',
-          parameters: _i1.testObjectToJson({'refreshToken': refreshToken}),
+          parameters: _ist.testObjectToJson({'refreshToken': refreshToken}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3474,7 +3518,7 @@ class _JwtRefreshEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i71.AuthSuccess>);
+                as _ida.Future<_iacs.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3489,16 +3533,16 @@ class _PasskeyIdpEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i3.Future<({_i73.ByteData challenge, _i2.UuidValue id})> createChallenge(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<({_idt.ByteData challenge, _is.UuidValue id})> createChallenge(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'passkeyIdp',
             method: 'createChallenge',
           );
@@ -3507,7 +3551,7 @@ class _PasskeyIdpEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'passkeyIdp',
           methodName: 'createChallenge',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -3516,8 +3560,8 @@ class _PasskeyIdpEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (record) => _i72.Protocol()
-                  .deserialize<({_i73.ByteData challenge, _i2.UuidValue id})>(
+              (record) => _i66y2smk.Protocol()
+                  .deserialize<({_idt.ByteData challenge, _is.UuidValue id})>(
                     record,
                   ),
             );
@@ -3528,13 +3572,13 @@ class _PasskeyIdpEndpoint {
     });
   }
 
-  _i3.Future<void> register(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i74.PasskeyRegistrationRequest registrationRequest,
+  _ida.Future<void> register(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _iais.PasskeyRegistrationRequest registrationRequest,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'passkeyIdp',
             method: 'register',
           );
@@ -3543,7 +3587,7 @@ class _PasskeyIdpEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'passkeyIdp',
           methodName: 'register',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'registrationRequest': registrationRequest,
           }),
           serializationManager: _serializationManager,
@@ -3553,7 +3597,7 @@ class _PasskeyIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3561,13 +3605,13 @@ class _PasskeyIdpEndpoint {
     });
   }
 
-  _i3.Future<_i71.AuthSuccess> login(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required _i74.PasskeyLoginRequest loginRequest,
+  _ida.Future<_iacs.AuthSuccess> login(
+    _ist.TestSessionBuilder sessionBuilder, {
+    required _iais.PasskeyLoginRequest loginRequest,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'passkeyIdp',
             method: 'login',
           );
@@ -3576,7 +3620,7 @@ class _PasskeyIdpEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'passkeyIdp',
           methodName: 'login',
-          parameters: _i1.testObjectToJson({'loginRequest': loginRequest}),
+          parameters: _ist.testObjectToJson({'loginRequest': loginRequest}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3584,7 +3628,7 @@ class _PasskeyIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i71.AuthSuccess>);
+                as _ida.Future<_iacs.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3592,10 +3636,10 @@ class _PasskeyIdpEndpoint {
     });
   }
 
-  _i3.Future<bool> hasAccount(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<bool> hasAccount(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'passkeyIdp',
             method: 'hasAccount',
           );
@@ -3604,7 +3648,7 @@ class _PasskeyIdpEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'passkeyIdp',
           methodName: 'hasAccount',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -3612,7 +3656,7 @@ class _PasskeyIdpEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

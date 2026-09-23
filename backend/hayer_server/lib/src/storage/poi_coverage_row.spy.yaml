@@ -9,6 +9,7 @@ fields:
   countryCode: String
   anchorLatitude: double
   anchorLongitude: double
+  location: GeographyPoint
   radiusMeters: int
   calibrationVersion: String
   resultCount: int

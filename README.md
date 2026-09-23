@@ -1,18 +1,40 @@
 # Hayer
 
-Hayer is an Android-first place decision app: pick a category and location,
-swipe a deterministic deck of nearby places, or share an `ABC-124` session
-so a group can decide from the same ordered deck. Swipe cards can open full
-place details without consuming a vote. After group matching, every participant
-gets one editable `My choice` ballot; plurality wins and the host's own ballot
-breaks a leading tie. Users can privately save places on one device, organize
-Want to try/Favorites lists, and start a room from an ordered saved shortlist
-with an optional five-place fresh mix. The repository also contains the
-Serverpod/PostGIS backend and a protected Flutter web operations console.
+Hayer is an Android-first place discovery and decision app. Choose what you
+want and where to look, then use Quick Pick to swipe through nearby ideas,
+Explore to browse a live map, or Decide Together to make a choice with a group.
+Places can be opened for full details, shared, saved privately on the device,
+or reported when their information needs correction. Saved places can be
+organized into Want to try/Favorites lists and used to start a room from an
+ordered shortlist with an optional five-place fresh mix. The repository also
+contains the Serverpod/PostGIS backend and a protected Flutter web operations
+console.
 
 The product decisions, implementation status, verification evidence, and next
 release gates live in [`PROJECT.md`](PROJECT.md). The longer product brief is
 [`overview.md`](overview.md).
+
+## App features
+
+- **Choose what and where:** Browse or search place categories, combine up to
+  five categories, use the current location, or search and adjust another map
+  area.
+- **Quick Pick:** Swipe through a ranked deck of nearby places, open details
+  without using a vote, and refine the search when you want more options.
+- **Explore:** Browse places on a map and in result cards. Changing the map
+  area or selected categories searches that view for places; results include
+  category and text filters, sorting, and area coverage. Open a place to see
+  its available photos, hours, contact details, and map link; share it, save it,
+  or report an issue.
+- **Decide Together:** Create or join a shareable `ABC-124` room and decide
+  from the same ordered deck. Group matching is followed by an editable
+  `My choice` ballot; plurality wins, with the host's ballot breaking a leading
+  tie.
+- **Saved places:** Keep private Want to try and Favorites collections on the
+  device. Build an ordered shortlist of 2–20 saved places to start a room, with
+  an optional mix of five fresh suggestions.
+- **Personalization:** Use the English or Arabic interface and choose a light
+  or dark appearance.
 
 ## Repository layout
 
@@ -52,8 +74,12 @@ Riyadh live canary passes. The backend:
   three allowlisted photos, and optional summary/featured review;
 - applies exact-radius, closure, price, deduplication, deterministic ranking,
   and category-diversity rules before persisting an immutable session deck;
-- serves a shared PostGIS catalog first, refreshes after 72 hours, and permits
-  a guarded 30-day fallback with dynamic fields suppressed;
+- searches the selected map view and categories for Explore, then resolves
+  returned place IDs from the shared PostGIS catalog when available; uncached
+  places are fetched for display and queued for catalog population;
+- serves Quick Pick and group-session decks from the shared PostGIS catalog
+  first, refreshes after 72 hours, and permits a guarded 30-day fallback with
+  dynamic fields suppressed;
 - rate-limits source traffic, coalesces identical refreshes, bounds responses,
   uses a 30-second creation deadline, and fails safely on parser drift.
 
@@ -62,7 +88,7 @@ catalog.
 
 ## Local setup
 
-Prerequisites are Flutter 3.47.2, Dart 3.13.2, Serverpod CLI 3.4.13, and a
+Prerequisites are Flutter 3.47.2, Dart 3.13.2, Serverpod CLI 4.0.0, and a
 PostgreSQL 16 database with PostGIS for integration/runtime work.
 
 ```bash

@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'admin_discovery_auto_mapped_type.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'admin_discovery_auto_mapped_type.dart' as _izsiyar5;
 
 /// What the Discover type auto-mapper has done, for the unmapped-types page
 /// and the tree editor.
-abstract class AdminDiscoveryAutoMapReport implements _i1.SerializableModel {
+abstract class AdminDiscoveryAutoMapReport
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminDiscoveryAutoMapReport._({
     required this.enabled,
     required this.mappedTypeCount,
@@ -29,22 +29,22 @@ abstract class AdminDiscoveryAutoMapReport implements _i1.SerializableModel {
     required bool enabled,
     required int mappedTypeCount,
     DateTime? lastMappedAt,
-    required List<_i2.AdminDiscoveryAutoMappedType> recent,
+    required List<_izsiyar5.AdminDiscoveryAutoMappedType> recent,
   }) = _AdminDiscoveryAutoMapReportImpl;
 
   factory AdminDiscoveryAutoMapReport.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return AdminDiscoveryAutoMapReport(
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      enabled: _isc.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
       mappedTypeCount: jsonSerialization['mappedTypeCount'] as int,
       lastMappedAt: jsonSerialization['lastMappedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastMappedAt'],
             ),
-      recent: _i3.Protocol()
-          .deserialize<List<_i2.AdminDiscoveryAutoMappedType>>(
+      recent: _iynev3sz.Protocol()
+          .deserialize<List<_izsiyar5.AdminDiscoveryAutoMappedType>>(
             jsonSerialization['recent'],
           ),
     );
@@ -60,16 +60,16 @@ abstract class AdminDiscoveryAutoMapReport implements _i1.SerializableModel {
   DateTime? lastMappedAt;
 
   /// The most recent assignments, newest first.
-  List<_i2.AdminDiscoveryAutoMappedType> recent;
+  List<_izsiyar5.AdminDiscoveryAutoMappedType> recent;
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMapReport]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminDiscoveryAutoMapReport copyWith({
     bool? enabled,
     int? mappedTypeCount,
     DateTime? lastMappedAt,
-    List<_i2.AdminDiscoveryAutoMappedType>? recent,
+    List<_izsiyar5.AdminDiscoveryAutoMappedType>? recent,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,8 +83,19 @@ abstract class AdminDiscoveryAutoMapReport implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminDiscoveryAutoMapReport',
+      'enabled': enabled,
+      'mappedTypeCount': mappedTypeCount,
+      if (lastMappedAt != null) 'lastMappedAt': lastMappedAt?.toJson(),
+      'recent': recent.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +106,7 @@ class _AdminDiscoveryAutoMapReportImpl extends AdminDiscoveryAutoMapReport {
     required bool enabled,
     required int mappedTypeCount,
     DateTime? lastMappedAt,
-    required List<_i2.AdminDiscoveryAutoMappedType> recent,
+    required List<_izsiyar5.AdminDiscoveryAutoMappedType> recent,
   }) : super._(
          enabled: enabled,
          mappedTypeCount: mappedTypeCount,
@@ -105,13 +116,13 @@ class _AdminDiscoveryAutoMapReportImpl extends AdminDiscoveryAutoMapReport {
 
   /// Returns a shallow copy of this [AdminDiscoveryAutoMapReport]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminDiscoveryAutoMapReport copyWith({
     bool? enabled,
     int? mappedTypeCount,
     Object? lastMappedAt = _Undefined,
-    List<_i2.AdminDiscoveryAutoMappedType>? recent,
+    List<_izsiyar5.AdminDiscoveryAutoMappedType>? recent,
   }) {
     return AdminDiscoveryAutoMapReport(
       enabled: enabled ?? this.enabled,

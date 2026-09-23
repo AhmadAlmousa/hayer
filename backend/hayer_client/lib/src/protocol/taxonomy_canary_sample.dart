@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i2;
-
-abstract class TaxonomyCanarySample implements _i1.SerializableModel {
+abstract class TaxonomyCanarySample
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   TaxonomyCanarySample._({
     required this.itemId,
     required this.resultCount,
@@ -35,7 +35,7 @@ abstract class TaxonomyCanarySample implements _i1.SerializableModel {
     return TaxonomyCanarySample(
       itemId: jsonSerialization['itemId'] as String,
       resultCount: jsonSerialization['resultCount'] as int,
-      sampleNames: _i2.Protocol().deserialize<List<String>>(
+      sampleNames: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['sampleNames'],
       ),
       errorCode: jsonSerialization['errorCode'] as String?,
@@ -52,7 +52,7 @@ abstract class TaxonomyCanarySample implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [TaxonomyCanarySample]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   TaxonomyCanarySample copyWith({
     String? itemId,
     int? resultCount,
@@ -71,8 +71,19 @@ abstract class TaxonomyCanarySample implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'TaxonomyCanarySample',
+      'itemId': itemId,
+      'resultCount': resultCount,
+      'sampleNames': sampleNames.toJson(),
+      if (errorCode != null) 'errorCode': errorCode,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -93,7 +104,7 @@ class _TaxonomyCanarySampleImpl extends TaxonomyCanarySample {
 
   /// Returns a shallow copy of this [TaxonomyCanarySample]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   TaxonomyCanarySample copyWith({
     String? itemId,

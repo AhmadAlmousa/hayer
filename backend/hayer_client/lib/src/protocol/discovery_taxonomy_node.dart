@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'discovery_taxonomy_node.dart' as _i3sj4yil;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'discovery_taxonomy_node.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class DiscoveryTaxonomyNode implements _i1.SerializableModel {
+abstract class DiscoveryTaxonomyNode
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryTaxonomyNode._({
     required this.id,
     required this.labelEn,
@@ -35,7 +35,7 @@ abstract class DiscoveryTaxonomyNode implements _i1.SerializableModel {
     required String labelAr,
     required String emoji,
     required List<String> typeAliases,
-    required List<_i2.DiscoveryTaxonomyNode> children,
+    required List<_i3sj4yil.DiscoveryTaxonomyNode> children,
     bool? selectable,
     bool? selectionGroupRoot,
     String? searchQueryEn,
@@ -50,18 +50,19 @@ abstract class DiscoveryTaxonomyNode implements _i1.SerializableModel {
       labelEn: jsonSerialization['labelEn'] as String,
       labelAr: jsonSerialization['labelAr'] as String,
       emoji: jsonSerialization['emoji'] as String,
-      typeAliases: _i3.Protocol().deserialize<List<String>>(
+      typeAliases: _iynev3sz.Protocol().deserialize<List<String>>(
         jsonSerialization['typeAliases'],
       ),
-      children: _i3.Protocol().deserialize<List<_i2.DiscoveryTaxonomyNode>>(
-        jsonSerialization['children'],
-      ),
+      children: _iynev3sz.Protocol()
+          .deserialize<List<_i3sj4yil.DiscoveryTaxonomyNode>>(
+            jsonSerialization['children'],
+          ),
       selectable: jsonSerialization['selectable'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['selectable']),
+          : _isc.BoolJsonExtension.fromJson(jsonSerialization['selectable']),
       selectionGroupRoot: jsonSerialization['selectionGroupRoot'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _isc.BoolJsonExtension.fromJson(
               jsonSerialization['selectionGroupRoot'],
             ),
       searchQueryEn: jsonSerialization['searchQueryEn'] as String?,
@@ -79,7 +80,7 @@ abstract class DiscoveryTaxonomyNode implements _i1.SerializableModel {
 
   List<String> typeAliases;
 
-  List<_i2.DiscoveryTaxonomyNode> children;
+  List<_i3sj4yil.DiscoveryTaxonomyNode> children;
 
   bool? selectable;
 
@@ -91,14 +92,14 @@ abstract class DiscoveryTaxonomyNode implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryTaxonomyNode]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryTaxonomyNode copyWith({
     String? id,
     String? labelEn,
     String? labelAr,
     String? emoji,
     List<String>? typeAliases,
-    List<_i2.DiscoveryTaxonomyNode>? children,
+    List<_i3sj4yil.DiscoveryTaxonomyNode>? children,
     bool? selectable,
     bool? selectionGroupRoot,
     String? searchQueryEn,
@@ -122,8 +123,25 @@ abstract class DiscoveryTaxonomyNode implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryTaxonomyNode',
+      'id': id,
+      'labelEn': labelEn,
+      'labelAr': labelAr,
+      'emoji': emoji,
+      'typeAliases': typeAliases.toJson(),
+      'children': children.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (selectable != null) 'selectable': selectable,
+      if (selectionGroupRoot != null) 'selectionGroupRoot': selectionGroupRoot,
+      if (searchQueryEn != null) 'searchQueryEn': searchQueryEn,
+      if (searchQueryAr != null) 'searchQueryAr': searchQueryAr,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -136,7 +154,7 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
     required String labelAr,
     required String emoji,
     required List<String> typeAliases,
-    required List<_i2.DiscoveryTaxonomyNode> children,
+    required List<_i3sj4yil.DiscoveryTaxonomyNode> children,
     bool? selectable,
     bool? selectionGroupRoot,
     String? searchQueryEn,
@@ -156,7 +174,7 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
 
   /// Returns a shallow copy of this [DiscoveryTaxonomyNode]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryTaxonomyNode copyWith({
     String? id,
@@ -164,7 +182,7 @@ class _DiscoveryTaxonomyNodeImpl extends DiscoveryTaxonomyNode {
     String? labelAr,
     String? emoji,
     List<String>? typeAliases,
-    List<_i2.DiscoveryTaxonomyNode>? children,
+    List<_i3sj4yil.DiscoveryTaxonomyNode>? children,
     Object? selectable = _Undefined,
     Object? selectionGroupRoot = _Undefined,
     Object? searchQueryEn = _Undefined,

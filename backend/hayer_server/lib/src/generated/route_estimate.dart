@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class RouteEstimate
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   RouteEstimate._({
     required this.distanceMeters,
     required this.durationSeconds,
@@ -33,10 +32,10 @@ abstract class RouteEstimate
     return RouteEstimate(
       distanceMeters: jsonSerialization['distanceMeters'] as int,
       durationSeconds: jsonSerialization['durationSeconds'] as int,
-      trafficAware: _i1.BoolJsonExtension.fromJson(
+      trafficAware: _is.BoolJsonExtension.fromJson(
         jsonSerialization['trafficAware'],
       ),
-      checkedAt: _i1.DateTimeJsonExtension.fromJson(
+      checkedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['checkedAt'],
       ),
     );
@@ -52,7 +51,7 @@ abstract class RouteEstimate
 
   /// Returns a shallow copy of this [RouteEstimate]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   RouteEstimate copyWith({
     int? distanceMeters,
     int? durationSeconds,
@@ -83,7 +82,7 @@ abstract class RouteEstimate
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -102,7 +101,7 @@ class _RouteEstimateImpl extends RouteEstimate {
 
   /// Returns a shallow copy of this [RouteEstimate]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   RouteEstimate copyWith({
     int? distanceMeters,

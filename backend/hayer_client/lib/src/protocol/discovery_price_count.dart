@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoveryPriceCount implements _i1.SerializableModel {
+abstract class DiscoveryPriceCount
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryPriceCount._({
     this.priceLevel,
     required this.count,
@@ -37,7 +37,7 @@ abstract class DiscoveryPriceCount implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryPriceCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryPriceCount copyWith({
     int? priceLevel,
     int? count,
@@ -52,8 +52,17 @@ abstract class DiscoveryPriceCount implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryPriceCount',
+      if (priceLevel != null) 'priceLevel': priceLevel,
+      'count': count,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -70,7 +79,7 @@ class _DiscoveryPriceCountImpl extends DiscoveryPriceCount {
 
   /// Returns a shallow copy of this [DiscoveryPriceCount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryPriceCount copyWith({
     Object? priceLevel = _Undefined,

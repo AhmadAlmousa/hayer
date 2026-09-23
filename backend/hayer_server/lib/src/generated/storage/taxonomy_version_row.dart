@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../taxonomy_status.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../taxonomy_status.dart' as _i5zgwsjw;
 
 abstract class TaxonomyVersionRow
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   TaxonomyVersionRow._({
     this.id,
     required this.version,
@@ -37,7 +36,7 @@ abstract class TaxonomyVersionRow
     int? id,
     required String version,
     required int revision,
-    required _i2.TaxonomyStatus status,
+    required _i5zgwsjw.TaxonomyStatus status,
     required String documentJson,
     required bool validationPassed,
     required List<String> validationErrors,
@@ -54,14 +53,14 @@ abstract class TaxonomyVersionRow
       id: jsonSerialization['id'] as int?,
       version: jsonSerialization['version'] as String,
       revision: jsonSerialization['revision'] as int,
-      status: _i2.TaxonomyStatus.fromJson(
+      status: _i5zgwsjw.TaxonomyStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
       documentJson: jsonSerialization['documentJson'] as String,
-      validationPassed: _i1.BoolJsonExtension.fromJson(
+      validationPassed: _is.BoolJsonExtension.fromJson(
         jsonSerialization['validationPassed'],
       ),
-      validationErrors: _i3.Protocol().deserialize<List<String>>(
+      validationErrors: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['validationErrors'],
       ),
       validationLocationJson:
@@ -69,17 +68,17 @@ abstract class TaxonomyVersionRow
       validationRadiusMeters:
           jsonSerialization['validationRadiusMeters'] as int?,
       createdBy: jsonSerialization['createdBy'] as String,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
       validatedAt: jsonSerialization['validatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['validatedAt'],
             ),
       publishedAt: jsonSerialization['publishedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['publishedAt'],
             ),
     );
@@ -96,7 +95,7 @@ abstract class TaxonomyVersionRow
 
   int revision;
 
-  _i2.TaxonomyStatus status;
+  _i5zgwsjw.TaxonomyStatus status;
 
   String documentJson;
 
@@ -117,16 +116,16 @@ abstract class TaxonomyVersionRow
   DateTime? publishedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [TaxonomyVersionRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TaxonomyVersionRow copyWith({
     int? id,
     String? version,
     int? revision,
-    _i2.TaxonomyStatus? status,
+    _i5zgwsjw.TaxonomyStatus? status,
     String? documentJson,
     bool? validationPassed,
     List<String>? validationErrors,
@@ -169,12 +168,11 @@ abstract class TaxonomyVersionRow
   }
 
   static TaxonomyVersionRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
+    _is.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
+    _is.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
+    _is.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
     TaxonomyVersionRowInclude? include,
   }) {
     return TaxonomyVersionRowIncludeList._(
@@ -182,7 +180,6 @@ abstract class TaxonomyVersionRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TaxonomyVersionRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(TaxonomyVersionRow.t),
       include: include,
     );
@@ -190,7 +187,7 @@ abstract class TaxonomyVersionRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -201,7 +198,7 @@ class _TaxonomyVersionRowImpl extends TaxonomyVersionRow {
     int? id,
     required String version,
     required int revision,
-    required _i2.TaxonomyStatus status,
+    required _i5zgwsjw.TaxonomyStatus status,
     required String documentJson,
     required bool validationPassed,
     required List<String> validationErrors,
@@ -229,13 +226,13 @@ class _TaxonomyVersionRowImpl extends TaxonomyVersionRow {
 
   /// Returns a shallow copy of this [TaxonomyVersionRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TaxonomyVersionRow copyWith({
     Object? id = _Undefined,
     String? version,
     int? revision,
-    _i2.TaxonomyStatus? status,
+    _i5zgwsjw.TaxonomyStatus? status,
     String? documentJson,
     bool? validationPassed,
     List<String>? validationErrors,
@@ -270,129 +267,129 @@ class _TaxonomyVersionRowImpl extends TaxonomyVersionRow {
 }
 
 class TaxonomyVersionRowUpdateTable
-    extends _i1.UpdateTable<TaxonomyVersionRowTable> {
+    extends _is.UpdateTable<TaxonomyVersionRowTable> {
   TaxonomyVersionRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> version(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> version(String value) => _is.ColumnValue(
     table.version,
     value,
   );
 
-  _i1.ColumnValue<int, int> revision(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> revision(int value) => _is.ColumnValue(
     table.revision,
     value,
   );
 
-  _i1.ColumnValue<_i2.TaxonomyStatus, _i2.TaxonomyStatus> status(
-    _i2.TaxonomyStatus value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_i5zgwsjw.TaxonomyStatus, _i5zgwsjw.TaxonomyStatus> status(
+    _i5zgwsjw.TaxonomyStatus value,
+  ) => _is.ColumnValue(
     table.status,
     value,
   );
 
-  _i1.ColumnValue<String, String> documentJson(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> documentJson(String value) => _is.ColumnValue(
     table.documentJson,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> validationPassed(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> validationPassed(bool value) => _is.ColumnValue(
     table.validationPassed,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> validationErrors(
+  _is.ColumnValue<List<String>, List<String>> validationErrors(
     List<String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.validationErrors,
     value,
   );
 
-  _i1.ColumnValue<String, String> validationLocationJson(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> validationLocationJson(String? value) =>
+      _is.ColumnValue(
         table.validationLocationJson,
         value,
       );
 
-  _i1.ColumnValue<int, int> validationRadiusMeters(int? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> validationRadiusMeters(int? value) =>
+      _is.ColumnValue(
         table.validationRadiusMeters,
         value,
       );
 
-  _i1.ColumnValue<String, String> createdBy(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> createdBy(String value) => _is.ColumnValue(
     table.createdBy,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> validatedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> validatedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.validatedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> publishedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> publishedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.publishedAt,
         value,
       );
 }
 
-class TaxonomyVersionRowTable extends _i1.Table<int?> {
+class TaxonomyVersionRowTable extends _is.Table<int?> {
   TaxonomyVersionRowTable({super.tableRelation})
     : super(tableName: 'hayer_taxonomy_version') {
     updateTable = TaxonomyVersionRowUpdateTable(this);
-    version = _i1.ColumnString(
+    version = _is.ColumnString(
       'version',
       this,
     );
-    revision = _i1.ColumnInt(
+    revision = _is.ColumnInt(
       'revision',
       this,
     );
-    status = _i1.ColumnEnum(
+    status = _is.ColumnEnum(
       'status',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    documentJson = _i1.ColumnString(
+    documentJson = _is.ColumnString(
       'documentJson',
       this,
     );
-    validationPassed = _i1.ColumnBool(
+    validationPassed = _is.ColumnBool(
       'validationPassed',
       this,
     );
-    validationErrors = _i1.ColumnSerializable<List<String>>(
+    validationErrors = _is.ColumnSerializable<List<String>>(
       'validationErrors',
       this,
     );
-    validationLocationJson = _i1.ColumnString(
+    validationLocationJson = _is.ColumnString(
       'validationLocationJson',
       this,
     );
-    validationRadiusMeters = _i1.ColumnInt(
+    validationRadiusMeters = _is.ColumnInt(
       'validationRadiusMeters',
       this,
     );
-    createdBy = _i1.ColumnString(
+    createdBy = _is.ColumnString(
       'createdBy',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    validatedAt = _i1.ColumnDateTime(
+    validatedAt = _is.ColumnDateTime(
       'validatedAt',
       this,
     );
-    publishedAt = _i1.ColumnDateTime(
+    publishedAt = _is.ColumnDateTime(
       'publishedAt',
       this,
     );
@@ -400,32 +397,32 @@ class TaxonomyVersionRowTable extends _i1.Table<int?> {
 
   late final TaxonomyVersionRowUpdateTable updateTable;
 
-  late final _i1.ColumnString version;
+  late final _is.ColumnString version;
 
-  late final _i1.ColumnInt revision;
+  late final _is.ColumnInt revision;
 
-  late final _i1.ColumnEnum<_i2.TaxonomyStatus> status;
+  late final _is.ColumnEnum<_i5zgwsjw.TaxonomyStatus> status;
 
-  late final _i1.ColumnString documentJson;
+  late final _is.ColumnString documentJson;
 
-  late final _i1.ColumnBool validationPassed;
+  late final _is.ColumnBool validationPassed;
 
-  late final _i1.ColumnSerializable<List<String>> validationErrors;
+  late final _is.ColumnSerializable<List<String>> validationErrors;
 
-  late final _i1.ColumnString validationLocationJson;
+  late final _is.ColumnString validationLocationJson;
 
-  late final _i1.ColumnInt validationRadiusMeters;
+  late final _is.ColumnInt validationRadiusMeters;
 
-  late final _i1.ColumnString createdBy;
+  late final _is.ColumnString createdBy;
 
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  late final _i1.ColumnDateTime validatedAt;
+  late final _is.ColumnDateTime validatedAt;
 
-  late final _i1.ColumnDateTime publishedAt;
+  late final _is.ColumnDateTime publishedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     version,
     revision,
@@ -442,23 +439,22 @@ class TaxonomyVersionRowTable extends _i1.Table<int?> {
   ];
 }
 
-class TaxonomyVersionRowInclude extends _i1.IncludeObject {
+class TaxonomyVersionRowInclude extends _is.IncludeObject {
   TaxonomyVersionRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => TaxonomyVersionRow.t;
+  _is.Table<int?> get table => TaxonomyVersionRow.t;
 }
 
-class TaxonomyVersionRowIncludeList extends _i1.IncludeList {
+class TaxonomyVersionRowIncludeList extends _is.IncludeList {
   TaxonomyVersionRowIncludeList._({
-    _i1.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
+    _is.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -466,10 +462,10 @@ class TaxonomyVersionRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => TaxonomyVersionRow.t;
+  _is.Table<int?> get table => TaxonomyVersionRow.t;
 }
 
 class TaxonomyVersionRowRepository {
@@ -498,22 +494,20 @@ class TaxonomyVersionRowRepository {
   /// );
   /// ```
   Future<List<TaxonomyVersionRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
+    _is.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TaxonomyVersionRow>(
       where: where?.call(TaxonomyVersionRow.t),
       orderBy: orderBy?.call(TaxonomyVersionRow.t),
       orderByList: orderByList?.call(TaxonomyVersionRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -540,21 +534,19 @@ class TaxonomyVersionRowRepository {
   /// );
   /// ```
   Future<TaxonomyVersionRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
+    _is.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TaxonomyVersionRow>(
       where: where?.call(TaxonomyVersionRow.t),
       orderBy: orderBy?.call(TaxonomyVersionRow.t),
       orderByList: orderByList?.call(TaxonomyVersionRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -564,11 +556,11 @@ class TaxonomyVersionRowRepository {
 
   /// Finds a single [TaxonomyVersionRow] by its [id] or null if no such row exists.
   Future<TaxonomyVersionRow?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<TaxonomyVersionRow>(
       id,
@@ -588,16 +580,22 @@ class TaxonomyVersionRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TaxonomyVersionRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TaxonomyVersionRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<TaxonomyVersionRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -605,12 +603,81 @@ class TaxonomyVersionRowRepository {
   ///
   /// The returned [TaxonomyVersionRow] will have its `id` field set.
   Future<TaxonomyVersionRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TaxonomyVersionRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<TaxonomyVersionRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [TaxonomyVersionRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [TaxonomyVersionRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<TaxonomyVersionRow>> upsert(
+    _is.DatabaseSession session,
+    List<TaxonomyVersionRow> rows, {
+    required _is.ColumnSelections<TaxonomyVersionRowTable> conflictColumns,
+    _is.ColumnSelections<TaxonomyVersionRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<TaxonomyVersionRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<TaxonomyVersionRow>(
+      rows,
+      conflictColumns: conflictColumns(TaxonomyVersionRow.t),
+      updateColumns: updateColumns?.call(TaxonomyVersionRow.t),
+      updateWhere: updateWhere?.call(TaxonomyVersionRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [TaxonomyVersionRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [TaxonomyVersionRow] will have its `id` field set.
+  Future<TaxonomyVersionRow?> upsertRow(
+    _is.DatabaseSession session,
+    TaxonomyVersionRow row, {
+    required _is.ColumnSelections<TaxonomyVersionRowTable> conflictColumns,
+    _is.ColumnSelections<TaxonomyVersionRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<TaxonomyVersionRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<TaxonomyVersionRow>(
+      row,
+      conflictColumns: conflictColumns(TaxonomyVersionRow.t),
+      updateColumns: updateColumns?.call(TaxonomyVersionRow.t),
+      updateWhere: updateWhere?.call(TaxonomyVersionRow.t),
       transaction: transaction,
     );
   }
@@ -620,16 +687,22 @@ class TaxonomyVersionRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TaxonomyVersionRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TaxonomyVersionRow> rows, {
-    _i1.ColumnSelections<TaxonomyVersionRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TaxonomyVersionRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<TaxonomyVersionRow>(
       rows,
       columns: columns?.call(TaxonomyVersionRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -637,10 +710,10 @@ class TaxonomyVersionRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<TaxonomyVersionRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TaxonomyVersionRow row, {
-    _i1.ColumnSelections<TaxonomyVersionRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TaxonomyVersionRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<TaxonomyVersionRow>(
       row,
@@ -652,11 +725,11 @@ class TaxonomyVersionRowRepository {
   /// Updates a single [TaxonomyVersionRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<TaxonomyVersionRow?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<TaxonomyVersionRowUpdateTable>
+    required _is.ColumnValueListBuilder<TaxonomyVersionRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<TaxonomyVersionRow>(
       id,
@@ -667,17 +740,21 @@ class TaxonomyVersionRowRepository {
 
   /// Updates all [TaxonomyVersionRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TaxonomyVersionRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<TaxonomyVersionRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<TaxonomyVersionRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<TaxonomyVersionRowTable> where,
+    required _is.WhereExpressionBuilder<TaxonomyVersionRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
-    _i1.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
+    _is.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<TaxonomyVersionRow>(
       columnValues: columnValues(TaxonomyVersionRow.t.updateTable),
@@ -686,30 +763,44 @@ class TaxonomyVersionRowRepository {
       offset: offset,
       orderBy: orderBy?.call(TaxonomyVersionRow.t),
       orderByList: orderByList?.call(TaxonomyVersionRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [TaxonomyVersionRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TaxonomyVersionRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TaxonomyVersionRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
+    _is.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<TaxonomyVersionRow>(
       rows,
+      orderBy: orderBy?.call(TaxonomyVersionRow.t),
+      orderByList: orderByList?.call(TaxonomyVersionRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [TaxonomyVersionRow].
   Future<TaxonomyVersionRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TaxonomyVersionRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<TaxonomyVersionRow>(
       row,
@@ -718,24 +809,37 @@ class TaxonomyVersionRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<TaxonomyVersionRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TaxonomyVersionRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<TaxonomyVersionRowTable> where,
+    _is.OrderByBuilder<TaxonomyVersionRowTable>? orderBy,
+    _is.OrderByListBuilder<TaxonomyVersionRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TaxonomyVersionRow>(
       where: where(TaxonomyVersionRow.t),
+      orderBy: orderBy?.call(TaxonomyVersionRow.t),
+      orderByList: orderByList?.call(TaxonomyVersionRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TaxonomyVersionRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<TaxonomyVersionRow>(
       where: where?.call(TaxonomyVersionRow.t),
@@ -746,11 +850,11 @@ class TaxonomyVersionRowRepository {
 
   /// Acquires row-level locks on [TaxonomyVersionRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TaxonomyVersionRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<TaxonomyVersionRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<TaxonomyVersionRow>(
       where: where(TaxonomyVersionRow.t),

@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class OpeningPeriod implements _i1.SerializableModel {
+abstract class OpeningPeriod
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   OpeningPeriod._({
     required this.day,
     required this.openMinutes,
@@ -33,7 +33,9 @@ abstract class OpeningPeriod implements _i1.SerializableModel {
       day: jsonSerialization['day'] as int,
       openMinutes: jsonSerialization['openMinutes'] as int,
       closeMinutes: jsonSerialization['closeMinutes'] as int,
-      overnight: _i1.BoolJsonExtension.fromJson(jsonSerialization['overnight']),
+      overnight: _isc.BoolJsonExtension.fromJson(
+        jsonSerialization['overnight'],
+      ),
     );
   }
 
@@ -47,7 +49,7 @@ abstract class OpeningPeriod implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [OpeningPeriod]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   OpeningPeriod copyWith({
     int? day,
     int? openMinutes,
@@ -66,8 +68,19 @@ abstract class OpeningPeriod implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'OpeningPeriod',
+      'day': day,
+      'openMinutes': openMinutes,
+      'closeMinutes': closeMinutes,
+      'overnight': overnight,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -86,7 +99,7 @@ class _OpeningPeriodImpl extends OpeningPeriod {
 
   /// Returns a shallow copy of this [OpeningPeriod]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   OpeningPeriod copyWith({
     int? day,

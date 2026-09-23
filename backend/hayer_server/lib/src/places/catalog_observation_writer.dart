@@ -107,6 +107,7 @@ final class CatalogObservationWriter {
     CatalogObservationEvidence? evidence,
     CatalogObservationCoverage? coverage,
     CatalogObservationMetrics? metrics,
+    Set<String> preserveExistingCatalogRows = const {},
   }) async {
     final queryByCategory = {
       for (final query in evidence?.queries ?? const <PlaceQuery>[])
@@ -137,20 +138,22 @@ final class CatalogObservationWriter {
         sourceCheckedAt: observedAt,
         isStale: false,
       );
-      catalogInput.add({
-        'providerPlaceId': place.placeId,
-        'featureId': place.featureId,
-        'normalizedName': _normalizeName(place.name),
-        'name': place.name,
-        'countryCode': countryCode,
-        'latitude': place.latitude,
-        'longitude': place.longitude,
-        'categoryIds': evidencedCategories,
-        'snapshot': snapshot.toJson(),
-        'calibrationVersion': calibrationVersion,
-        'sourceCheckedAt': observedAt.toIso8601String(),
-        'seenAt': observedAt.toIso8601String(),
-      });
+      if (!preserveExistingCatalogRows.contains(place.placeId)) {
+        catalogInput.add({
+          'providerPlaceId': place.placeId,
+          'featureId': place.featureId,
+          'normalizedName': _normalizeName(place.name),
+          'name': place.name,
+          'countryCode': countryCode,
+          'latitude': place.latitude,
+          'longitude': place.longitude,
+          'categoryIds': evidencedCategories,
+          'snapshot': snapshot.toJson(),
+          'calibrationVersion': calibrationVersion,
+          'sourceCheckedAt': observedAt.toIso8601String(),
+          'seenAt': observedAt.toIso8601String(),
+        });
+      }
       for (final categoryId in evidencedCategories) {
         final isDirect = directlyObserved.contains(categoryId);
         final evidenceDetail = isDirect
@@ -177,7 +180,7 @@ final class CatalogObservationWriter {
 
     var knownPlaces = 0;
     await session.db.transaction((transaction) async {
-      if (metrics != null && catalogInput.isNotEmpty) {
+      if (metrics != null && uniquePlaces.isNotEmpty) {
         final known = await session.db.unsafeQuery(
           '''
 SELECT COUNT(*)::int AS count

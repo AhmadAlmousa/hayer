@@ -10,7 +10,7 @@ String setupErrorMessage(Object error, AppLocalizations strings) {
     if (error.code == 'no_places') return strings.noPlaces;
     return error.message;
   }
-  if (error is ServerpodClientException && error.statusCode >= 500) {
+  if (error is ServerpodClientHttpException && error.statusCode >= 500) {
     return strings.serverRequestFailed;
   }
   return strings.serverUnavailable;

@@ -1514,6 +1514,12 @@ abstract class AppLocalizations {
   /// **'Distance unavailable'**
   String get routeDistanceUnavailable;
 
+  /// No description provided for @routeCalculating.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculating route…'**
+  String get routeCalculating;
+
   /// No description provided for @currentLocationUnavailableUsingHost.
   ///
   /// In en, this message translates to:
@@ -1970,6 +1976,30 @@ abstract class AppLocalizations {
   /// **'Recently discovered'**
   String get discoverySortRecent;
 
+  /// No description provided for @discoverySortDistanceArea.
+  ///
+  /// In en, this message translates to:
+  /// **'📍 Distance from area center'**
+  String get discoverySortDistanceArea;
+
+  /// No description provided for @discoverySortDistanceCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'🧭 Distance from my location'**
+  String get discoverySortDistanceCurrent;
+
+  /// No description provided for @discoverySortHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how places appear in your results.'**
+  String get discoverySortHelp;
+
+  /// No description provided for @discoverySortLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Current location is unavailable. Sorting from the area center.'**
+  String get discoverySortLocationUnavailable;
+
   /// No description provided for @discoveryExplainBest.
   ///
   /// In en, this message translates to:
@@ -2018,6 +2048,18 @@ abstract class AppLocalizations {
   /// **'Newest to our catalog'**
   String get discoveryExplainRecent;
 
+  /// No description provided for @discoveryExplainDistanceArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest places to the center of this area first.'**
+  String get discoveryExplainDistanceArea;
+
+  /// No description provided for @discoveryExplainDistanceCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest places to your current location first.'**
+  String get discoveryExplainDistanceCurrent;
+
   /// No description provided for @discoveryTagHiddenGem.
   ///
   /// In en, this message translates to:
@@ -2029,12 +2071,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'💎 Hidden gem'**
   String get discoveryTagHiddenGemPlain;
-
-  /// No description provided for @discoveryTagAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'{days, plural, =0{🆕 Added today} =1{🆕 Added yesterday} other{🆕 Added {days} days ago}}'**
-  String discoveryTagAdded(int days);
 
   /// No description provided for @discoveryTagRatedBelow.
   ///
@@ -2221,6 +2257,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear the search'**
   String get discoverySearchClear;
+
+  /// No description provided for @discoverySearchPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Search places'**
+  String get discoverySearchPlaces;
 
   /// No description provided for @discoveryFilterReviews.
   ///

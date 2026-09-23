@@ -1628,8 +1628,7 @@ class HayerSessionEndpoint extends Endpoint {
       final participants = await ParticipantRow.db.find(
         session,
         where: (table) => table.sessionId.equals(sessionId),
-        orderBy: (table) => table.isHost,
-        orderDescending: true,
+        orderBy: (table) => table.isHost.desc(),
         transaction: transaction,
       );
       final participantViews = participants
@@ -1979,7 +1978,7 @@ class HayerSessionEndpoint extends Endpoint {
         revision: revision,
         occurredAt: DateTime.now().toUtc(),
       ),
-      global: false,
+      scope: MessageScope.local,
     );
   }
 

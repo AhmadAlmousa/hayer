@@ -10,14 +10,13 @@ import '../../core/place_links.dart';
 import '../../domain/discovery_area.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../saved/save_place_button.dart';
-import 'discovery_config_controller.dart';
 import 'discovery_place_details.dart';
 import 'discovery_place_row.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
 import 'discovery_selection_controller.dart';
 
-/// The selected place, shown over the map.
+/// The selected place, shown in a modal sheet above the map.
 ///
 /// Tapping a pin or a row selects a place, and this is what that selection
 /// looks like: what the place is, how it is rated, and the two things worth
@@ -30,10 +29,11 @@ import 'discovery_selection_controller.dart';
 /// reusing the row: the selected place is often one of the visible rows, and
 /// two widgets carrying one row's keys would be one tree with two of each.
 class DiscoveryPlaceCard extends ConsumerWidget {
-  const DiscoveryPlaceCard({super.key, this.origin});
+  const DiscoveryPlaceCard({super.key, this.origin, required this.onClose});
 
   /// The permitted device location, for distances.
   final DiscoveryPoint? origin;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,11 +45,6 @@ class DiscoveryPlaceCard extends ConsumerWidget {
     final colors = theme.colorScheme;
     final notifier = ref.read(discoverySelectionProvider.notifier);
     final results = ref.watch(discoveryResultsProvider);
-    final scoring = ref.watch(
-      discoveryConfigProvider.select(
-        (availability) => availability.config?.scoring,
-      ),
-    );
 
     // The selected place is either one of the loaded rows or a previewed one.
     DiscoverPlace? item;
@@ -67,8 +62,6 @@ class DiscoveryPlaceCard extends ConsumerWidget {
       body = _Place(
         item: item,
         countryCode: queryContext.countryCode,
-        evaluatedAt: queryContext.evaluatedAt,
-        scoring: scoring,
         origin: origin,
         onDetails: () => _openDetails(context, ref, item!),
       );
@@ -103,11 +96,8 @@ class DiscoveryPlaceCard extends ConsumerWidget {
     }
 
     return Material(
-      key: const ValueKey('discovery-place-card'),
+      key: const ValueKey('discovery-place-sheet'),
       color: colors.surface,
-      elevation: 8,
-      borderRadius: BorderRadius.circular(20),
-      clipBehavior: Clip.antiAlias,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -139,7 +129,7 @@ class DiscoveryPlaceCard extends ConsumerWidget {
               IconButton(
                 key: const ValueKey('discovery-card-close'),
                 tooltip: strings.discoveryClearSelection,
-                onPressed: notifier.clear,
+                onPressed: onClose,
                 icon: const Icon(Icons.close_rounded),
               ),
             ],
@@ -179,16 +169,12 @@ class _Place extends StatelessWidget {
   const _Place({
     required this.item,
     required this.countryCode,
-    required this.evaluatedAt,
-    required this.scoring,
     required this.origin,
     required this.onDetails,
   });
 
   final DiscoverPlace item;
   final String? countryCode;
-  final DateTime evaluatedAt;
-  final DiscoveryScoring? scoring;
   final DiscoveryPoint? origin;
   final VoidCallback onDetails;
 
@@ -218,12 +204,7 @@ class _Place extends StatelessWidget {
           ),
         ),
     ].join(' · ');
-    final (tagText, tagColor) = discoveryTagLabel(
-      context,
-      item,
-      evaluatedAt: evaluatedAt,
-      scoring: scoring,
-    );
+    final (tagText, tagColor) = discoveryTagLabel(context, item);
     final rating = switch (place.rating) {
       final value? => Text(
         '★ ${NumberFormat('0.0', locale).format(value)}',

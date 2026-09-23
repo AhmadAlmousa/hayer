@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoveryMapPoint implements _i1.SerializableModel {
+abstract class DiscoveryMapPoint
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryMapPoint._({
     required this.catalogId,
     required this.provider,
@@ -45,7 +45,9 @@ abstract class DiscoveryMapPoint implements _i1.SerializableModel {
       latitude: (jsonSerialization['latitude'] as num).toDouble(),
       longitude: (jsonSerialization['longitude'] as num).toDouble(),
       rating: (jsonSerialization['rating'] as num?)?.toDouble(),
-      hiddenGem: _i1.BoolJsonExtension.fromJson(jsonSerialization['hiddenGem']),
+      hiddenGem: _isc.BoolJsonExtension.fromJson(
+        jsonSerialization['hiddenGem'],
+      ),
     );
   }
 
@@ -67,7 +69,7 @@ abstract class DiscoveryMapPoint implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryMapPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryMapPoint copyWith({
     int? catalogId,
     String? provider,
@@ -94,8 +96,23 @@ abstract class DiscoveryMapPoint implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryMapPoint',
+      'catalogId': catalogId,
+      'provider': provider,
+      'placeId': placeId,
+      'name': name,
+      'latitude': latitude,
+      'longitude': longitude,
+      if (rating != null) 'rating': rating,
+      'hiddenGem': hiddenGem,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -124,7 +141,7 @@ class _DiscoveryMapPointImpl extends DiscoveryMapPoint {
 
   /// Returns a shallow copy of this [DiscoveryMapPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryMapPoint copyWith({
     int? catalogId,

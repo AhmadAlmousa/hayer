@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class DiscoveryRatingBucket implements _i1.SerializableModel {
+abstract class DiscoveryRatingBucket
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoveryRatingBucket._({
     required this.minimumInclusive,
     required this.maximumExclusive,
@@ -46,7 +46,7 @@ abstract class DiscoveryRatingBucket implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoveryRatingBucket]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoveryRatingBucket copyWith({
     double? minimumInclusive,
     double? maximumExclusive,
@@ -63,8 +63,18 @@ abstract class DiscoveryRatingBucket implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoveryRatingBucket',
+      'minimumInclusive': minimumInclusive,
+      'maximumExclusive': maximumExclusive,
+      'count': count,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -81,7 +91,7 @@ class _DiscoveryRatingBucketImpl extends DiscoveryRatingBucket {
 
   /// Returns a shallow copy of this [DiscoveryRatingBucket]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoveryRatingBucket copyWith({
     double? minimumInclusive,

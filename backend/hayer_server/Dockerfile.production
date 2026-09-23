@@ -27,7 +27,7 @@ COPY app/pubspec.yaml app/pubspec.yaml
 COPY admin/pubspec.yaml admin/pubspec.yaml
 COPY backend/hayer_client/pubspec.yaml backend/hayer_client/pubspec.yaml
 COPY backend/hayer_server/pubspec.yaml backend/hayer_server/pubspec.yaml
-RUN flutter pub get
+RUN flutter pub get --enforce-lockfile
 COPY app app
 COPY admin admin
 COPY backend/hayer_client backend/hayer_client
@@ -40,38 +40,39 @@ RUN cd app \
 # does not contain the SDK, package cache, source tree, or development watcher.
 FROM dart:3.13.2@sha256:1f86408456fbcdc5f9c33fa267d3680d86e79c255ec338b9a215459224769770 AS native-build
 WORKDIR /workspace
+# The root workspace includes the Flutter app and admin packages. Keep the Dart
+# image's /runtime payload for the final native bundles, but resolve the shared
+# lockfile with the Flutter SDK from the build-only toolchain stage.
+COPY --from=flutter-toolchain /opt/flutter /opt/flutter
+ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
+COPY pubspec.yaml pubspec.lock ./
+COPY app/pubspec.yaml app/pubspec.yaml
+COPY admin/pubspec.yaml admin/pubspec.yaml
 COPY backend/hayer_client/pubspec.yaml backend/hayer_client/pubspec.yaml
 COPY backend/hayer_server/pubspec.yaml backend/hayer_server/pubspec.yaml
-RUN printf '%s\n' \
-  'name: hayer_native_workspace' \
-  'publish_to: none' \
-  'environment:' \
-  '  sdk: ^3.13.0' \
-  'workspace:' \
-  '  - backend/hayer_client' \
-  '  - backend/hayer_server' \
-  > pubspec.yaml \
-  && dart pub get
+RUN flutter pub get --enforce-lockfile
 COPY backend/hayer_client backend/hayer_client
 COPY backend/hayer_server backend/hayer_server
-RUN mkdir -p /out \
-  && dart compile exe backend/hayer_server/bin/main.dart \
-    -o /out/hayer-server \
-  && dart compile exe backend/hayer_server/tool/init_runtime_config.dart \
-    -o /out/hayer-runtime-init \
-  && dart compile exe backend/hayer_server/tool/place_source_canary.dart \
-    -o /out/hayer-place-canary \
-  && dart compile exe backend/hayer_client/tool/public_gateway_canary.dart \
-    -o /out/hayer-public-gateway-canary
+RUN cd backend/hayer_server \
+  && dart build cli --target bin/main.dart --output /out/server \
+  && mv /out/server/bundle/bin/main /out/server/bundle/bin/hayer-server \
+  && dart build cli --target bin/runtime_init.dart --output /out/runtime-init \
+  && mv /out/runtime-init/bundle/bin/runtime_init /out/runtime-init/bundle/bin/hayer-runtime-init \
+  && dart build cli --target bin/place_canary.dart --output /out/place-canary \
+  && mv /out/place-canary/bundle/bin/place_canary /out/place-canary/bundle/bin/hayer-place-canary \
+  && cd ../hayer_client \
+  && dart build cli --target bin/public_gateway_canary.dart --output /out/public-gateway-canary \
+  && mv /out/public-gateway-canary/bundle/bin/public_gateway_canary /out/public-gateway-canary/bundle/bin/hayer-public-gateway-canary
 
-FROM debian:bookworm-slim@sha256:88200866dfff7ea7f5cbcb6ec7c8a701889efe6fe859fe64d6990e4b07ea4171 AS runtime
+FROM alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8 AS runtime
 ENV runmode=production serverid=default logging=normal role=monolith
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    apache2-utils ca-certificates curl \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache apache2-utils ca-certificates curl
 WORKDIR /opt/hayer
-COPY --from=native-build --chmod=755 /out/ /usr/local/bin/
+COPY --from=native-build /runtime/ /
+COPY --from=native-build --chmod=755 /out/server/bundle/ bundles/server/
+COPY --from=native-build --chmod=755 /out/runtime-init/bundle/ bundles/runtime-init/
+COPY --from=native-build --chmod=755 /out/place-canary/bundle/ bundles/place-canary/
+COPY --from=native-build --chmod=755 /out/public-gateway-canary/bundle/ bundles/public-gateway-canary/
 COPY backend/hayer_server/config config
 COPY backend/hayer_server/migrations migrations
 COPY backend/hayer_server/web/pages web/pages
@@ -81,4 +82,4 @@ COPY --from=web-build /workspace/app/build/web web/app
 COPY --from=web-build /workspace/admin/build/web web/admin
 RUN mkdir -p web/static/.well-known web/static/downloads
 EXPOSE 8080 8081 8082
-CMD ["hayer-server", "--mode=production", "--server-id=default", "--logging=normal", "--role=monolith", "--apply-migrations"]
+CMD ["/opt/hayer/bundles/server/bin/hayer-server", "--mode=production", "--server-id=default", "--logging=normal", "--role=monolith", "--apply-migrations"]

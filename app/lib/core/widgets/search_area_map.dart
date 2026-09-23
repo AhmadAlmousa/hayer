@@ -15,7 +15,7 @@ const maxSearchRadiusMeters = 10000;
 /// Displays the chosen search center and its radius on an interactive map.
 ///
 /// When [editable] is true, drag the center dot to move the area and drag the
-/// arrow handle on the circle edge to resize it. The map itself remains
+/// round handle on the circle edge to resize it. The map itself remains
 /// pannable and pinch-zoomable.
 class SearchAreaMap extends StatefulWidget {
   const SearchAreaMap({
@@ -48,7 +48,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
   bool _drawAgain = false;
   Fill? _areaFill;
   Circle? _centerMarker;
-  Symbol? _radiusMarker;
+  Circle? _radiusMarker;
   double? _previewLatitude;
   double? _previewLongitude;
   int? _previewRadius;
@@ -96,7 +96,6 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
                   annotationOrder: const [
                     AnnotationType.fill,
                     AnnotationType.circle,
-                    AnnotationType.symbol,
                   ],
                   onMapCreated: _onMapCreated,
                   onCameraMove: widget.editable ? _trackCameraMove : null,
@@ -222,7 +221,7 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
       }
       return;
     }
-    if (id == _radiusMarker?.id && annotation is Symbol) {
+    if (id == _radiusMarker?.id && annotation is Circle) {
       final radius = distanceMeters(
         _previewLatitude ?? widget.latitude,
         _previewLongitude ?? widget.longitude,
@@ -253,9 +252,9 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
     if (marker != null &&
         marker.id != _centerMarker?.id &&
         (_previewLatitude != null || _previewLongitude != null)) {
-      await controller.updateSymbol(
+      await controller.updateCircle(
         marker,
-        SymbolOptions(geometry: radiusHandlePoint(latitude, longitude, radius)),
+        CircleOptions(geometry: radiusHandlePoint(latitude, longitude, radius)),
       );
     }
   }
@@ -300,18 +299,17 @@ class _SearchAreaMapState extends State<SearchAreaMap> {
         ),
       );
       if (widget.editable) {
-        _radiusMarker = await controller.addSymbol(
-          SymbolOptions(
+        _radiusMarker = await controller.addCircle(
+          CircleOptions(
             geometry: radiusHandlePoint(
               widget.latitude,
               widget.longitude,
               widget.radiusMeters,
             ),
-            textField: '↔',
-            textSize: 28,
-            textColor: '#FFFFFF',
-            textHaloColor: '#087F7E',
-            textHaloWidth: 5,
+            circleColor: '#087F7E',
+            circleRadius: 17,
+            circleStrokeColor: '#FFFFFF',
+            circleStrokeWidth: 4,
             draggable: true,
           ),
         );

@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class ParticipantView implements _i1.SerializableModel {
+abstract class ParticipantView
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ParticipantView._({
     required this.participantId,
     required this.displayName,
@@ -36,12 +36,12 @@ abstract class ParticipantView implements _i1.SerializableModel {
     return ParticipantView(
       participantId: jsonSerialization['participantId'] as String,
       displayName: jsonSerialization['displayName'] as String,
-      isHost: _i1.BoolJsonExtension.fromJson(jsonSerialization['isHost']),
+      isHost: _isc.BoolJsonExtension.fromJson(jsonSerialization['isHost']),
       currentIndex: jsonSerialization['currentIndex'] as int,
-      hasCompleted: _i1.BoolJsonExtension.fromJson(
+      hasCompleted: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['hasCompleted'],
       ),
-      lastSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      lastSeenAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastSeenAt'],
       ),
     );
@@ -61,7 +61,7 @@ abstract class ParticipantView implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ParticipantView]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ParticipantView copyWith({
     String? participantId,
     String? displayName,
@@ -84,8 +84,21 @@ abstract class ParticipantView implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ParticipantView',
+      'participantId': participantId,
+      'displayName': displayName,
+      'isHost': isHost,
+      'currentIndex': currentIndex,
+      'hasCompleted': hasCompleted,
+      'lastSeenAt': lastSeenAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -108,7 +121,7 @@ class _ParticipantViewImpl extends ParticipantView {
 
   /// Returns a shallow copy of this [ParticipantView]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ParticipantView copyWith({
     String? participantId,

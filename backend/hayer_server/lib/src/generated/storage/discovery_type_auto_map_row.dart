@@ -10,14 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// What the Discover type auto-mapper has assigned, so an operator can see
 /// which aliases the mapper chose rather than a person, and move the ones it
 /// got wrong. One row per observed type; a later run overwrites its own row.
 abstract class DiscoveryTypeAutoMapRow
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DiscoveryTypeAutoMapRow._({
     this.id,
     required this.typeKey,
@@ -45,7 +44,7 @@ abstract class DiscoveryTypeAutoMapRow
       primaryType: jsonSerialization['primaryType'] as String,
       nodeId: jsonSerialization['nodeId'] as String,
       rule: jsonSerialization['rule'] as String,
-      mappedAt: _i1.DateTimeJsonExtension.fromJson(
+      mappedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['mappedAt'],
       ),
     );
@@ -69,11 +68,11 @@ abstract class DiscoveryTypeAutoMapRow
   DateTime mappedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DiscoveryTypeAutoMapRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DiscoveryTypeAutoMapRow copyWith({
     int? id,
     String? typeKey,
@@ -105,12 +104,11 @@ abstract class DiscoveryTypeAutoMapRow
   }
 
   static DiscoveryTypeAutoMapRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
+    _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
+    _is.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
     DiscoveryTypeAutoMapRowInclude? include,
   }) {
     return DiscoveryTypeAutoMapRowIncludeList._(
@@ -118,7 +116,6 @@ abstract class DiscoveryTypeAutoMapRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DiscoveryTypeAutoMapRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(DiscoveryTypeAutoMapRow.t),
       include: include,
     );
@@ -126,7 +123,7 @@ abstract class DiscoveryTypeAutoMapRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -151,7 +148,7 @@ class _DiscoveryTypeAutoMapRowImpl extends DiscoveryTypeAutoMapRow {
 
   /// Returns a shallow copy of this [DiscoveryTypeAutoMapRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DiscoveryTypeAutoMapRow copyWith({
     Object? id = _Undefined,
@@ -173,57 +170,57 @@ class _DiscoveryTypeAutoMapRowImpl extends DiscoveryTypeAutoMapRow {
 }
 
 class DiscoveryTypeAutoMapRowUpdateTable
-    extends _i1.UpdateTable<DiscoveryTypeAutoMapRowTable> {
+    extends _is.UpdateTable<DiscoveryTypeAutoMapRowTable> {
   DiscoveryTypeAutoMapRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> typeKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> typeKey(String value) => _is.ColumnValue(
     table.typeKey,
     value,
   );
 
-  _i1.ColumnValue<String, String> primaryType(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> primaryType(String value) => _is.ColumnValue(
     table.primaryType,
     value,
   );
 
-  _i1.ColumnValue<String, String> nodeId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> nodeId(String value) => _is.ColumnValue(
     table.nodeId,
     value,
   );
 
-  _i1.ColumnValue<String, String> rule(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> rule(String value) => _is.ColumnValue(
     table.rule,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> mappedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> mappedAt(DateTime value) =>
+      _is.ColumnValue(
         table.mappedAt,
         value,
       );
 }
 
-class DiscoveryTypeAutoMapRowTable extends _i1.Table<int?> {
+class DiscoveryTypeAutoMapRowTable extends _is.Table<int?> {
   DiscoveryTypeAutoMapRowTable({super.tableRelation})
     : super(tableName: 'hayer_discovery_type_automap') {
     updateTable = DiscoveryTypeAutoMapRowUpdateTable(this);
-    typeKey = _i1.ColumnString(
+    typeKey = _is.ColumnString(
       'typeKey',
       this,
     );
-    primaryType = _i1.ColumnString(
+    primaryType = _is.ColumnString(
       'primaryType',
       this,
     );
-    nodeId = _i1.ColumnString(
+    nodeId = _is.ColumnString(
       'nodeId',
       this,
     );
-    rule = _i1.ColumnString(
+    rule = _is.ColumnString(
       'rule',
       this,
     );
-    mappedAt = _i1.ColumnDateTime(
+    mappedAt = _is.ColumnDateTime(
       'mappedAt',
       this,
     );
@@ -231,18 +228,18 @@ class DiscoveryTypeAutoMapRowTable extends _i1.Table<int?> {
 
   late final DiscoveryTypeAutoMapRowUpdateTable updateTable;
 
-  late final _i1.ColumnString typeKey;
+  late final _is.ColumnString typeKey;
 
-  late final _i1.ColumnString primaryType;
+  late final _is.ColumnString primaryType;
 
-  late final _i1.ColumnString nodeId;
+  late final _is.ColumnString nodeId;
 
-  late final _i1.ColumnString rule;
+  late final _is.ColumnString rule;
 
-  late final _i1.ColumnDateTime mappedAt;
+  late final _is.ColumnDateTime mappedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     typeKey,
     primaryType,
@@ -252,23 +249,22 @@ class DiscoveryTypeAutoMapRowTable extends _i1.Table<int?> {
   ];
 }
 
-class DiscoveryTypeAutoMapRowInclude extends _i1.IncludeObject {
+class DiscoveryTypeAutoMapRowInclude extends _is.IncludeObject {
   DiscoveryTypeAutoMapRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DiscoveryTypeAutoMapRow.t;
+  _is.Table<int?> get table => DiscoveryTypeAutoMapRow.t;
 }
 
-class DiscoveryTypeAutoMapRowIncludeList extends _i1.IncludeList {
+class DiscoveryTypeAutoMapRowIncludeList extends _is.IncludeList {
   DiscoveryTypeAutoMapRowIncludeList._({
-    _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
+    _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -276,10 +272,10 @@ class DiscoveryTypeAutoMapRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DiscoveryTypeAutoMapRow.t;
+  _is.Table<int?> get table => DiscoveryTypeAutoMapRow.t;
 }
 
 class DiscoveryTypeAutoMapRowRepository {
@@ -308,22 +304,20 @@ class DiscoveryTypeAutoMapRowRepository {
   /// );
   /// ```
   Future<List<DiscoveryTypeAutoMapRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DiscoveryTypeAutoMapRow>(
       where: where?.call(DiscoveryTypeAutoMapRow.t),
       orderBy: orderBy?.call(DiscoveryTypeAutoMapRow.t),
       orderByList: orderByList?.call(DiscoveryTypeAutoMapRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -350,21 +344,19 @@ class DiscoveryTypeAutoMapRowRepository {
   /// );
   /// ```
   Future<DiscoveryTypeAutoMapRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DiscoveryTypeAutoMapRow>(
       where: where?.call(DiscoveryTypeAutoMapRow.t),
       orderBy: orderBy?.call(DiscoveryTypeAutoMapRow.t),
       orderByList: orderByList?.call(DiscoveryTypeAutoMapRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -374,11 +366,11 @@ class DiscoveryTypeAutoMapRowRepository {
 
   /// Finds a single [DiscoveryTypeAutoMapRow] by its [id] or null if no such row exists.
   Future<DiscoveryTypeAutoMapRow?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DiscoveryTypeAutoMapRow>(
       id,
@@ -398,16 +390,22 @@ class DiscoveryTypeAutoMapRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeAutoMapRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryTypeAutoMapRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DiscoveryTypeAutoMapRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -415,12 +413,81 @@ class DiscoveryTypeAutoMapRowRepository {
   ///
   /// The returned [DiscoveryTypeAutoMapRow] will have its `id` field set.
   Future<DiscoveryTypeAutoMapRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryTypeAutoMapRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DiscoveryTypeAutoMapRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [DiscoveryTypeAutoMapRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [DiscoveryTypeAutoMapRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<DiscoveryTypeAutoMapRow>> upsert(
+    _is.DatabaseSession session,
+    List<DiscoveryTypeAutoMapRow> rows, {
+    required _is.ColumnSelections<DiscoveryTypeAutoMapRowTable> conflictColumns,
+    _is.ColumnSelections<DiscoveryTypeAutoMapRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<DiscoveryTypeAutoMapRow>(
+      rows,
+      conflictColumns: conflictColumns(DiscoveryTypeAutoMapRow.t),
+      updateColumns: updateColumns?.call(DiscoveryTypeAutoMapRow.t),
+      updateWhere: updateWhere?.call(DiscoveryTypeAutoMapRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [DiscoveryTypeAutoMapRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [DiscoveryTypeAutoMapRow] will have its `id` field set.
+  Future<DiscoveryTypeAutoMapRow?> upsertRow(
+    _is.DatabaseSession session,
+    DiscoveryTypeAutoMapRow row, {
+    required _is.ColumnSelections<DiscoveryTypeAutoMapRowTable> conflictColumns,
+    _is.ColumnSelections<DiscoveryTypeAutoMapRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<DiscoveryTypeAutoMapRow>(
+      row,
+      conflictColumns: conflictColumns(DiscoveryTypeAutoMapRow.t),
+      updateColumns: updateColumns?.call(DiscoveryTypeAutoMapRow.t),
+      updateWhere: updateWhere?.call(DiscoveryTypeAutoMapRow.t),
       transaction: transaction,
     );
   }
@@ -430,16 +497,22 @@ class DiscoveryTypeAutoMapRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeAutoMapRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryTypeAutoMapRow> rows, {
-    _i1.ColumnSelections<DiscoveryTypeAutoMapRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DiscoveryTypeAutoMapRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DiscoveryTypeAutoMapRow>(
       rows,
       columns: columns?.call(DiscoveryTypeAutoMapRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -447,10 +520,10 @@ class DiscoveryTypeAutoMapRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DiscoveryTypeAutoMapRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryTypeAutoMapRow row, {
-    _i1.ColumnSelections<DiscoveryTypeAutoMapRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DiscoveryTypeAutoMapRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DiscoveryTypeAutoMapRow>(
       row,
@@ -462,11 +535,11 @@ class DiscoveryTypeAutoMapRowRepository {
   /// Updates a single [DiscoveryTypeAutoMapRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DiscoveryTypeAutoMapRow?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DiscoveryTypeAutoMapRowUpdateTable>
+    required _is.ColumnValueListBuilder<DiscoveryTypeAutoMapRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DiscoveryTypeAutoMapRow>(
       id,
@@ -477,17 +550,21 @@ class DiscoveryTypeAutoMapRowRepository {
 
   /// Updates all [DiscoveryTypeAutoMapRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeAutoMapRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DiscoveryTypeAutoMapRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DiscoveryTypeAutoMapRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable> where,
+    required _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
-    _i1.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DiscoveryTypeAutoMapRow>(
       columnValues: columnValues(DiscoveryTypeAutoMapRow.t.updateTable),
@@ -496,30 +573,44 @@ class DiscoveryTypeAutoMapRowRepository {
       offset: offset,
       orderBy: orderBy?.call(DiscoveryTypeAutoMapRow.t),
       orderByList: orderByList?.call(DiscoveryTypeAutoMapRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [DiscoveryTypeAutoMapRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeAutoMapRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DiscoveryTypeAutoMapRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DiscoveryTypeAutoMapRow>(
       rows,
+      orderBy: orderBy?.call(DiscoveryTypeAutoMapRow.t),
+      orderByList: orderByList?.call(DiscoveryTypeAutoMapRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [DiscoveryTypeAutoMapRow].
   Future<DiscoveryTypeAutoMapRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DiscoveryTypeAutoMapRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DiscoveryTypeAutoMapRow>(
       row,
@@ -528,24 +619,37 @@ class DiscoveryTypeAutoMapRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DiscoveryTypeAutoMapRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable> where,
+    _is.OrderByBuilder<DiscoveryTypeAutoMapRowTable>? orderBy,
+    _is.OrderByListBuilder<DiscoveryTypeAutoMapRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DiscoveryTypeAutoMapRow>(
       where: where(DiscoveryTypeAutoMapRow.t),
+      orderBy: orderBy?.call(DiscoveryTypeAutoMapRow.t),
+      orderByList: orderByList?.call(DiscoveryTypeAutoMapRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DiscoveryTypeAutoMapRow>(
       where: where?.call(DiscoveryTypeAutoMapRow.t),
@@ -556,11 +660,11 @@ class DiscoveryTypeAutoMapRowRepository {
 
   /// Acquires row-level locks on [DiscoveryTypeAutoMapRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DiscoveryTypeAutoMapRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DiscoveryTypeAutoMapRow>(
       where: where(DiscoveryTypeAutoMapRow.t),

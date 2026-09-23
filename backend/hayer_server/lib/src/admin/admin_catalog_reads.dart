@@ -177,8 +177,7 @@ WHERE catalog."catalogId" = @catalogId
         where: (table) =>
             table.provider.equals(place.provider) &
             table.providerPlaceId.equals(place.placeId),
-        orderBy: (table) => table.lastSeenAt,
-        orderDescending: true,
+        orderBy: (table) => table.lastSeenAt.desc(),
         limit: evidenceLimit,
         transaction: transaction,
       );
@@ -197,8 +196,7 @@ WHERE catalog."catalogId" = @catalogId
       final reports = await PoiIssueReportRow.db.find(
         session,
         where: (table) => table.placeId.equals(place.placeId),
-        orderBy: (table) => table.createdAt,
-        orderDescending: true,
+        orderBy: (table) => table.createdAt.desc(),
         limit: recentReportLimit,
         transaction: transaction,
       );

@@ -10,13 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../calibration_status.dart' as _i2;
-import 'package:hayer_server/src/generated/protocol.dart' as _i3;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../calibration_status.dart' as _i5qm94s5;
 
 abstract class CalibrationRow
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   CalibrationRow._({
     this.id,
     required this.version,
@@ -32,9 +31,9 @@ abstract class CalibrationRow
   });
 
   factory CalibrationRow({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String version,
-    required _i2.CalibrationStatus status,
+    required _i5qm94s5.CalibrationStatus status,
     required Map<String, String> document,
     required bool fixturePassed,
     required bool liveCanaryPassed,
@@ -49,35 +48,35 @@ abstract class CalibrationRow
     return CalibrationRow(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       version: jsonSerialization['version'] as String,
-      status: _i2.CalibrationStatus.fromJson(
+      status: _i5qm94s5.CalibrationStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
-      document: _i3.Protocol().deserialize<Map<String, String>>(
+      document: _i66y2smk.Protocol().deserialize<Map<String, String>>(
         jsonSerialization['document'],
       ),
-      fixturePassed: _i1.BoolJsonExtension.fromJson(
+      fixturePassed: _is.BoolJsonExtension.fromJson(
         jsonSerialization['fixturePassed'],
       ),
-      liveCanaryPassed: _i1.BoolJsonExtension.fromJson(
+      liveCanaryPassed: _is.BoolJsonExtension.fromJson(
         jsonSerialization['liveCanaryPassed'],
       ),
-      validationErrors: _i3.Protocol().deserialize<List<String>>(
+      validationErrors: _i66y2smk.Protocol().deserialize<List<String>>(
         jsonSerialization['validationErrors'],
       ),
       createdBy: jsonSerialization['createdBy'] as String,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
       validatedAt: jsonSerialization['validatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['validatedAt'],
             ),
       activatedAt: jsonSerialization['activatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['activatedAt'],
             ),
     );
@@ -88,11 +87,11 @@ abstract class CalibrationRow
   static const db = CalibrationRowRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String version;
 
-  _i2.CalibrationStatus status;
+  _i5qm94s5.CalibrationStatus status;
 
   Map<String, String> document;
 
@@ -111,15 +110,15 @@ abstract class CalibrationRow
   DateTime? activatedAt;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [CalibrationRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CalibrationRow copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? version,
-    _i2.CalibrationStatus? status,
+    _i5qm94s5.CalibrationStatus? status,
     Map<String, String>? document,
     bool? fixturePassed,
     bool? liveCanaryPassed,
@@ -157,12 +156,11 @@ abstract class CalibrationRow
   }
 
   static CalibrationRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<CalibrationRowTable>? where,
+    _is.WhereExpressionBuilder<CalibrationRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CalibrationRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<CalibrationRowTable>? orderByList,
+    _is.OrderByBuilder<CalibrationRowTable>? orderBy,
+    _is.OrderByListBuilder<CalibrationRowTable>? orderByList,
     CalibrationRowInclude? include,
   }) {
     return CalibrationRowIncludeList._(
@@ -170,7 +168,6 @@ abstract class CalibrationRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CalibrationRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(CalibrationRow.t),
       include: include,
     );
@@ -178,7 +175,7 @@ abstract class CalibrationRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -186,9 +183,9 @@ class _Undefined {}
 
 class _CalibrationRowImpl extends CalibrationRow {
   _CalibrationRowImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String version,
-    required _i2.CalibrationStatus status,
+    required _i5qm94s5.CalibrationStatus status,
     required Map<String, String> document,
     required bool fixturePassed,
     required bool liveCanaryPassed,
@@ -213,12 +210,12 @@ class _CalibrationRowImpl extends CalibrationRow {
 
   /// Returns a shallow copy of this [CalibrationRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CalibrationRow copyWith({
     Object? id = _Undefined,
     String? version,
-    _i2.CalibrationStatus? status,
+    _i5qm94s5.CalibrationStatus? status,
     Map<String, String>? document,
     bool? fixturePassed,
     bool? liveCanaryPassed,
@@ -229,7 +226,7 @@ class _CalibrationRowImpl extends CalibrationRow {
     Object? activatedAt = _Undefined,
   }) {
     return CalibrationRow(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       version: version ?? this.version,
       status: status ?? this.status,
       document:
@@ -255,111 +252,110 @@ class _CalibrationRowImpl extends CalibrationRow {
   }
 }
 
-class CalibrationRowUpdateTable extends _i1.UpdateTable<CalibrationRowTable> {
+class CalibrationRowUpdateTable extends _is.UpdateTable<CalibrationRowTable> {
   CalibrationRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> version(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> version(String value) => _is.ColumnValue(
     table.version,
     value,
   );
 
-  _i1.ColumnValue<_i2.CalibrationStatus, _i2.CalibrationStatus> status(
-    _i2.CalibrationStatus value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_i5qm94s5.CalibrationStatus, _i5qm94s5.CalibrationStatus>
+  status(_i5qm94s5.CalibrationStatus value) => _is.ColumnValue(
     table.status,
     value,
   );
 
-  _i1.ColumnValue<Map<String, String>, Map<String, String>> document(
+  _is.ColumnValue<Map<String, String>, Map<String, String>> document(
     Map<String, String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.document,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> fixturePassed(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> fixturePassed(bool value) => _is.ColumnValue(
     table.fixturePassed,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> liveCanaryPassed(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> liveCanaryPassed(bool value) => _is.ColumnValue(
     table.liveCanaryPassed,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> validationErrors(
+  _is.ColumnValue<List<String>, List<String>> validationErrors(
     List<String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.validationErrors,
     value,
   );
 
-  _i1.ColumnValue<String, String> createdBy(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> createdBy(String value) => _is.ColumnValue(
     table.createdBy,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> validatedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> validatedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.validatedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> activatedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> activatedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.activatedAt,
         value,
       );
 }
 
-class CalibrationRowTable extends _i1.Table<_i1.UuidValue?> {
+class CalibrationRowTable extends _is.Table<_is.UuidValue?> {
   CalibrationRowTable({super.tableRelation})
     : super(tableName: 'hayer_calibration') {
     updateTable = CalibrationRowUpdateTable(this);
-    version = _i1.ColumnString(
+    version = _is.ColumnString(
       'version',
       this,
     );
-    status = _i1.ColumnEnum(
+    status = _is.ColumnEnum(
       'status',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    document = _i1.ColumnSerializable<Map<String, String>>(
+    document = _is.ColumnSerializable<Map<String, String>>(
       'document',
       this,
     );
-    fixturePassed = _i1.ColumnBool(
+    fixturePassed = _is.ColumnBool(
       'fixturePassed',
       this,
     );
-    liveCanaryPassed = _i1.ColumnBool(
+    liveCanaryPassed = _is.ColumnBool(
       'liveCanaryPassed',
       this,
     );
-    validationErrors = _i1.ColumnSerializable<List<String>>(
+    validationErrors = _is.ColumnSerializable<List<String>>(
       'validationErrors',
       this,
     );
-    createdBy = _i1.ColumnString(
+    createdBy = _is.ColumnString(
       'createdBy',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    validatedAt = _i1.ColumnDateTime(
+    validatedAt = _is.ColumnDateTime(
       'validatedAt',
       this,
     );
-    activatedAt = _i1.ColumnDateTime(
+    activatedAt = _is.ColumnDateTime(
       'activatedAt',
       this,
     );
@@ -367,28 +363,28 @@ class CalibrationRowTable extends _i1.Table<_i1.UuidValue?> {
 
   late final CalibrationRowUpdateTable updateTable;
 
-  late final _i1.ColumnString version;
+  late final _is.ColumnString version;
 
-  late final _i1.ColumnEnum<_i2.CalibrationStatus> status;
+  late final _is.ColumnEnum<_i5qm94s5.CalibrationStatus> status;
 
-  late final _i1.ColumnSerializable<Map<String, String>> document;
+  late final _is.ColumnSerializable<Map<String, String>> document;
 
-  late final _i1.ColumnBool fixturePassed;
+  late final _is.ColumnBool fixturePassed;
 
-  late final _i1.ColumnBool liveCanaryPassed;
+  late final _is.ColumnBool liveCanaryPassed;
 
-  late final _i1.ColumnSerializable<List<String>> validationErrors;
+  late final _is.ColumnSerializable<List<String>> validationErrors;
 
-  late final _i1.ColumnString createdBy;
+  late final _is.ColumnString createdBy;
 
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  late final _i1.ColumnDateTime validatedAt;
+  late final _is.ColumnDateTime validatedAt;
 
-  late final _i1.ColumnDateTime activatedAt;
+  late final _is.ColumnDateTime activatedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     version,
     status,
@@ -403,23 +399,22 @@ class CalibrationRowTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class CalibrationRowInclude extends _i1.IncludeObject {
+class CalibrationRowInclude extends _is.IncludeObject {
   CalibrationRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => CalibrationRow.t;
+  _is.Table<_is.UuidValue?> get table => CalibrationRow.t;
 }
 
-class CalibrationRowIncludeList extends _i1.IncludeList {
+class CalibrationRowIncludeList extends _is.IncludeList {
   CalibrationRowIncludeList._({
-    _i1.WhereExpressionBuilder<CalibrationRowTable>? where,
+    _is.WhereExpressionBuilder<CalibrationRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -427,10 +422,10 @@ class CalibrationRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => CalibrationRow.t;
+  _is.Table<_is.UuidValue?> get table => CalibrationRow.t;
 }
 
 class CalibrationRowRepository {
@@ -459,22 +454,20 @@ class CalibrationRowRepository {
   /// );
   /// ```
   Future<List<CalibrationRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CalibrationRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CalibrationRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CalibrationRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<CalibrationRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CalibrationRowTable>? orderBy,
+    _is.OrderByListBuilder<CalibrationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CalibrationRow>(
       where: where?.call(CalibrationRow.t),
       orderBy: orderBy?.call(CalibrationRow.t),
       orderByList: orderByList?.call(CalibrationRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -501,21 +494,19 @@ class CalibrationRowRepository {
   /// );
   /// ```
   Future<CalibrationRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CalibrationRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CalibrationRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CalibrationRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<CalibrationRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CalibrationRowTable>? orderBy,
+    _is.OrderByListBuilder<CalibrationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CalibrationRow>(
       where: where?.call(CalibrationRow.t),
       orderBy: orderBy?.call(CalibrationRow.t),
       orderByList: orderByList?.call(CalibrationRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -525,11 +516,11 @@ class CalibrationRowRepository {
 
   /// Finds a single [CalibrationRow] by its [id] or null if no such row exists.
   Future<CalibrationRow?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CalibrationRow>(
       id,
@@ -549,16 +540,22 @@ class CalibrationRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CalibrationRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CalibrationRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<CalibrationRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -566,12 +563,81 @@ class CalibrationRowRepository {
   ///
   /// The returned [CalibrationRow] will have its `id` field set.
   Future<CalibrationRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CalibrationRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<CalibrationRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [CalibrationRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CalibrationRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<CalibrationRow>> upsert(
+    _is.DatabaseSession session,
+    List<CalibrationRow> rows, {
+    required _is.ColumnSelections<CalibrationRowTable> conflictColumns,
+    _is.ColumnSelections<CalibrationRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<CalibrationRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<CalibrationRow>(
+      rows,
+      conflictColumns: conflictColumns(CalibrationRow.t),
+      updateColumns: updateColumns?.call(CalibrationRow.t),
+      updateWhere: updateWhere?.call(CalibrationRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [CalibrationRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CalibrationRow] will have its `id` field set.
+  Future<CalibrationRow?> upsertRow(
+    _is.DatabaseSession session,
+    CalibrationRow row, {
+    required _is.ColumnSelections<CalibrationRowTable> conflictColumns,
+    _is.ColumnSelections<CalibrationRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<CalibrationRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CalibrationRow>(
+      row,
+      conflictColumns: conflictColumns(CalibrationRow.t),
+      updateColumns: updateColumns?.call(CalibrationRow.t),
+      updateWhere: updateWhere?.call(CalibrationRow.t),
       transaction: transaction,
     );
   }
@@ -581,16 +647,22 @@ class CalibrationRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CalibrationRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CalibrationRow> rows, {
-    _i1.ColumnSelections<CalibrationRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CalibrationRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<CalibrationRow>(
       rows,
       columns: columns?.call(CalibrationRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -598,10 +670,10 @@ class CalibrationRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CalibrationRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CalibrationRow row, {
-    _i1.ColumnSelections<CalibrationRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CalibrationRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<CalibrationRow>(
       row,
@@ -613,10 +685,10 @@ class CalibrationRowRepository {
   /// Updates a single [CalibrationRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CalibrationRow?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<CalibrationRowUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<CalibrationRowUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<CalibrationRow>(
       id,
@@ -627,16 +699,20 @@ class CalibrationRowRepository {
 
   /// Updates all [CalibrationRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CalibrationRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CalibrationRowUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CalibrationRowTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<CalibrationRowUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<CalibrationRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CalibrationRowTable>? orderBy,
-    _i1.OrderByListBuilder<CalibrationRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CalibrationRowTable>? orderBy,
+    _is.OrderByListBuilder<CalibrationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<CalibrationRow>(
       columnValues: columnValues(CalibrationRow.t.updateTable),
@@ -645,30 +721,44 @@ class CalibrationRowRepository {
       offset: offset,
       orderBy: orderBy?.call(CalibrationRow.t),
       orderByList: orderByList?.call(CalibrationRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [CalibrationRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CalibrationRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CalibrationRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CalibrationRowTable>? orderBy,
+    _is.OrderByListBuilder<CalibrationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<CalibrationRow>(
       rows,
+      orderBy: orderBy?.call(CalibrationRow.t),
+      orderByList: orderByList?.call(CalibrationRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [CalibrationRow].
   Future<CalibrationRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CalibrationRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<CalibrationRow>(
       row,
@@ -677,24 +767,37 @@ class CalibrationRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<CalibrationRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CalibrationRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CalibrationRowTable> where,
+    _is.OrderByBuilder<CalibrationRowTable>? orderBy,
+    _is.OrderByListBuilder<CalibrationRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CalibrationRow>(
       where: where(CalibrationRow.t),
+      orderBy: orderBy?.call(CalibrationRow.t),
+      orderByList: orderByList?.call(CalibrationRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CalibrationRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CalibrationRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<CalibrationRow>(
       where: where?.call(CalibrationRow.t),
@@ -705,11 +808,11 @@ class CalibrationRowRepository {
 
   /// Acquires row-level locks on [CalibrationRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CalibrationRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CalibrationRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CalibrationRow>(
       where: where(CalibrationRow.t),

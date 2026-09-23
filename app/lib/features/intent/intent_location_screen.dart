@@ -10,6 +10,7 @@ import '../../core/widgets/content_shell.dart';
 import '../../core/widgets/location_search_field.dart';
 import '../../core/widgets/search_area_map.dart';
 import 'intent_copy.dart';
+import 'intent_process_timeline.dart';
 import 'place_intent_controller.dart';
 
 class IntentLocationScreen extends ConsumerStatefulWidget {
@@ -54,86 +55,96 @@ class _IntentLocationScreenState extends ConsumerState<IntentLocationScreen> {
     }
     final latitude = intent.latitude ?? 24.7136;
     final longitude = intent.longitude ?? 46.6753;
-    return Scaffold(
-      appBar: AppBar(title: Text(copy.where)),
-      body: SafeArea(
-        child: ContentShell(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-            children: [
-              Text(
-                copy.wherePrompt,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 18),
-              FilledButton.icon(
-                key: const ValueKey('intent-current-location'),
-                onPressed: _locating ? null : () => _useCurrent(goNext: true),
-                icon: _locating
-                    ? const SizedBox.square(
-                        dimension: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.my_location_rounded),
-                label: Text(copy.currentLocation),
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton.icon(
-                key: const ValueKey('intent-choose-area'),
-                onPressed: () {
-                  setState(() => _choosing = !_choosing);
-                  if (!intent.hasWhere) unawaited(_useCurrent(goNext: false));
-                },
-                icon: const Icon(Icons.map_outlined),
-                label: Text(copy.chooseArea),
-              ),
-              if (_error case final error?) ...[
-                const SizedBox(height: 12),
+    void back() => context.go('/');
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) back();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(copy.where),
+          leading: BackButton(onPressed: back),
+        ),
+        bottomNavigationBar: IntentStepActions(
+          onBack: back,
+          onNext: intent.hasWhere ? () => context.go('/next') : null,
+        ),
+        body: SafeArea(
+          child: ContentShell(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+              children: [
+                IntentProcessTimeline(step: 1, onStep: (_) => back()),
                 Text(
-                  error,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  copy.wherePrompt,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
-              ],
-              if (_choosing) ...[
                 const SizedBox(height: 18),
-                LocationSearchField(
-                  key: _searchKey,
-                  controller: _search,
-                  latitude: latitude,
-                  longitude: longitude,
-                  locating: _locating,
-                  onUseCurrentLocation: () => _useCurrent(goNext: false),
-                  onSelected: _selectSuggestion,
-                ),
-                const SizedBox(height: 12),
-                SearchAreaMap(
-                  latitude: latitude,
-                  longitude: longitude,
-                  radiusMeters: intent.radiusMeters,
-                  editable: true,
-                  onCenterChanged: _moveCenter,
-                  onRadiusChanged: ref
-                      .read(placeIntentProvider.notifier)
-                      .setRadius,
-                ),
-                const SizedBox(height: 14),
                 FilledButton.icon(
-                  key: const ValueKey('intent-confirm-area'),
-                  onPressed: intent.hasWhere ? () => context.go('/next') : null,
-                  icon: const Icon(Icons.check_rounded),
-                  label: Text(copy.confirmArea),
+                  key: const ValueKey('intent-current-location'),
+                  onPressed: _locating ? null : _useCurrent,
+                  icon: _locating
+                      ? const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.my_location_rounded),
+                  label: Text(copy.currentLocation),
                 ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  key: const ValueKey('intent-choose-area'),
+                  onPressed: () {
+                    setState(() => _choosing = !_choosing);
+                  },
+                  icon: const Icon(Icons.map_outlined),
+                  label: Text(copy.chooseArea),
+                ),
+                if (_error case final error?) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    error,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ],
+                if (_choosing) ...[
+                  const SizedBox(height: 18),
+                  LocationSearchField(
+                    key: _searchKey,
+                    controller: _search,
+                    latitude: latitude,
+                    longitude: longitude,
+                    locating: _locating,
+                    onUseCurrentLocation: _useCurrent,
+                    onSelected: _selectSuggestion,
+                  ),
+                  const SizedBox(height: 12),
+                  SearchAreaMap(
+                    latitude: latitude,
+                    longitude: longitude,
+                    radiusMeters: intent.radiusMeters,
+                    editable: true,
+                    onCenterChanged: _moveCenter,
+                    onRadiusChanged: ref
+                        .read(placeIntentProvider.notifier)
+                        .setRadius,
+                  ),
+                  const SizedBox(height: 14),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Future<void> _useCurrent({required bool goNext}) async {
+  Future<void> _useCurrent() async {
     final revision = ++_revision;
     setState(() {
       _locating = true;
@@ -161,7 +172,6 @@ class _IntentLocationScreenState extends ConsumerState<IntentLocationScreen> {
       _search.text =
           '${position.latitude.toStringAsFixed(5)}, ${position.longitude.toStringAsFixed(5)}';
       unawaited(_enrich(position.latitude, position.longitude, revision));
-      if (goNext && mounted) context.go('/next');
     } catch (_) {
       if (mounted) {
         setState(

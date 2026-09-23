@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class AdminMapLocation implements _i1.SerializableModel {
+abstract class AdminMapLocation
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminMapLocation._({
     required this.address,
     required this.latitude,
@@ -52,7 +52,7 @@ abstract class AdminMapLocation implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminMapLocation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminMapLocation copyWith({
     String? address,
     double? latitude,
@@ -73,8 +73,20 @@ abstract class AdminMapLocation implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminMapLocation',
+      'address': address,
+      'latitude': latitude,
+      'longitude': longitude,
+      'countryCode': countryCode,
+      if (cityName != null) 'cityName': cityName,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -97,7 +109,7 @@ class _AdminMapLocationImpl extends AdminMapLocation {
 
   /// Returns a shallow copy of this [AdminMapLocation]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminMapLocation copyWith({
     String? address,

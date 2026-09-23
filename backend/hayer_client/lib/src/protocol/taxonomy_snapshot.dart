@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'taxonomy_item.dart' as _ikn8u775;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'taxonomy_item.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class TaxonomySnapshot implements _i1.SerializableModel {
+abstract class TaxonomySnapshot
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   TaxonomySnapshot._({
     required this.version,
     required this.items,
@@ -23,13 +23,13 @@ abstract class TaxonomySnapshot implements _i1.SerializableModel {
 
   factory TaxonomySnapshot({
     required String version,
-    required List<_i2.TaxonomyItem> items,
+    required List<_ikn8u775.TaxonomyItem> items,
   }) = _TaxonomySnapshotImpl;
 
   factory TaxonomySnapshot.fromJson(Map<String, dynamic> jsonSerialization) {
     return TaxonomySnapshot(
       version: jsonSerialization['version'] as String,
-      items: _i3.Protocol().deserialize<List<_i2.TaxonomyItem>>(
+      items: _iynev3sz.Protocol().deserialize<List<_ikn8u775.TaxonomyItem>>(
         jsonSerialization['items'],
       ),
     );
@@ -37,14 +37,14 @@ abstract class TaxonomySnapshot implements _i1.SerializableModel {
 
   String version;
 
-  List<_i2.TaxonomyItem> items;
+  List<_ikn8u775.TaxonomyItem> items;
 
   /// Returns a shallow copy of this [TaxonomySnapshot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   TaxonomySnapshot copyWith({
     String? version,
-    List<_i2.TaxonomyItem>? items,
+    List<_ikn8u775.TaxonomyItem>? items,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -56,15 +56,24 @@ abstract class TaxonomySnapshot implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'TaxonomySnapshot',
+      'version': version,
+      'items': items.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _TaxonomySnapshotImpl extends TaxonomySnapshot {
   _TaxonomySnapshotImpl({
     required String version,
-    required List<_i2.TaxonomyItem> items,
+    required List<_ikn8u775.TaxonomyItem> items,
   }) : super._(
          version: version,
          items: items,
@@ -72,11 +81,11 @@ class _TaxonomySnapshotImpl extends TaxonomySnapshot {
 
   /// Returns a shallow copy of this [TaxonomySnapshot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   TaxonomySnapshot copyWith({
     String? version,
-    List<_i2.TaxonomyItem>? items,
+    List<_ikn8u775.TaxonomyItem>? items,
   }) {
     return TaxonomySnapshot(
       version: version ?? this.version,

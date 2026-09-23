@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
+import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hayer_client/hayer_client.dart' show DiscoverPlace;
 import 'package:intl/intl.dart';
@@ -14,25 +15,17 @@ import '../../l10n/generated/app_localizations.dart';
 import '../report/report_place_issue_sheet.dart';
 import 'discovery_config_controller.dart';
 import 'discovery_coverage_controller.dart';
-import 'discovery_coverage_strip.dart';
 import 'discovery_filter_text.dart';
-import 'discovery_place_details.dart';
 import 'discovery_place_row.dart';
 import 'discovery_results_controller.dart';
+import 'discovery_search_field.dart';
 import 'discovery_selection_controller.dart';
 import 'discovery_sort_text.dart';
 import 'discovery_taxonomy_provider.dart';
 
-/// The share of the screen the results take, the map taking the rest.
-///
-/// Fixed rather than dragged: the sheet used to be draggable over a full-bleed
-/// map, and the owner asked for a layout that never lands in an in-between
-/// state. Both halves are always usable, so neither has to be uncovered.
-const discoveryResultsShare = 0.5;
-
 const _revealDuration = Duration(milliseconds: 250);
 
-/// The ranked Discover results, filling the lower half of the screen.
+/// The ranked Discover results in the map's draggable bottom sheet.
 class DiscoveryResultsSheet extends ConsumerStatefulWidget {
   const DiscoveryResultsSheet({
     super.key,
@@ -40,6 +33,7 @@ class DiscoveryResultsSheet extends ConsumerStatefulWidget {
     required this.scrollController,
     required this.origin,
     required this.onApply,
+    required this.onSelectRow,
   });
 
   /// The committed query.
@@ -51,6 +45,7 @@ class DiscoveryResultsSheet extends ConsumerStatefulWidget {
 
   /// Commits a changed query.
   final ValueChanged<DiscoveryUrlQuery> onApply;
+  final ValueChanged<DiscoverPlace> onSelectRow;
 
   @override
   ConsumerState<DiscoveryResultsSheet> createState() =>
@@ -60,9 +55,9 @@ class DiscoveryResultsSheet extends ConsumerStatefulWidget {
 class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
   /// The selected row, which a tapped pin scrolls into view.
   final _selectedRow = GlobalKey();
+  bool _searchingPlaces = false;
 
-  /// Scrolls the selected place's row into view. The list is always on
-  /// screen now, so there is no sheet to raise first.
+  /// Scrolls the selected place's row into view in the results sheet.
   Future<void> _reveal() async {
     final place = ref.read(discoverySelectionProvider).place;
     if (place == null) return;
@@ -95,24 +90,6 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
     );
   }
 
-  /// Opens a loaded row's details, in the search and context it was loaded
-  /// in.
-  void _openDetails(DiscoverPlace item) {
-    final results = ref.read(discoveryResultsProvider);
-    final search = results.search;
-    final queryContext = results.context;
-    if (search == null || queryContext == null) return;
-    unawaited(
-      showDiscoveryPlaceDetails(
-        context,
-        item: item,
-        search: search,
-        queryContext: queryContext,
-        origin: widget.origin,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final query = widget.query;
@@ -125,7 +102,6 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
       },
     );
     final selection = ref.watch(discoverySelectionProvider);
-    final selector = ref.read(discoverySelectionProvider.notifier);
     // A previewed place is not one of the rows, so no row is highlighted.
     final selectedId = selection.previewing ? null : selection.place?.catalogId;
     // Only the server decides what Discover covers. Rows kept from a covered
@@ -162,11 +138,6 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
     };
     return CustomScrollView(
       controller: widget.scrollController,
-      // The list is half a screen rather than a sheet that can be dragged to
-      // fill one, so the default 250dp of off-screen cache is a smaller share
-      // of it than it used to be. A larger one keeps the next rows built as
-      // the half is scrolled, and keeps the coverage strip alive just above
-      // the fold while a selected row is revealed.
       scrollCacheExtent: const ScrollCacheExtent.pixels(800),
       slivers: [
         SliverToBoxAdapter(
@@ -174,8 +145,20 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
             title: title,
             explainer: discoverySortExplainer(context, shownSort, scoring),
             onRefresh: outsideCoverage ? null : notifier.refresh,
+            onSearch: () =>
+                setState(() => _searchingPlaces = !_searchingPlaces),
           ),
         ),
+        if (_searchingPlaces || query.text.isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            sliver: SliverToBoxAdapter(
+              child: DiscoverySearchField(
+                query: query,
+                onApply: widget.onApply,
+              ),
+            ),
+          ),
         if (results.loading != null && !outsideCoverage)
           SliverToBoxAdapter(
             child: LinearProgressIndicator(
@@ -187,10 +170,6 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
             child: _Notice(message: strings.discoveryUnsupportedArea),
           )
         else ...[
-          if (viewport != null)
-            SliverToBoxAdapter(
-              child: DiscoveryCoverageStrip(viewport: viewport),
-            ),
           if (results.search == null)
             SliverToBoxAdapter(
               child: switch (results.error) {
@@ -227,12 +206,9 @@ class _DiscoveryResultsSheetState extends ConsumerState<DiscoveryResultsSheet> {
                     key: selected ? _selectedRow : null,
                     item: item,
                     countryCode: results.context?.countryCode,
-                    evaluatedAt: results.context!.evaluatedAt,
-                    scoring: scoring,
                     origin: widget.origin,
                     selected: selected,
-                    onTap: () => selector.selectRow(item),
-                    onDetails: selected ? () => _openDetails(item) : null,
+                    onTap: () => widget.onSelectRow(item),
                     // Worst rated is where a wrong rating or a closed place
                     // is most likely to be noticed, so reporting is direct.
                     onReport:
@@ -361,11 +337,13 @@ class _Header extends StatelessWidget {
     required this.title,
     required this.explainer,
     required this.onRefresh,
+    required this.onSearch,
   });
 
   final String title;
   final String? explainer;
   final VoidCallback? onRefresh;
+  final VoidCallback onSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -386,12 +364,22 @@ class _Header extends StatelessWidget {
       onPressed: onRefresh,
       icon: const Icon(Icons.refresh_rounded),
     );
+    final search = IconButton(
+      key: const ValueKey('discovery-place-search-toggle'),
+      tooltip: strings.discoverySearchPlaces,
+      onPressed: onSearch,
+      icon: const Icon(Icons.search_rounded),
+    );
     // At large text sizes the actions wrap under the count instead of
     // squeezing it.
     final large = MediaQuery.textScalerOf(context).scale(14) > 20;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Center(child: _SheetGrip()),
+        ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 8, 8),
           child: Column(
@@ -401,12 +389,16 @@ class _Header extends StatelessWidget {
                 heading,
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
-                  child: refresh,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [search, refresh],
+                  ),
                 ),
               ] else
                 Row(
                   children: [
                     Expanded(child: heading),
+                    search,
                     refresh,
                   ],
                 ),
@@ -429,6 +421,36 @@ class _Header extends StatelessWidget {
     );
   }
 }
+
+class _SheetGrip extends StatelessWidget {
+  const _SheetGrip();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    key: const ValueKey('discovery-sheet-grip'),
+    width: 36,
+    height: 4,
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.onSurfaceVariant
+          .withValues(alpha: .45),
+      borderRadius: BorderRadius.circular(2),
+    ),
+  );
+}
+
+@Preview(name: 'Explore results header', group: 'Explore', size: Size(360, 180))
+Widget discoveryResultsHeaderPreview() => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  home: Scaffold(
+    body: _Header(
+      title: '24 places in view',
+      explainer: 'Best matches nearby',
+      onRefresh: () {},
+      onSearch: () {},
+    ),
+  ),
+);
 
 class _Notice extends StatelessWidget {
   const _Notice({

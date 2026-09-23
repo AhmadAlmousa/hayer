@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'place_snapshot.dart' as _ikbous9x;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'place_snapshot.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class DiscoverPlace implements _i1.SerializableModel {
+abstract class DiscoverPlace
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DiscoverPlace._({
     required this.catalogId,
     required this.provider,
@@ -29,7 +29,7 @@ abstract class DiscoverPlace implements _i1.SerializableModel {
   factory DiscoverPlace({
     required int catalogId,
     required String provider,
-    required _i2.PlaceSnapshot place,
+    required _ikbous9x.PlaceSnapshot place,
     required int ordinal,
     required DateTime firstSeenAt,
     required bool hiddenGem,
@@ -40,17 +40,19 @@ abstract class DiscoverPlace implements _i1.SerializableModel {
     return DiscoverPlace(
       catalogId: jsonSerialization['catalogId'] as int,
       provider: jsonSerialization['provider'] as String,
-      place: _i3.Protocol().deserialize<_i2.PlaceSnapshot>(
+      place: _iynev3sz.Protocol().deserialize<_ikbous9x.PlaceSnapshot>(
         jsonSerialization['place'],
       ),
       ordinal: jsonSerialization['ordinal'] as int,
-      firstSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      firstSeenAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['firstSeenAt'],
       ),
-      hiddenGem: _i1.BoolJsonExtension.fromJson(jsonSerialization['hiddenGem']),
+      hiddenGem: _isc.BoolJsonExtension.fromJson(
+        jsonSerialization['hiddenGem'],
+      ),
       openNow: jsonSerialization['openNow'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['openNow']),
+          : _isc.BoolJsonExtension.fromJson(jsonSerialization['openNow']),
     );
   }
 
@@ -58,7 +60,7 @@ abstract class DiscoverPlace implements _i1.SerializableModel {
 
   String provider;
 
-  _i2.PlaceSnapshot place;
+  _ikbous9x.PlaceSnapshot place;
 
   int ordinal;
 
@@ -70,11 +72,11 @@ abstract class DiscoverPlace implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DiscoverPlace]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DiscoverPlace copyWith({
     int? catalogId,
     String? provider,
-    _i2.PlaceSnapshot? place,
+    _ikbous9x.PlaceSnapshot? place,
     int? ordinal,
     DateTime? firstSeenAt,
     bool? hiddenGem,
@@ -95,8 +97,22 @@ abstract class DiscoverPlace implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DiscoverPlace',
+      'catalogId': catalogId,
+      'provider': provider,
+      'place': place.toJsonForProtocol(),
+      'ordinal': ordinal,
+      'firstSeenAt': firstSeenAt.toJson(),
+      'hiddenGem': hiddenGem,
+      if (openNow != null) 'openNow': openNow,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -106,7 +122,7 @@ class _DiscoverPlaceImpl extends DiscoverPlace {
   _DiscoverPlaceImpl({
     required int catalogId,
     required String provider,
-    required _i2.PlaceSnapshot place,
+    required _ikbous9x.PlaceSnapshot place,
     required int ordinal,
     required DateTime firstSeenAt,
     required bool hiddenGem,
@@ -123,12 +139,12 @@ class _DiscoverPlaceImpl extends DiscoverPlace {
 
   /// Returns a shallow copy of this [DiscoverPlace]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DiscoverPlace copyWith({
     int? catalogId,
     String? provider,
-    _i2.PlaceSnapshot? place,
+    _ikbous9x.PlaceSnapshot? place,
     int? ordinal,
     DateTime? firstSeenAt,
     bool? hiddenGem,

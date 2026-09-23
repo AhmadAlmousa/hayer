@@ -9,7 +9,6 @@ import 'package:hayer_app/core/providers.dart';
 import 'package:hayer_app/features/home/home_screen.dart';
 import 'package:hayer_app/l10n/generated/app_localizations.dart';
 import 'package:hayer_app/l10n/localization_delegates.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../discover/discovery_fakes.dart';
@@ -171,10 +170,6 @@ Future<GoRouter> _pumpHome(
         locale: locale,
         localizationsDelegates: hayerLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        builder: (context, child) => M3ETheme(
-          data: M3EThemeData.fromMaterial(Theme.of(context)),
-          child: child!,
-        ),
       ),
     ),
   );

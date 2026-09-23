@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-
-abstract class AdminCatalogCategoryEvidence implements _i1.SerializableModel {
+abstract class AdminCatalogCategoryEvidence
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminCatalogCategoryEvidence._({
     required this.categoryId,
     required this.evidenceQuery,
@@ -34,10 +34,10 @@ abstract class AdminCatalogCategoryEvidence implements _i1.SerializableModel {
     return AdminCatalogCategoryEvidence(
       categoryId: jsonSerialization['categoryId'] as String,
       evidenceQuery: jsonSerialization['evidenceQuery'] as String,
-      firstSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      firstSeenAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['firstSeenAt'],
       ),
-      lastSeenAt: _i1.DateTimeJsonExtension.fromJson(
+      lastSeenAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastSeenAt'],
       ),
     );
@@ -53,7 +53,7 @@ abstract class AdminCatalogCategoryEvidence implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminCatalogCategoryEvidence]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminCatalogCategoryEvidence copyWith({
     String? categoryId,
     String? evidenceQuery,
@@ -72,8 +72,19 @@ abstract class AdminCatalogCategoryEvidence implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminCatalogCategoryEvidence',
+      'categoryId': categoryId,
+      'evidenceQuery': evidenceQuery,
+      'firstSeenAt': firstSeenAt.toJson(),
+      'lastSeenAt': lastSeenAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -92,7 +103,7 @@ class _AdminCatalogCategoryEvidenceImpl extends AdminCatalogCategoryEvidence {
 
   /// Returns a shallow copy of this [AdminCatalogCategoryEvidence]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminCatalogCategoryEvidence copyWith({
     String? categoryId,

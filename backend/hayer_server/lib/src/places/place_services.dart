@@ -29,8 +29,7 @@ class PlaceServices {
     final active = await CalibrationRow.db.findFirstRow(
       session,
       where: (table) => table.status.equals(CalibrationStatus.active),
-      orderBy: (table) => table.activatedAt,
-      orderDescending: true,
+      orderBy: (table) => table.activatedAt.desc(),
     );
     final document = active?.document['json'];
     if (active == null || document == null) return instance();

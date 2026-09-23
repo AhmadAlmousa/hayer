@@ -10,15 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'analytics_point.dart' as _i2;
-import 'analytics_heat_cell.dart' as _i3;
-import 'analytics_breakdown.dart' as _i4;
-import 'package:hayer_server/src/generated/protocol.dart' as _i5;
+import 'package:hayer_server/src/generated/protocol.dart' as _i66y2smk;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'analytics_breakdown.dart' as _iky5xq8l;
+import 'analytics_heat_cell.dart' as _i58c035v;
+import 'analytics_point.dart' as _irt4ny16;
 
 abstract class AdminUsageAnalytics
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AdminUsageAnalytics._({
     required this.averageSwipeDepth,
     required this.sessionTrend,
@@ -36,16 +35,16 @@ abstract class AdminUsageAnalytics
 
   factory AdminUsageAnalytics({
     required double averageSwipeDepth,
-    required List<_i2.AnalyticsPoint> sessionTrend,
-    required List<_i2.AnalyticsPoint> participantTrend,
-    required List<_i2.AnalyticsPoint> decisionTrend,
-    required List<_i3.AnalyticsHeatCell> peakUsage,
-    required List<_i4.AnalyticsBreakdown> groupSizes,
-    required List<_i4.AnalyticsBreakdown> radiusChoices,
-    required List<_i4.AnalyticsBreakdown> deckSizeChoices,
-    required List<_i4.AnalyticsBreakdown> priceChoices,
-    required List<_i4.AnalyticsBreakdown> visitChoices,
-    required List<_i4.AnalyticsBreakdown> qualityBreakdown,
+    required List<_irt4ny16.AnalyticsPoint> sessionTrend,
+    required List<_irt4ny16.AnalyticsPoint> participantTrend,
+    required List<_irt4ny16.AnalyticsPoint> decisionTrend,
+    required List<_i58c035v.AnalyticsHeatCell> peakUsage,
+    required List<_iky5xq8l.AnalyticsBreakdown> groupSizes,
+    required List<_iky5xq8l.AnalyticsBreakdown> radiusChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> deckSizeChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> priceChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> visitChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> qualityBreakdown,
     required DateTime generatedAt,
   }) = _AdminUsageAnalyticsImpl;
 
@@ -53,38 +52,47 @@ abstract class AdminUsageAnalytics
     return AdminUsageAnalytics(
       averageSwipeDepth: (jsonSerialization['averageSwipeDepth'] as num)
           .toDouble(),
-      sessionTrend: _i5.Protocol().deserialize<List<_i2.AnalyticsPoint>>(
-        jsonSerialization['sessionTrend'],
-      ),
-      participantTrend: _i5.Protocol().deserialize<List<_i2.AnalyticsPoint>>(
-        jsonSerialization['participantTrend'],
-      ),
-      decisionTrend: _i5.Protocol().deserialize<List<_i2.AnalyticsPoint>>(
-        jsonSerialization['decisionTrend'],
-      ),
-      peakUsage: _i5.Protocol().deserialize<List<_i3.AnalyticsHeatCell>>(
-        jsonSerialization['peakUsage'],
-      ),
-      groupSizes: _i5.Protocol().deserialize<List<_i4.AnalyticsBreakdown>>(
-        jsonSerialization['groupSizes'],
-      ),
-      radiusChoices: _i5.Protocol().deserialize<List<_i4.AnalyticsBreakdown>>(
-        jsonSerialization['radiusChoices'],
-      ),
-      deckSizeChoices: _i5.Protocol().deserialize<List<_i4.AnalyticsBreakdown>>(
-        jsonSerialization['deckSizeChoices'],
-      ),
-      priceChoices: _i5.Protocol().deserialize<List<_i4.AnalyticsBreakdown>>(
-        jsonSerialization['priceChoices'],
-      ),
-      visitChoices: _i5.Protocol().deserialize<List<_i4.AnalyticsBreakdown>>(
-        jsonSerialization['visitChoices'],
-      ),
-      qualityBreakdown: _i5.Protocol()
-          .deserialize<List<_i4.AnalyticsBreakdown>>(
+      sessionTrend: _i66y2smk.Protocol()
+          .deserialize<List<_irt4ny16.AnalyticsPoint>>(
+            jsonSerialization['sessionTrend'],
+          ),
+      participantTrend: _i66y2smk.Protocol()
+          .deserialize<List<_irt4ny16.AnalyticsPoint>>(
+            jsonSerialization['participantTrend'],
+          ),
+      decisionTrend: _i66y2smk.Protocol()
+          .deserialize<List<_irt4ny16.AnalyticsPoint>>(
+            jsonSerialization['decisionTrend'],
+          ),
+      peakUsage: _i66y2smk.Protocol()
+          .deserialize<List<_i58c035v.AnalyticsHeatCell>>(
+            jsonSerialization['peakUsage'],
+          ),
+      groupSizes: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['groupSizes'],
+          ),
+      radiusChoices: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['radiusChoices'],
+          ),
+      deckSizeChoices: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['deckSizeChoices'],
+          ),
+      priceChoices: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['priceChoices'],
+          ),
+      visitChoices: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
+            jsonSerialization['visitChoices'],
+          ),
+      qualityBreakdown: _i66y2smk.Protocol()
+          .deserialize<List<_iky5xq8l.AnalyticsBreakdown>>(
             jsonSerialization['qualityBreakdown'],
           ),
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
@@ -92,43 +100,43 @@ abstract class AdminUsageAnalytics
 
   double averageSwipeDepth;
 
-  List<_i2.AnalyticsPoint> sessionTrend;
+  List<_irt4ny16.AnalyticsPoint> sessionTrend;
 
-  List<_i2.AnalyticsPoint> participantTrend;
+  List<_irt4ny16.AnalyticsPoint> participantTrend;
 
-  List<_i2.AnalyticsPoint> decisionTrend;
+  List<_irt4ny16.AnalyticsPoint> decisionTrend;
 
-  List<_i3.AnalyticsHeatCell> peakUsage;
+  List<_i58c035v.AnalyticsHeatCell> peakUsage;
 
-  List<_i4.AnalyticsBreakdown> groupSizes;
+  List<_iky5xq8l.AnalyticsBreakdown> groupSizes;
 
-  List<_i4.AnalyticsBreakdown> radiusChoices;
+  List<_iky5xq8l.AnalyticsBreakdown> radiusChoices;
 
-  List<_i4.AnalyticsBreakdown> deckSizeChoices;
+  List<_iky5xq8l.AnalyticsBreakdown> deckSizeChoices;
 
-  List<_i4.AnalyticsBreakdown> priceChoices;
+  List<_iky5xq8l.AnalyticsBreakdown> priceChoices;
 
-  List<_i4.AnalyticsBreakdown> visitChoices;
+  List<_iky5xq8l.AnalyticsBreakdown> visitChoices;
 
-  List<_i4.AnalyticsBreakdown> qualityBreakdown;
+  List<_iky5xq8l.AnalyticsBreakdown> qualityBreakdown;
 
   DateTime generatedAt;
 
   /// Returns a shallow copy of this [AdminUsageAnalytics]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AdminUsageAnalytics copyWith({
     double? averageSwipeDepth,
-    List<_i2.AnalyticsPoint>? sessionTrend,
-    List<_i2.AnalyticsPoint>? participantTrend,
-    List<_i2.AnalyticsPoint>? decisionTrend,
-    List<_i3.AnalyticsHeatCell>? peakUsage,
-    List<_i4.AnalyticsBreakdown>? groupSizes,
-    List<_i4.AnalyticsBreakdown>? radiusChoices,
-    List<_i4.AnalyticsBreakdown>? deckSizeChoices,
-    List<_i4.AnalyticsBreakdown>? priceChoices,
-    List<_i4.AnalyticsBreakdown>? visitChoices,
-    List<_i4.AnalyticsBreakdown>? qualityBreakdown,
+    List<_irt4ny16.AnalyticsPoint>? sessionTrend,
+    List<_irt4ny16.AnalyticsPoint>? participantTrend,
+    List<_irt4ny16.AnalyticsPoint>? decisionTrend,
+    List<_i58c035v.AnalyticsHeatCell>? peakUsage,
+    List<_iky5xq8l.AnalyticsBreakdown>? groupSizes,
+    List<_iky5xq8l.AnalyticsBreakdown>? radiusChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? deckSizeChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? priceChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? visitChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? qualityBreakdown,
     DateTime? generatedAt,
   });
   @override
@@ -193,23 +201,23 @@ abstract class AdminUsageAnalytics
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AdminUsageAnalyticsImpl extends AdminUsageAnalytics {
   _AdminUsageAnalyticsImpl({
     required double averageSwipeDepth,
-    required List<_i2.AnalyticsPoint> sessionTrend,
-    required List<_i2.AnalyticsPoint> participantTrend,
-    required List<_i2.AnalyticsPoint> decisionTrend,
-    required List<_i3.AnalyticsHeatCell> peakUsage,
-    required List<_i4.AnalyticsBreakdown> groupSizes,
-    required List<_i4.AnalyticsBreakdown> radiusChoices,
-    required List<_i4.AnalyticsBreakdown> deckSizeChoices,
-    required List<_i4.AnalyticsBreakdown> priceChoices,
-    required List<_i4.AnalyticsBreakdown> visitChoices,
-    required List<_i4.AnalyticsBreakdown> qualityBreakdown,
+    required List<_irt4ny16.AnalyticsPoint> sessionTrend,
+    required List<_irt4ny16.AnalyticsPoint> participantTrend,
+    required List<_irt4ny16.AnalyticsPoint> decisionTrend,
+    required List<_i58c035v.AnalyticsHeatCell> peakUsage,
+    required List<_iky5xq8l.AnalyticsBreakdown> groupSizes,
+    required List<_iky5xq8l.AnalyticsBreakdown> radiusChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> deckSizeChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> priceChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> visitChoices,
+    required List<_iky5xq8l.AnalyticsBreakdown> qualityBreakdown,
     required DateTime generatedAt,
   }) : super._(
          averageSwipeDepth: averageSwipeDepth,
@@ -228,20 +236,20 @@ class _AdminUsageAnalyticsImpl extends AdminUsageAnalytics {
 
   /// Returns a shallow copy of this [AdminUsageAnalytics]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AdminUsageAnalytics copyWith({
     double? averageSwipeDepth,
-    List<_i2.AnalyticsPoint>? sessionTrend,
-    List<_i2.AnalyticsPoint>? participantTrend,
-    List<_i2.AnalyticsPoint>? decisionTrend,
-    List<_i3.AnalyticsHeatCell>? peakUsage,
-    List<_i4.AnalyticsBreakdown>? groupSizes,
-    List<_i4.AnalyticsBreakdown>? radiusChoices,
-    List<_i4.AnalyticsBreakdown>? deckSizeChoices,
-    List<_i4.AnalyticsBreakdown>? priceChoices,
-    List<_i4.AnalyticsBreakdown>? visitChoices,
-    List<_i4.AnalyticsBreakdown>? qualityBreakdown,
+    List<_irt4ny16.AnalyticsPoint>? sessionTrend,
+    List<_irt4ny16.AnalyticsPoint>? participantTrend,
+    List<_irt4ny16.AnalyticsPoint>? decisionTrend,
+    List<_i58c035v.AnalyticsHeatCell>? peakUsage,
+    List<_iky5xq8l.AnalyticsBreakdown>? groupSizes,
+    List<_iky5xq8l.AnalyticsBreakdown>? radiusChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? deckSizeChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? priceChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? visitChoices,
+    List<_iky5xq8l.AnalyticsBreakdown>? qualityBreakdown,
     DateTime? generatedAt,
   }) {
     return AdminUsageAnalytics(

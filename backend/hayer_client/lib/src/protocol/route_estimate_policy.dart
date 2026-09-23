@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'route_origin_mode.dart' as _itt0gps6;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'route_origin_mode.dart' as _i2;
-
-abstract class RouteEstimatePolicy implements _i1.SerializableModel {
+abstract class RouteEstimatePolicy
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   RouteEstimatePolicy._({
     required this.enabled,
     required this.allowParticipantLocation,
@@ -25,17 +25,17 @@ abstract class RouteEstimatePolicy implements _i1.SerializableModel {
   factory RouteEstimatePolicy({
     required bool enabled,
     required bool allowParticipantLocation,
-    required _i2.RouteOriginMode defaultOrigin,
+    required _itt0gps6.RouteOriginMode defaultOrigin,
     required int cacheMinutes,
   }) = _RouteEstimatePolicyImpl;
 
   factory RouteEstimatePolicy.fromJson(Map<String, dynamic> jsonSerialization) {
     return RouteEstimatePolicy(
-      enabled: _i1.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
-      allowParticipantLocation: _i1.BoolJsonExtension.fromJson(
+      enabled: _isc.BoolJsonExtension.fromJson(jsonSerialization['enabled']),
+      allowParticipantLocation: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['allowParticipantLocation'],
       ),
-      defaultOrigin: _i2.RouteOriginMode.fromJson(
+      defaultOrigin: _itt0gps6.RouteOriginMode.fromJson(
         (jsonSerialization['defaultOrigin'] as String),
       ),
       cacheMinutes: jsonSerialization['cacheMinutes'] as int,
@@ -46,17 +46,17 @@ abstract class RouteEstimatePolicy implements _i1.SerializableModel {
 
   bool allowParticipantLocation;
 
-  _i2.RouteOriginMode defaultOrigin;
+  _itt0gps6.RouteOriginMode defaultOrigin;
 
   int cacheMinutes;
 
   /// Returns a shallow copy of this [RouteEstimatePolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RouteEstimatePolicy copyWith({
     bool? enabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultOrigin,
+    _itt0gps6.RouteOriginMode? defaultOrigin,
     int? cacheMinutes,
   });
   @override
@@ -71,8 +71,19 @@ abstract class RouteEstimatePolicy implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'RouteEstimatePolicy',
+      'enabled': enabled,
+      'allowParticipantLocation': allowParticipantLocation,
+      'defaultOrigin': defaultOrigin.toJson(),
+      'cacheMinutes': cacheMinutes,
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -80,7 +91,7 @@ class _RouteEstimatePolicyImpl extends RouteEstimatePolicy {
   _RouteEstimatePolicyImpl({
     required bool enabled,
     required bool allowParticipantLocation,
-    required _i2.RouteOriginMode defaultOrigin,
+    required _itt0gps6.RouteOriginMode defaultOrigin,
     required int cacheMinutes,
   }) : super._(
          enabled: enabled,
@@ -91,12 +102,12 @@ class _RouteEstimatePolicyImpl extends RouteEstimatePolicy {
 
   /// Returns a shallow copy of this [RouteEstimatePolicy]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RouteEstimatePolicy copyWith({
     bool? enabled,
     bool? allowParticipantLocation,
-    _i2.RouteOriginMode? defaultOrigin,
+    _itt0gps6.RouteOriginMode? defaultOrigin,
     int? cacheMinutes,
   }) {
     return RouteEstimatePolicy(

@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'admin_catalog_place.dart' as _i76u62qe;
+import 'admin_catalog_type_count.dart' as _i189df3w;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'admin_catalog_place.dart' as _i2;
-import 'admin_catalog_type_count.dart' as _i3;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i4;
-
-abstract class AdminCatalogPage implements _i1.SerializableModel {
+abstract class AdminCatalogPage
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AdminCatalogPage._({
     required this.items,
     required this.total,
@@ -28,36 +28,38 @@ abstract class AdminCatalogPage implements _i1.SerializableModel {
   });
 
   factory AdminCatalogPage({
-    required List<_i2.AdminCatalogPlace> items,
+    required List<_i76u62qe.AdminCatalogPlace> items,
     required int total,
     required int page,
     required int pageSize,
-    required List<_i3.AdminCatalogTypeCount> types,
+    required List<_i189df3w.AdminCatalogTypeCount> types,
     required DateTime freshAfter,
     required DateTime generatedAt,
   }) = _AdminCatalogPageImpl;
 
   factory AdminCatalogPage.fromJson(Map<String, dynamic> jsonSerialization) {
     return AdminCatalogPage(
-      items: _i4.Protocol().deserialize<List<_i2.AdminCatalogPlace>>(
-        jsonSerialization['items'],
-      ),
+      items: _iynev3sz.Protocol()
+          .deserialize<List<_i76u62qe.AdminCatalogPlace>>(
+            jsonSerialization['items'],
+          ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
       pageSize: jsonSerialization['pageSize'] as int,
-      types: _i4.Protocol().deserialize<List<_i3.AdminCatalogTypeCount>>(
-        jsonSerialization['types'],
-      ),
-      freshAfter: _i1.DateTimeJsonExtension.fromJson(
+      types: _iynev3sz.Protocol()
+          .deserialize<List<_i189df3w.AdminCatalogTypeCount>>(
+            jsonSerialization['types'],
+          ),
+      freshAfter: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['freshAfter'],
       ),
-      generatedAt: _i1.DateTimeJsonExtension.fromJson(
+      generatedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['generatedAt'],
       ),
     );
   }
 
-  List<_i2.AdminCatalogPlace> items;
+  List<_i76u62qe.AdminCatalogPlace> items;
 
   int total;
 
@@ -65,7 +67,7 @@ abstract class AdminCatalogPage implements _i1.SerializableModel {
 
   int pageSize;
 
-  List<_i3.AdminCatalogTypeCount> types;
+  List<_i189df3w.AdminCatalogTypeCount> types;
 
   DateTime freshAfter;
 
@@ -73,13 +75,13 @@ abstract class AdminCatalogPage implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AdminCatalogPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AdminCatalogPage copyWith({
-    List<_i2.AdminCatalogPlace>? items,
+    List<_i76u62qe.AdminCatalogPlace>? items,
     int? total,
     int? page,
     int? pageSize,
-    List<_i3.AdminCatalogTypeCount>? types,
+    List<_i189df3w.AdminCatalogTypeCount>? types,
     DateTime? freshAfter,
     DateTime? generatedAt,
   });
@@ -98,18 +100,32 @@ abstract class AdminCatalogPage implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminCatalogPage',
+      'items': items.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'total': total,
+      'page': page,
+      'pageSize': pageSize,
+      'types': types.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'freshAfter': freshAfter.toJson(),
+      'generatedAt': generatedAt.toJson(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _AdminCatalogPageImpl extends AdminCatalogPage {
   _AdminCatalogPageImpl({
-    required List<_i2.AdminCatalogPlace> items,
+    required List<_i76u62qe.AdminCatalogPlace> items,
     required int total,
     required int page,
     required int pageSize,
-    required List<_i3.AdminCatalogTypeCount> types,
+    required List<_i189df3w.AdminCatalogTypeCount> types,
     required DateTime freshAfter,
     required DateTime generatedAt,
   }) : super._(
@@ -124,14 +140,14 @@ class _AdminCatalogPageImpl extends AdminCatalogPage {
 
   /// Returns a shallow copy of this [AdminCatalogPage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AdminCatalogPage copyWith({
-    List<_i2.AdminCatalogPlace>? items,
+    List<_i76u62qe.AdminCatalogPlace>? items,
     int? total,
     int? page,
     int? pageSize,
-    List<_i3.AdminCatalogTypeCount>? types,
+    List<_i189df3w.AdminCatalogTypeCount>? types,
     DateTime? freshAfter,
     DateTime? generatedAt,
   }) {

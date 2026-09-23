@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 
 import '../../core/providers.dart';
 import '../../core/page_title.dart';
@@ -69,11 +68,11 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     final strings = AppLocalizations.of(context)!;
     setBrowserPageTitle('${strings.joinSession} — ${strings.appName}');
     return Scaffold(
-      appBar: M3EAppBar.top(
+      appBar: AppBar(
         automaticallyImplyLeading: true,
         title: Text(strings.joinSession),
         actions: [
-          M3EIconButton(
+          IconButton(
             tooltip: strings.scanQrCode,
             onPressed: () => context.push('/scan'),
             icon: const Icon(Icons.qr_code_scanner_rounded),

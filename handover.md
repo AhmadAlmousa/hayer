@@ -52,7 +52,7 @@ references/Vela/        GPL reference only; never copy/link its source
 
 The root workspace contains `app`, `admin`, `backend/hayer_server`, and
 `backend/hayer_client`. It requires Dart `^3.13.0`; intended tooling is Flutter
-**3.47.2**, Dart **3.13.2**, Serverpod CLI **3.4.13**, and PostgreSQL 16 with
+**3.47.2**, Dart **3.13.2**, Serverpod CLI **4.0.0**, and PostgreSQL 16 with
 PostGIS. The backend is a Serverpod monolith; Redis is intentionally absent.
 
 ## Ownership and collaboration

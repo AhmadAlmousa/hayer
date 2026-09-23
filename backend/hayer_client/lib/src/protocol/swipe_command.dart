@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:hayer_client/src/protocol/protocol.dart' as _iynev3sz;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'client_analytics_context.dart' as _iae9jhcw;
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'client_analytics_context.dart' as _i2;
-import 'package:hayer_client/src/protocol/protocol.dart' as _i3;
-
-abstract class SwipeCommand implements _i1.SerializableModel {
+abstract class SwipeCommand
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SwipeCommand._({
     required this.sessionId,
     required this.placeId,
@@ -33,22 +33,22 @@ abstract class SwipeCommand implements _i1.SerializableModel {
     required int swipeIndex,
     required DateTime clientSwipedAt,
     required String idempotencyKey,
-    _i2.ClientAnalyticsContext? analyticsContext,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   }) = _SwipeCommandImpl;
 
   factory SwipeCommand.fromJson(Map<String, dynamic> jsonSerialization) {
     return SwipeCommand(
       sessionId: jsonSerialization['sessionId'] as String,
       placeId: jsonSerialization['placeId'] as String,
-      liked: _i1.BoolJsonExtension.fromJson(jsonSerialization['liked']),
+      liked: _isc.BoolJsonExtension.fromJson(jsonSerialization['liked']),
       swipeIndex: jsonSerialization['swipeIndex'] as int,
-      clientSwipedAt: _i1.DateTimeJsonExtension.fromJson(
+      clientSwipedAt: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['clientSwipedAt'],
       ),
       idempotencyKey: jsonSerialization['idempotencyKey'] as String,
       analyticsContext: jsonSerialization['analyticsContext'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ClientAnalyticsContext>(
+          : _iynev3sz.Protocol().deserialize<_iae9jhcw.ClientAnalyticsContext>(
               jsonSerialization['analyticsContext'],
             ),
     );
@@ -66,11 +66,11 @@ abstract class SwipeCommand implements _i1.SerializableModel {
 
   String idempotencyKey;
 
-  _i2.ClientAnalyticsContext? analyticsContext;
+  _iae9jhcw.ClientAnalyticsContext? analyticsContext;
 
   /// Returns a shallow copy of this [SwipeCommand]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   SwipeCommand copyWith({
     String? sessionId,
     String? placeId,
@@ -78,7 +78,7 @@ abstract class SwipeCommand implements _i1.SerializableModel {
     int? swipeIndex,
     DateTime? clientSwipedAt,
     String? idempotencyKey,
-    _i2.ClientAnalyticsContext? analyticsContext,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -96,8 +96,23 @@ abstract class SwipeCommand implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SwipeCommand',
+      'sessionId': sessionId,
+      'placeId': placeId,
+      'liked': liked,
+      'swipeIndex': swipeIndex,
+      'clientSwipedAt': clientSwipedAt.toJson(),
+      'idempotencyKey': idempotencyKey,
+      if (analyticsContext != null)
+        'analyticsContext': analyticsContext?.toJsonForProtocol(),
+    };
+  }
+
+  @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -111,7 +126,7 @@ class _SwipeCommandImpl extends SwipeCommand {
     required int swipeIndex,
     required DateTime clientSwipedAt,
     required String idempotencyKey,
-    _i2.ClientAnalyticsContext? analyticsContext,
+    _iae9jhcw.ClientAnalyticsContext? analyticsContext,
   }) : super._(
          sessionId: sessionId,
          placeId: placeId,
@@ -124,7 +139,7 @@ class _SwipeCommandImpl extends SwipeCommand {
 
   /// Returns a shallow copy of this [SwipeCommand]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   SwipeCommand copyWith({
     String? sessionId,
@@ -142,7 +157,7 @@ class _SwipeCommandImpl extends SwipeCommand {
       swipeIndex: swipeIndex ?? this.swipeIndex,
       clientSwipedAt: clientSwipedAt ?? this.clientSwipedAt,
       idempotencyKey: idempotencyKey ?? this.idempotencyKey,
-      analyticsContext: analyticsContext is _i2.ClientAnalyticsContext?
+      analyticsContext: analyticsContext is _iae9jhcw.ClientAnalyticsContext?
           ? analyticsContext
           : this.analyticsContext?.copyWith(),
     );

@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ProductAnalyticsEventRow
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ProductAnalyticsEventRow._({
     this.id,
     required this.eventId,
@@ -79,7 +78,7 @@ abstract class ProductAnalyticsEventRow
     return ProductAnalyticsEventRow(
       id: jsonSerialization['id'] as int?,
       eventId: jsonSerialization['eventId'] as String,
-      occurredAt: _i1.DateTimeJsonExtension.fromJson(
+      occurredAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['occurredAt'],
       ),
       metricName: jsonSerialization['metricName'] as String,
@@ -96,7 +95,7 @@ abstract class ProductAnalyticsEventRow
       sampleCount: jsonSerialization['sampleCount'] as int,
       receivedAt: jsonSerialization['receivedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['receivedAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['receivedAt']),
       eventSchemaVersion: jsonSerialization['eventSchemaVersion'] as int?,
       origin: jsonSerialization['origin'] as String?,
       journeyId: jsonSerialization['journeyId'] as String?,
@@ -108,7 +107,7 @@ abstract class ProductAnalyticsEventRow
       visibleMilliseconds: jsonSerialization['visibleMilliseconds'] as int?,
       processedAt: jsonSerialization['processedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['processedAt'],
             ),
     );
@@ -172,11 +171,11 @@ abstract class ProductAnalyticsEventRow
   DateTime? processedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ProductAnalyticsEventRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProductAnalyticsEventRow copyWith({
     int? id,
     String? eventId,
@@ -249,12 +248,11 @@ abstract class ProductAnalyticsEventRow
   }
 
   static ProductAnalyticsEventRowIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
+    _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
+    _is.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
     ProductAnalyticsEventRowInclude? include,
   }) {
     return ProductAnalyticsEventRowIncludeList._(
@@ -262,7 +260,6 @@ abstract class ProductAnalyticsEventRow
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProductAnalyticsEventRow.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(ProductAnalyticsEventRow.t),
       include: include,
     );
@@ -270,7 +267,7 @@ abstract class ProductAnalyticsEventRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -335,7 +332,7 @@ class _ProductAnalyticsEventRowImpl extends ProductAnalyticsEventRow {
 
   /// Returns a shallow copy of this [ProductAnalyticsEventRow]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProductAnalyticsEventRow copyWith({
     Object? id = _Undefined,
@@ -401,239 +398,239 @@ class _ProductAnalyticsEventRowImpl extends ProductAnalyticsEventRow {
 }
 
 class ProductAnalyticsEventRowUpdateTable
-    extends _i1.UpdateTable<ProductAnalyticsEventRowTable> {
+    extends _is.UpdateTable<ProductAnalyticsEventRowTable> {
   ProductAnalyticsEventRowUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> eventId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> eventId(String value) => _is.ColumnValue(
     table.eventId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> occurredAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> occurredAt(DateTime value) =>
+      _is.ColumnValue(
         table.occurredAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> metricName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> metricName(String value) => _is.ColumnValue(
     table.metricName,
     value,
   );
 
-  _i1.ColumnValue<String, String> modeKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> modeKey(String value) => _is.ColumnValue(
     table.modeKey,
     value,
   );
 
-  _i1.ColumnValue<String, String> countryCode(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> countryCode(String value) => _is.ColumnValue(
     table.countryCode,
     value,
   );
 
-  _i1.ColumnValue<String, String> cityKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> cityKey(String value) => _is.ColumnValue(
     table.cityKey,
     value,
   );
 
-  _i1.ColumnValue<String, String> cityName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> cityName(String value) => _is.ColumnValue(
     table.cityName,
     value,
   );
 
-  _i1.ColumnValue<String, String> categoryId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> categoryId(String value) => _is.ColumnValue(
     table.categoryId,
     value,
   );
 
-  _i1.ColumnValue<String, String> taxonomyKind(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> taxonomyKind(String value) => _is.ColumnValue(
     table.taxonomyKind,
     value,
   );
 
-  _i1.ColumnValue<String, String> taxonomyId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> taxonomyId(String value) => _is.ColumnValue(
     table.taxonomyId,
     value,
   );
 
-  _i1.ColumnValue<String, String> placeId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> placeId(String value) => _is.ColumnValue(
     table.placeId,
     value,
   );
 
-  _i1.ColumnValue<String, String> placeName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> placeName(String value) => _is.ColumnValue(
     table.placeName,
     value,
   );
 
-  _i1.ColumnValue<double, double> value(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> value(double value) => _is.ColumnValue(
     table.value,
     value,
   );
 
-  _i1.ColumnValue<int, int> sampleCount(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> sampleCount(int value) => _is.ColumnValue(
     table.sampleCount,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> receivedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> receivedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.receivedAt,
         value,
       );
 
-  _i1.ColumnValue<int, int> eventSchemaVersion(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> eventSchemaVersion(int? value) => _is.ColumnValue(
     table.eventSchemaVersion,
     value,
   );
 
-  _i1.ColumnValue<String, String> origin(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> origin(String? value) => _is.ColumnValue(
     table.origin,
     value,
   );
 
-  _i1.ColumnValue<String, String> journeyId(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> journeyId(String? value) => _is.ColumnValue(
     table.journeyId,
     value,
   );
 
-  _i1.ColumnValue<int, int> appBuild(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> appBuild(int? value) => _is.ColumnValue(
     table.appBuild,
     value,
   );
 
-  _i1.ColumnValue<String, String> platform(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> platform(String? value) => _is.ColumnValue(
     table.platform,
     value,
   );
 
-  _i1.ColumnValue<String, String> language(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> language(String? value) => _is.ColumnValue(
     table.language,
     value,
   );
 
-  _i1.ColumnValue<String, String> outcomeCode(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> outcomeCode(String? value) => _is.ColumnValue(
     table.outcomeCode,
     value,
   );
 
-  _i1.ColumnValue<int, int> deckPosition(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> deckPosition(int? value) => _is.ColumnValue(
     table.deckPosition,
     value,
   );
 
-  _i1.ColumnValue<int, int> visibleMilliseconds(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> visibleMilliseconds(int? value) => _is.ColumnValue(
     table.visibleMilliseconds,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> processedAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> processedAt(DateTime? value) =>
+      _is.ColumnValue(
         table.processedAt,
         value,
       );
 }
 
-class ProductAnalyticsEventRowTable extends _i1.Table<int?> {
+class ProductAnalyticsEventRowTable extends _is.Table<int?> {
   ProductAnalyticsEventRowTable({super.tableRelation})
     : super(tableName: 'hayer_product_analytics_event') {
     updateTable = ProductAnalyticsEventRowUpdateTable(this);
-    eventId = _i1.ColumnString(
+    eventId = _is.ColumnString(
       'eventId',
       this,
     );
-    occurredAt = _i1.ColumnDateTime(
+    occurredAt = _is.ColumnDateTime(
       'occurredAt',
       this,
     );
-    metricName = _i1.ColumnString(
+    metricName = _is.ColumnString(
       'metricName',
       this,
     );
-    modeKey = _i1.ColumnString(
+    modeKey = _is.ColumnString(
       'modeKey',
       this,
     );
-    countryCode = _i1.ColumnString(
+    countryCode = _is.ColumnString(
       'countryCode',
       this,
     );
-    cityKey = _i1.ColumnString(
+    cityKey = _is.ColumnString(
       'cityKey',
       this,
     );
-    cityName = _i1.ColumnString(
+    cityName = _is.ColumnString(
       'cityName',
       this,
     );
-    categoryId = _i1.ColumnString(
+    categoryId = _is.ColumnString(
       'categoryId',
       this,
     );
-    taxonomyKind = _i1.ColumnString(
+    taxonomyKind = _is.ColumnString(
       'taxonomyKind',
       this,
     );
-    taxonomyId = _i1.ColumnString(
+    taxonomyId = _is.ColumnString(
       'taxonomyId',
       this,
     );
-    placeId = _i1.ColumnString(
+    placeId = _is.ColumnString(
       'placeId',
       this,
     );
-    placeName = _i1.ColumnString(
+    placeName = _is.ColumnString(
       'placeName',
       this,
     );
-    value = _i1.ColumnDouble(
+    value = _is.ColumnDouble(
       'value',
       this,
     );
-    sampleCount = _i1.ColumnInt(
+    sampleCount = _is.ColumnInt(
       'sampleCount',
       this,
     );
-    receivedAt = _i1.ColumnDateTime(
+    receivedAt = _is.ColumnDateTime(
       'receivedAt',
       this,
     );
-    eventSchemaVersion = _i1.ColumnInt(
+    eventSchemaVersion = _is.ColumnInt(
       'eventSchemaVersion',
       this,
     );
-    origin = _i1.ColumnString(
+    origin = _is.ColumnString(
       'origin',
       this,
     );
-    journeyId = _i1.ColumnString(
+    journeyId = _is.ColumnString(
       'journeyId',
       this,
     );
-    appBuild = _i1.ColumnInt(
+    appBuild = _is.ColumnInt(
       'appBuild',
       this,
     );
-    platform = _i1.ColumnString(
+    platform = _is.ColumnString(
       'platform',
       this,
     );
-    language = _i1.ColumnString(
+    language = _is.ColumnString(
       'language',
       this,
     );
-    outcomeCode = _i1.ColumnString(
+    outcomeCode = _is.ColumnString(
       'outcomeCode',
       this,
     );
-    deckPosition = _i1.ColumnInt(
+    deckPosition = _is.ColumnInt(
       'deckPosition',
       this,
     );
-    visibleMilliseconds = _i1.ColumnInt(
+    visibleMilliseconds = _is.ColumnInt(
       'visibleMilliseconds',
       this,
     );
-    processedAt = _i1.ColumnDateTime(
+    processedAt = _is.ColumnDateTime(
       'processedAt',
       this,
     );
@@ -641,58 +638,58 @@ class ProductAnalyticsEventRowTable extends _i1.Table<int?> {
 
   late final ProductAnalyticsEventRowUpdateTable updateTable;
 
-  late final _i1.ColumnString eventId;
+  late final _is.ColumnString eventId;
 
-  late final _i1.ColumnDateTime occurredAt;
+  late final _is.ColumnDateTime occurredAt;
 
-  late final _i1.ColumnString metricName;
+  late final _is.ColumnString metricName;
 
-  late final _i1.ColumnString modeKey;
+  late final _is.ColumnString modeKey;
 
-  late final _i1.ColumnString countryCode;
+  late final _is.ColumnString countryCode;
 
-  late final _i1.ColumnString cityKey;
+  late final _is.ColumnString cityKey;
 
-  late final _i1.ColumnString cityName;
+  late final _is.ColumnString cityName;
 
-  late final _i1.ColumnString categoryId;
+  late final _is.ColumnString categoryId;
 
-  late final _i1.ColumnString taxonomyKind;
+  late final _is.ColumnString taxonomyKind;
 
-  late final _i1.ColumnString taxonomyId;
+  late final _is.ColumnString taxonomyId;
 
-  late final _i1.ColumnString placeId;
+  late final _is.ColumnString placeId;
 
-  late final _i1.ColumnString placeName;
+  late final _is.ColumnString placeName;
 
-  late final _i1.ColumnDouble value;
+  late final _is.ColumnDouble value;
 
-  late final _i1.ColumnInt sampleCount;
+  late final _is.ColumnInt sampleCount;
 
-  late final _i1.ColumnDateTime receivedAt;
+  late final _is.ColumnDateTime receivedAt;
 
-  late final _i1.ColumnInt eventSchemaVersion;
+  late final _is.ColumnInt eventSchemaVersion;
 
-  late final _i1.ColumnString origin;
+  late final _is.ColumnString origin;
 
-  late final _i1.ColumnString journeyId;
+  late final _is.ColumnString journeyId;
 
-  late final _i1.ColumnInt appBuild;
+  late final _is.ColumnInt appBuild;
 
-  late final _i1.ColumnString platform;
+  late final _is.ColumnString platform;
 
-  late final _i1.ColumnString language;
+  late final _is.ColumnString language;
 
-  late final _i1.ColumnString outcomeCode;
+  late final _is.ColumnString outcomeCode;
 
-  late final _i1.ColumnInt deckPosition;
+  late final _is.ColumnInt deckPosition;
 
-  late final _i1.ColumnInt visibleMilliseconds;
+  late final _is.ColumnInt visibleMilliseconds;
 
-  late final _i1.ColumnDateTime processedAt;
+  late final _is.ColumnDateTime processedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     eventId,
     occurredAt,
@@ -722,23 +719,22 @@ class ProductAnalyticsEventRowTable extends _i1.Table<int?> {
   ];
 }
 
-class ProductAnalyticsEventRowInclude extends _i1.IncludeObject {
+class ProductAnalyticsEventRowInclude extends _is.IncludeObject {
   ProductAnalyticsEventRowInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ProductAnalyticsEventRow.t;
+  _is.Table<int?> get table => ProductAnalyticsEventRow.t;
 }
 
-class ProductAnalyticsEventRowIncludeList extends _i1.IncludeList {
+class ProductAnalyticsEventRowIncludeList extends _is.IncludeList {
   ProductAnalyticsEventRowIncludeList._({
-    _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
+    _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -746,10 +742,10 @@ class ProductAnalyticsEventRowIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProductAnalyticsEventRow.t;
+  _is.Table<int?> get table => ProductAnalyticsEventRow.t;
 }
 
 class ProductAnalyticsEventRowRepository {
@@ -778,22 +774,20 @@ class ProductAnalyticsEventRowRepository {
   /// );
   /// ```
   Future<List<ProductAnalyticsEventRow>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ProductAnalyticsEventRow>(
       where: where?.call(ProductAnalyticsEventRow.t),
       orderBy: orderBy?.call(ProductAnalyticsEventRow.t),
       orderByList: orderByList?.call(ProductAnalyticsEventRow.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -820,21 +814,19 @@ class ProductAnalyticsEventRowRepository {
   /// );
   /// ```
   Future<ProductAnalyticsEventRow?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ProductAnalyticsEventRow>(
       where: where?.call(ProductAnalyticsEventRow.t),
       orderBy: orderBy?.call(ProductAnalyticsEventRow.t),
       orderByList: orderByList?.call(ProductAnalyticsEventRow.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -844,11 +836,11 @@ class ProductAnalyticsEventRowRepository {
 
   /// Finds a single [ProductAnalyticsEventRow] by its [id] or null if no such row exists.
   Future<ProductAnalyticsEventRow?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ProductAnalyticsEventRow>(
       id,
@@ -868,16 +860,22 @@ class ProductAnalyticsEventRowRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsEventRow>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProductAnalyticsEventRow> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ProductAnalyticsEventRow>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -885,12 +883,83 @@ class ProductAnalyticsEventRowRepository {
   ///
   /// The returned [ProductAnalyticsEventRow] will have its `id` field set.
   Future<ProductAnalyticsEventRow> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProductAnalyticsEventRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ProductAnalyticsEventRow>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ProductAnalyticsEventRow]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ProductAnalyticsEventRow]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProductAnalyticsEventRow>> upsert(
+    _is.DatabaseSession session,
+    List<ProductAnalyticsEventRow> rows, {
+    required _is.ColumnSelections<ProductAnalyticsEventRowTable>
+    conflictColumns,
+    _is.ColumnSelections<ProductAnalyticsEventRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ProductAnalyticsEventRow>(
+      rows,
+      conflictColumns: conflictColumns(ProductAnalyticsEventRow.t),
+      updateColumns: updateColumns?.call(ProductAnalyticsEventRow.t),
+      updateWhere: updateWhere?.call(ProductAnalyticsEventRow.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ProductAnalyticsEventRow] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ProductAnalyticsEventRow] will have its `id` field set.
+  Future<ProductAnalyticsEventRow?> upsertRow(
+    _is.DatabaseSession session,
+    ProductAnalyticsEventRow row, {
+    required _is.ColumnSelections<ProductAnalyticsEventRowTable>
+    conflictColumns,
+    _is.ColumnSelections<ProductAnalyticsEventRowTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ProductAnalyticsEventRow>(
+      row,
+      conflictColumns: conflictColumns(ProductAnalyticsEventRow.t),
+      updateColumns: updateColumns?.call(ProductAnalyticsEventRow.t),
+      updateWhere: updateWhere?.call(ProductAnalyticsEventRow.t),
       transaction: transaction,
     );
   }
@@ -900,16 +969,22 @@ class ProductAnalyticsEventRowRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsEventRow>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProductAnalyticsEventRow> rows, {
-    _i1.ColumnSelections<ProductAnalyticsEventRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProductAnalyticsEventRowTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ProductAnalyticsEventRow>(
       rows,
       columns: columns?.call(ProductAnalyticsEventRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -917,10 +992,10 @@ class ProductAnalyticsEventRowRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ProductAnalyticsEventRow> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProductAnalyticsEventRow row, {
-    _i1.ColumnSelections<ProductAnalyticsEventRowTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProductAnalyticsEventRowTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ProductAnalyticsEventRow>(
       row,
@@ -932,11 +1007,11 @@ class ProductAnalyticsEventRowRepository {
   /// Updates a single [ProductAnalyticsEventRow] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProductAnalyticsEventRow?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ProductAnalyticsEventRowUpdateTable>
+    required _is.ColumnValueListBuilder<ProductAnalyticsEventRowUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ProductAnalyticsEventRow>(
       id,
@@ -947,17 +1022,21 @@ class ProductAnalyticsEventRowRepository {
 
   /// Updates all [ProductAnalyticsEventRow]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsEventRow>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ProductAnalyticsEventRowUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ProductAnalyticsEventRowUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable> where,
+    required _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
-    _i1.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ProductAnalyticsEventRow>(
       columnValues: columnValues(ProductAnalyticsEventRow.t.updateTable),
@@ -966,30 +1045,44 @@ class ProductAnalyticsEventRowRepository {
       offset: offset,
       orderBy: orderBy?.call(ProductAnalyticsEventRow.t),
       orderByList: orderByList?.call(ProductAnalyticsEventRow.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [ProductAnalyticsEventRow]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsEventRow>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProductAnalyticsEventRow> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ProductAnalyticsEventRow>(
       rows,
+      orderBy: orderBy?.call(ProductAnalyticsEventRow.t),
+      orderByList: orderByList?.call(ProductAnalyticsEventRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [ProductAnalyticsEventRow].
   Future<ProductAnalyticsEventRow> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProductAnalyticsEventRow row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ProductAnalyticsEventRow>(
       row,
@@ -998,24 +1091,37 @@ class ProductAnalyticsEventRowRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProductAnalyticsEventRow>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable> where,
+    _is.OrderByBuilder<ProductAnalyticsEventRowTable>? orderBy,
+    _is.OrderByListBuilder<ProductAnalyticsEventRowTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ProductAnalyticsEventRow>(
       where: where(ProductAnalyticsEventRow.t),
+      orderBy: orderBy?.call(ProductAnalyticsEventRow.t),
+      orderByList: orderByList?.call(ProductAnalyticsEventRow.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ProductAnalyticsEventRow>(
       where: where?.call(ProductAnalyticsEventRow.t),
@@ -1026,11 +1132,11 @@ class ProductAnalyticsEventRowRepository {
 
   /// Acquires row-level locks on [ProductAnalyticsEventRow] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProductAnalyticsEventRowTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProductAnalyticsEventRowTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ProductAnalyticsEventRow>(
       where: where(ProductAnalyticsEventRow.t),

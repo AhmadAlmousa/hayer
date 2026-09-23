@@ -282,8 +282,7 @@ abstract final class DiscoveryHarvestService {
             (table.state.equals(DiscoveryHarvestState.succeeded) |
                 table.state.equals(DiscoveryHarvestState.partial) |
                 table.state.equals(DiscoveryHarvestState.failed)),
-        orderBy: (table) => table.completedAt,
-        orderDescending: true,
+        orderBy: (table) => table.completedAt.desc(),
         transaction: transaction,
       );
       final cooldownEnds = last?.completedAt?.add(
@@ -417,8 +416,7 @@ abstract final class DiscoveryHarvestService {
           (table.north > viewport.south) &
           (table.west < viewport.east) &
           (table.east > viewport.west),
-      orderBy: (table) => table.updatedAt,
-      orderDescending: true,
+      orderBy: (table) => table.updatedAt.desc(),
       limit: 20,
     );
     final jobs = await DiscoveryHarvestRow.db.find(

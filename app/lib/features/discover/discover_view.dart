@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hayer_client/hayer_client.dart'
-    show DiscoveryHarvestState, DiscoveryMapMode, LocationSuggestion;
+    show DiscoverPlace, DiscoveryMapMode, DiscoveryMapPoint, LocationSuggestion;
 import 'package:material_ui/material_ui.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -13,7 +13,6 @@ import '../../core/public_links.dart';
 import '../../core/widgets/location_search_field.dart';
 import '../../domain/discovery_area.dart';
 import '../../domain/discovery_category_tree.dart';
-import '../../domain/discovery_coverage.dart';
 import '../../domain/discovery_url_query.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'discovery_area_labels.dart';
@@ -24,9 +23,9 @@ import 'discovery_filter_bar.dart';
 import 'discovery_filter_sheet.dart';
 import 'discovery_map.dart';
 import 'discovery_place_card.dart';
+import 'discovery_place_details.dart';
 import 'discovery_results_controller.dart';
 import 'discovery_results_sheet.dart';
-import 'discovery_search_field.dart';
 import '../intent/place_intent_controller.dart';
 import 'discovery_search.dart';
 import 'discovery_selection_controller.dart';
@@ -57,7 +56,6 @@ class DiscoverView extends ConsumerStatefulWidget {
 
 class _DiscoverViewState extends ConsumerState<DiscoverView> {
   final _map = GlobalKey<DiscoveryMapState>();
-  final _results = ScrollController();
 
   /// Committing the camera on every frame of a pan would put a history entry
   /// and a query behind each one. This waits for the map to settle.
@@ -79,6 +77,7 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
 
   /// The permitted device location distances are measured from.
   DiscoveryPoint? _origin;
+  DiscoveryPoint? _sortOrigin;
 
   String? _areaLabel;
   String? _labelKey;
@@ -86,6 +85,7 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
   Size? _mapSize;
   bool _resolvingStart = false;
   bool _locating = false;
+  bool _showingPlaceSheet = false;
 
   DiscoveryUrlQuery get _query => _link.query;
 
@@ -123,7 +123,6 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
   void dispose() {
     _settle?.cancel();
     _areaSearch.dispose();
-    _results.dispose();
     super.dispose();
   }
 
@@ -133,6 +132,13 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     final viewport = _query.viewport;
     if (viewport == null) {
       unawaited(_openStartingArea());
+      return;
+    }
+    if (_query.sort == DiscoverySort.distanceCurrent &&
+        (_sortOrigin ?? _origin) == null) {
+      // A shared link contains no private device coordinates. If this device
+      // has no permitted location, keep the distance order usable.
+      unawaited(_resolveCurrentDistanceSort());
       return;
     }
     final location = _query.location;
@@ -151,17 +157,13 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     unawaited(ref.read(discoveryAreaStoreProvider).write(viewport));
     ref
         .read(discoveryResultsProvider.notifier)
-        .show(DiscoverySearch(query: _query));
+        .show(DiscoverySearch(query: _query, origin: _sortOrigin ?? _origin));
     _explore(viewport);
   }
 
-  /// Asks the server to explore [viewport] if it has not already been asked
-  /// for the same place.
-  ///
-  /// Browsing follows the camera freely because it only reads the catalog.
-  /// Exploring spends the user's harvest quota upstream, so it is asked once
-  /// per canonical cell: panning within one, or changing a sort or filter,
-  /// asks nothing further.
+  /// Asks the server to harvest [viewport] if it has not already been asked
+  /// for the same place. The selected category has its own source search in
+  /// the browse request; this broader harvest stays gated by canonical cell.
   void _explore(DiscoveryViewport viewport) {
     final key = discoveryExploreKey(viewport);
     if (key == _exploredKey) return;
@@ -176,31 +178,13 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     if (_resolvingStart) return;
     _resolvingStart = true;
     try {
-      final size = _mapSize ?? MediaQuery.sizeOf(context);
-      final width = size.width > 0 ? size.width : 400.0;
-      final height = size.height > 0 ? size.height : 800.0;
-      DiscoveryViewport? viewport;
-      if (await _permittedLocation() case final point?) {
-        viewport = discoveryViewportForCamera(
-          (
-            latitude: point.latitude,
-            longitude: point.longitude,
-            zoom: discoveryLocationZoom,
-          ),
-          width: width,
-          height: height,
-        );
-      }
-      viewport ??= await ref.read(discoveryAreaStoreProvider).read();
-      viewport ??= discoveryViewportForCamera(
-        (
-          latitude: discoveryDefaultCenter.latitude,
-          longitude: discoveryDefaultCenter.longitude,
-          zoom: discoveryDefaultZoom,
-        ),
-        width: width,
-        height: height,
-      );
+      final saved = await ref.read(discoveryAreaStoreProvider).read();
+      final center =
+          await _permittedLocation() ??
+          (saved == null
+              ? discoveryDefaultCenter
+              : discoveryViewportCenter(saved));
+      final viewport = discoveryViewportAround(center);
       if (!mounted || viewport == null || _query.viewport != null) return;
       final location = _query.withViewport(viewport).location;
       // The starting area is a default, not a search the user made.
@@ -222,7 +206,24 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
 
   Future<void> _loadOrigin() async {
     final origin = await _permittedLocation();
-    if (mounted && origin != null) setState(() => _origin = origin);
+    if (mounted && origin != null) {
+      setState(() => _origin = origin);
+      if (_query.sort == DiscoverySort.distanceCurrent) _commit();
+    }
+  }
+
+  Future<void> _resolveCurrentDistanceSort() async {
+    final position = await _permittedLocation();
+    if (!mounted || _query.sort != DiscoverySort.distanceCurrent) return;
+    if (position != null) {
+      setState(() => _sortOrigin = position);
+      _commit();
+    } else {
+      final location = _query.withSort(DiscoverySort.distanceArea).location;
+      _normalizedTo = location;
+      Router.neglect(context, () => context.go(location));
+      _notify(AppLocalizations.of(context)!.discoverySortLocationUnavailable);
+    }
   }
 
   /// How long the camera must rest before its area becomes the query.
@@ -265,10 +266,9 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
 
   /// Runs the search for wherever the map has come to rest.
   ///
-  /// Results follow the camera rather than waiting for a Search this area
-  /// button: the query is a read of the catalog we already hold, which costs
-  /// nothing upstream. Only exploring a new area does, and [_explore] gates
-  /// that separately.
+  /// A changed viewport becomes a new query. The server searches that area
+  /// and reuses a matching catalog search when one is still fresh; [_explore]
+  /// separately queues the broader area harvest once per canonical cell.
   void _cameraSettled(DiscoveryViewport visible) {
     _settle?.cancel();
     _settle = Timer(_browseDebounce, () {
@@ -312,6 +312,55 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
     if (mounted) setState(() => _searchingArea = false);
   }
 
+  Future<void> _showSelectedPlace() async {
+    if (_showingPlaceSheet || !mounted) return;
+    _showingPlaceSheet = true;
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        useSafeArea: true,
+        builder: (sheetContext) => SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * .55,
+          child: DiscoveryPlaceCard(
+            origin: _origin,
+            onClose: () => Navigator.of(sheetContext).pop(),
+          ),
+        ),
+      );
+    } finally {
+      _showingPlaceSheet = false;
+      if (mounted) ref.read(discoverySelectionProvider.notifier).clear();
+    }
+  }
+
+  void _selectPoint(DiscoveryMapPoint point) {
+    ref.read(discoverySelectionProvider.notifier).selectPoint(point);
+    if (ref.read(discoverySelectionProvider).place != null) {
+      unawaited(_showSelectedPlace());
+    }
+  }
+
+  Future<void> _selectRow(DiscoverPlace item) async {
+    final results = ref.read(discoveryResultsProvider);
+    final search = results.search;
+    final queryContext = results.context;
+    if (search == null || queryContext == null) return;
+    ref.read(discoverySelectionProvider.notifier).selectRow(item);
+    try {
+      await showDiscoveryPlaceDetails(
+        context,
+        item: item,
+        search: search,
+        queryContext: queryContext,
+        origin: _origin,
+      );
+    } finally {
+      if (mounted) ref.read(discoverySelectionProvider.notifier).clear();
+    }
+  }
+
   Future<void> _locate() async {
     setState(() => _locating = true);
     try {
@@ -353,27 +402,42 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 4),
                     child: Text(
-                      strings.discoverySortTitle,
+                      '✨ ${strings.discoverySortTitle}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                    child: Text(strings.discoverySortHelp),
+                  ),
                   for (final sort in DiscoverySort.values)
-                    RadioListTile<DiscoverySort>(
-                      key: ValueKey('discovery-sort-${sort.name}'),
-                      value: sort,
-                      title: Text(discoverySortLabel(strings, sort)),
-                      subtitle: switch (discoverySortExplainer(
-                        context,
-                        sort,
-                        scoring,
-                      )) {
-                        final explainer? => Text(explainer),
-                        null => null,
-                      },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 2,
+                      ),
+                      child: Card(
+                        color: _query.sort == sort
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : null,
+                        child: RadioListTile<DiscoverySort>(
+                          key: ValueKey('discovery-sort-${sort.name}'),
+                          value: sort,
+                          title: Text(discoverySortLabel(strings, sort)),
+                          subtitle: switch (discoverySortExplainer(
+                            context,
+                            sort,
+                            scoring,
+                          )) {
+                            final explainer? => Text(explainer),
+                            null => null,
+                          },
+                        ),
+                      ),
                     ),
                 ],
               ),
@@ -382,7 +446,28 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
         );
       },
     );
-    if (chosen != null && mounted) _apply(_query.withSort(chosen));
+    if (chosen == null || !mounted) return;
+    if (chosen == DiscoverySort.distanceCurrent) {
+      final position = await ref
+          .read(locationWarmupProvider)
+          .locate(requestPermission: true, refresh: true);
+      if (!mounted) return;
+      if (position == null) {
+        _notify(AppLocalizations.of(context)!.locationPermissionRequired);
+        return;
+      }
+      setState(() {
+        _origin = (latitude: position.latitude, longitude: position.longitude);
+        _sortOrigin = _origin;
+      });
+    } else {
+      _sortOrigin = null;
+    }
+    if (chosen == _query.sort) {
+      if (chosen == DiscoverySort.distanceCurrent) _commit();
+    } else {
+      _apply(_query.withSort(chosen));
+    }
   }
 
   Future<void> _openFilters() async {
@@ -491,19 +576,6 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
         if (next > (previous ?? 0)) _notify(strings.discoverySelectionGone);
       },
     );
-    ref.listen(discoveryCoverageProvider.select((coverage) => coverage.job), (
-      previous,
-      next,
-    ) {
-      final found =
-          next?.state == DiscoveryHarvestState.succeeded ||
-          next?.state == DiscoveryHarvestState.partial;
-      if (found &&
-          previous?.jobId == next?.jobId &&
-          !discoveryHarvestFinished(previous!.state)) {
-        _notify(strings.discoveryExplorationUpdated);
-      }
-    });
     final places = ref.watch(
       discoveryResultsProvider.select((results) => results.map),
     );
@@ -526,188 +598,182 @@ class _DiscoverViewState extends ConsumerState<DiscoverView> {
       child: Scaffold(
         body: SafeArea(
           bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Above the map rather than floating over it. Over a full-bleed
-              // map these had the whole screen behind them; over a half one at
-              // twice the system text size they would not fit.
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _AreaBar(
-                      title: viewport == null
-                          ? strings.discoveryThisArea
-                          : strings.discoveryAreaThisView(area),
-                      locating: _locating,
-                      onLocate: _locate,
-                      onShare: viewport == null ? null : _share,
-                      searching: _searchingArea,
-                      onSearch: () => setState(() => _searchingArea = true),
-                      onCloseSearch: _closeAreaSearch,
-                    ),
-                    if (_searchingArea)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              _mapSize = constraints.biggest;
+              return Stack(
+                children: [
+                  Positioned.fill(
+                    child: viewport == null
+                        ? ColoredBox(color: colors.surfaceContainerHighest)
+                        : DiscoveryMap(
+                            key: _map,
+                            viewport: viewport,
+                            onVisibleViewport: _cameraSettled,
+                            places: places,
+                            selected: selected,
+                            ranks: ranks,
+                            myLocationEnabled: _origin != null,
+                            onPlace: _selectPoint,
+                          ),
+                  ),
+                  if (places?.mode == DiscoveryMapMode.aggregates)
+                    Positioned(
+                      left: 12,
+                      right: 12,
+                      top: 160,
+                      child: Center(
                         child: Material(
-                          color: colors.surface,
-                          elevation: 3,
-                          borderRadius: BorderRadius.circular(20),
-                          clipBehavior: Clip.antiAlias,
+                          key: const ValueKey('discovery-zoom-in'),
+                          color: colors.inverseSurface,
+                          shape: const StadiumBorder(),
+                          elevation: 2,
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                            child: LocationSearchField(
-                              key: _areaSearchField,
-                              controller: _areaSearch,
-                              autofocus: true,
-                              latitude: _origin?.latitude,
-                              longitude: _origin?.longitude,
-                              onSelected: _goToSuggestion,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
                             ),
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 6),
-                    DiscoverySearchField(query: _query, onApply: _apply),
-                    const SizedBox(height: 4),
-                    DiscoveryFilterBar(
-                      query: _query,
-                      onSort: _chooseSort,
-                      onFilters: _openFilters,
-                      onCategories: _openCategories,
-                      onApply: _apply,
-                    ),
-                    if (viewport != null && _query.categoryIds.isNotEmpty)
-                      Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: TextButton.icon(
-                          key: const ValueKey('discover-quick-pick'),
-                          onPressed: _quickPick,
-                          icon: const Icon(Icons.bolt_rounded),
-                          label: Text(
-                            Localizations.localeOf(context).languageCode == 'ar'
-                                ? 'اختيار سريع لهذه الأماكن'
-                                : 'Quick Pick these places',
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              // Fixed halves of what is left. The one thing the split yields
-              // to is text size: at twice the system size the results header
-              // alone fills half a small phone and no row is left to read.
-              Expanded(
-                flex: _mapFlex(context),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    _mapSize = constraints.biggest;
-                    return Stack(
-                      children: [
-                        Positioned.fill(
-                          child: viewport == null
-                              ? ColoredBox(
-                                  color: colors.surfaceContainerHighest,
-                                )
-                              : DiscoveryMap(
-                                  key: _map,
-                                  viewport: viewport,
-                                  onVisibleViewport: _cameraSettled,
-                                  places: places,
-                                  selected: selected,
-                                  ranks: ranks,
-                                  myLocationEnabled: _origin != null,
-                                  onPlace: ref
-                                      .read(discoverySelectionProvider.notifier)
-                                      .selectPoint,
-                                ),
-                        ),
-                        if (places?.mode == DiscoveryMapMode.aggregates)
-                          Positioned(
-                            left: 12,
-                            right: 12,
-                            top: 8,
-                            child: Center(
-                              child: Material(
-                                key: const ValueKey('discovery-zoom-in'),
-                                color: colors.inverseSurface,
-                                shape: const StadiumBorder(),
-                                elevation: 2,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 8,
-                                  ),
-                                  child: Text(
-                                    strings.discoveryZoomInForPlaces,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      color: colors.onInverseSurface,
-                                    ),
-                                  ),
-                                ),
+                            child: Text(
+                              strings.discoveryZoomInForPlaces,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: colors.onInverseSurface,
                               ),
                             ),
                           ),
-                        // The selected place rides the map's lower edge, bounded
-                        // by the map so at large text its contents scroll inside
-                        // the card. The padding and alignment around it let taps
-                        // and pans through to the map.
-                        Positioned.fill(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                            child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: DiscoveryPlaceCard(origin: _origin),
-                            ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: constraints.maxHeight * .65,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (_searchingArea)
+                                Material(
+                                  color: colors.surface,
+                                  elevation: 3,
+                                  borderRadius: BorderRadius.circular(20),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      12,
+                                      4,
+                                      12,
+                                      8,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Align(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          child: IconButton(
+                                            key: const ValueKey(
+                                              'discovery-close-search',
+                                            ),
+                                            tooltip: MaterialLocalizations.of(
+                                              context,
+                                            ).closeButtonTooltip,
+                                            onPressed: _closeAreaSearch,
+                                            icon: const Icon(
+                                              Icons.close_rounded,
+                                            ),
+                                          ),
+                                        ),
+                                        LocationSearchField(
+                                          key: _areaSearchField,
+                                          controller: _areaSearch,
+                                          autofocus: true,
+                                          latitude: _origin?.latitude,
+                                          longitude: _origin?.longitude,
+                                          onSelected: _goToSuggestion,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              else
+                                _AreaBar(
+                                  title: viewport == null
+                                      ? strings.discoveryThisArea
+                                      : strings.discoveryAreaThisView(area),
+                                  locating: _locating,
+                                  onLocate: _locate,
+                                  onShare: viewport == null ? null : _share,
+                                  onSearch: () =>
+                                      setState(() => _searchingArea = true),
+                                ),
+                              const SizedBox(height: 6),
+                              DiscoveryFilterBar(
+                                query: _query,
+                                onSort: _chooseSort,
+                                onFilters: _openFilters,
+                                onCategories: _openCategories,
+                                onApply: _apply,
+                              ),
+                              if (viewport != null &&
+                                  _query.categoryIds.isNotEmpty)
+                                Align(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: TextButton.icon(
+                                    key: const ValueKey('discover-quick-pick'),
+                                    onPressed: _quickPick,
+                                    icon: const Icon(Icons.bolt_rounded),
+                                    label: Text(
+                                      Localizations.localeOf(context)
+                                                  .languageCode ==
+                                              'ar'
+                                          ? 'اختيار سريع لهذه الأماكن'
+                                          : 'Quick Pick these places',
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                flex: _resultsFlex(context),
-                child: Material(
-                  color: colors.surface,
-                  elevation: 8,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(28),
+                      ),
                     ),
                   ),
-                  clipBehavior: Clip.antiAlias,
-                  child: DiscoveryResultsSheet(
-                    query: _query,
-                    scrollController: _results,
-                    origin: _origin,
-                    onApply: _apply,
+                  DraggableScrollableSheet(
+                    key: const ValueKey('discovery-results-draggable'),
+                    initialChildSize: .28,
+                    minChildSize: .16,
+                    maxChildSize: .9,
+                    snap: true,
+                    snapSizes: const [.28, .55],
+                    builder: (context, scrollController) => Material(
+                      color: colors.surface,
+                      elevation: 8,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(28),
+                        ),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: DiscoveryResultsSheet(
+                        query: _query,
+                        scrollController: scrollController,
+                        origin: _origin,
+                        onApply: _apply,
+                        onSelectRow: _selectRow,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
+                ],
+              );
+            },
           ),
         ),
       ),
-    );
-  }
-
-  /// The map's share of the split, against [_resultsFlex].
-  ///
-  /// Equal halves at the system text size, which is what the layout is for.
-  /// Above that the results take more, because their header grows with the
-  /// text while the map does not, and a map below a quarter of the screen
-  /// stops being a map.
-  int _mapFlex(BuildContext context) => 100 - _resultsFlex(context);
-
-  int _resultsFlex(BuildContext context) {
-    final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
-    return (discoveryResultsShare * 100 * scale).round().clamp(
-      (discoveryResultsShare * 100).round(),
-      75,
     );
   }
 }
@@ -719,9 +785,7 @@ class _AreaBar extends StatelessWidget {
     required this.locating,
     required this.onLocate,
     required this.onShare,
-    required this.searching,
     required this.onSearch,
-    required this.onCloseSearch,
   });
 
   final String title;
@@ -731,11 +795,7 @@ class _AreaBar extends StatelessWidget {
   /// Shares the committed search, while there is one.
   final VoidCallback? onShare;
 
-  /// Whether the area is being searched by name, which the bar offers a way
-  /// out of instead of a way in.
-  final bool searching;
   final VoidCallback onSearch;
-  final VoidCallback onCloseSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -753,7 +813,7 @@ class _AreaBar extends StatelessWidget {
             Expanded(
               child: InkWell(
                 key: const ValueKey('discovery-area-search'),
-                onTap: searching ? onCloseSearch : onSearch,
+                onTap: onSearch,
                 borderRadius: BorderRadius.circular(20),
                 // As tall as the buttons beside it, so the bar keeps the
                 // height it had before its title became a control.
@@ -788,20 +848,12 @@ class _AreaBar extends StatelessWidget {
                 ),
               ),
             ),
-            if (searching)
-              IconButton(
-                key: const ValueKey('discovery-close-search'),
-                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                onPressed: onCloseSearch,
-                icon: const Icon(Icons.close_rounded),
-              )
-            else
-              IconButton(
-                key: const ValueKey('discovery-share'),
-                tooltip: strings.discoveryShareSearch,
-                onPressed: onShare,
-                icon: const Icon(Icons.share_rounded),
-              ),
+            IconButton(
+              key: const ValueKey('discovery-share'),
+              tooltip: strings.discoveryShareSearch,
+              onPressed: onShare,
+              icon: const Icon(Icons.share_rounded),
+            ),
             IconButton.filledTonal(
               tooltip: strings.discoveryShowMyLocation,
               onPressed: locating ? null : onLocate,

@@ -57,7 +57,7 @@ Future<void> showDiscoveryPlaceDetails(
         known: standing,
       ),
     ),
-    saveButton: (place) => SavePlaceButton(place: place, prominent: true),
+    saveButton: (place) => SavePlaceButton(place: place, outlined: true),
     onReportIssue: () => showCatalogPlaceIssue(
       context,
       catalogId: item.catalogId,
